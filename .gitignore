@@ -1,0 +1,13 @@
+# 数据、运行记录与报告默认不提交（见 docs/architecture.md §9.1）
+/data/
+/runs/
+/reports/
+
+# 密钥与本地环境
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+.DS_Store

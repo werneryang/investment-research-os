@@ -1,0 +1,80 @@
+# 来源登记（docs/architecture.md §5.1）
+#
+# 核验状态按「来源 × 数据集 × 用途」分别记录：
+#   candidate        候选来源：只有资料入口
+#   docs_verified    说明已核验：已阅读官方说明，不代表程序接入成功
+#   access_verified  接入已验证：指定获取方式和样本取得成功
+#   use_verified     用途已验证：在明确范围内通过相应研究要求
+# 一个样本下载成功不代表整个来源可用。新增核验请追加记录，不改写旧记录。
+
+sources:
+  - id: ust_treasury
+    publisher: U.S. Department of the Treasury
+    channel: home.treasury.gov 每日利率数据 CSV 按年下载
+    url: https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rate-archives
+    license: 美国联邦政府发布信息；以官网条款为准，再分发前另行确认
+    registration: 无需注册或 key
+    rate_limit: 未公布；本项目串行请求，失败有界重试
+    revisions: 按日发布，偶有更正；官网不提供历史版本，本地以快照保存
+    maintenance: 期限列会随发行变化（如 2022 年新增 4 Mo、2025 年新增 1.5 Month），解析按列名识别
+    alternatives: [fred_graph]
+    verification:
+      - dataset: ust_par_yield_curve
+        status: docs_verified
+        date: "2026-10-22"
+        evidence: 官方档案页说明 CSV 档案及 XML 入口
+      - dataset: ust_par_yield_curve
+        status: access_verified
+        date: "2026-10-22"
+        evidence: 2019、2024、2025 年 CSV 样本取得成功；列结构随年份不同
+        use: 程序化按年下载日度票面收益率曲线
+
+  - id: fred_graph
+    publisher: Federal Reserve Bank of St. Louis（上游为各统计机构）
+    channel: FRED 图表 CSV 导出（fredgraph.csv），无需 key
+    url: https://fred.stlouisfed.org/docs/api/terms_of_use.html
+    license: 部分序列含第三方权利；按序列确认，公开取得不等于可自由再分发
+    registration: 无需注册或 key
+    rate_limit: 未公布；本项目串行请求，失败有界重试
+    revisions: 只返回当前版本，不含历史版本；时点研究需改用 fred_api（ALFRED）
+    maintenance: 图表导出接口非正式 API，格式可能变化；空值以空字符串或 "." 表示
+    alternatives: [fred_api]
+    verification:
+      - dataset: fred_dgs10
+        status: access_verified
+        date: "2026-10-22"
+        evidence: DGS10 2024 年 1 月样本取得成功；假日为空值
+        use: 当前版本日度序列下载
+      - dataset: fred_cpiaucsl
+        status: access_verified
+        date: "2026-10-22"
+        evidence: CPIAUCSL 全历史样本取得成功
+        use: 当前版本月度序列下载
+
+  - id: fred_api
+    publisher: Federal Reserve Bank of St. Louis（ALFRED 历史版本）
+    channel: FRED API series/observations，需免费 API key（环境变量 FRED_API_KEY）
+    url: https://fred.stlouisfed.org/docs/api/api_key.html
+    license: 同 FRED 使用条款；部分序列含第三方权利
+    registration: 免费注册取得 API key；key 不进入 Git
+    rate_limit: 以官方说明为准；本项目串行请求
+    revisions: realtime_start 给出每个历史版本的发布日期，可用于时点研究
+    maintenance: key 失效或额度变化时降级到 fred_graph（只限描述性研究）
+    alternatives: [fred_graph]
+    verification:
+      - dataset: alfred_cpiaucsl
+        status: docs_verified
+        date: "2026-10-22"
+        evidence: 官方说明要求 key；ALFRED 提供历史版本。本项目尚未用真实 key 测试接入
+
+  - id: manual
+    publisher: 人工导入（每次导入另行声明原始发布者与取得方式）
+    channel: 本地 CSV 文件导入
+    url: ""
+    license: 按原始来源确认
+    registration: 视原始来源而定
+    rate_limit: 不适用
+    revisions: 每次导入保存原始文件快照，形成新版本
+    maintenance: 人工维护；原始文件与声明一并保存
+    alternatives: []
+    verification: []

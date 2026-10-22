@@ -1,0 +1,71 @@
+# 数据集登记：来源下的具体数据对象与语义（docs/architecture.md §6）
+#
+# availability 是「最早可用于研究决策」的保守规则，不是实际发布时间：
+#   next_day                观测日次日 0 点（来源时区）
+#   period_end_lag_days     观测期间结束后 days 天 0 点
+#   published_next_day      供应方发布日次日 0 点（需要来源提供发布日期）
+#   unknown                 无法确定，available_at 留空
+
+datasets:
+  ust_par_yield_curve:
+    source_id: ust_treasury
+    upstream_id: U.S. Treasury Daily Treasury Par Yield Curve Rates
+    connector: treasury_par_curve
+    description: 美国国债日度票面收益率曲线（par yield，按债券等价收益率报价）
+    frequency: daily
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: next_day}
+    value_range: [-5, 30]
+
+  fred_dgs10:
+    source_id: fred_graph
+    upstream_id: "Board of Governors of the Federal Reserve System (H.15) via FRED: DGS10"
+    connector: fred_graph_csv
+    description: 10 年期国债固定期限收益率（H.15，与 Treasury 曲线同一上游）
+    params: {series: DGS10}
+    frequency: daily
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: next_day}
+    value_range: [-5, 30]
+
+  fred_cpiaucsl:
+    source_id: fred_graph
+    upstream_id: "U.S. Bureau of Labor Statistics via FRED: CPIAUCSL"
+    connector: fred_graph_csv
+    description: 美国 CPI-U 季调指数（当前修订版本，非当时版本）
+    params: {series: CPIAUCSL}
+    frequency: monthly
+    unit: index_1982_1984=100
+    currency: null
+    timezone: America/New_York
+    # BLS 通常在次月中旬发布；取 45 天作为保守规则，仅为当前版本的近似
+    availability: {type: period_end_lag_days, days: 45}
+    value_range: [0, 1000]
+
+  alfred_cpiaucsl:
+    source_id: fred_api
+    upstream_id: "U.S. Bureau of Labor Statistics via ALFRED: CPIAUCSL"
+    connector: fred_api_vintages
+    description: CPI-U 季调指数全部历史版本（需要 FRED_API_KEY）
+    params: {series: CPIAUCSL}
+    frequency: monthly
+    unit: index_1982_1984=100
+    currency: null
+    timezone: America/New_York
+    availability: {type: published_next_day}
+    value_range: [0, 1000]
+
+  manual_example:
+    source_id: manual
+    upstream_id: 人工导入示例（导入时须声明原始来源）
+    connector: manual_csv
+    description: 人工导入通道示例；CSV 需含 observation_at 与 value 列，可选 series_id
+    frequency: monthly
+    unit: percent
+    currency: null
+    timezone: UTC
+    availability: {type: unknown}
