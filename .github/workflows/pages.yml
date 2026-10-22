@@ -1,0 +1,69 @@
+# 项目网站：重新取得免费数据 → 运行研究 → 复现校验 → 生成静态页面 → 发布到 GitHub Pages
+#
+# 任何必需步骤失败（测试、Treasury 取得、研究运行、复现不一致）都不会发布，线上保留上一版页面。
+# FRED 只用于交叉核验，取得失败时研究照常运行，页面显示交叉核验「跳过」。
+name: Research site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # 工作日 23:30 UTC（美东傍晚 Treasury 当日数据发布之后）
+    - cron: "30 23 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Install locked dependencies
+        run: uv sync --locked
+
+      - name: Test
+        run: uv run pytest -q
+
+      - name: Fetch Treasury par yield curve (2024 onward)
+        run: uv run iros fetch ust_par_yield_curve --start 2024
+
+      - name: Fetch FRED DGS10 for cross-check
+        continue-on-error: true
+        run: uv run iros fetch fred_dgs10 --start 2024-01-01
+
+      - name: Run studies
+        run: |
+          uv run iros run config/studies/ust_curve_2024.yaml
+          uv run iros run config/studies/ust_curve_last_year.yaml
+
+      - name: Verify runs reproduce from pinned inputs
+        run: uv run iros verify --all
+
+      - name: Build site
+        run: uv run iros site --out _site
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -28,7 +28,13 @@ from .data.store import (
     sha256_bytes,
     version_as_of,
 )
-from .registry import Registry, StudySpec, load_study, parse_study
+from .registry import (
+    Registry,
+    StudySpec,
+    load_study,
+    parse_study,
+    resolve_relative_dates,
+)
 from .research import ResearchResult, StudyInput, get_branch
 from .validation.reference import spot_check
 
@@ -209,8 +215,9 @@ def run_study(root: Path, study_path: Path, pins: dict[str, str] | None = None,
     from .reporting import write_report  # 延迟导入：matplotlib 只在生成报告时需要
 
     root = Path(root)
-    study = load_study(study_path)
     started = clock()
+    study = parse_study(resolve_relative_dates(load_study(study_path).raw, started.date()),
+                        Path(study_path).name)
     # 随机后缀保证同一秒内的运行也不碰撞；目录排他创建，已有记录绝不覆盖
     run_id = f"{study.study_id}-{compact(started)}-{uuid.uuid4().hex[:8]}"
     run_dir = root / "runs" / run_id

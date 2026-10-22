@@ -65,6 +65,9 @@ def _date_coverage(curve: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp,
                     "incomplete_reason": "数据集未登记预期观测日历，无法证明期间完整"})
         return out
     expected = calendar.expected_dates(start, end)
+    unverified = calendar.unverified_span(start, end)
+    if unverified:  # 只在确有未核验日期时记录，已核验期间的结果结构保持不变
+        out["calendar_unverified"] = unverified
     missing = expected.difference(observed)
     unexpected = observed.difference(expected)
     share = (len(expected) - len(missing)) / len(expected) if len(expected) else 0.0
@@ -133,6 +136,10 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
     coverage["dataset_issues"] = [
         i for i in curve_in.version.quality.get("issues", []) if i.get("series_id") in tenor_of]
 
+    if coverage.get("calendar_unverified"):
+        limitations.append(
+            f"预期观测日历 {coverage['calendar']} 未在 {'、'.join(coverage['calendar_unverified'])} 核验，"
+            "该段的预期日期按规则推定，临时休市或额外发布日可能使日期覆盖略有偏差")
     if not period_complete:
         covered = f"{coverage['first']} 至 {coverage['last']}" if coverage["curve_days"] else "无"
         limitations.append(

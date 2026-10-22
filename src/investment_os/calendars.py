@@ -10,20 +10,10 @@ from dataclasses import dataclass
 from typing import Any
 
 import pandas as pd
-from pandas.tseries.holiday import (
-    AbstractHolidayCalendar,
-    GoodFriday,
-    USFederalHolidayCalendar,
-)
-
-
-class _GoodFridayCalendar(AbstractHolidayCalendar):
-    rules = [GoodFriday]
-
+from pandas.tseries.holiday import AbstractHolidayCalendar, USFederalHolidayCalendar
 
 _HOLIDAY_RULES: dict[str, type[AbstractHolidayCalendar]] = {
     "us_federal": USFederalHolidayCalendar,
-    "good_friday": _GoodFridayCalendar,
 }
 
 
@@ -34,6 +24,19 @@ class CalendarSpec:
     holiday_rules: tuple[str, ...]
     additional_closures: tuple[pd.Timestamp, ...]
     evidence: str
+    verified_from: pd.Timestamp | None = None
+    verified_through: pd.Timestamp | None = None
+
+    def unverified_span(self, start: pd.Timestamp, end: pd.Timestamp) -> list[str]:
+        """[start, end] 中超出核验范围的部分（ISO 日期区间描述）；全部已核验时为空。"""
+        if self.verified_from is None or self.verified_through is None:
+            return [f"{start.date()} 至 {end.date()}"]
+        spans = []
+        if start < self.verified_from:
+            spans.append(f"{start.date()} 至 {min(end, self.verified_from - pd.Timedelta(days=1)).date()}")
+        if end > self.verified_through:
+            spans.append(f"{max(start, self.verified_through + pd.Timedelta(days=1)).date()} 至 {end.date()}")
+        return spans
 
     def expected_dates(self, start: pd.Timestamp, end: pd.Timestamp) -> pd.DatetimeIndex:
         """[start, end] 内的预期观测日：工作日减去节假日规则与额外休市日。"""
@@ -58,5 +61,8 @@ def load_calendars(doc: dict[str, Any]) -> dict[str, CalendarSpec]:
             holiday_rules=rules,
             additional_closures=tuple(pd.Timestamp(str(d)) for d in item.get("additional_closures") or ()),
             evidence=item["evidence"],
+            verified_from=pd.Timestamp(str(item["verified_from"])) if item.get("verified_from") else None,
+            verified_through=(pd.Timestamp(str(item["verified_through"]))
+                              if item.get("verified_through") else None),
         )
     return out

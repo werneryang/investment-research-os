@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import copy
 import hashlib
 import json
+import re
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
 import yaml
 
 from .calendars import CalendarSpec, load_calendars
@@ -151,6 +155,32 @@ class StudySpec:
     def config_hash(self) -> str:
         canon = json.dumps(self.raw, sort_keys=True, ensure_ascii=False, default=str)
         return hashlib.sha256(canon.encode("utf-8")).hexdigest()
+
+
+_RELATIVE = re.compile(r"^today(?:-(\d+)([dmy]))?$")
+
+
+def resolve_relative_dates(raw: dict[str, Any], today: date) -> dict[str, Any]:
+    """把 scope.start/end 中的 today、today-30d、today-6m、today-1y 换算为具体日期。
+
+    运行时换算一次并写入运行清单，复现时使用换算后的固定日期，而不是重新取「今天」。
+    """
+    out = copy.deepcopy(raw)
+    scope = out.get("scope") or {}
+    resolved = {}
+    for key in ("start", "end"):
+        value = scope.get(key)
+        m = _RELATIVE.match(str(value)) if isinstance(value, str) else None
+        if not m:
+            continue
+        n, unit = m.groups()
+        delta = pd.DateOffset(**{{"d": "days", "m": "months", "y": "years"}[unit]: int(n)}) if n else None
+        day = (pd.Timestamp(today) - delta) if delta is not None else pd.Timestamp(today)
+        scope[key] = day.date().isoformat()
+        resolved[key] = value
+    if resolved:
+        scope["relative_dates"] = resolved
+    return out
 
 
 def load_study(path: Path) -> StudySpec:

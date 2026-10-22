@@ -10,7 +10,7 @@ import pytest
 
 from investment_os.connectors.fred import FredGraphCsvConnector
 from investment_os.connectors.treasury import URL_TEMPLATE, TreasuryParCurveConnector
-from investment_os.data import DataStore
+from investment_os.data import DataStore, ingest
 from investment_os.registry import Registry
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -90,3 +90,12 @@ def treasury_connector(responses: dict[int, str | Exception]) -> TreasuryParCurv
 
 def dgs10_connector(start: str, end: str, body: str = DGS10_2024) -> FredGraphCsvConnector:
     return FredGraphCsvConnector(http_get=FakeHttp({dgs10_url(start, end): body.encode()}), **NO_RETRY)
+
+
+@pytest.fixture
+def loaded(project, registry, store):
+    ingest(registry, store, "ust_par_yield_curve", {"start": 2024, "end": 2024},
+           treasury_connector({2024: TREASURY_2024}))
+    ingest(registry, store, "fred_dgs10", {"start": "2024-01-01", "end": "2024-01-05"},
+           dgs10_connector("2024-01-01", "2024-01-05"))
+    return project

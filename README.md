@@ -37,6 +37,22 @@ uv run iros run config/studies/ust_curve_2024.yaml
 uv run iros verify <run_id>
 ```
 
+## 项目网站
+
+`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 重新取得 Treasury 与 FRED 数据 → 运行 `ust_curve_2024` 与滚动的 `ust_curve_last_year` → `iros verify --all` → 生成静态网站 → 发布到 GitHub Pages。任何必需步骤失败都不发布，线上保留上一版。
+
+本地生成与预览：
+
+```bash
+uv run iros site --out _site
+```
+
+```bash
+python3 -m http.server 8765 --directory _site
+```
+
+页面说明性内容（建设进度、模块地图、可靠性机制）在 `site/content.yaml`；研究结果、数据与核验状态从运行记录和登记中生成。
+
 其他命令：`iros sources`（来源与核验状态）、`iros datasets`（版本与质量概况）、`iros runs`、`iros import <dataset> <file> --declared-source "..."`（人工导入）。
 
 ```bash

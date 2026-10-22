@@ -37,15 +37,6 @@ def write_study(project: Path, **overrides) -> Path:
     return path
 
 
-@pytest.fixture
-def loaded(project, registry, store):
-    ingest(registry, store, "ust_par_yield_curve", {"start": 2024, "end": 2024},
-           treasury_connector({2024: TREASURY_2024}))
-    ingest(registry, store, "fred_dgs10", {"start": "2024-01-01", "end": "2024-01-05"},
-           dgs10_connector("2024-01-01", "2024-01-05"))
-    return project
-
-
 def load_result(project: Path, manifest: dict) -> dict:
     return json.loads((project / "runs" / manifest["run_id"] / "result.json").read_text())
 

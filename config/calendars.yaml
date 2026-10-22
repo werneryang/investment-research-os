@@ -1,12 +1,15 @@
 # 预期观测日历：某数据集「应当有观测」的日期集合，用于日期覆盖检查。
-# 规则须用真实数据核验；新增休市日（如临时国丧日）追加到 additional_closures 并注明依据。
+# 规则须用真实数据核验；verified_from/verified_through 之外的日期只按规则推定，
+# 研究会在限制中说明。新增休市日（如临时国丧日）追加到 additional_closures 并注明依据。
 
 calendars:
   us_treasury_daily:
-    description: 美国财政部日度利率发布日：工作日，扣除联邦假日与耶稣受难日
-    holiday_rules: [us_federal, good_friday]
-    additional_closures: []
+    description: 美国财政部日度利率发布日：工作日，扣除联邦假日及逐年核验的额外休市日
+    holiday_rules: [us_federal]
+    # 耶稣受难日并非每年休市：2024、2025 年未发布，2026 年 4 月 3 日照常发布
+    additional_closures: ["2024-03-29", "2025-04-18"]
+    verified_from: "2024-01-01"
+    verified_through: "2026-10-22"
     evidence: >-
-      2026-10-22 与 Treasury 2024、2025 年 CSV 的日期集合逐日比对：
-      预期日期与实际发布日期完全一致（2024 年 250 日，耶稣受难日 3 月 29 日不发布；
-      2025 年 4 月 18 日同）。其他年份未核验。
+      2026-10-22 与 Treasury 2024、2025 年全年及 2026 年截至 10 月 22 日的 CSV 日期集合逐日比对，
+      预期日期与实际发布日期完全一致（2024 年 250 日、2026 年截至 10 月 22 日 203 日）。

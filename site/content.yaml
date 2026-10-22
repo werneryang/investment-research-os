@@ -1,0 +1,71 @@
+# 项目网站的说明性内容（建设进度、模块地图、可靠性机制）。
+# 研究结果、数据与核验状态不写在这里，由 `iros site` 从运行记录与登记中生成。
+
+title: Investment Research OS
+tagline: 个人投资研究框架——免费数据、可追溯的版本、可复现的研究记录
+
+phases:
+  - id: P0
+    name: 总体架构
+    status: done
+    summary: 目标、范围、模块契约、资源地图与可靠性规则（架构 V0.3）
+  - id: P1
+    name: 公共契约与资源核验
+    status: partial
+    summary: 首个案例所需的来源登记、时间与质量契约、成果与运行规范已实现；其他市场与对象待扩展
+  - id: P2
+    name: 小规模贯通验证
+    status: done
+    summary: 美国国债收益率曲线案例：取得 → 快照 → 标准化 → 分析 → 报告 → 复现，含异常反例测试
+  - id: P3
+    name: 研究模块渐进扩展
+    status: planned
+    summary: 宏观、资产、行业、证券、组合等分支按研究需要增加
+  - id: P4
+    name: 高级研究或可选应用
+    status: planned
+    summary: 复杂预测、策略模拟、新市场或个人账户等应用，按需启用
+
+modules:
+  - id: Q
+    name: 研究定义
+    code: registry.py · config/studies
+    role: 问题、范围、方法与用途
+  - id: D
+    name: 资源接入
+    code: connectors/
+    role: Treasury、FRED、ALFRED、人工导入
+  - id: S
+    name: 数据与版本
+    code: data/
+    role: 原始快照、标准化版本、时间契约、时点视图
+  - id: A
+    name: 公共分析
+    code: analytics/
+    role: 利率曲线、收益、风险
+  - id: M
+    name: 研究分支
+    code: research/
+    role: 描述、解释、预测、模拟成果
+  - id: O
+    name: 成果与档案
+    code: reporting/ · runs.py
+    role: 报告、图表、运行清单
+  - id: V
+    name: 质量与验证
+    code: quality/ · validation/
+    role: 缺失与隔离、交叉核验、快照抽查、复现
+
+guarantees:
+  - title: 来源可追溯
+    detail: 每次取得原样保存原始文件及校验值；标准化版本只追加、不覆盖，记录上游快照与上一版本。
+  - title: 缺失显式表达
+    detail: 不填零、不沿用前值、不插值；冲突数据隔离；覆盖不足时，依赖它的结论标为不支持。
+  - title: 期间覆盖对照日历
+    detail: 日期覆盖对照经核验的发布日历计算；期间不完整时只保留首尾对比，不输出均值、极值与计数。
+  - title: 时点资格需要证据
+    detail: 只有当前修订的数据，不能凭假定的发布延迟进入过去的时点视图；必须是当时已取得的快照或供应方历史版本。
+  - title: 失败留痕
+    detail: 每次取得记录开始与终态；任何阶段失败都保留旧版本与诊断快照；凭证不进入日志。
+  - title: 固定输入可复现
+    detail: 运行清单固定研究定义、数据版本、输入角色与代码内容校验值；verify 重算并比较结果校验值。

@@ -1,0 +1,42 @@
+# 滚动案例：最近一年的曲线变化。日期在运行时换算为具体值并写入运行清单，复现使用固定日期。
+study_id: ust_curve_last_year
+title: 近一年美国国债收益率曲线变化
+question: 最近一年美国国债名义票面收益率曲线的水平、斜率与曲率如何变化？
+result_type: descriptive
+branch: rates_curve
+
+scope:
+  market: US
+  currency: USD
+  start: today-1y
+  end: today
+  frequency: daily
+  # 使用最新修订历史的描述性研究，不声称当时的预测能力
+  vintage_policy: latest
+
+data:
+  curve: ust_par_yield_curve
+  # 可选输入：不可用时跳过交叉核验，不阻断主研究
+  cross_check: {dataset: fred_dgs10, required: false}
+
+method:
+  key_tenors: [3M, 2Y, 5Y, 10Y, 30Y]
+  spreads:
+    - [2Y, 10Y]
+    - [3M, 10Y]
+  curvature: [2Y, 5Y, 10Y]
+  curve_snapshots: [start, end]
+  min_coverage: 0.95
+
+benchmark: 期初曲线（窗口内首个有效交易日）
+evaluation:
+  - 标准化结果与原始快照逐点抽查一致（独立解析路径）
+  - Treasury 10 年与 FRED DGS10 一致性检查（同一上游，不构成独立验证）
+  - 固定数据版本可重现（iros verify）
+
+limitations:
+  - 票面收益率（par yield）曲线，不是零息或远期曲线，也不是债券或债券基金的持有期回报
+  - 名义收益率，未扣除通胀
+  - 期间描述，不含预测或交易含义；相关变化不构成因果解释
+  - 窗口终点为运行当天，最新一两个交易日可能尚未发布
+  - Treasury 官网不提供历史版本，使用本地快照；结果对应快照内容

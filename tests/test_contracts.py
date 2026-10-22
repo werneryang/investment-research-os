@@ -78,8 +78,12 @@ def test_treasury_calendar_matches_verified_2024_dates():
     cal = Registry.load(PROJECT_ROOT).calendars["us_treasury_daily"]
     days = cal.expected_dates(pd.Timestamp("2024-01-01"), pd.Timestamp("2024-12-31"))
     assert len(days) == 250
-    assert pd.Timestamp("2024-03-29") not in days  # 耶稣受难日
+    assert pd.Timestamp("2024-03-29") not in days  # 2024 年耶稣受难日未发布
     assert pd.Timestamp("2024-01-15") not in days  # MLK
+    # 2026 年耶稣受难日照常发布，不能当作固定规则
+    assert pd.Timestamp("2026-04-03") in cal.expected_dates(pd.Timestamp("2026-04-01"), pd.Timestamp("2026-04-30"))
+    assert cal.unverified_span(pd.Timestamp("2024-01-01"), pd.Timestamp("2024-12-31")) == []
+    assert cal.unverified_span(pd.Timestamp("2026-06-01"), pd.Timestamp("2027-01-31")) == ["2026-10-23 至 2027-01-31"]
 
 
 def test_registry_rejects_unknown_status(tmp_path: Path):

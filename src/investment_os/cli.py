@@ -6,6 +6,8 @@
     iros import <dataset> <file> --declared-source "..."
     iros run config/studies/x.yaml       运行研究，生成报告与运行记录
     iros verify <run_id>                 用固定数据版本复现运行结果
+    iros verify --all                    复现全部运行
+    iros site --out _site                生成项目静态网站
     iros runs                            运行记录列表
 """
 
@@ -99,13 +101,31 @@ def cmd_run(args: argparse.Namespace) -> int:
 
 
 def cmd_verify(args: argparse.Namespace) -> int:
-    record = verify_run(_root(args.root), args.run_id)
-    ok = record["reproduced"]
-    print(f"[{'reproduced' if ok else 'mismatch'}] {args.run_id}")
-    print(f"    原结果 {record['original_hash'][:16]}，重算 {record['new_hash'][:16]}")
-    if record["code_changed"]:
-        print("    注意：代码与原运行不同（或存在未提交改动）")
-    return 0 if ok else 1
+    root = _root(args.root)
+    if args.all:
+        run_ids = [r["run_id"] for r in list_runs(root) if r["status"] not in ("failed", "running")]
+    elif args.run_id:
+        run_ids = [args.run_id]
+    else:
+        raise SystemExit("请给出 run_id，或用 --all 复现全部运行")
+    failed = 0
+    for run_id in run_ids:
+        record = verify_run(root, run_id)
+        ok = record["reproduced"]
+        failed += not ok
+        print(f"[{'reproduced' if ok else 'mismatch'}] {run_id}")
+        print(f"    原结果 {record['original_hash'][:16]}，重算 {record['new_hash'][:16]}")
+        if record["code_changed"]:
+            print("    注意：代码或配置与原运行不同")
+    return 1 if failed else 0
+
+
+def cmd_site(args: argparse.Namespace) -> int:
+    from .site import build_site  # 延迟导入：只在生成网站时需要
+
+    index = build_site(_root(args.root), Path(args.out))
+    print(f"网站已生成：{index}")
+    return 0
 
 
 def cmd_runs(args: argparse.Namespace) -> int:
@@ -139,8 +159,13 @@ def build_parser() -> argparse.ArgumentParser:
     r.set_defaults(func=cmd_run)
 
     v = sub.add_parser("verify", help="复现运行结果")
-    v.add_argument("run_id")
+    v.add_argument("run_id", nargs="?")
+    v.add_argument("--all", action="store_true", help="复现全部未失败的运行")
     v.set_defaults(func=cmd_verify)
+
+    w = sub.add_parser("site", help="生成项目静态网站")
+    w.add_argument("--out", default="_site", help="输出目录（默认 _site）")
+    w.set_defaults(func=cmd_site)
 
     sub.add_parser("runs", help="运行记录").set_defaults(func=cmd_runs)
     return p

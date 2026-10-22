@@ -121,9 +121,11 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
     body: list[Any] = []
     if r.get("levels"):
         first = next(iter(r["levels"].values()))
-        body.append(f"变化以首个有效观测（{first.get('start_date', '—')}）为基准，"
-                    f"至最后有效观测（{first.get('end_date', '—')}）；不是跨年末口径，也不是持有期回报。"
-                    "标为 — 的期间统计因期间未能证明完整而不输出。")
+        note = (f"变化以首个有效观测（{first.get('start_date', '—')}）为基准，"
+                f"至最后有效观测（{first.get('end_date', '—')}）；不是跨年末口径，也不是持有期回报。")
+        if not cov.get("period_complete", True):
+            note += "标为 — 的期间统计因期间未能证明完整而不输出。"
+        body.append(note)
         body.append(("table", ["期限", "期初 %", "期末 %", "变化 bp", "最低 %（日期）", "最高 %（日期）", "均值 %"],
                      [[t, _fmt(v["start"]), _fmt(v["end"]), _fmt(v["change_bp"], 0),
                        _dated(v["min"], v["min_date"]), _dated(v["max"], v["max_date"]),
