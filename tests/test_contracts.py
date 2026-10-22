@@ -3,7 +3,13 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from investment_os.contracts import AvailabilityRule, VerificationStatus
+from investment_os.contracts import (
+    AvailabilityRule,
+    SourceSpec,
+    Use,
+    VerificationRecord,
+    VerificationStatus,
+)
 from investment_os.data.timing import available_at, period_end, published_to_utc
 from investment_os.registry import Registry, RegistryError, load_datasets, load_sources
 from investment_os.tenor import parse_tenor
@@ -33,6 +39,47 @@ def test_project_registry_loads():
     assert reg.sources["ust_treasury"].status_for("ust_par_yield_curve") is VerificationStatus.ACCESS_VERIFIED
     # 没有记录的数据集仍是候选
     assert reg.sources["manual"].status_for("manual_example") is VerificationStatus.CANDIDATE
+
+
+def test_use_verification_only_counts_for_that_use():
+    rec = lambda status, use=None: VerificationRecord("d", status, "2026-10-22", "e", use)  # noqa: E731
+    src = SourceSpec("s", "p", "c", "u", "l", "r", "r", "r", "m", verification=(
+        rec(VerificationStatus.ACCESS_VERIFIED),
+        rec(VerificationStatus.USE_VERIFIED, Use.DESCRIPTIVE),
+    ))
+    assert src.status_for("d", Use.DESCRIPTIVE) is VerificationStatus.USE_VERIFIED
+    assert src.status_for("d", Use.POINT_IN_TIME) is VerificationStatus.ACCESS_VERIFIED
+    assert src.status_for("d") is VerificationStatus.ACCESS_VERIFIED
+    assert src.verified_uses("d") == [Use.DESCRIPTIVE]
+
+
+def test_use_verified_requires_use(tmp_path: Path):
+    (tmp_path / "s.yaml").write_text("""
+sources:
+  - {id: x, publisher: p, channel: c, url: u, license: l, registration: r,
+     rate_limit: r, revisions: r, maintenance: m,
+     verification: [{dataset: d, status: use_verified, date: "2026-01-01", evidence: e}]}
+""", encoding="utf-8")
+    with pytest.raises(RegistryError, match="必须声明 use"):
+        load_sources(tmp_path / "s.yaml")
+
+
+def test_dataset_rejects_unsupported_frequency(tmp_path: Path):
+    (tmp_path / "d.yaml").write_text("""
+datasets:
+  a: {source_id: s, upstream_id: u, connector: c, frequency: hourly, unit: percent,
+      timezone: UTC, availability: {type: period_end_lag_days, days: 1}}
+""", encoding="utf-8")
+    with pytest.raises(RegistryError, match="频率"):
+        load_datasets(tmp_path / "d.yaml", {"s": object()})
+
+
+def test_treasury_calendar_matches_verified_2024_dates():
+    cal = Registry.load(PROJECT_ROOT).calendars["us_treasury_daily"]
+    days = cal.expected_dates(pd.Timestamp("2024-01-01"), pd.Timestamp("2024-12-31"))
+    assert len(days) == 250
+    assert pd.Timestamp("2024-03-29") not in days  # 耶稣受难日
+    assert pd.Timestamp("2024-01-15") not in days  # MLK
 
 
 def test_registry_rejects_unknown_status(tmp_path: Path):

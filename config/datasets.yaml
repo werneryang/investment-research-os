@@ -2,9 +2,15 @@
 #
 # availability 是「最早可用于研究决策」的保守规则，不是实际发布时间：
 #   next_day                观测日次日 0 点（来源时区）
-#   period_end_lag_days     观测期间结束后 days 天 0 点
+#   period_end_lag_days     观测期间结束后第 days 天结束时（来源时区）
 #   published_next_day      供应方发布日次日 0 点（需要来源提供发布日期）
 #   unknown                 无法确定，available_at 留空
+#
+# vintages 声明历史版本能力（默认 none）：
+#   supplier  供应方提供历史版本及发布日期，可凭 available_at 用于时点研究
+#   none      只有当前修订版本；时点研究只能使用当时已取得（retrieved_at）的本地快照，
+#             可用时间规则本身不能证明修订值当时已知
+# calendar 引用 config/calendars.yaml 中经核验的预期观测日历，用于日期覆盖检查
 
 datasets:
   ust_par_yield_curve:
@@ -17,6 +23,8 @@ datasets:
     currency: USD
     timezone: America/New_York
     availability: {type: next_day}
+    vintages: none
+    calendar: us_treasury_daily
     value_range: [-5, 30]
 
   fred_dgs10:
@@ -30,6 +38,7 @@ datasets:
     currency: USD
     timezone: America/New_York
     availability: {type: next_day}
+    vintages: none
     value_range: [-5, 30]
 
   fred_cpiaucsl:
@@ -44,6 +53,7 @@ datasets:
     timezone: America/New_York
     # BLS 通常在次月中旬发布；取 45 天作为保守规则，仅为当前版本的近似
     availability: {type: period_end_lag_days, days: 45}
+    vintages: none
     value_range: [0, 1000]
 
   alfred_cpiaucsl:
@@ -57,6 +67,7 @@ datasets:
     currency: null
     timezone: America/New_York
     availability: {type: published_next_day}
+    vintages: supplier
     value_range: [0, 1000]
 
   manual_example:

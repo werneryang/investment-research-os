@@ -11,7 +11,14 @@ from typing import Any
 import pandas as pd
 
 from ..contracts import DatasetSpec
-from .base import STAGING_COLUMNS, FetchError, ParsedPayload, RawPayload, empty_staging, now_utc
+from .base import (
+    STAGING_COLUMNS,
+    FetchError,
+    ParsedPayload,
+    RawPayload,
+    empty_staging,
+    now_utc,
+)
 
 
 class ManualCsvConnector:

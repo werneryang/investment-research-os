@@ -4,7 +4,9 @@
 #   candidate        候选来源：只有资料入口
 #   docs_verified    说明已核验：已阅读官方说明，不代表程序接入成功
 #   access_verified  接入已验证：指定获取方式和样本取得成功
-#   use_verified     用途已验证：在明确范围内通过相应研究要求
+#   use_verified     用途已验证：在明确范围内通过相应研究要求；必须声明 use，
+#                    且只对该用途有效（descriptive | point_in_time）
+# 说明与接入核验对数据集整体有效；scope 写明核验覆盖的范围。
 # 一个样本下载成功不代表整个来源可用。新增核验请追加记录，不改写旧记录。
 
 sources:
@@ -27,7 +29,7 @@ sources:
         status: access_verified
         date: "2026-10-22"
         evidence: 2019、2024、2025 年 CSV 样本取得成功；列结构随年份不同
-        use: 程序化按年下载日度票面收益率曲线
+        scope: 程序化按年下载日度票面收益率曲线
 
   - id: fred_graph
     publisher: Federal Reserve Bank of St. Louis（上游为各统计机构）
@@ -44,12 +46,12 @@ sources:
         status: access_verified
         date: "2026-10-22"
         evidence: DGS10 2024 年 1 月样本取得成功；假日为空值
-        use: 当前版本日度序列下载
+        scope: 当前版本日度序列下载
       - dataset: fred_cpiaucsl
         status: access_verified
         date: "2026-10-22"
         evidence: CPIAUCSL 全历史样本取得成功
-        use: 当前版本月度序列下载
+        scope: 当前版本月度序列下载
 
   - id: fred_api
     publisher: Federal Reserve Bank of St. Louis（ALFRED 历史版本）

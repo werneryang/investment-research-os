@@ -8,7 +8,7 @@ from typing import Any, Callable
 import pandas as pd
 
 from ..contracts import DatasetVersion, ResultType
-from ..registry import StudySpec
+from ..registry import Registry, StudySpec
 
 
 @dataclass
@@ -53,7 +53,8 @@ class ResearchResult:
         return d
 
 
-Branch = Callable[[StudySpec, dict[str, StudyInput]], ResearchResult]
+# 分支接收研究定义、输入与登记（用于日历等公共参照），返回结构化成果
+Branch = Callable[[StudySpec, dict[str, StudyInput], Registry], ResearchResult]
 _BRANCHES: dict[str, Branch] = {}
 
 

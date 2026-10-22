@@ -33,6 +33,16 @@ def _fmt(v: Any, digits: int = 2) -> str:
     return str(v)
 
 
+def _dated(value: Any, day: str | None) -> str:
+    return "—" if value is None else f"{_fmt(value)}（{day}）"
+
+
+def _inversion_cells(inv: dict[str, Any] | None) -> list[str]:
+    if not inv:
+        return ["—", "—"]
+    return [f"{inv['inverted_days']} / {inv['inverted_share']:.0%}", str(inv["zero_days"])]
+
+
 # ---- 图表 -----------------------------------------------------------------
 
 def _figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
@@ -110,15 +120,20 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
     r = result["results"]
     body: list[Any] = []
     if r.get("levels"):
+        first = next(iter(r["levels"].values()))
+        body.append(f"变化以首个有效观测（{first.get('start_date', '—')}）为基准，"
+                    f"至最后有效观测（{first.get('end_date', '—')}）；不是跨年末口径，也不是持有期回报。"
+                    "标为 — 的期间统计因期间未能证明完整而不输出。")
         body.append(("table", ["期限", "期初 %", "期末 %", "变化 bp", "最低 %（日期）", "最高 %（日期）", "均值 %"],
                      [[t, _fmt(v["start"]), _fmt(v["end"]), _fmt(v["change_bp"], 0),
-                       f"{_fmt(v['min'])}（{v['min_date']}）", f"{_fmt(v['max'])}（{v['max_date']}）",
+                       _dated(v["min"], v["min_date"]), _dated(v["max"], v["max_date"]),
                        _fmt(v["mean"])] for t, v in r["levels"].items()]))
     if r.get("spreads"):
-        body.append(("table", ["利差", "期初 bp", "期末 bp", "变化 bp", "最低 bp", "最高 bp", "倒挂天数 / 占比"],
+        body.append("倒挂定义为利差严格小于 0；恰为 0 的日期单独列出，不计入倒挂。")
+        body.append(("table", ["利差", "期初 bp", "期末 bp", "变化 bp", "最低 bp", "最高 bp",
+                               "倒挂天数 / 占比", "零利差天数"],
                      [[k, _fmt(v["start"], 0), _fmt(v["end"], 0), _fmt(v["change_bp"], 0),
-                       _fmt(v["min"], 0), _fmt(v["max"], 0),
-                       f"{v['inversion']['inverted_days']} / {v['inversion']['inverted_share']:.0%}"]
+                       _fmt(v["min"], 0), _fmt(v["max"], 0), *_inversion_cells(v["inversion"])]
                       for k, v in r["spreads"].items()]))
     if r.get("curvature"):
         body.append(("table", ["曲率", "期初 bp", "期末 bp", "变化 bp", "均值 bp"],
@@ -134,10 +149,20 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
                  or ["无可绘制的数据。"]))
 
     cov_rows = [[t, str(v["observations"]), f"{v['share']:.1%}"] for t, v in cov["tenors"].items()]
+    if cov.get("expected_days") is not None:
+        dates = (f"预期观测日 {cov['expected_days']} 天（日历 {cov['calendar']}），"
+                 f"实际 {cov['curve_days']} 天（{cov['date_share']:.1%}）")
+        if cov.get("missing_days"):
+            dates += f"，缺少 {cov['missing_days']} 天（如 {'、'.join(cov['missing_examples'][:3])}）"
+    else:
+        dates = f"实际观测日 {cov['curve_days']} 天，未登记预期日历"
+    verdict = "完整" if cov["period_complete"] else f"未能证明完整：{cov.get('incomplete_reason', '')}"
     coverage = [
-        f"曲线交易日 {cov['curve_days']} 天，覆盖 {cov['first'] or '—'} 至 {cov['last'] or '—'}；"
-        f"期间{'完整' if cov['period_complete'] else '未完整'}覆盖。最低覆盖要求 {cov['min_coverage']:.0%}。",
-        ("table", ["期限", "有效观测", "占比"], cov_rows),
+        f"{dates}；覆盖 {cov['first'] or '—'} 至 {cov['last'] or '—'}。期间覆盖：{verdict}。"
+        f"最低覆盖要求 {cov['min_coverage']:.0%}。",
+        ("table", ["期限", "有效观测", "占比（分母为预期观测日）"
+                   if cov.get("tenor_denominator") == "expected_days" else "占比（分母为实际观测日）"],
+         cov_rows),
     ]
     if cov.get("excluded_rows"):
         coverage.append("排除的行（缺失或隔离）："

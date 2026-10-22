@@ -1,6 +1,11 @@
 import pandas as pd
 
-from investment_os.quality import classify_values, dataset_report, ok_rows, resolve_duplicates
+from investment_os.quality import (
+    classify_values,
+    dataset_report,
+    ok_rows,
+    resolve_duplicates,
+)
 
 
 def test_classify_values_marks_missing_unparseable_and_out_of_range():

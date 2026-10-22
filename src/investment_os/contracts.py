@@ -93,13 +93,35 @@ class AvailabilityRule:
         }[self.type]
 
 
+class Use(str, Enum):
+    """研究用途。用途核验（use_verified）只对声明的用途有效（architecture §5.1）。"""
+
+    DESCRIPTIVE = "descriptive"  # 使用最新修订历史的描述与比较
+    POINT_IN_TIME = "point_in_time"  # 只用当时可获知数据的时点研究
+
+
+class VintageSupport(str, Enum):
+    """数据集提供历史版本的能力，决定能否用于时点研究。
+
+    只有 SUPPLIER 的行能凭 available_at 证明「当时已知」；NONE 的行还需要
+    retrieved_at 证据，即本系统当时确实已经取得该值。
+    """
+
+    SUPPLIER = "supplier"  # 供应方提供历史版本及发布日期（如 ALFRED）
+    NONE = "none"  # 只有当前修订版本；时点研究只能用当时已取得的本地快照
+
+
+FREQUENCIES = ("daily", "weekly", "monthly", "quarterly", "annual")
+
+
 @dataclass(frozen=True)
 class VerificationRecord:
     dataset: str
     status: VerificationStatus
     date: str
     evidence: str
-    use: str = ""
+    use: Use | None = None  # 仅 use_verified 需要，且只对该用途有效
+    scope: str = ""  # 核验所覆盖的范围说明（期间、样本、方式）
 
 
 @dataclass(frozen=True)
@@ -118,12 +140,26 @@ class SourceSpec:
     alternatives: tuple[str, ...] = ()
     verification: tuple[VerificationRecord, ...] = ()
 
-    def status_for(self, dataset: str) -> VerificationStatus:
-        records = [v for v in self.verification if v.dataset == dataset]
+    def status_for(self, dataset: str, use: Use | None = None) -> VerificationStatus:
+        """按「来源 × 数据集 × 用途」取状态。
+
+        说明与接入核验对数据集整体有效；用途核验只在查询同一用途时计入。
+        不给用途时，结果最高为 access_verified。
+        """
+        records = [
+            v for v in self.verification
+            if v.dataset == dataset
+            and (v.status is not VerificationStatus.USE_VERIFIED or (use is not None and v.use is use))
+        ]
         if not records:
             return VerificationStatus.CANDIDATE
         order = list(VerificationStatus)
         return max((r.status for r in records), key=order.index)
+
+    def verified_uses(self, dataset: str) -> list[Use]:
+        return sorted({v.use for v in self.verification
+                       if v.dataset == dataset and v.status is VerificationStatus.USE_VERIFIED
+                       and v.use is not None}, key=lambda u: u.value)
 
 
 @dataclass(frozen=True)
@@ -139,6 +175,8 @@ class DatasetSpec:
     currency: str | None
     timezone: str
     availability: AvailabilityRule
+    vintages: VintageSupport = VintageSupport.NONE
+    calendar: str | None = None  # 预期观测日历；用于判断日期覆盖
     description: str = ""
     params: dict[str, Any] = field(default_factory=dict)
     value_range: tuple[float, float] | None = None

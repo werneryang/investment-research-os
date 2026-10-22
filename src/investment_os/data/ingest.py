@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass
-from typing import Any
+from datetime import datetime
+from typing import Any, Callable
 
 import pandas as pd
 
 from ..connectors import Connector, FetchError, get_connector
-from ..connectors.base import now_utc
+from ..connectors.base import now_utc, redact
 from ..contracts import SERIES_COLUMNS, DatasetSpec, DatasetVersion
 from ..quality import classify_values, dataset_report, resolve_duplicates
 from ..registry import Registry
@@ -70,71 +72,87 @@ def ingest(
     dataset_id: str,
     request: dict[str, Any],
     connector: Connector | None = None,
+    clock: Callable[[], datetime] = now_utc,
 ) -> IngestResult:
+    """取得一次并版本化。
+
+    开始即写入 started 记录；任何阶段失败都写入 failed 终态（含阶段与已保存的原始快照），
+    旧版本保持不变。失败结果如实返回，不吞掉异常冒充成功。
+    """
     spec = registry.dataset(dataset_id)
     connector = connector or get_connector(spec.connector)
-    started = now_utc()
+    started = clock()
     previous = store.latest(dataset_id)
-    log: dict[str, Any] = {"dataset_id": dataset_id, "started_at": started.isoformat(),
-                           "connector": connector.name,
+    attempt_id = uuid.uuid4().hex[:12]
+    log: dict[str, Any] = {"attempt_id": attempt_id, "dataset_id": dataset_id,
+                           "started_at": started.isoformat(), "connector": connector.name,
                            "request": {k: v for k, v in request.items() if k != "path"}}
+    store.log_fetch({**log, "status": "started"})
+    raw_refs: list[dict[str, Any]] = []
+    stage = "fetch"
 
-    def fail(message: str, raw_refs: list[dict[str, Any]] | None = None) -> IngestResult:
-        # 失败时保留旧版本并记录，不生成新的更新时间
-        store.log_fetch({**log, "status": "failed", "error": message, "raw_snapshots": raw_refs or [],
-                         "kept_version": previous.version_id if previous else None})
-        return IngestResult(dataset_id, "failed", message, previous)
+    def finish(status: str, **extra: Any) -> None:
+        store.log_fetch({**log, "status": status, "finished_at": clock().isoformat(),
+                         "raw_snapshots": raw_refs, **extra})
 
     try:
         payloads = connector.fetch(spec, request)
-    except (FetchError, ValueError, OSError) as e:
-        return fail(str(e))
-    if not payloads:
-        return fail("接入器未返回任何资料")
+        if not payloads:
+            raise FetchError("接入器未返回任何资料")
 
-    raw_refs = [store.save_raw(dataset_id, p) for p in payloads]
-    staged, series_meta = [], {}
-    try:
+        stage = "snapshot"
+        raw_refs = [store.save_raw(dataset_id, p) for p in payloads]
+
+        stage = "parse"
+        staged, series_meta = [], {}
         for p in payloads:
             parsed = connector.parse(spec, p)
             staged.append(parsed.staging)
             series_meta.update(parsed.series)
-    except (FetchError, ValueError, KeyError, IndexError) as e:
-        return fail(f"解析失败（原始快照已保存供诊断）：{e}", raw_refs)
+        staging = pd.concat(staged, ignore_index=True)
+        if staging.empty:
+            raise FetchError("取得的资料不含任何观测")
 
-    retrieved_at = max(p.retrieved_at for p in payloads)
-    staging = pd.concat(staged, ignore_index=True)
-    if staging.empty:
-        return fail("取得的资料不含任何观测", raw_refs)
+        stage = "normalize"
+        retrieved_at = max(p.retrieved_at for p in payloads)
+        new = normalize(spec, staging, pd.Timestamp(retrieved_at),
+                        f"{LOCAL_VINTAGE_PREFIX}{compact(retrieved_at)}")
+        new, dup_stats = resolve_duplicates(new, ["series_id", "observation_at", "vintage_id"])
 
-    new = normalize(spec, staging, pd.Timestamp(retrieved_at),
-                    f"{LOCAL_VINTAGE_PREFIX}{compact(retrieved_at)}")
-    new, dup_stats = resolve_duplicates(new, ["series_id", "observation_at", "vintage_id"])
+        stage = "merge"
+        prev_df = None
+        if previous is not None:
+            prev_df, _ = store.load(dataset_id, previous.version_id)
+            series_meta = {**previous.series, **series_meta}
+        merged = _merge(prev_df, new)
+        report = dataset_report(merged, spec.frequency)
+        report["duplicates"] = dup_stats
+        report["availability_rule"] = spec.availability.describe()
+        report["time_precision"] = "day"  # 可用与发布时间均只精确到日
+        report["vintages"] = spec.vintages.value
 
-    prev_df = None
-    if previous is not None:
-        prev_df, _ = store.load(dataset_id, previous.version_id)
-        series_meta = {**previous.series, **series_meta}
-    merged = _merge(prev_df, new)
-    report = dataset_report(merged, spec.frequency)
-    report["duplicates"] = dup_stats
-    report["availability_rule"] = spec.availability.describe()
+        if previous is not None and content_hash(merged) == previous.content_hash:
+            finish("unchanged", kept_version=previous.version_id)
+            return IngestResult(dataset_id, "unchanged", "内容与最新版本相同，未创建新版本", previous)
 
-    if previous is not None and content_hash(merged) == previous.content_hash:
-        store.log_fetch({**log, "status": "unchanged", "raw_snapshots": raw_refs,
-                         "kept_version": previous.version_id})
-        return IngestResult(dataset_id, "unchanged", "内容与最新版本相同，未创建新版本", previous)
+        stage = "save"
+        version = store.save_version(
+            dataset_id, merged,
+            raw_snapshots=([*previous.raw_snapshots] if previous else []) + raw_refs,
+            transform=TRANSFORM_ID,
+            quality=report,
+            series=series_meta,
+            parent_version=previous.version_id if previous else None,
+            created_at=clock(),
+        )
+    except Exception as e:  # noqa: BLE001 - 任何阶段的失败都要留下终态记录
+        message = redact(f"{stage} 阶段失败：{type(e).__name__}: {e}")
+        if raw_refs:
+            message += "（原始快照已保存供诊断）"
+        finish("failed", stage=stage, error=message,
+               kept_version=previous.version_id if previous else None)
+        return IngestResult(dataset_id, "failed", message, previous)
 
-    version = store.save_version(
-        dataset_id, merged,
-        raw_snapshots=([*previous.raw_snapshots] if previous else []) + raw_refs,
-        transform=TRANSFORM_ID,
-        quality=report,
-        series=series_meta,
-        parent_version=previous.version_id if previous else None,
-        created_at=now_utc(),
-    )
-    store.log_fetch({**log, "status": "created", "raw_snapshots": raw_refs,
-                     "version_id": version.version_id})
+    finish("created", version_id=version.version_id)
     return IngestResult(dataset_id, "created", f"已创建版本 {version.version_id}（{version.rows} 行）",
                         version)

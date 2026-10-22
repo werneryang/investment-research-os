@@ -55,8 +55,9 @@ def level_summary(series: pd.Series, unit: str) -> dict[str, float | str | None]
 
 
 def inversion_stats(spread: pd.Series) -> dict[str, float | int]:
-    """倒挂（利差 < 0）天数与占比，只计有效观测。"""
+    """倒挂定义为利差严格小于 0；恰为 0 的日期单独计数，不计入倒挂。只计有效观测。"""
     s = spread.dropna()
     inverted = int((s < 0).sum())
     return {"observations": int(len(s)), "inverted_days": inverted,
+            "zero_days": int((s == 0).sum()),
             "inverted_share": inverted / len(s) if len(s) else float("nan")}

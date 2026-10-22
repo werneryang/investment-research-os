@@ -21,7 +21,12 @@ from typing import Any
 import pandas as pd
 
 from ..connectors.base import RawPayload
-from ..contracts import SERIES_COLUMNS, SERIES_SCHEMA_VERSION, DatasetVersion
+from ..contracts import (
+    SERIES_COLUMNS,
+    SERIES_SCHEMA_VERSION,
+    DatasetVersion,
+    VintageSupport,
+)
 
 LOCAL_VINTAGE_PREFIX = "local:"
 
@@ -174,14 +179,47 @@ class DataStore:
             f.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
 
 
-def as_of(df: pd.DataFrame, at: datetime | pd.Timestamp) -> pd.DataFrame:
-    """时点视图：只保留 available_at ≤ at 的数据，每个观测取当时最新的版本。
+def to_utc(at: datetime | pd.Timestamp | str) -> pd.Timestamp:
+    ts = pd.Timestamp(at)
+    return ts.tz_localize("UTC") if ts.tzinfo is None else ts.tz_convert("UTC")
 
-    available_at 未知的行被排除——不能证明当时可得的数据不进入时点研究。
+
+def eligibility_as_of(df: pd.DataFrame, at: datetime | pd.Timestamp,
+                      vintages: VintageSupport) -> pd.DataFrame:
+    """逐行判断能否证明「在 at 时已知」，返回 eligible 与 reason 两列。
+
+    - available_at 未知：不能证明，排除
+    - available_at 晚于 at：当时尚未可用，排除
+    - 供应方历史版本（有发布日期的非本地版本）：available_at 即为证据
+    - 其他（当前修订版本、本地快照）：还需 retrieved_at ≤ at，即本系统当时确已取得；
+      可用时间规则只表达假定的发布延迟，不能证明修订值当时已知
     """
-    at = pd.Timestamp(at)
-    if at.tzinfo is None:
-        at = at.tz_localize("UTC")
-    known = df[df["available_at"].notna() & (df["available_at"] <= at)]
-    known = known.sort_values(["series_id", "observation_at", "available_at"])
+    at = to_utc(at)
+    avail_known = df["available_at"].notna()
+    avail_ok = avail_known & (df["available_at"] <= at)
+    supplier = pd.Series(False, index=df.index)
+    if vintages is VintageSupport.SUPPLIER:
+        vint = df["vintage_id"].fillna("").astype(str)
+        supplier = ~vint.str.startswith(LOCAL_VINTAGE_PREFIX) & df["published_at"].notna()
+    retrieved_ok = df["retrieved_at"].notna() & (df["retrieved_at"] <= at)
+    eligible = avail_ok & (supplier | retrieved_ok)
+    reason = pd.Series("", index=df.index, dtype="object")
+    reason[~avail_known] = "available_at_unknown"
+    reason[avail_known & ~avail_ok] = "not_yet_available"
+    reason[avail_ok & ~supplier & ~retrieved_ok] = "no_evidence_known_then"
+    return pd.DataFrame({"eligible": eligible, "reason": reason})
+
+
+def as_of(df: pd.DataFrame, at: datetime | pd.Timestamp,
+          vintages: VintageSupport = VintageSupport.NONE) -> pd.DataFrame:
+    """时点视图：只保留能证明在 at 时已知的行，每个观测取当时最新的版本。"""
+    known = df[eligibility_as_of(df, at, vintages)["eligible"]]
+    known = known.sort_values(["series_id", "observation_at", "available_at", "retrieved_at"])
     return known.groupby(["series_id", "observation_at"], as_index=False, sort=False).tail(1)
+
+
+def version_as_of(versions: list[DatasetVersion], at: datetime | pd.Timestamp) -> DatasetVersion | None:
+    """at 时本系统已有的最新版本；当前修订数据集的时点重放只能用它。"""
+    at = to_utc(at)
+    earlier = [v for v in versions if to_utc(v.created_at) <= at]
+    return earlier[-1] if earlier else None

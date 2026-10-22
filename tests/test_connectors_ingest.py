@@ -8,7 +8,9 @@ import pytest
 from investment_os.connectors.base import FetchError, fetch_with_retry
 from investment_os.connectors.fred import FredApiVintagesConnector
 from investment_os.connectors.manual import ManualCsvConnector
-from investment_os.data import as_of, ingest
+from investment_os.contracts import VintageSupport
+from investment_os.data import as_of, ingest, normalize
+from investment_os.data.store import eligibility_as_of
 
 from .conftest import (
     NO_RETRY,
@@ -60,7 +62,10 @@ def test_ingest_creates_then_dedupes_unchanged(registry, store):
     assert r2.status == "unchanged"
     assert r2.version.version_id == r1.version.version_id
     assert len(store.versions("ust_par_yield_curve")) == 1
-    assert [e["status"] for e in store.fetch_log("ust_par_yield_curve")] == ["created", "unchanged"]
+    log = store.fetch_log("ust_par_yield_curve")
+    assert [e["status"] for e in log] == ["started", "created", "started", "unchanged"]
+    # 每次尝试都有开始与终态，按 attempt_id 成对
+    assert log[0]["attempt_id"] == log[1]["attempt_id"] != log[2]["attempt_id"]
 
 
 def test_ingest_failure_keeps_previous_version(registry, store):
@@ -122,7 +127,7 @@ def test_fred_graph_rejects_wrong_series(registry, store):
     assert store.fetch_log("fred_dgs10")[-1]["raw_snapshots"]
 
 
-ALFRED = {"observations": [
+ALFRED = {"count": 3, "offset": 0, "limit": 100000, "observations": [
     {"realtime_start": "2024-02-13", "realtime_end": "2025-02-11", "date": "2024-01-01", "value": "308.417"},
     {"realtime_start": "2025-02-12", "realtime_end": "9999-12-31", "date": "2024-01-01", "value": "309.685"},
     {"realtime_start": "2024-03-12", "realtime_end": "9999-12-31", "date": "2024-02-01", "value": "310.326"},
@@ -153,11 +158,13 @@ def test_alfred_vintages_support_point_in_time(registry, store):
     df, _ = store.load("alfred_cpiaucsl")
     jan = lambda view: view[view.observation_at == pd.Timestamp("2024-01-01")]  # noqa: E731
     # 2024-03-01 时只能看到 1 月首发值，2 月数据尚未发布
-    view = as_of(df, pd.Timestamp("2024-03-01", tz="UTC"))
+    view = as_of(df, pd.Timestamp("2024-03-01", tz="UTC"), VintageSupport.SUPPLIER)
     assert jan(view)["value"].item() == 308.417
     assert pd.Timestamp("2024-02-01") not in set(view.observation_at)
     # 2025 年修订后看到修订值
-    assert jan(as_of(df, pd.Timestamp("2025-06-01", tz="UTC")))["value"].item() == 309.685
+    assert jan(as_of(df, pd.Timestamp("2025-06-01", tz="UTC"), VintageSupport.SUPPLIER))["value"].item() == 309.685
+    # 不声明供应方历史版本时，同样的行没有「当时已知」的证据
+    assert as_of(df, pd.Timestamp("2025-06-01", tz="UTC")).empty
 
 
 def test_manual_import_requires_declared_source(registry, store, tmp_path: Path):
@@ -176,3 +183,81 @@ def test_manual_import_requires_declared_source(registry, store, tmp_path: Path)
     # 可用时间未知：留空，并被时点视图排除
     assert df["available_at"].isna().all()
     assert as_of(df, pd.Timestamp("2030-01-01", tz="UTC")).empty
+
+
+class PagedAlfred(FakeHttp):
+    """按 offset/limit 切片返回 ALFRED 观测；``count`` 可声明为大于实际条数以模拟截断。"""
+
+    def __init__(self, observations, count=None):
+        super().__init__({})
+        self.observations = observations
+        self.count = len(observations) if count is None else count
+
+    def __call__(self, url, timeout):
+        import urllib.parse
+        self.calls.append(url)
+        q = dict(urllib.parse.parse_qsl(urllib.parse.urlsplit(url).query))
+        off, lim = int(q["offset"]), int(q["limit"])
+        return json.dumps({"count": self.count, "offset": off, "limit": lim,
+                           "observations": self.observations[off:off + lim]}).encode()
+
+
+def test_alfred_fetches_all_pages(registry, store):
+    http = PagedAlfred(ALFRED["observations"])
+    conn = FredApiVintagesConnector(http_get=http, api_key="k", page_limit=2, **NO_RETRY)
+    r = ingest(registry, store, "alfred_cpiaucsl", {}, conn)
+    assert r.status == "created" and r.version.rows == 3
+    assert len(http.calls) == 2
+    assert len(r.version.raw_snapshots) == 2
+
+
+def test_alfred_truncated_result_fails(registry, store):
+    http = PagedAlfred(ALFRED["observations"], count=100_001)
+    conn = FredApiVintagesConnector(http_get=http, api_key="k", page_limit=2, **NO_RETRY)
+    r = ingest(registry, store, "alfred_cpiaucsl", {}, conn)
+    assert r.status == "failed" and "不完整" in r.message
+    assert store.versions("alfred_cpiaucsl") == []
+
+
+def test_fred_api_failure_does_not_leak_key(registry, store):
+    key = "FAKEKEY1234567890"
+    http = FakeHttp({})  # 所有请求都失败，异常文本含完整 URL
+    def failing(url, timeout):
+        http.calls.append(url)
+        raise urllib.error.URLError(f"timed out while fetching {url}")
+    conn = FredApiVintagesConnector(http_get=failing, api_key=key, **NO_RETRY)
+    r = ingest(registry, store, "alfred_cpiaucsl", {}, conn)
+    assert r.status == "failed"
+    assert key in http.calls[0]  # key 确实用于请求
+    assert key not in r.message
+    assert key not in (store.base / "catalog" / "fetch_log.jsonl").read_text()
+
+
+def test_normalize_stage_failure_is_logged(registry, store, monkeypatch):
+    import sys
+    ingest_mod = sys.modules["investment_os.data.ingest"]  # 包内同名函数会遮蔽子模块属性
+
+    def boom(*a, **k):
+        raise ValueError("synthetic normalize failure")
+    monkeypatch.setattr(ingest_mod, "normalize", boom)
+    r = ingest(registry, store, "ust_par_yield_curve", {"start": 2024, "end": 2024},
+               treasury_connector({2024: TREASURY_2024}))
+    assert r.status == "failed"
+    last = store.fetch_log("ust_par_yield_curve")[-1]
+    assert last["status"] == "failed" and last["stage"] == "normalize"
+    assert last["raw_snapshots"]  # 原始快照已保存且被引用
+
+
+def test_current_revision_cannot_enter_past_point_in_time_view(registry):
+    """回归 F1：2026 年下载的当前修订 CPI，不能凭 45 天规则进入 2024 年的时点视图。"""
+    spec = registry.dataset("fred_cpiaucsl")
+    staging = pd.DataFrame({"series_id": ["CPIAUCSL"], "observation_at": [pd.Timestamp("2024-01-01").date()],
+                            "raw_value": ["309.685"], "published_at": [None], "vintage_label": [None]})
+    df = normalize(spec, staging, pd.Timestamp("2026-10-22", tz="UTC"), "local:20261022T000000Z")
+    assert df["available_at"].iloc[0] == pd.Timestamp("2024-03-17 04:00", tz="UTC")
+    at = pd.Timestamp("2024-04-01", tz="UTC")
+    assert as_of(df, at, VintageSupport.NONE).empty
+    assert eligibility_as_of(df, at, VintageSupport.NONE)["reason"].iloc[0] == "no_evidence_known_then"
+    # 本系统在当时确已取得的快照则可以使用
+    df_then = normalize(spec, staging, pd.Timestamp("2024-03-20", tz="UTC"), "local:20240320T000000Z")
+    assert len(as_of(df_then, at, VintageSupport.NONE)) == 1

@@ -31,7 +31,12 @@ def test_level_summary_uses_first_and_last_valid(curve):
 
 def test_inversion_stats(curve):
     stats = rates.inversion_stats(rates.spread_bp(curve, "2Y", "10Y"))
-    assert stats == {"observations": 2, "inverted_days": 2, "inverted_share": 1.0}
+    assert stats == {"observations": 2, "inverted_days": 2, "zero_days": 0, "inverted_share": 1.0}
+
+
+def test_zero_spread_is_not_inversion():
+    stats = rates.inversion_stats(pd.Series([-1.0, 0.0, 0.0, 2.0]))
+    assert (stats["inverted_days"], stats["zero_days"]) == (1, 2)
 
 
 def test_curve_frame_pivots_long_table():
@@ -53,6 +58,21 @@ def test_total_return_refuses_double_counting():
         returns.total_returns(prices, "close")
     r = returns.total_returns(prices, "close", distributions=pd.Series([0.0, 1.0]))
     assert r.iloc[1] == pytest.approx(0.02)
+
+
+def test_unknown_distribution_is_not_zero():
+    prices = pd.Series([100.0, 101.0, 102.0])
+    # 显式未知
+    r = returns.total_returns(prices, "close", distributions=pd.Series([0.0, float("nan"), 0.0]))
+    assert math.isnan(r.iloc[1])
+    assert r.iloc[2] == pytest.approx(102 / 101 - 1)
+    # 稀疏事件表：默认未列出即未知
+    sparse = pd.Series([1.0], index=[2])
+    assert math.isnan(returns.total_returns(prices, "close", distributions=sparse).iloc[1])
+    # 声明事件表完整后，未列出才按零处理
+    r = returns.total_returns(prices, "close", distributions=sparse, events_complete=True)
+    assert r.iloc[1] == pytest.approx(0.01)
+    assert r.iloc[2] == pytest.approx(103 / 101 - 1)
 
 
 def test_currency_conversion_is_multiplicative():

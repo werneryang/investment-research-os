@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import re
 import time
 import urllib.error
 import urllib.request
@@ -35,16 +36,31 @@ def urllib_get(url: str, timeout: float) -> bytes:
         return resp.read()
 
 
+# 查询参数中可能携带凭证的名称；出现在任何错误文本或日志前都要清洗
+_SECRET_PARAM = re.compile(r"(?i)\b(api_key|apikey|access_token|token|key|secret)=([^&\s'\"<>]+)")
+
+
+def redact(text: str) -> str:
+    """把 URL 或错误文本中的凭证参数值替换为 ***。"""
+    return _SECRET_PARAM.sub(lambda m: f"{m.group(1)}=***", text)
+
+
 def fetch_with_retry(
     url: str,
     http_get: HttpGet = urllib_get,
     *,
+    display_url: str | None = None,
     attempts: int = 3,
     timeout: float = 60.0,
     backoff: float = 2.0,
     sleep: Callable[[float], None] = time.sleep,
 ) -> bytes:
-    """有界重试；最终失败抛出 FetchError。"""
+    """有界重试；最终失败抛出 FetchError。
+
+    ``url`` 可能含凭证，只用于请求；错误消息使用 ``display_url``（默认为清洗后的 url），
+    底层异常文本同样清洗。
+    """
+    shown = display_url or redact(url)
     last: Exception | None = None
     for i in range(attempts):
         try:
@@ -53,7 +69,8 @@ def fetch_with_retry(
             last = e
             if i < attempts - 1:
                 sleep(backoff * (2**i))
-    raise FetchError(f"{attempts} 次尝试后仍无法取得 {url}：{last}")
+    detail = redact(str(last).replace(url, shown))
+    raise FetchError(f"{attempts} 次尝试后仍无法取得 {shown}：{type(last).__name__}: {detail}")
 
 
 @dataclass

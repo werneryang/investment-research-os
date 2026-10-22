@@ -10,16 +10,24 @@ import hashlib
 import json
 import platform
 import subprocess
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
 from importlib import metadata
 from pathlib import Path
-from typing import Any
-
-import pandas as pd
+from typing import Any, Callable
 
 from . import __version__
 from .connectors.base import now_utc
-from .contracts import RunStatus
-from .data.store import DataStore, as_of, compact, sha256_bytes
+from .contracts import DatasetSpec, RunStatus, VintageSupport
+from .data.store import (
+    DataStore,
+    as_of,
+    compact,
+    eligibility_as_of,
+    sha256_bytes,
+    version_as_of,
+)
 from .registry import Registry, StudySpec, load_study, parse_study
 from .research import ResearchResult, StudyInput, get_branch
 from .validation.reference import spot_check
@@ -68,45 +76,89 @@ def environment() -> dict[str, str]:
     return env
 
 
+@dataclass
+class LoadedInputs:
+    inputs: dict[str, StudyInput]
+    warnings: list[str] = field(default_factory=list)
+    unused: dict[str, dict[str, str]] = field(default_factory=dict)  # role → {dataset_id, reason}
+
+
+def _select_version(store: DataStore, spec: DatasetSpec, study: StudySpec, pin: str | None):
+    """选择数据版本。时点研究中，只有当前修订的数据集只能用当时已有的版本。"""
+    if pin is not None or study.scope.get("vintage_policy", "latest") != "as_of":
+        return store.load(spec.id, pin)
+    if spec.vintages is VintageSupport.SUPPLIER:
+        return store.load(spec.id)
+    at = study.scope["as_of"]
+    v = version_as_of(store.versions(spec.id), at)
+    if v is None:
+        raise LookupError(
+            f"{spec.id} 只有当前修订版本，且本系统在 {at} 之前没有取得过该数据集；"
+            "可用时间规则不能证明修订值当时已知，不能用于此时点研究")
+    return store.load(spec.id, v.version_id)
+
+
 def load_inputs(registry: Registry, store: DataStore, study: StudySpec,
-                pins: dict[str, str] | None = None) -> tuple[dict[str, StudyInput], list[str]]:
+                pins: dict[str, str] | None = None,
+                frozen: dict[str, dict[str, Any]] | None = None) -> LoadedInputs:
+    """加载研究输入。
+
+    ``frozen`` 来自原运行清单：角色集合、版本与核验状态全部按原样固定；
+    原运行未使用的可选输入保持不使用，即使现在已经有数据。
+    """
     pins = pins or {}
-    inputs: dict[str, StudyInput] = {}
-    warnings: list[str] = []
     policy = study.scope.get("vintage_policy", "latest")
+    if policy not in ("latest", "as_of"):
+        raise ValueError(f"未知的版本策略：{policy}")
+    out = LoadedInputs(inputs={})
     for role, (dataset_id, required) in _data_roles(study).items():
+        spec = registry.dataset(dataset_id)
+        fixed = frozen.get(role) if frozen is not None else None
+        if frozen is not None and (fixed is None or not fixed.get("used", True)):
+            reason = (fixed or {}).get("reason", "原运行未使用该输入")
+            out.unused[role] = {"dataset_id": dataset_id, "reason": f"按原运行固定为不使用：{reason}"}
+            continue
+        pin = fixed["version_id"] if fixed else pins.get(dataset_id)
         try:
-            frame, version = store.load(dataset_id, pins.get(dataset_id))
+            frame, version = _select_version(store, spec, study, pin)
         except LookupError as e:
             if required:
                 raise
-            warnings.append(f"可选输入 {role}（{dataset_id}）不可用：{e}")
+            out.warnings.append(f"可选输入 {role}（{dataset_id}）不可用：{e}")
+            out.unused[role] = {"dataset_id": dataset_id, "reason": str(e)}
             continue
         if policy == "as_of":
-            at = pd.Timestamp(study.scope["as_of"])
-            unknown = int(frame["available_at"].isna().sum())
-            frame = as_of(frame, at)
-            if unknown:
-                warnings.append(f"{dataset_id} 有 {unknown} 行可用时间未知，已从时点视图中排除")
-        elif policy != "latest":
-            raise ValueError(f"未知的版本策略：{policy}")
-        status = registry.source_of(dataset_id).status_for(dataset_id).value
-        inputs[role] = StudyInput(role=role, dataset_id=dataset_id, frame=frame,
-                                  version=version, source_status=status)
-    return inputs, warnings
+            at = study.scope["as_of"]
+            reasons = eligibility_as_of(frame, at, spec.vintages)["reason"]
+            for reason, n in reasons[reasons != ""].value_counts().items():
+                out.warnings.append(f"{dataset_id} 有 {n} 行在时点视图中排除：{_EXCLUSION_TEXT[reason]}")
+            frame = as_of(frame, at, spec.vintages)
+        status = (fixed["source_status"] if fixed
+                  else registry.source_of(dataset_id).status_for(dataset_id, study.use).value)
+        out.inputs[role] = StudyInput(role=role, dataset_id=dataset_id, frame=frame,
+                                      version=version, source_status=status)
+    return out
 
 
-def execute(root: Path, study: StudySpec, pins: dict[str, str] | None = None
-            ) -> tuple[ResearchResult, dict[str, StudyInput], list[str]]:
+_EXCLUSION_TEXT = {
+    "available_at_unknown": "可用时间未知",
+    "not_yet_available": "当时尚未可用",
+    "no_evidence_known_then": "无证据表明当时已知（当前修订值且当时尚未取得）",
+}
+
+
+def execute(root: Path, study: StudySpec, pins: dict[str, str] | None = None,
+            frozen: dict[str, dict[str, Any]] | None = None
+            ) -> tuple[ResearchResult, LoadedInputs]:
     """无副作用地执行研究：加载固定版本数据 → 研究分支 → 原始快照抽查。"""
     registry = Registry.load(root)
     store = DataStore(root)
-    inputs, warnings = load_inputs(registry, store, study, pins)
-    result = get_branch(study.branch)(study, inputs)
+    loaded = load_inputs(registry, store, study, pins, frozen)
+    result = get_branch(study.branch)(study, loaded.inputs, registry)
     primary_role = next(r for r, (_, req) in _data_roles(study).items() if req)
-    primary = inputs[primary_role]
+    primary = loaded.inputs[primary_role]
     result.validation["raw_spot_check"] = spot_check(store, primary.version, primary.frame)
-    return result, inputs, warnings
+    return result, loaded
 
 
 def _status(result: ResearchResult) -> RunStatus:
@@ -115,15 +167,18 @@ def _status(result: ResearchResult) -> RunStatus:
     return RunStatus.PARTIAL if result.is_partial or failed_checks else RunStatus.SUCCESS
 
 
-def run_study(root: Path, study_path: Path, pins: dict[str, str] | None = None) -> dict[str, Any]:
+def run_study(root: Path, study_path: Path, pins: dict[str, str] | None = None,
+              clock: Callable[[], datetime] = now_utc) -> dict[str, Any]:
     from .reporting import write_report  # 延迟导入：matplotlib 只在生成报告时需要
 
     root = Path(root)
     study = load_study(study_path)
-    started = now_utc()
-    run_id = f"{study.study_id}-{compact(started)}"
+    started = clock()
+    # 随机后缀保证同一秒内的运行也不碰撞；目录排他创建，已有记录绝不覆盖
+    run_id = f"{study.study_id}-{compact(started)}-{uuid.uuid4().hex[:8]}"
     run_dir = root / "runs" / run_id
-    run_dir.mkdir(parents=True, exist_ok=True)
+    (root / "runs").mkdir(parents=True, exist_ok=True)
+    run_dir.mkdir(exist_ok=False)
     manifest: dict[str, Any] = {
         "run_id": run_id,
         "study_id": study.study_id,
@@ -139,26 +194,29 @@ def run_study(root: Path, study_path: Path, pins: dict[str, str] | None = None) 
     }
     _write_json(run_dir / "manifest.json", manifest)
     try:
-        result, inputs, warnings = execute(root, study, pins)
+        result, loaded = execute(root, study, pins)
         rhash = result_hash(result)
-        result_doc = {**result.to_dict(), "run_id": run_id, "generated_at": now_utc().isoformat(),
+        result_doc = {**result.to_dict(), "run_id": run_id, "generated_at": clock().isoformat(),
                       "result_hash": rhash}
         _write_json(run_dir / "result.json", result_doc)
         report_paths = write_report(root, result_doc)
         status = _status(result)
         manifest.update({
             "status": status.value,
-            "inputs": [{"role": i.role, "dataset_id": i.dataset_id, "version_id": i.version.version_id,
-                        "content_hash": i.version.content_hash, "source_status": i.source_status}
-                       for i in inputs.values()],
+            # 记录完整角色集合：未使用的输入同样固定，复现时不会被后来的数据补上
+            "inputs": [{"role": i.role, "used": True, "dataset_id": i.dataset_id,
+                        "version_id": i.version.version_id, "content_hash": i.version.content_hash,
+                        "source_status": i.source_status, "use": study.use.value}
+                       for i in loaded.inputs.values()]
+            + [{"role": role, "used": False, **info} for role, info in loaded.unused.items()],
             "result_hash": rhash,
-            "warnings": warnings,
+            "warnings": loaded.warnings,
             "unsupported": result.unsupported,
             "outputs": [_output_ref(root, p) for p in [run_dir / "result.json", *report_paths]],
         })
     except Exception as e:  # noqa: BLE001 - 任何失败都要留下运行记录
         manifest.update({"status": RunStatus.FAILED.value, "error": f"{type(e).__name__}: {e}"})
-    manifest["finished_at"] = now_utc().isoformat()
+    manifest["finished_at"] = clock().isoformat()
     _write_json(run_dir / "manifest.json", manifest)
     return manifest
 
@@ -171,8 +229,9 @@ def verify_run(root: Path, run_id: str) -> dict[str, Any]:
     if manifest.get("status") == RunStatus.FAILED.value:
         raise ValueError(f"运行 {run_id} 本身失败，没有可复现的结果")
     study = parse_study(manifest["study_config"], run_id)
-    pins = {i["dataset_id"]: i["version_id"] for i in manifest["inputs"]}
-    result, _, _ = execute(root, study, pins)
+    # 旧清单只列出使用过的输入：未列出的角色视为未使用
+    frozen = {i["role"]: i for i in manifest["inputs"]}
+    result, _ = execute(root, study, frozen=frozen)
     new_hash = result_hash(result)
     current_code = code_version(root)
     record = {

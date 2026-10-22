@@ -75,14 +75,20 @@ class FredGraphCsvConnector:
 class FredApiVintagesConnector:
     """FRED API（ALFRED）：取得全部历史版本，realtime_start 作为该版本的发布日期。
 
-    需要环境变量 FRED_API_KEY。key 不写入快照元数据或运行记录。
+    需要环境变量 FRED_API_KEY。key 只用于请求，不写入快照、日志或错误消息。
+    API 单次最多返回 ``limit`` 条，按 offset 逐页取得，并核对总数与 count 一致；
+    无法取得完整结果时失败，不把截断的数据称为「全部历史版本」。
     """
 
     name = "fred_api_vintages"
+    PAGE_LIMIT = 100_000  # 官方上限
+    MAX_PAGES = 1_000
 
-    def __init__(self, http_get: HttpGet = urllib_get, api_key: str | None = None, **retry: Any) -> None:
+    def __init__(self, http_get: HttpGet = urllib_get, api_key: str | None = None,
+                 page_limit: int | None = None, **retry: Any) -> None:
         self.http_get = http_get
         self.api_key = api_key
+        self.page_limit = page_limit or self.PAGE_LIMIT
         self.retry = retry
 
     def fetch(self, dataset: DatasetSpec, request: dict[str, Any]) -> list[RawPayload]:
@@ -90,30 +96,54 @@ class FredApiVintagesConnector:
         if not key:
             raise FetchError("未设置 FRED_API_KEY；可改用无需 key 的 fred_graph 数据集（仅当前版本）")
         series = _series_of(dataset)
-        query = {
+        base = {
             "series_id": series,
             "file_type": "json",
             "realtime_start": "1776-07-04",
             "realtime_end": "9999-12-31",
+            "limit": str(self.page_limit),
         }
         if request.get("start"):
-            query["observation_start"] = str(request["start"])
+            base["observation_start"] = str(request["start"])
         if request.get("end"):
-            query["observation_end"] = str(request["end"])
-        url = f"{API_URL}?{urllib.parse.urlencode({**query, 'api_key': key})}"
-        content = fetch_with_retry(url, self.http_get, **self.retry)
-        public_url = f"{API_URL}?{urllib.parse.urlencode(query)}"
-        return [RawPayload(content=content, url=public_url, request=query,
-                           retrieved_at=now_utc(), extension="json")]
+            base["observation_end"] = str(request["end"])
+
+        payloads: list[RawPayload] = []
+        received = 0
+        expected: int | None = None
+        for _ in range(self.MAX_PAGES):
+            query = {**base, "offset": str(received)}
+            public_url = f"{API_URL}?{urllib.parse.urlencode(query)}"
+            url = f"{API_URL}?{urllib.parse.urlencode({**query, 'api_key': key})}"
+            try:
+                content = fetch_with_retry(url, self.http_get, display_url=public_url, **self.retry)
+            except FetchError as e:
+                raise FetchError(str(e).replace(key, "***")) from None
+            page = _api_page(content)
+            count = int(page.get("count", -1))
+            if expected is None:
+                expected = count
+            elif count != expected:
+                raise FetchError(f"分页过程中 count 由 {expected} 变为 {count}，结果可能不一致")
+            n = len(page["observations"])
+            payloads.append(RawPayload(content=content, url=public_url, request=query,
+                                       retrieved_at=now_utc(), extension="json"))
+            received += n
+            if expected < 0:
+                raise FetchError("FRED API 返回缺少 count，无法核对完整性")
+            if received >= expected:
+                break
+            if n == 0:
+                raise FetchError(f"只取得 {received}/{expected} 条后返回空页，结果不完整")
+        else:
+            raise FetchError(f"超过 {self.MAX_PAGES} 页仍未取完（{received}/{expected}）")
+        if received != expected:
+            raise FetchError(f"取得 {received} 条，与 count={expected} 不一致")
+        return payloads
 
     def parse(self, dataset: DatasetSpec, payload: RawPayload) -> ParsedPayload:
         series = _series_of(dataset)
-        try:
-            doc = json.loads(payload.content)
-        except json.JSONDecodeError as e:
-            raise FetchError(f"FRED API 返回内容不是 JSON：{e}") from e
-        if "observations" not in doc:
-            raise FetchError(f"FRED API 返回错误：{doc.get('error_message', doc)}")
+        doc = _api_page(payload.content)
         rows = [
             (
                 series,
@@ -126,3 +156,13 @@ class FredApiVintagesConnector:
         ]
         staging = pd.DataFrame(rows, columns=STAGING_COLUMNS) if rows else empty_staging()
         return ParsedPayload(staging, {series: {"fred_series": series}})
+
+
+def _api_page(content: bytes) -> dict[str, Any]:
+    try:
+        doc = json.loads(content)
+    except json.JSONDecodeError as e:
+        raise FetchError(f"FRED API 返回内容不是 JSON：{e}") from e
+    if "observations" not in doc:
+        raise FetchError(f"FRED API 返回错误：{doc.get('error_message', '未知错误')}")
+    return doc

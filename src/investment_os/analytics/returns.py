@@ -18,11 +18,16 @@ def simple_returns(prices: pd.Series) -> pd.Series:
 
 
 def total_returns(prices: pd.Series, price_type: str,
-                  distributions: pd.Series | None = None) -> pd.Series:
+                  distributions: pd.Series | None = None,
+                  events_complete: bool = False) -> pd.Series:
     """持有期总收益。
 
     - ``close`` / ``nav``：未含分配，需给出 ``distributions``（除息日对齐的每单位现金分配）
     - ``adjusted_close`` / ``total_return_index``：已含分配，再给出分配视为重复计算并报错
+
+    ``distributions`` 中显式的 NaN 表示未知，对应期间的收益为 NaN，绝不当作零。
+    分配序列未列出的日期默认也是未知；只有调用方声明 ``events_complete=True``
+    （事件表已核验完整、未列出即无分配）时才按零处理。
     """
     if price_type not in PRICE_TYPES:
         raise ValueError(f"未知价格类型：{price_type}")
@@ -33,7 +38,9 @@ def total_returns(prices: pd.Series, price_type: str,
     if distributions is None:
         raise ValueError(f"{price_type} 未含分配；计算总收益需给出分配序列，"
                          "或明确改用 simple_returns 计算价格收益")
-    dist = distributions.reindex(prices.index).fillna(0.0)
+    dist = distributions.reindex(prices.index)
+    if events_complete:
+        dist[~prices.index.isin(distributions.index)] = 0.0
     return (prices + dist) / prices.shift(1) - 1
 
 

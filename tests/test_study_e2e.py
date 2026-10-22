@@ -1,9 +1,9 @@
 """贯通验证：取得 → 标准化 → 公共分析 → 报告与运行记录（architecture §10 P2）。"""
 
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 
-import pandas as pd
 import pytest
 import yaml
 
@@ -113,7 +113,7 @@ def test_incomplete_period_is_disclosed(loaded):
     assert manifest["status"] == "partial"
     result = load_result(loaded, manifest)
     assert result["coverage"]["period_complete"] is False
-    assert any("未完整覆盖" in x for x in result["limitations"])
+    assert any("未能证明完整覆盖" in x for x in result["limitations"])
 
 
 def test_missing_optional_input_skips_cross_check(project, registry, store):
@@ -143,10 +143,109 @@ def test_cli_run_and_verify(loaded, capsys):
     assert "ust_par_yield_curve" in capsys.readouterr().out
 
 
-def test_as_of_policy_excludes_data_not_yet_available(loaded):
-    # 2024-01-04 纽约 0 点时，只有 1 月 2 日与 3 日的曲线可用
+def test_as_of_rejects_current_revision_not_held_at_the_time(loaded):
+    """回归 F1：数据今天才取得，不能用于 2024 年的时点研究。"""
     scope = {**STUDY["scope"], "vintage_policy": "as_of", "as_of": "2024-01-04T05:00:00Z"}
     manifest = run_study(loaded, write_study(loaded, scope=scope))
+    assert manifest["status"] == "failed"
+    assert "只有当前修订版本" in manifest["error"]
+
+
+class AtTime:
+    """把接入器取得时间固定为某一时刻，模拟过去真实取得的快照。"""
+
+    def __init__(self, inner, at):
+        self.inner, self.at, self.name = inner, at, inner.name
+
+    def fetch(self, dataset, request):
+        payloads = self.inner.fetch(dataset, request)
+        for p in payloads:
+            p.retrieved_at = self.at
+        return payloads
+
+    def parse(self, dataset, payload):
+        return self.inner.parse(dataset, payload)
+
+
+def test_as_of_replays_snapshot_held_at_the_time(project, registry, store):
+    """本地重放：使用当时已取得的版本，后来的修订不进入当时的视图。"""
+    then = datetime(2024, 1, 4, 6, 0, tzinfo=timezone.utc)
+    early = "\n".join(TREASURY_2024.splitlines()[0:1] + TREASURY_2024.splitlines()[3:5]) + "\n"
+    ingest(registry, store, "ust_par_yield_curve", {"start": 2024, "end": 2024},
+           AtTime(treasury_connector({2024: early}), then), clock=lambda: then)
+    revised = TREASURY_2024.replace("01/03/2024,5.54", "01/03/2024,5.99")
+    ingest(registry, store, "ust_par_yield_curve", {"start": 2024, "end": 2024},
+           treasury_connector({2024: revised}))
+
+    scope = {**STUDY["scope"], "end": "2024-01-03", "vintage_policy": "as_of",
+             "as_of": "2024-01-04T12:00:00Z"}
+    manifest = run_study(project, write_study(project, scope=scope,
+                                              method={**STUDY["method"], "key_tenors": ["1M", "10Y"],
+                                                      "spreads": [], "curvature": []}))
+    assert manifest["status"] == "success", manifest.get("error")
+    assert manifest["inputs"][0]["version_id"] == store.versions("ust_par_yield_curve")[0].version_id
+    result = load_result(project, manifest)
+    assert result["results"]["levels"]["1M"]["end"] == 5.54  # 当时的值，不是后来的 5.99
+
+
+SPARSE = "\n".join([TREASURY_2024.splitlines()[0],
+                    "12/31/2024,4.40,4.39,4.37,4.32,4.24,4.16,4.25,4.27,4.38,4.48,4.58,4.86,4.78",
+                    TREASURY_2024.splitlines()[-1]]) + "\n"
+
+
+def test_two_observations_in_a_year_is_not_complete(project, registry, store):
+    """回归 F2：全年只剩首尾两日，不能报告为完整、成功。"""
+    ingest(registry, store, "ust_par_yield_curve", {"start": 2024, "end": 2024},
+           treasury_connector({2024: SPARSE}))
+    scope = {**STUDY["scope"], "start": "2024-01-01", "end": "2024-12-31"}
+    manifest = run_study(project, write_study(project, scope=scope))
+    assert manifest["status"] == "partial"
+    result = load_result(project, manifest)
+    cov = result["coverage"]
+    assert cov["period_complete"] is False
+    assert (cov["expected_days"], cov["curve_days"]) == (250, 2)
+    assert cov["tenors"]["10Y"]["share"] == pytest.approx(2 / 250)
+    assert {u["item"] for u in result["unsupported"]} >= {"期限 10Y", "期间统计（均值、极值、倒挂天数）"}
+    assert result["results"]["levels"] == {}  # 期限覆盖不足，水平也不输出
+
+
+def test_incomplete_period_keeps_endpoints_but_withholds_period_stats(loaded):
+    # 数据只到 1 月 5 日，研究期间到 1 月 31 日；降低门槛使期限仍被支持，单独检验期间统计的限制
+    scope = {**STUDY["scope"], "end": "2024-01-31"}
+    method = {**STUDY["method"], "min_coverage": 0.15}  # 实际 4 / 预期 21 日
+    manifest = run_study(loaded, write_study(loaded, scope=scope, method=method))
+    assert manifest["status"] == "partial"
     result = load_result(loaded, manifest)
-    assert result["coverage"]["last"] == "2024-01-03"
-    assert pd.Timestamp(result["data_cutoff"]) < pd.Timestamp("2024-01-04")
+    assert result["coverage"]["period_complete"] is False
+    assert result["coverage"]["expected_days"] == 21
+    ten = result["results"]["levels"]["10Y"]
+    assert (ten["start"], ten["end"], ten["change_bp"]) == (3.95, 4.05, pytest.approx(10))
+    assert ten["mean"] is None and ten["min"] is None and ten["max"] is None
+    assert result["results"]["spreads"]["2Y-10Y"]["inversion"] is None
+    html = next((loaded / o["path"]).read_text() for o in manifest["outputs"]
+                if o["path"].endswith(".html"))
+    assert "未能证明完整" in html
+
+
+def test_same_second_runs_do_not_overwrite(loaded):
+    """回归 F4：同一秒启动的两次运行各自留档。"""
+    fixed = datetime(2026, 10, 22, 12, 0, tzinfo=timezone.utc)
+    m1 = run_study(loaded, write_study(loaded, title="第一次"), clock=lambda: fixed)
+    m2 = run_study(loaded, write_study(loaded, title="第二次"), clock=lambda: fixed)
+    assert m1["run_id"] != m2["run_id"]
+    for m, title in ((m1, "第一次"), (m2, "第二次")):
+        saved = json.loads((loaded / "runs" / m["run_id"] / "manifest.json").read_text())
+        assert saved["study_config"]["title"] == title
+        assert saved["result_hash"] == m["result_hash"]
+
+
+def test_verify_keeps_originally_missing_optional_input_missing(project, registry, store):
+    """回归 F5：原运行没有交叉核验数据，后来导入也不改变复现结果。"""
+    ingest(registry, store, "ust_par_yield_curve", {"start": 2024, "end": 2024},
+           treasury_connector({2024: TREASURY_2024}))
+    manifest = run_study(project, write_study(project))
+    unused = [i for i in manifest["inputs"] if not i["used"]]
+    assert [i["role"] for i in unused] == ["cross_check"]
+    ingest(registry, store, "fred_dgs10", {"start": "2024-01-01", "end": "2024-01-05"},
+           dgs10_connector("2024-01-01", "2024-01-05"))
+    assert verify_run(project, manifest["run_id"])["reproduced"] is True
