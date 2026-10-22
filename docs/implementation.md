@@ -41,7 +41,8 @@ iros run
   write_report         → reports/<study>/<run>/report.{md,html} + figures/
   manifest             → runs/<run>/manifest.json（开始时即写入，失败也保留）
 
-iros verify <run_id>   → 用清单中的研究定义与数据版本重算，比较结果校验值
+iros verify <run_id>   → 用清单中的研究定义与数据版本重算，比较结果校验值；
+                         另比较 src/、config/ 的内容校验值判断代码是否变化（文档、测试改动不算）
 ```
 
 ## 3. 契约的落地方式

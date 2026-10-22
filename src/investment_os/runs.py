@@ -49,21 +49,58 @@ def result_hash(result: ResearchResult) -> str:
     return hashlib.sha256(canon.encode("utf-8")).hexdigest()
 
 
-def code_version(root: Path) -> dict[str, Any]:
-    info: dict[str, Any] = {"package_version": __version__}
+# 影响研究结果的代码与配置目录；文档、测试等改动不算代码变化
+SOURCE_DIRS = ("src", "config")
+_IGNORED_PARTS = {"__pycache__", ".DS_Store"}
+
+
+def source_hash(root: Path) -> str:
+    """src/ 与 config/ 的内容校验值（相对路径 + 文件字节），不依赖 Git，含未提交改动。"""
+    digest = hashlib.sha256()
+    for top in SOURCE_DIRS:
+        base = Path(root) / top
+        if not base.is_dir():
+            continue
+        for path in sorted(base.rglob("*")):
+            if not path.is_file() or _IGNORED_PARTS & set(path.parts) or path.suffix == ".pyc":
+                continue
+            digest.update(path.relative_to(root).as_posix().encode("utf-8") + b"\0")
+            digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return digest.hexdigest()
+
+
+def _git(root: Path, *args: str) -> str | None:
     try:
-        info["git_commit"] = subprocess.run(
-            ["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=True,
-        ).stdout.strip()
-        dirty = subprocess.run(
-            ["git", "status", "--porcelain", "--", "src", "config"], cwd=root,
-            capture_output=True, text=True, check=True,
-        ).stdout.strip()
-        info["dirty"] = bool(dirty)
+        return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True,
+                              check=True).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
-        info["git_commit"] = None
-        info["dirty"] = None
+        return None
+
+
+def code_version(root: Path) -> dict[str, Any]:
+    info: dict[str, Any] = {"package_version": __version__, "source_hash": source_hash(root)}
+    info["git_commit"] = _git(root, "rev-parse", "HEAD")
+    status = _git(root, "status", "--porcelain", "--", *SOURCE_DIRS)
+    info["dirty"] = None if status is None else bool(status)
     return info
+
+
+def code_changed(root: Path, original: dict[str, Any], current: dict[str, Any]) -> bool:
+    """比较影响结果的代码与配置是否变化，而不是比较提交号。
+
+    新清单直接比较 source_hash。旧清单没有 source_hash：若原运行基于干净提交，
+    比较该提交与当前 HEAD 的 src/config 树，且当前无未提交改动；无法判断时视为已变化。
+    """
+    if original.get("source_hash"):
+        return original["source_hash"] != current["source_hash"]
+    commit = original.get("git_commit")
+    if not commit or original.get("dirty") is not False or current.get("dirty") is not False:
+        return True
+    for top in SOURCE_DIRS:
+        then, now = _git(root, "rev-parse", f"{commit}:{top}"), _git(root, "rev-parse", f"HEAD:{top}")
+        if then is None or then != now:
+            return True
+    return False
 
 
 def environment() -> dict[str, str]:
@@ -242,8 +279,7 @@ def verify_run(root: Path, run_id: str) -> dict[str, Any]:
         "new_hash": new_hash,
         "original_code": manifest["code"],
         "current_code": current_code,
-        "code_changed": current_code.get("git_commit") != manifest["code"].get("git_commit")
-        or bool(current_code.get("dirty")) or bool(manifest["code"].get("dirty")),
+        "code_changed": code_changed(root, manifest["code"], current_code),
     }
     with (run_dir / "verifications.jsonl").open("a", encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
