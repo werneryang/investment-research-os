@@ -65,7 +65,9 @@ def _latest_runs(root: Path) -> list[dict[str, Any]]:
     for r in list_runs(root):
         if r["status"] in (None, "failed", "running"):
             continue
-        if r["study_id"] not in by_study or r["started_at"] > by_study[r["study_id"]]["started_at"]:
+        # started_at 只精确到秒；同一秒的运行按清单写入时间（纳秒）区分先后
+        r["_order"] = (r["started_at"], (root / "runs" / r["run_id"] / "manifest.json").stat().st_mtime_ns)
+        if r["study_id"] not in by_study or r["_order"] > by_study[r["study_id"]]["_order"]:
             by_study[r["study_id"]] = r
     out = []
     for r in sorted(by_study.values(), key=lambda x: x["study_id"]):
