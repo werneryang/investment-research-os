@@ -82,9 +82,15 @@ branches:
           - 冲击发生的概率或未来利率走势（需要预测模型与样本外验证）
       - id: equity_risk
         name: 股票
+        summary: 美国股票市场与 Fama/French 因子的月度收益（市场超额收益加无风险利率即市场总收益）
         risk: [equity]
-        planned: true
-        needs: 需要指数总收益与估值数据源，以及公司行动与成分变化的处理
+        datasets: [french_ff3, french_ff5, french_mom]
+        studies: []
+        can_answer: []
+        cannot_answer:
+          - 个股或具体指数基金的回报（只有组合层面的因子收益）
+          - 估值水平（市盈率、CAPE 等，尚未接入 Shiller、Damodaran）
+          - 美国以外的股票市场
       - id: credit_premium
         name: 信用
         risk: [credit]
@@ -107,9 +113,14 @@ branches:
     directions:
       - id: sector_structure
         name: 行业与地区结构
+        summary: 美国 12 个行业组合的价值加权月度收益
         risk: [equity]
-        planned: true
-        needs: 需要行业分类标准及其有效时间，以及行业或地区指数收益数据
+        datasets: [french_ind12_vw]
+        studies: []
+        can_answer: []
+        cannot_answer:
+          - 行业估值、集中度与成分变化（只接入了收益）
+          - 美国以外的地区与行业
 
   - id: securities_funds
     name: 证券与基金
@@ -138,7 +149,7 @@ branches:
       - id: portfolio
         name: 模拟组合风险
         planned: true
-        needs: 依赖上游资产收益与风险数据；只做模拟组合，不需要真实账户
+        needs: 股票市场与无风险利率的月度收益已接入；还需要债券等其他资产的收益数据。只做模拟组合，不需要真实账户
 
   - id: forecast_strategy
     name: 预测与策略实验

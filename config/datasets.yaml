@@ -208,6 +208,74 @@ datasets:
     value_range: [0, 1000000]
     scheduled_fetch: {}
 
+  # ---- Kenneth French 数据库（2026-10-23）：月度因子与行业组合收益，百分比 ----
+  # 文件通常在月末后约三到八周更新（202608 数据于 2026-09-24 生成，2026-10-23 时 202609 仍未发布）；
+  # 可用时间取月末后第 90 天结束，是保守规则。数据随 CRSP 更新整体重算，只有当前版本，因此参加定时快照。
+
+  french_ff3:
+    source_id: ken_french
+    upstream_id: "Kenneth R. French Data Library: F-F_Research_Data_Factors（月度）"
+    connector: french_csv
+    description: Fama/French 三因子月度收益：市场超额收益（Mkt-RF）、规模（SMB）、价值（HML）与无风险利率（RF）
+    params: {file: F-F_Research_Data_Factors, columns: [Mkt-RF, SMB, HML, RF], prefix: FF3_}
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [-100, 1000]
+    scheduled_fetch: {}
+
+  french_ff5:
+    source_id: ken_french
+    upstream_id: "Kenneth R. French Data Library: F-F_Research_Data_5_Factors_2x3（月度）"
+    connector: french_csv
+    description: Fama/French 五因子月度收益（2x3 分组）：在三因子之外加盈利（RMW）与投资（CMA）
+    params: {file: F-F_Research_Data_5_Factors_2x3, columns: [Mkt-RF, SMB, HML, RMW, CMA, RF], prefix: FF5_}
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [-100, 1000]
+    scheduled_fetch: {}
+
+  french_mom:
+    source_id: ken_french
+    upstream_id: "Kenneth R. French Data Library: F-F_Momentum_Factor（月度）"
+    connector: french_csv
+    description: 动量因子月度收益（Mom，过去 12 至 2 个月收益高减低）
+    params: {file: F-F_Momentum_Factor, columns: [Mom], prefix: MOM_}
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [-100, 1000]
+    scheduled_fetch: {}
+
+  french_ind12_vw:
+    source_id: ken_french
+    upstream_id: "Kenneth R. French Data Library: 12_Industry_Portfolios，价值加权月度收益"
+    connector: french_csv
+    description: 12 个行业组合的价值加权月度收益（每年 6 月末按 SIC 代码重新分组）
+    params:
+      file: 12_Industry_Portfolios
+      section: Average Value Weighted Returns -- Monthly
+      columns: [NoDur, Durbl, Manuf, Enrgy, Chems, BusEq, Telcm, Utils, Shops, Hlth, Money, Other]
+      prefix: IND12VW_
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [-100, 1000]
+    scheduled_fetch: {}
+
   manual_example:
     source_id: manual
     upstream_id: 人工导入示例（导入时须声明原始来源）

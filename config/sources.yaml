@@ -315,15 +315,57 @@ sources:
   - id: ken_french
     name: Kenneth French 数据库
     publisher: Kenneth R. French Data Library（Dartmouth Tuck）
+    channel: 数据库 ftp 目录下的 <文件名>_CSV.zip 直接下载，每个 zip 内一个多段 CSV
     url: https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html
+    license: 文件带「Copyright Eugene F. Fama and Kenneth R. French」声明，未见再分发许可；只在本地使用，不进公开存档
+    registration: 无需注册或 key
+    rate_limit: 未公布；本项目串行请求，失败有界重试
+    revisions: 只有当前版本；随 CRSP 数据库更新与方法调整整体重算，文件头注明所用 CRSP 数据库月份
+    maintenance: 通常每月更新，滞后约一至两个月；版式变化时按表头核对报错（params.columns）
+    alternatives: []
     category: factors
     directions: [equity_risk, sector_structure, portfolio]
     access: file
+    signup: none
+    redistribution: restricted
+    coverage: 美国股票因子 1926-07 起（五因子 1963-07 起），月度；另有日度、周度与年度文件
     offers:
-      - 因子收益（市场、规模、价值等）
-      - 行业组合收益
-    notes: 方法与历史修订需核验；数据会随方法更新整体重算
-    next_step: 核验下载格式、方法说明与许可
+      - 日度因子与动量
+      - 更细的行业组合（30、49 个行业）与规模、价值分组组合
+      - 国际与发达市场因子
+    notes: >-
+      市场因子 Mkt-RF 加 RF 即美国股票市场的月度总收益（价值加权，含分红）；RF 在 202406 之前取自 Ibbotson，
+      之后为 ICE BofA 1 个月国库券指数。数值为百分比，缺失写作 -99.99 或 -999
+    next_step: 按研究需要登记日度因子或更细的行业组合
+    verification:
+      - dataset: french_ff3
+        status: access_verified
+        date: "2026-10-23"
+        evidence: >-
+          取得 F-F_Research_Data_Factors（CRSP 202608）：1926-07 至 2026-08 共 1202 个月 × 4 列全部合格，无缺月
+          （版本 v20261023T224136Z-97921212）。月度复利与文件自带年度表在 1927–2025 年逐年一致（最大差 0.04 个百分点，
+          为四舍五入）；近三个月 RF 年化约 3.6%，与联邦基金利率 3.88% 相称
+        scope: 月度表（文件第一段）；年度表不读入
+      - dataset: french_ff5
+        status: access_verified
+        date: "2026-10-23"
+        evidence: >-
+          取得 F-F_Research_Data_5_Factors_2x3（CRSP 202608）：1963-07 至 2026-08 共 758 个月 × 6 列全部合格
+          （版本 v20261023T224136Z-dc32763b）。RF 与三因子文件完全一致；Mkt-RF 在 167 个月有差异，最大 0.08 个百分点，
+          分布在各年代，可能是两个文件的市场因子样本略有不同（原因未核实）。需要市场收益时以三因子文件为准
+        scope: 月度表（文件第一段）
+      - dataset: french_mom
+        status: access_verified
+        date: "2026-10-23"
+        evidence: 取得 F-F_Momentum_Factor（CRSP 202608）：1927-01 至 2026-08 共 1196 个月全部合格（版本 v20261023T224137Z-a7da223f）
+        scope: 月度表（文件第一段）
+      - dataset: french_ind12_vw
+        status: access_verified
+        date: "2026-10-23"
+        evidence: >-
+          取得 12_Industry_Portfolios（CRSP 202608）中「Average Value Weighted Returns -- Monthly」段：1926-07 至 2026-08
+          共 1202 个月 × 12 个行业全部合格（版本 v20261023T224138Z-786d9898）。等权、年度、公司数、规模与账面市值比各段未读入
+        scope: 价值加权月度收益段
 
   - id: shiller
     name: Shiller 股市数据
