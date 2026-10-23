@@ -77,6 +77,34 @@ def test_coverage_strip_marks_missing_and_tenor_gaps():
     assert "2024-01-03" in svg
 
 
+def test_coverage_strip_monthly_summary_and_exception_list():
+    r = {"coverage": {"tenors": {"10Y": {}}, "missing_dates": ["2024-01-03"], "missing_days": 1,
+                      "pending_dates": ["2024-02-01"]},
+         "tables": {"daily": [{"date": "2024-01-02", "10Y": 3.95}, {"date": "2024-01-04", "10Y": None}]}}
+    html = coverage_strip(r)
+    monthly = html[html.index('class="cov-monthly"'):html.index("</svg>", html.index('class="cov-monthly"'))]
+    assert monthly.count('<rect class="m cov-miss"') == 2  # 1 月最差状态为缺失（观测日行与 10Y 行）
+    assert monthly.count('<rect class="m cov-pending"') == 2  # 2 月只有未取得日
+    r["coverage"]["pending_dates"].append("2024-01-05")
+    r["coverage"]["missing_dates"] = []
+    r["tables"]["daily"][1]["10Y"] = 4.0
+    html2 = coverage_strip(r)
+    monthly2 = html2[html2.index('class="cov-monthly"'):]
+    assert monthly2.count('<rect class="m cov-ok"') == 2  # 1 月有合格日，单个未取得日不把整月画成未取得
+    assert "观测日：2/3 天合格" in monthly and "10Y：1/3 天合格" in monthly  # 1 月 4 日有曲线但 10Y 缺失
+    exceptions = html[html.index('class="cov-exceptions"'):]
+    assert "非合格日期（3 条）" in exceptions
+    assert "2024-01-03 · 整日" in exceptions and "2024-01-04 · 10Y" in exceptions
+    assert "2024-02-01 · 整日：未取得" in exceptions
+
+
+def test_coverage_strip_states_when_all_observations_qualify():
+    r = {"coverage": {"tenors": {"10Y": {}}},
+         "tables": {"daily": [{"date": "2024-01-02", "10Y": 3.95}]}}
+    html = coverage_strip(r)
+    assert "cov-exceptions" not in html and "均有合格观测" in html
+
+
 def test_coverage_strip_discloses_partial_missing_list():
     r = {"coverage": {"tenors": {}, "missing_examples": ["2024-01-03"], "missing_days": 5},
          "tables": {"daily": [{"date": "2024-01-02"}]}}

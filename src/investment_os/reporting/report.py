@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import base64
+import functools
 import html
 import math
 import re
@@ -17,6 +18,7 @@ import pandas as pd
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from matplotlib import font_manager  # noqa: E402
 
 from ..analytics.rates import curvature_label, spread_label  # noqa: E402
 from ..research.findings import COVERAGE_LABEL, completeness, coverage_summary  # noqa: E402
@@ -52,27 +54,57 @@ def _inversion_cells(inv: dict[str, Any] | None) -> list[str]:
 
 # ---- 图表 -----------------------------------------------------------------
 
+# 图中文字用中文，需要系统里有 CJK 字体（发布工作流安装 fonts-noto-cjk）。
+# 找不到时退回英文标签，避免出现方框字。
+_CJK_FONTS = ("Noto Sans CJK SC", "Noto Sans CJK JP", "Noto Sans SC", "Source Han Sans SC", "PingFang SC",
+              "Hiragino Sans GB", "Heiti SC", "Microsoft YaHei", "WenQuanYi Zen Hei")
+_CURVE_TICKS = ("3M", "1Y", "2Y", "5Y", "10Y", "20Y", "30Y")
+
+
+@functools.cache
+def _cjk_font() -> str | None:
+    names = {f.name for f in font_manager.fontManager.ttflist}
+    return next((n for n in _CJK_FONTS if n in names), None)
+
+
+def _t(zh: str, en: str) -> str:
+    return zh if _cjk_font() else en
+
+
+def _style() -> None:
+    plt.rcParams.update({"figure.dpi": 110, "axes.spines.top": False, "axes.spines.right": False,
+                         "axes.grid": True, "grid.alpha": 0.3, "font.size": 9})
+    if font := _cjk_font():
+        plt.rcParams.update({"font.sans-serif": [font, "DejaVu Sans"], "axes.unicode_minus": False})
+
+
 def _curve_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
     daily = result["tables"].get("daily") or []
     if not daily:
         return []
     out_dir.mkdir(parents=True, exist_ok=True)
-    plt.rcParams.update({"figure.dpi": 110, "axes.spines.top": False, "axes.spines.right": False,
-                         "axes.grid": True, "grid.alpha": 0.3, "font.size": 9})
+    _style()
     x = pd.to_datetime([r["date"] for r in daily])
     figs: list[tuple[str, Path]] = []
 
     snaps = result["results"].get("snapshots") or []
     if snaps:
+        # 横轴按期限（年）的平方根排布，避免短端挤在一起；刻度标期限代码
         fig, ax = plt.subplots(figsize=(7, 3.6))
+        names = {"start": _t("期初", "start"), "end": _t("期末", "end")}
+        ticks: set[str] = set()
         for snap in snaps:
             tenors = sorted((k for k in snap if k not in ("label", "date")),
                             key=lambda c: parse_tenor(c).months)
-            ax.plot([parse_tenor(t).months / 12 for t in tenors], [snap[t] for t in tenors],
-                    marker="o", ms=3, label=f"{snap['label']} {snap['date']}")
-        ax.set_xlabel("Maturity (years)")
-        ax.set_ylabel("Par yield (%)")
-        ax.set_title("Yield curve: start vs end of period")
+            ticks.update(t for t in tenors if t in _CURVE_TICKS)
+            ax.plot([math.sqrt(parse_tenor(t).months / 12) for t in tenors], [snap[t] for t in tenors],
+                    marker="o", ms=3, label=f"{names.get(snap['label'], snap['label'])} {snap['date']}")
+        shown = sorted(ticks, key=lambda c: parse_tenor(c).months)
+        ax.set_xticks([math.sqrt(parse_tenor(t).months / 12) for t in shown], shown)
+        ax.set_xlim(left=0)
+        ax.set_xlabel(_t("期限（平方根刻度）", "Maturity (square-root scale)"))
+        ax.set_ylabel(_t("票面收益率（%）", "Par yield (%)"))
+        ax.set_title(_t("期初与期末收益率曲线", "Yield curve: start vs end of period"))
         ax.legend(frameon=False)
         figs.append(("期初与期末收益率曲线", _save(fig, out_dir / "curve_snapshots.png")))
 
@@ -81,13 +113,14 @@ def _curve_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Pat
         fig, ax = plt.subplots(figsize=(7, 3.6))
         for t in levels:
             ax.plot(x, [r.get(t) for r in daily], lw=1.1, label=t)
-        ax.set_ylabel("Par yield (%)")
-        ax.set_title("Key tenor yields")
+        ax.set_ylabel(_t("票面收益率（%）", "Par yield (%)"))
+        ax.set_title(_t("关键期限收益率", "Key tenor yields"))
         ax.legend(frameon=False, ncol=len(levels))
         figs.append(("关键期限收益率", _save(fig, out_dir / "key_tenors.png")))
 
+    curvature = _t("曲率", "curvature")
     spread_cols = [*((k, spread_label(k)) for k in result["results"].get("spreads", {})),
-                   *((f"curvature {k}", f"curvature {curvature_label(k)}")
+                   *((f"curvature {k}", f"{curvature} {curvature_label(k)}")
                      for k in result["results"].get("curvature", {}))]
     if spread_cols:
         fig, ax = plt.subplots(figsize=(7, 3.6))
@@ -95,7 +128,7 @@ def _curve_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Pat
             ax.plot(x, [r.get(col) for r in daily], lw=1.1, label=label)
         ax.axhline(0, color="black", lw=0.8)
         ax.set_ylabel("bp")
-        ax.set_title("Spreads (long - short) and butterfly curvature")
+        ax.set_title(_t("利差（长端 − 短端）与蝶式曲率", "Spreads (long - short) and butterfly curvature"))
         ax.legend(frameon=False)
         figs.append(("利差与曲率", _save(fig, out_dir / "spreads.png")))
     return figs
@@ -106,20 +139,21 @@ def _bond_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path
     if not scen:
         return []
     out_dir.mkdir(parents=True, exist_ok=True)
-    plt.rcParams.update({"figure.dpi": 110, "axes.spines.top": False, "axes.spines.right": False,
-                         "axes.grid": True, "grid.alpha": 0.3, "font.size": 9})
+    _style()
     figs: list[tuple[str, Path]] = []
     focus = "10Y" if "10Y" in scen else next(iter(scen))
     rows = scen[focus]
     x = [r["shock_bp"] for r in rows]
+    shock = _t("收益率冲击（bp）", "Yield shock (bp)")
     fig, ax = plt.subplots(figsize=(7, 3.6))
-    ax.plot(x, [r["full_pct"] for r in rows], marker="o", ms=3, label="Full repricing")
-    ax.plot(x, [r["duration_pct"] for r in rows], ls="--", label="Duration")
-    ax.plot(x, [r["duration_convexity_pct"] for r in rows], ls=":", label="Duration + convexity")
+    ax.plot(x, [r["full_pct"] for r in rows], marker="o", ms=3, label=_t("完整重新定价", "Full repricing"))
+    ax.plot(x, [r["duration_pct"] for r in rows], ls="--", label=_t("久期近似", "Duration"))
+    ax.plot(x, [r["duration_convexity_pct"] for r in rows], ls=":",
+            label=_t("久期 + 凸性", "Duration + convexity"))
     ax.axhline(0, color="black", lw=0.8)
-    ax.set_xlabel("Yield shock (bp)")
-    ax.set_ylabel("Price change (%)")
-    ax.set_title(f"{focus} hypothetical par bond: price change by method")
+    ax.set_xlabel(shock)
+    ax.set_ylabel(_t("价格变化（%）", "Price change (%)"))
+    ax.set_title(_t(f"{focus} 假设平价债券：各方法的价格变化", f"{focus} hypothetical par bond: price change by method"))
     ax.legend(frameon=False)
     figs.append((f"{focus} 价格变化：完整重新定价与近似", _save(fig, out_dir / "scenario_price.png")))
 
@@ -128,9 +162,9 @@ def _bond_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path
         ax.plot([r["shock_bp"] for r in rs], [r["duration_convexity_error_pp"] for r in rs], marker="o", ms=3,
                 label=tenor)
     ax.axhline(0, color="black", lw=0.8)
-    ax.set_xlabel("Yield shock (bp)")
-    ax.set_ylabel("Error (pp)")
-    ax.set_title("Duration + convexity approximation error vs full repricing")
+    ax.set_xlabel(shock)
+    ax.set_ylabel(_t("误差（百分点）", "Error (pp)"))
+    ax.set_title(_t("久期 + 凸性近似误差（相对完整重新定价）", "Duration + convexity approximation error vs full repricing"))
     ax.legend(frameon=False, ncol=len(scen))
     figs.append(("久期 + 凸性近似误差（各期限）", _save(fig, out_dir / "approx_error.png")))
     return figs

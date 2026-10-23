@@ -143,10 +143,10 @@ def _history(study_id: str, runs: list[dict[str, Any]], archived: dict[str, Any]
             timeline.append({"item": cur, "diffs": diffs, "between": run_differences(prev, cur)})
     if timeline:
         change_rows = "".join(
-            f"<tr><td>{e(t['item']['result']['data_cutoff'])}</td>"
+            f"<tr><td class=\"nowrap\">{e(t['item']['result']['data_cutoff'])}</td>"
             f"<td>{'<br>'.join(e(d['item'] + '：' + d['from'] + ' → ' + d['to']) for d in t['diffs'])}</td>"
             f"<td class='small'>{'<br>'.join(e(x) for x in t['between']) or '—'}</td>"
-            f"<td><a href=\"{up}runs/{e(t['item']['manifest']['run_id'])}/report.html\">报告</a></td></tr>"
+            f"<td><a class=\"nowrap\" href=\"{up}runs/{e(t['item']['manifest']['run_id'])}/report.html\">报告</a></td></tr>"
             for t in reversed(timeline))
         change_html = ('<p class="small muted">「两次运行之间的差异」只列出可以客观比较的项目（研究窗口、数据版本、代码、解释规则），'
                        '不推断变化的原因；滚动窗口移动、数据修订、方法或规则修改都可能带来结论变化。</p>'
@@ -165,12 +165,13 @@ def _history(study_id: str, runs: list[dict[str, Any]], archived: dict[str, Any]
                     else "本次发布的最新运行（结论与上一归档相同，未单独归档）")
         ver = item["verification"]
         rows.append(
-            f"<tr><td>{e(m['started_at'][:16].replace('T', ' '))}</td><td>{e(r['data_cutoff'])}</td>"
+            f"<tr><td class=\"nowrap\">{e(m['started_at'][:16].replace('T', ' '))}</td>"
+            f"<td class=\"nowrap\">{e(r['data_cutoff'])}</td>"
             f"<td>{chip(m['status'], STATUS_LABEL.get(m['status'], m['status']))}</td>"
             + "".join(f"<td>{e(fn(r))}</td>" for _, fn in renderer.history_columns) +
             f"<td>{'一致' if ver and ver['reproduced'] else ('不一致' if ver else '—')}"
             f"{'（部分）' if ver and ver.get('scope') == 'partial' else ''}</td>"
-            f"<td><a href=\"{up}runs/{e(m['run_id'])}/report.html\">报告</a>"
+            f"<td><a class=\"nowrap\" href=\"{up}runs/{e(m['run_id'])}/report.html\">报告</a>"
             f"<div class='small muted'>{e(note)}</div></td></tr>")
     archive_link = f' <a href="{e(repo)}/tree/archive">运行档案（archive 分支）</a>' if repo else ""
     columns = "".join(f"<th>{e(label)}</th>" for label, _ in renderer.history_columns)

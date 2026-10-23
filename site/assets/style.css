@@ -3,7 +3,7 @@
 --ok:#1f7a4d;--ok-bg:#e3f2ea;--warn:#8a5a00;--warn-bg:#fbefd5;--bad:#a12d2d;--bad-bg:#f8e1e1;--mute-bg:#ecebe6}
 @media (prefers-color-scheme:dark){:root{--bg:#141413;--panel:#1d1d1b;--fg:#ecebe6;--muted:#a3a29b;--line:#33322e;
 --accent:#8fb6dd;--ok:#7fd1a5;--ok-bg:#183326;--warn:#f0c46b;--warn-bg:#3a2e14;--bad:#f09a9a;--bad-bg:#3d1c1c;--mute-bg:#2a2a27}
-.figs img{background:#fff}}
+.figs img{background:#fff;filter:brightness(.88)}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",
 "Noto Sans CJK SC","Microsoft YaHei",sans-serif}
@@ -17,11 +17,11 @@ h2{font-size:1.25rem;margin:0 0 1rem}
 h3{font-size:1.1rem;margin:0 0 .2rem}h4{margin:0 0 .3rem;font-size:.98rem}
 .muted{color:var(--muted)}.small{font-size:.82rem}
 a{color:var(--accent)}a:focus-visible,.button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-code{font-size:.85em;word-break:break-all}
+code{font-size:.85em;overflow-wrap:break-word}  /* 整段换到下一行，只有一行放不下时才在词中断开 */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:20px}
 .card-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
 .card-head p{margin:0}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin:16px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:16px 0}
 .stat{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
 .stat-label{color:var(--muted);font-size:.8rem}.stat-value{font-size:1.15rem;font-weight:600;
 font-variant-numeric:tabular-nums}.stat-note{color:var(--muted);font-size:.8rem}
@@ -115,6 +115,13 @@ figure.coverage svg{display:block;max-width:100%;height:auto;background:var(--pa
 .cov-label{font-size:9px;fill:var(--muted)}.cov-tick{font-size:8px;fill:var(--muted)}
 .key{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:-1px}
 .key.cov-ok{background:var(--ok)}.key.cov-gap{background:var(--warn)}.key.cov-miss{background:var(--bad)}.key.cov-pending{background:transparent;border:1px solid var(--muted)}
+.cov-label-m{font-size:12px;fill:var(--muted)}.cov-tick-m{font-size:10px;fill:var(--muted)}
+figure.coverage .cov-monthly,.cov-note-monthly{display:none}
+@media (max-width:600px){figure.coverage .cov-daily,.cov-note-daily{display:none}
+figure.coverage .cov-monthly{display:block}.cov-note-monthly{display:inline}}
+.cov-exceptions{margin-top:6px;font-size:.85rem}.cov-exceptions summary{cursor:pointer;color:var(--accent)}
+.cov-exceptions ul{list-style:none;margin:.3rem 0;padding:0}.cov-exceptions li{margin:.15rem 0}
+.cov-exceptions .key{margin-left:0}
 
 /* ---- 首页研究列表 ---- */
 .card.featured{border-color:var(--accent)}
@@ -129,7 +136,9 @@ table.capability td{min-width:150px}
 tr.planned td{color:var(--muted)}
 table.compact{width:auto;min-width:50%}
 .two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
-@media (max-width:600px){.study-row{flex-direction:column}.evidence table th{width:auto;white-space:normal}}
+@media (max-width:600px){.study-row{flex-direction:column}.evidence table th{width:auto;white-space:normal}
+.card-head{flex-direction:column;gap:6px}.card{padding:16px}.stats{gap:8px}.stat{padding:8px 10px}
+.stat-value{font-size:1.02rem}}
 
 /* ---- 图表面板（静态图默认可见，交互图表为增强） ---- */
 [hidden]{display:none !important}
