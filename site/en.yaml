@@ -27,7 +27,7 @@ phrases:
   政策利率与流动性: Policy rates & liquidity
   "联邦基金有效利率与美联储资产负债表规模": "Effective federal funds rate and the size of the Fed's balance sheet"
   增长与就业: Growth & employment
-  "失业率与非农就业人数（当前修订版本）": "Unemployment rate and nonfarm payrolls (current revision)"
+  "失业率与非农就业人数：当前修订版本，以及 ALFRED 的全部历史版本（当时公布的数值）": "Unemployment rate and nonfarm payrolls: the current revision, plus every ALFRED vintage (the values as published at the time)"
   美国国债期限结构: US Treasury term structure
   名义票面收益率曲线的水平、斜率、曲率与倒挂: Level, slope, curvature and inversion of the nominal par yield curve
   指定期间内各期限收益率、利差与曲率如何变化: How yields, spreads and curvature by tenor changed over a given period
@@ -240,7 +240,7 @@ phrases:
   没有可程序取得的免费路径时使用；每次导入单独声明原始发布者与取得方式: Used when there is no free programmatic route; each import declares its original publisher and how it was obtained
   没有成分变化记录时，指数层面的回测有幸存者偏差: Without records of constituent changes, index-level backtests have survivorship bias
   波动率指数（如 VIX）: Volatility indices (e.g. VIX)
-  "按研究需要登记更多序列的历史版本（如 UNRATE、PAYEMS）": "Register vintages for more series as studies need them (e.g. UNRATE, PAYEMS)"
+  "按研究需要登记更多序列的历史版本（如 GDP 等季度序列）": "Register vintages for more series as studies need them (e.g. quarterly series such as GDP)"
   "逐个序列确认许可；需要时登记更多序列（如信用利差，先核验第三方权利与可得历史）": "Confirm the license series by series; register more series when needed (e.g. credit spreads, after checking third-party rights and available history)"
   社区工具可作接入候选；数据权利受各上游约束，接口稳定性需持续核验: Community tools are access candidates; data rights follow each upstream, and interface stability needs ongoing checks
   美国国债曲线: US Treasury curve
@@ -262,7 +262,6 @@ phrases:
   部分序列含第三方权利；按序列确认，公开取得不等于可自由再分发: Some series carry third-party rights; confirmed per series, and public access does not mean free redistribution
   "市场的通胀预期本身（盈亏平衡通胀率含通胀风险溢价与流动性溢价）": "Market inflation expectations as such (breakeven inflation includes inflation-risk and liquidity premia)"
   "市场对未来政策利率的预期（需要期货或调查数据）": "Market expectations of future policy rates (needs futures or survey data)"
-  "当时公布的就业数据（非农就业会随基准修订改变，需要 ALFRED 或当时的快照）": "Employment data as published at the time (payrolls change with benchmark revisions; needs ALFRED or snapshots taken then)"
   "产出与增长（尚未接入 GDP 等序列；调查与模型估计须与观测值分开登记）": "Output and growth (GDP and similar series not yet connected; surveys and model estimates must be registered separately from observations)"
   "10 年期 TIPS 固定期限实际收益率": "10-year TIPS constant-maturity real yield"
   "10 年期盈亏平衡通胀率（名义收益率 − TIPS 实际收益率；含通胀风险溢价与流动性溢价，不等于通胀预期）": "10-year breakeven inflation (nominal yield − TIPS real yield; includes inflation-risk and liquidity premia, so it is not the same as expected inflation)"
@@ -272,6 +271,8 @@ phrases:
   "联邦基金有效利率（日度，含周末与假日，沿用前一工作日利率）": "Effective federal funds rate (daily, including weekends and holidays, which carry the previous business day's rate)"
   "观测期间结束后第 0 天结束时（来源时区）": "End of the day the observation period ends (source time zone)"
   "观测期间结束后第 4 天结束时（来源时区）": "End of the 4th day after the observation period ends (source time zone)"
+  "失业率（季调）全部历史版本：每次公布与修订的数值及其发布日期（需要 FRED_API_KEY）": "Unemployment rate (seasonally adjusted), every vintage: each published and revised value with its release date (needs FRED_API_KEY)"
+  "非农就业人数（季调）全部历史版本：首次公布、逐月修订与年度基准修订（需要 FRED_API_KEY）": "Nonfarm payrolls (seasonally adjusted), every vintage: first releases, monthly revisions and annual benchmark revisions (needs FRED_API_KEY)"
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'

@@ -192,7 +192,7 @@ sources:
     redistribution: per_series
     coverage: ALFRED 历史版本，按序列不同
     notes: 时点研究的官方路径；key 放在项目根目录的 .env（不入库），CLI 启动时读取。供应方保留全部历史版本，不需要本机定时快照
-    next_step: 按研究需要登记更多序列的历史版本（如 UNRATE、PAYEMS）
+    next_step: 按研究需要登记更多序列的历史版本（如 GDP 等季度序列）
     verification:
       - dataset: alfred_cpiaucsl
         status: docs_verified
@@ -205,6 +205,22 @@ sources:
           用真实 key 取得 CPIAUCSL 全部历史版本：670 个版本（1972-07-21 至 2026-10-14），957 个观测月（1947-01 至 2026-09），
           3104 行合格（版本 v20261023T221556Z-9afb0747）。抽查 2025-09：2025-10-24 首次公布 324.368，2026-02-13 修订为 324.245。
           key 未出现在原始快照、取得记录与日志中
+        scope: 历史版本全量下载（含分页）；发布日期取 realtime_start
+      - dataset: alfred_unrate
+        status: access_verified
+        date: "2026-10-23"
+        evidence: >-
+          UNRATE 全部历史版本：800 个版本（1960-03-15 至 2026-10-02），观测 1948-01 至 2026-09，2198 行合格；
+          2025-10 缺值（停摆期间未调查，上游缺失）（版本 v20261023T223430Z-eb9c9777）。每个观测的最后发布值与当前修订序列
+          944 个月完全一致；抽查 2024-03：2024-04-05 公布 3.8，2025-01-10 修订为 3.9。key 未出现在快照、取得记录与日志中
+        scope: 历史版本全量下载（含分页）；发布日期取 realtime_start
+      - dataset: alfred_payems
+        status: access_verified
+        date: "2026-10-23"
+        evidence: >-
+          PAYEMS 全部历史版本：860 个版本（1955-05-06 至 2026-10-02），观测 1939-01 至 2026-09，13691 行全部合格
+          （版本 v20261023T223432Z-aadaeec8）。每个观测的最后发布值与当前修订序列 1053 个月完全一致；抽查 2024-03：
+          2024-04-05 首次公布 158133，2025-02-07 年度基准修订为 157517。key 未出现在快照、取得记录与日志中
         scope: 历史版本全量下载（含分页）；发布日期取 realtime_start
 
   - id: manual

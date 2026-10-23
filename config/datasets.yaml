@@ -46,7 +46,9 @@ datasets:
     unit: percent
     currency: USD
     timezone: America/New_York
-    availability: {type: next_day}
+    # 2026-10-23 前为 next_day，早于 FRED 上的实际可得时间（当天 15:26 EDT 时仍止于 10-21）；
+    # 改为与其他 H.15 日度序列相同的保守规则：观测日后第 4 天结束，覆盖周末加周一假日
+    availability: {type: period_end_lag_days, days: 4}
     vintages: none
     value_range: [-5, 30]
     scheduled_fetch: {}
@@ -80,6 +82,35 @@ datasets:
     availability: {type: published_next_day}
     vintages: supplier
     value_range: [0, 1000]
+
+  # ALFRED 历史版本：供应方保留每次发布的数值与发布日期（realtime_start），不需要本机定时快照
+  alfred_unrate:
+    source_id: fred_api
+    upstream_id: "U.S. Bureau of Labor Statistics via ALFRED: UNRATE"
+    connector: fred_api_vintages
+    description: 失业率（季调）全部历史版本：每次公布与修订的数值及其发布日期（需要 FRED_API_KEY）
+    params: {series: UNRATE}
+    frequency: monthly
+    unit: percent
+    currency: null
+    timezone: America/New_York
+    availability: {type: published_next_day}
+    vintages: supplier
+    value_range: [0, 100]
+
+  alfred_payems:
+    source_id: fred_api
+    upstream_id: "U.S. Bureau of Labor Statistics via ALFRED: PAYEMS"
+    connector: fred_api_vintages
+    description: 非农就业人数（季调）全部历史版本：首次公布、逐月修订与年度基准修订（需要 FRED_API_KEY）
+    params: {series: PAYEMS}
+    frequency: monthly
+    unit: thousands_of_persons
+    currency: null
+    timezone: America/New_York
+    availability: {type: published_next_day}
+    vintages: supplier
+    value_range: [0, 1000000]
 
   # ---- 第一批 FRED 序列（2026-10-23）：只接入数据，尚无研究 ----
   # H.15 日度序列在 FRED 上通常次一工作日下午才出现（2026-10-23 15:26 EDT 时 DFF、DFII10 仍止于 10-21）；

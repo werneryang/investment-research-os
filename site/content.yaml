@@ -43,12 +43,11 @@ branches:
           - 市场对未来政策利率的预期（需要期货或调查数据）
       - id: growth_labor
         name: 增长与就业
-        summary: 失业率与非农就业人数（当前修订版本）
-        datasets: [fred_unrate, fred_payems]
+        summary: 失业率与非农就业人数：当前修订版本，以及 ALFRED 的全部历史版本（当时公布的数值）
+        datasets: [fred_unrate, fred_payems, alfred_unrate, alfred_payems]
         studies: []
         can_answer: []
         cannot_answer:
-          - 当时公布的就业数据（非农就业会随基准修订改变，需要 ALFRED 或当时的快照）
           - 产出与增长（尚未接入 GDP 等序列；调查与模型估计须与观测值分开登记）
 
   - id: markets_assets
