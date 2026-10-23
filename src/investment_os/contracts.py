@@ -156,6 +156,12 @@ class SourceSpec:
         order = list(VerificationStatus)
         return max((r.status for r in records), key=order.index)
 
+    def use_record(self, dataset: str, use: Use) -> VerificationRecord | None:
+        """该数据集针对该用途的最新一条用途核验记录（含日期、证据与范围）。"""
+        records = [v for v in self.verification if v.dataset == dataset
+                   and v.status is VerificationStatus.USE_VERIFIED and v.use is use]
+        return max(records, key=lambda v: v.date) if records else None
+
     def verified_uses(self, dataset: str) -> list[Use]:
         return sorted({v.use for v in self.verification
                        if v.dataset == dataset and v.status is VerificationStatus.USE_VERIFIED

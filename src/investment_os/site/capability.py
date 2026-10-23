@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..contracts import ResultType, Use, VerificationStatus
+from ..contracts import ResultType, Use
 from ..registry import Registry
 from ..research import branch_result_types
 from .common import RESULT_TYPE_LABEL, STATUS_LABEL, VERIFY_LABEL, chip, e, shell
@@ -31,19 +31,25 @@ def domain_status(domain: dict[str, Any], registry: Registry, datasets: dict[str
     studies = [s for s in domain.get("studies", []) if s in latest]
     runs = [{"study_id": s, "status": latest[s]["manifest"]["status"],
              "branch": latest[s]["result"]["branch"], "use": _use(latest[s]["result"])} for s in studies]
-    validated = []
+    validated: dict[tuple[str, Use], Any] = {}
     for run in runs:
         for ds in domain.get("datasets", []):
             spec = registry.datasets.get(ds)
-            if spec and registry.sources[spec.source_id].status_for(ds, run["use"]) is VerificationStatus.USE_VERIFIED:
-                validated.append((ds, run["use"]))
+            record = registry.sources[spec.source_id].use_record(ds, run["use"]) if spec else None
+            if record is not None:
+                validated[(ds, run["use"])] = record
+    used = {r["use"] for r in runs}
+    unvalidated = [d for d in domain.get("datasets", [])
+                   if d in datasets and not any((d, u) in validated for u in used)]
     if runs:
         category = "active"
     elif any(r["has_data"] for r in ds_rows):
         category = "data_only"
     else:
         category = "registered" if ds_rows else "planned"  # 已登记数据集但本次构建未取得，不是「规划」
-    return {"category": category, "datasets": ds_rows, "runs": runs, "validated": sorted(set(validated))}
+    return {"category": category, "datasets": ds_rows, "runs": runs,
+            "validated": [(ds, u, rec) for (ds, u), rec in sorted(validated.items(), key=lambda kv: kv[0])],
+            "unvalidated": unvalidated if runs else []}
 
 
 def _use(result: dict[str, Any]) -> Use:
@@ -85,8 +91,14 @@ def _domain_row(domain: dict[str, Any], st: dict[str, Any]) -> str:
         analysis = ('<span class="muted">尚无研究（数据已接入）</span>' if st["category"] == "data_only"
                     else '<span class="muted">尚无研究；数据已登记，本次构建未取得</span>')
     if st["validated"]:
-        validation = "".join(f"<div>{chip('pass', '用途已验证')} {e(USE_SHORT[u])} · <code class='small'>{e(ds)}</code></div>"
-                             for ds, u in st["validated"])
+        validation = "".join(
+            f"<div>{chip('pass', '用途已验证')} {e(USE_SHORT[u])} · <code class='small'>{e(ds)}</code>"
+            f"<div class='small muted'>登记于 {e(rec.date)}；范围：{e(rec.scope)}</div>"
+            f"<details class='basis'><summary>核验证据</summary><p class='small'>{e(rec.evidence)}</p></details></div>"
+            for ds, u, rec in st["validated"])
+        if st["unvalidated"]:
+            validation += (f"<div class='small muted'>未登记用途核验："
+                           f"{e('、'.join(st['unvalidated']))}（只用于交叉检查或尚未核验）</div>")
     elif st["runs"]:
         ok = all(r["status"] == "success" for r in st["runs"])
         validation = (f"{chip('skipped', '未登记用途核验')}<div class='small muted'>"

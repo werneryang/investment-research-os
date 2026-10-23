@@ -92,7 +92,14 @@ def test_capability_categories_come_from_registry_and_runs():
     ds = {"ust_par_yield_curve": {"status": "access_verified", "version_id": "v1", "verified_uses": []},
           "fred_cpiaucsl": {"status": "access_verified", "version_id": "v2", "verified_uses": []}}
     active = domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
-    assert active["category"] == "active" and active["validated"] == []  # 尚无用途核验记录
+    # 真实登记中已有 ust_par_yield_curve 的描述性用途核验；只对该用途计入
+    assert [(d, u.value) for d, u, _ in active["validated"]] == [("ust_par_yield_curve", "descriptive")]
+    assert "2024-01-01 至 2026-10-22" in active["validated"][0][2].scope
+    as_of = {"s1": {"manifest": {"status": "success"},
+                    "result": {"branch": "rates_curve", "scope": {"vintage_policy": "as_of"}}}}
+    assert domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, as_of)["validated"] == []
+    two = domain_status({"datasets": ["ust_par_yield_curve", "fred_cpiaucsl"], "studies": ["s1"]}, reg, ds, _latest())
+    assert two["unvalidated"] == ["fred_cpiaucsl"]
     assert domain_status({"datasets": ["fred_cpiaucsl"], "studies": []}, reg, ds, {})["category"] == "data_only"
     assert domain_status({"planned": True}, reg, ds, {})["category"] == "planned"
     # 已登记但本次未取得的数据集不是「规划」

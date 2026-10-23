@@ -37,6 +37,12 @@ def test_project_registry_loads():
     assert reg.source_of("ust_par_yield_curve").id == "ust_treasury"
     # 多条核验记录取最高状态
     assert reg.sources["ust_treasury"].status_for("ust_par_yield_curve") is VerificationStatus.ACCESS_VERIFIED
+    # 描述性用途已核验，时点研究仍只是接入已验证
+    src = reg.sources["ust_treasury"]
+    assert src.status_for("ust_par_yield_curve", Use.DESCRIPTIVE) is VerificationStatus.USE_VERIFIED
+    assert src.status_for("ust_par_yield_curve", Use.POINT_IN_TIME) is VerificationStatus.ACCESS_VERIFIED
+    assert src.use_record("ust_par_yield_curve", Use.DESCRIPTIVE).date == "2026-10-23"
+    assert reg.sources["fred_graph"].status_for("fred_dgs10", Use.DESCRIPTIVE) is VerificationStatus.ACCESS_VERIFIED
     # 没有记录的数据集仍是候选
     assert reg.sources["manual"].status_for("manual_example") is VerificationStatus.CANDIDATE
 
