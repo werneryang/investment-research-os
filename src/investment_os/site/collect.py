@@ -113,6 +113,7 @@ def datasets(registry: Registry, store: DataStore) -> list[dict[str, Any]]:
             "availability": d.availability.describe(),
             "calendar": d.calendar,
             "archive_data": d.archive_data,
+            "scheduled": d.scheduled_fetch is not None,
             "status": src.status_for(d.id).value,
             "verified_uses": [u.value for u in src.verified_uses(d.id)],
             "version_id": v.version_id if v else None,

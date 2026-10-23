@@ -81,6 +81,9 @@ def test_build_site_from_runs(loaded):
     assert "研究模块渐进扩展 <span class=\"chip chip-partial\">部分完成</span>" in cap  # P3 已有两类研究
     methods = (site / "methods.html").read_text(encoding="utf-8")
     assert 'id="status"' in methods and "us_treasury_daily" in methods
+    # 公开存档与本机定时快照分开说明；列出登记了定时取得的数据集
+    assert "<th>公开存档</th>" in methods and "数据存档" not in methods
+    assert "本机定时快照目前覆盖" in methods and "<code>fred_payems</code>" in methods
 
     # 资源目录：已接入与候选来源同在一处，候选标明未核验；方向链接到能力地图的分支
     src = (site / "sources.html").read_text(encoding="utf-8")
