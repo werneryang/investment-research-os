@@ -15,6 +15,9 @@ USE_LABEL = {"descriptive": "历史描述（使用最新修订数据）", "point
              "scenario": "情景模拟（假设输入，使用最新修订数据）"}
 RESULT_TYPE_LABEL = {"descriptive": "描述与比较", "explanatory": "解释与归因",
                      "forecast": "预测", "simulation": "情景与策略模拟"}
+# 风险来源分类（架构 §4），研究方向的标签
+RISK_LABEL = {"equity": "股票", "rates": "利率", "credit": "信用", "inflation": "通胀", "fx": "汇率",
+              "commodity": "商品", "liquidity": "流动性", "instrument": "工具结构"}
 CHECK_LABEL = {"pass": "通过", "fail": "未通过", "skipped": "跳过"}
 FETCH_LABEL = {"created": "新版本", "unchanged": "无变化", "failed": "失败"}
 CHECK_NOTES = {

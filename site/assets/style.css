@@ -145,3 +145,15 @@ table.compact{width:auto;min-width:50%}
 .chart-panel{margin:12px 0 4px}
 .chart-status{margin:.5rem 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .chart-status:empty{display:none}
+/* 研究框架：首页分支卡片与能力地图的分支行 */
+.branch-card h3{font-size:1.15rem;margin:0 0 .2rem}
+.direction{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
+.direction h4{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 .2rem}
+.direction > p{margin:0 0 .6rem}
+.chip-tag{background:transparent;border:1px solid var(--line)}
+.study-row.focus{display:block;border-color:var(--accent)}
+.study-row.focus .card-head{margin-bottom:.2rem}
+h4.sub{margin:1rem 0 .5rem;font-size:.95rem;color:var(--muted)}
+.planned-line{color:var(--muted);margin:.8rem 0 0}
+tr.branch th{background:var(--bg);color:var(--fg);font-size:.98rem;white-space:normal;padding-top:14px}
+tr.branch th .small{font-weight:400}

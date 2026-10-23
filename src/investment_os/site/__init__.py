@@ -1,8 +1,9 @@
 """研究门户（静态网站）：把登记、数据目录、运行记录与报告发布为可浏览的研究成果（模块 O）。
 
-网站只读取已有的结构化记录，不重新计算研究结果。三个问题的分工：
+网站只读取已有的结构化记录，不重新计算研究结果。各页面的分工：
 
-- 研究发现了什么：首页与研究页（studies/<id>/）的关键发现与图表
+- 系统研究什么、从哪里进入：首页按研究框架（分支 → 方向 → 研究）组织，研究焦点只显示关键数字
+- 研究发现了什么：研究页（studies/<id>/）的关键发现与图表
 - 这些发现有多可靠：研究页的证据面板与数据覆盖、数据与方法页
 - 系统能研究什么：研究能力地图（map.html）；系统状态放在页脚与 methods.html#status
 
@@ -33,7 +34,7 @@ from ..archive import archived_runs
 from ..data.store import DataStore
 from ..maintenance import check_calendar
 from ..registry import Registry
-from .capability import capability_page, summary
+from .capability import capability_page, framework, summary
 from .collect import collect_runs, datasets, ordered_studies
 from .common import repo_url
 from .home import home_page
@@ -135,7 +136,8 @@ def build_site(root: Path, out: Path, archive: Path | None = None) -> Path:
 
     calendar_checks = _calendar_checks(root, registry)
     cap = summary(content, registry, ds_by_id, latest)
-    (out / "index.html").write_text(home_page(studies, latest, content, build, cap), encoding="utf-8")
+    (out / "index.html").write_text(home_page(studies, latest, content, build, framework(content, registry, ds_by_id, latest)),
+                                     encoding="utf-8")
     (out / "map.html").write_text(capability_page(content, registry, ds_by_id, latest, build), encoding="utf-8")
     (out / "methods.html").write_text(methods_page(content, registry, ds_rows, latest, build, calendar_checks),
                                       encoding="utf-8")

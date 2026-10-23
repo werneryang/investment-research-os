@@ -2,7 +2,7 @@
 
 from investment_os.registry import Registry
 from investment_os.research.findings import FLAT_BP, changes, findings, state
-from investment_os.site.capability import domain_status, summary
+from investment_os.site.capability import direction_status, framework, summary
 from investment_os.site.coverage import coverage_strip
 
 from .conftest import PROJECT_ROOT
@@ -120,35 +120,40 @@ def test_capability_categories_come_from_registry_and_runs():
     reg = Registry.load(PROJECT_ROOT)
     ds = {"ust_par_yield_curve": {"status": "access_verified", "version_id": "v1", "verified_uses": []},
           "fred_cpiaucsl": {"status": "access_verified", "version_id": "v2", "verified_uses": []}}
-    active = domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
+    active = direction_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
     # 真实登记中已有 ust_par_yield_curve 的描述性用途核验；只对该用途计入
     assert [(d, u.value) for d, u, _, _ in active["validated"]] == [("ust_par_yield_curve", "descriptive")]
     assert "2024-01-01 至 2026-10-22" in active["validated"][0][2].scope
     as_of = {"s1": {"manifest": {"status": "success"},
                     "result": {"branch": "rates_curve",
                                "scope": {"vintage_policy": "as_of", "start": "2024-01-01", "end": "2024-12-31"}}}}
-    assert domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, as_of)["validated"] == []
-    two = domain_status({"datasets": ["ust_par_yield_curve", "fred_cpiaucsl"], "studies": ["s1"]}, reg, ds, _latest())
+    assert direction_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, as_of)["validated"] == []
+    two = direction_status({"datasets": ["ust_par_yield_curve", "fred_cpiaucsl"], "studies": ["s1"]}, reg, ds, _latest())
     assert two["unvalidated"] == ["fred_cpiaucsl"]
-    assert domain_status({"datasets": ["fred_cpiaucsl"], "studies": []}, reg, ds, {})["category"] == "data_only"
-    assert domain_status({"planned": True}, reg, ds, {})["category"] == "planned"
+    assert direction_status({"datasets": ["fred_cpiaucsl"], "studies": []}, reg, ds, {})["category"] == "data_only"
+    assert direction_status({"planned": True}, reg, ds, {})["category"] == "planned"
     # 已登记但本次未取得的数据集不是「规划」
-    assert domain_status({"datasets": ["alfred_cpiaucsl"], "studies": []}, reg,
+    assert direction_status({"datasets": ["alfred_cpiaucsl"], "studies": []}, reg,
                          {"alfred_cpiaucsl": {"status": "docs_verified", "version_id": None,
                                               "verified_uses": []}}, {})["category"] == "registered"
-    content = {"domains": [{"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, {"planned": True}]}
-    assert summary(content, reg, ds, _latest()) == {"active": 1, "data_only": 0, "registered": 0, "planned": 1}
+    content = {"branches": [
+        {"id": "a", "directions": [{"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, {"planned": True}]},
+        {"id": "b", "directions": [{"datasets": ["fred_cpiaucsl"], "studies": []}]},
+        {"id": "c", "directions": [{"planned": True}]}]}
+    assert summary(content, reg, ds, _latest()) == {"active": 1, "data_only": 1, "registered": 0, "planned": 2}
+    # 分支状态取其方向中最好的一项
+    assert [b["category"] for b in framework(content, reg, ds, _latest())] == ["active", "data_only", "planned"]
 
 
 def test_capability_map_shows_partial_scope():
     from investment_os.site.capability import _validated_entry
     reg = Registry.load(PROJECT_ROOT)
     ds = {"ust_par_yield_curve": {"status": "access_verified", "version_id": "v1", "verified_uses": []}}
-    inside = domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
+    inside = direction_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
     assert inside["validated"][0][3][0][1]["status"] == "in_scope"
     assert "部分在范围内" not in _validated_entry(*inside["validated"][0])
 
-    past = domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds,
+    past = direction_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds,
                          _latest(start="2025-10-23", end="2026-10-25"))
     cov = past["validated"][0][3][0][1]
     assert cov["status"] == "partial" and cov["uncovered"] == [["2026-10-23", "2026-10-25"]]

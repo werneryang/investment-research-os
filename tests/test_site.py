@@ -45,8 +45,10 @@ def test_build_site_from_runs(loaded):
     index = build_site(loaded, loaded / "_site")
     site = loaded / "_site"
     page = index.read_text(encoding="utf-8")
-    # 首页以研究发现为主体：规则生成的发现、关键数字与证据摘要，链接到研究页
-    assert "研究焦点" in page and "关键发现" in page
+    # 首页按研究框架组织；研究焦点显示关键数字、前两条发现与证据摘要，链接到研究页
+    assert "<h2>研究框架</h2>" in page and "研究焦点" in page and "关键发现" in page
+    assert "规划中的分支：地区与行业 · 证券与基金 · 组合与情景 · 预测与策略实验" in page
+    assert "未归入研究方向的研究" in page  # 测试研究不在 content.yaml 的任何方向中
     assert "10 年期收益率由 3.95% 升至 4.05%" in page
     assert "3.95% → 4.05%" in page and "10Y − 2Y 利差" in page and "2Y–10Y" not in page
     assert "用途：历史描述，不是预测或交易回测" in page
@@ -73,7 +75,8 @@ def test_build_site_from_runs(loaded):
     assert "studies/ust_curve_test/#history" in (site / "history" / "ust_curve_test.html").read_text()
 
     cap = (site / "map.html").read_text(encoding="utf-8")
-    assert "美国国债收益率曲线" in cap and "规划，未开始" in cap
+    assert "<h2>研究分支与方向</h2>" in cap and "美国国债期限结构" in cap and "规划，未开始" in cap
+    assert "<tr class='branch' id='markets_assets'>" in cap and "工具结构" in cap
     assert "研究模块渐进扩展 <span class=\"chip chip-partial\">部分完成</span>" in cap  # P3 已有两类研究
     methods = (site / "methods.html").read_text(encoding="utf-8")
     assert 'id="status"' in methods and "us_treasury_daily" in methods
@@ -112,6 +115,34 @@ def test_site_without_runs(project):
     assert (project / "_site" / "map.html").exists() and (project / "_site" / "methods.html").exists()
 
 
+def test_home_places_studies_in_their_branch(loaded):
+    shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
+    content = loaded / "site" / "content.yaml"
+    text = content.read_text(encoding="utf-8")
+    assert "studies: [ust_curve_last_year, ust_curve_2024]" in text
+    content.write_text(text.replace("studies: [ust_curve_last_year, ust_curve_2024]", "studies: [ust_curve_test]"),
+                       encoding="utf-8")
+    run_study(loaded, write_study(loaded))
+    page = build_site(loaded, loaded / "_site").read_text(encoding="utf-8")
+    card = page[page.index('id="markets_assets"'):]
+    card = card[:card.index("</article>")]
+    assert "研究焦点" in card and 'href="studies/ust_curve_test/"' in card and "美国国债期限结构" in card
+    assert "本分支规划中：股票 · 信用 · 波动率 · 跨市场比较" in card
+    assert "未归入研究方向的研究" not in page
+    # 已有研究的分支排在只有数据的分支之前
+    assert page.index('id="markets_assets"') < page.index('id="macro_policy"')
+
+
+def test_shared_data_lists_only_directions_with_runs():
+    from investment_os.site.home import _shared_data
+    dirs = [({"name": "期限结构", "datasets": ["ust"]}, {"runs": [1]}),
+            ({"name": "利率敏感性", "datasets": ["ust"]}, {"runs": [1]}),
+            ({"name": "规划", "datasets": ["ust"]}, {"runs": []})]
+    html = _shared_data(dirs)
+    assert "同时支撑「期限结构」「利率敏感性」" in html and "规划" not in html
+    assert _shared_data(dirs[:1]) == ""
+
+
 def test_charts_are_static_first_and_self_hosted(loaded):
     """静态图默认可见、交互图表区默认隐藏；Chart.js 随站点托管，不引用外部 CDN。"""
     import base64
@@ -125,8 +156,8 @@ def test_charts_are_static_first_and_self_hosted(loaded):
     home = (site / "index.html").read_text(encoding="utf-8")
     study = (site / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")
     run = f"runs/{m['run_id']}"
-    for page, prefix, figs in ((home, "", ("curve_snapshots.png", "spreads.png")),
-                               (study, "../../", ("curve_snapshots.png", "key_tenors.png", "spreads.png"))):
+    assert "chart-panel" not in home and "chart.umd" not in home  # 图表只在研究页
+    for page, prefix, figs in ((study, "../../", ("curve_snapshots.png", "key_tenors.png", "spreads.png")),):
         panel = re.search(r'<div class="chart-panel".*?</p></div>', page, re.S).group(0)
         static = re.search(r'<div class="chart-static figs">(.*?)</div>', panel, re.S).group(1)
         for f in figs:

@@ -30,7 +30,6 @@ class Renderer:
     history_columns: tuple[tuple[str, Callable[[dict[str, Any]], str]], ...]
     chart_data: Callable[[dict[str, Any]], dict[str, Any] | None]
     figures: tuple[tuple[str, str], ...]
-    home_figures: tuple[tuple[str, str], ...]
     use_note: str
     state_description: str
     rule_params_label: Callable[[dict[str, Any]], str] = field(default=lambda p: "")
@@ -160,7 +159,6 @@ CURVE = Renderer(
     chart_data=_curve_chart,
     figures=(("curve_snapshots.png", "期初与期末收益率曲线"), ("key_tenors.png", "关键期限收益率"),
              ("spreads.png", "利差与曲率")),
-    home_figures=(("curve_snapshots.png", "期初与期末收益率曲线"), ("spreads.png", "利差与曲率")),
     use_note="历史描述，不是预测或交易回测",
     state_description="利差是否倒挂、变陡或变平、覆盖是否完整",
     rule_params_label=lambda p: f"基本持平阈值 {p.get('flat_bp', FLAT_BP)} bp",
@@ -266,7 +264,6 @@ BOND = Renderer(
                                                          .values()), default=None), 3))),
     chart_data=_bond_chart,
     figures=(("scenario_price.png", "价格变化：完整重新定价与近似"), ("approx_error.png", "久期 + 凸性近似误差")),
-    home_figures=(("scenario_price.png", "价格变化：完整重新定价与近似"), ("approx_error.png", "久期 + 凸性近似误差")),
     use_note="假设情景，不是预测，也不是真实债券或基金的风险",
     state_description="近似误差档位、只用久期时的误差方向",
     rule_params_label=lambda p: f"误差档位 {p.get('error_bands_pp')} pp",
@@ -289,7 +286,6 @@ UNSUPPORTED = Renderer(
     history_columns=(),
     chart_data=lambda r: None,
     figures=(),
-    home_figures=(),
     use_note="该研究分支暂无展示组件，用途见完整报告",
     state_description="定性状态",
     supported=False,
