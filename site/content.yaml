@@ -30,7 +30,7 @@ branches:
         studies: []
         can_answer: []
         cannot_answer:
-          - 当时可获知的通胀数据（ALFRED 尚未用真实 key 接入）
+          - 盈亏平衡通胀率与 TIPS 收益率当时公布的数值（只有当前修订版本；CPI 的历史版本已由 ALFRED 接入）
           - 市场的通胀预期本身（盈亏平衡通胀率含通胀风险溢价与流动性溢价）
       - id: policy_liquidity
         name: 政策利率与流动性

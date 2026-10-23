@@ -23,7 +23,7 @@ phrases:
   某种信号是否改善预测或模拟表现？: Does a given signal improve forecasts or simulated performance?
   通胀: Inflation
   "CPI、盈亏平衡通胀率与 TIPS 实际收益率；时点研究需要 ALFRED 历史版本": "CPI, breakeven inflation and TIPS real yields; point-in-time studies need ALFRED vintages"
-  当时可获知的通胀数据（ALFRED 尚未用真实 key 接入）: Inflation data as knowable at the time (ALFRED not yet connected with a real key)
+  "盈亏平衡通胀率与 TIPS 收益率当时公布的数值（只有当前修订版本；CPI 的历史版本已由 ALFRED 接入）": "Breakeven inflation and TIPS yields as published at the time (current revision only; CPI vintages are connected through ALFRED)"
   政策利率与流动性: Policy rates & liquidity
   "联邦基金有效利率与美联储资产负债表规模": "Effective federal funds rate and the size of the Fed's balance sheet"
   增长与就业: Growth & employment
@@ -219,7 +219,7 @@ phrases:
   数据权利另受上游条款约束；作为可替换接入，不保证持续可用；不进入公开存档: Data rights are also subject to upstream terms; treated as a replaceable connection with no guarantee of continued availability; never put in the public archive
   方法与历史修订需核验；数据会随方法更新整体重算: Methods and historical revisions need verifying; the whole dataset is recomputed when methods change
   无需注册或 key: No sign-up or key needed
-  时点研究的官方路径；接入器（含分页）已实现，只用离线样本测试: The official route for point-in-time studies; the connector (with paging) is implemented but tested only on offline samples
+  "时点研究的官方路径；key 放在项目根目录的 .env（不入库），CLI 启动时读取。供应方保留全部历史版本，不需要本机定时快照": "The official path for point-in-time studies; the key lives in .env at the project root (not committed) and is read when the CLI starts. The supplier keeps every vintage, so local scheduled snapshots are not needed"
   有效汇率: Effective exchange rates
   机构的长期假设，各自方法不同；不能当作直接观测或相互无条件替代: Institutions' long-term assumptions, each with its own method; not direct observations and not interchangeable
   机构资本市场假设: Institutional capital market assumptions
@@ -240,7 +240,7 @@ phrases:
   没有可程序取得的免费路径时使用；每次导入单独声明原始发布者与取得方式: Used when there is no free programmatic route; each import declares its original publisher and how it was obtained
   没有成分变化记录时，指数层面的回测有幸存者偏差: Without records of constituent changes, index-level backtests have survivorship bias
   波动率指数（如 VIX）: Volatility indices (e.g. VIX)
-  用真实 key 取得 CPIAUCSL 样本，记录 access_verified: Fetch a CPIAUCSL sample with a real key and record access_verified
+  "按研究需要登记更多序列的历史版本（如 UNRATE、PAYEMS）": "Register vintages for more series as studies need them (e.g. UNRATE, PAYEMS)"
   "逐个序列确认许可；需要时登记更多序列（如信用利差，先核验第三方权利与可得历史）": "Confirm the license series by series; register more series when needed (e.g. credit spreads, after checking third-party rights and available history)"
   社区工具可作接入候选；数据权利受各上游约束，接口稳定性需持续核验: Community tools are access candidates; data rights follow each upstream, and interface stability needs ongoing checks
   美国国债曲线: US Treasury curve
