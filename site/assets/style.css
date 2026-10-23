@@ -114,10 +114,10 @@ pre{background:var(--panel);border:1px solid var(--line);border-radius:6px;paddi
 /* ---- 覆盖条 ---- */
 figure.coverage{margin:8px 0 4px}
 figure.coverage svg{display:block;max-width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px}
-.cov-ok{fill:var(--ok)}.cov-gap{fill:var(--warn)}.cov-miss{fill:var(--bad)}.cov-pending{fill:var(--line)}
+.cov-ok{fill:var(--ok)}.cov-gap{fill:var(--warn)}.cov-miss{fill:var(--bad)}.cov-pending{fill:transparent;stroke:var(--muted);stroke-width:.6}
 .cov-label{font-size:9px;fill:var(--muted)}.cov-tick{font-size:8px;fill:var(--muted)}
 .key{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:-1px}
-.key.cov-ok{background:var(--ok)}.key.cov-gap{background:var(--warn)}.key.cov-miss{background:var(--bad)}.key.cov-pending{background:var(--line)}
+.key.cov-ok{background:var(--ok)}.key.cov-gap{background:var(--warn)}.key.cov-miss{background:var(--bad)}.key.cov-pending{background:transparent;border:1px solid var(--muted)}
 
 /* ---- 首页研究列表 ---- */
 .card.featured{border-color:var(--accent)}
