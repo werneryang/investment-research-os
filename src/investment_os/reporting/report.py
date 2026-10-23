@@ -194,7 +194,8 @@ def _curve_sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
     if cov.get("expected_days") is not None:
         detail = f"研究窗口内预期观测日 {cov['expected_days']} 天（日历 {cov['calendar']}）"
         if cov.get("pending_days"):
-            detail += f"，评估时尚未发布 {cov['pending_days']} 天"
+            detail += (f"，未取得 {cov['pending_days']} 天（数据下载时尚未到保守可用时点，"
+                       "不代表已确认尚未发布）")
         if cov.get("missing_days"):
             detail += f"，应已发布但缺失 {cov['missing_days']} 天（如 {'、'.join(cov['missing_examples'][:3])}）"
         detail += "。"

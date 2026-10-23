@@ -31,7 +31,7 @@ def _strip_interpretation(project, run_id):
 def test_run_records_interpretation(loaded):
     m = run_study(loaded, write_study(loaded))
     interp = load_result(loaded, m)["interpretation"]
-    assert interp["rule_version"] == "rates_curve-findings.v1"
+    assert interp["rule_version"] == "rates_curve-findings.v2"
     assert len(interp["rule_fingerprint"]) == 16 and interp["params"] == {"flat_bp": 5.0}
     assert interp["items"][0]["text"] == "10 年期收益率由 3.95% 升至 4.05%（+10 bp，2024-01-02 至 2024-01-05）。"
     assert interp["state"]["10Y 期间"] == "上升"
@@ -54,7 +54,7 @@ def test_site_shows_recorded_findings_not_rewritten_by_new_rules(loaded, monkeyp
     page = (loaded / "_site" / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")
     assert "10 年期收益率由 3.95% 升至 4.05%" in page  # 运行当时的措辞
     assert "基本持平：3.95%" not in page
-    assert "在运行时按规则 rates_curve-findings.v1" in page and "当前规则已变化" in page
+    assert "在运行时按规则 rates_curve-findings.v2" in page and "当前规则已变化" in page
 
 
 def test_old_runs_are_labelled_retrospective_and_still_reproduce(loaded):

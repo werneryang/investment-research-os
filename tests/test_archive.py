@@ -124,3 +124,38 @@ def test_restore_with_data_keeps_latest_version_latest(loaded, tmp_path):
     archive.restore(fresh, arch, with_data=True)
     versions = [v.version_id for v in DataStore(fresh).versions("ust_par_yield_curve")]
     assert versions == [old_version, new_version]  # 按创建时间排序，最新仍是新取得的版本
+
+
+def test_interpretation_only_change_is_archived(loaded, tmp_path, monkeypatch):
+    """回归：只改解释规则、数字不变时，新解释也必须进入长期档案。"""
+    import investment_os.research.findings as rules
+
+    arch = tmp_path / "archive"
+    run_study(loaded, write_study(loaded))
+    archive.save(loaded, arch)
+    monkeypatch.setattr(rules, "FLAT_BP", 100.0)  # +10 bp 由「升至」变为「基本持平」
+    second = run_study(loaded, write_study(loaded))
+    added = archive.save(loaded, arch)
+    assert [e["run_id"] for e in added] == [second["run_id"]]
+    assert added[0]["reason"] == "解释变化（结果不变）" and added[0]["hash_version"] == archive.SUBSTANTIVE_HASH_VERSION
+    stored = json.loads((arch / "runs" / second["run_id"] / "result.json").read_text(encoding="utf-8"))
+    assert stored["interpretation"]["items"][0]["text"].startswith("10 年期收益率基本持平")
+    third = run_study(loaded, write_study(loaded))  # 规则不再变化：跳过
+    assert archive.save(loaded, arch) == []
+    log = [json.loads(x) for x in (arch / "archive.jsonl").read_text().splitlines()]
+    assert log[-1]["run_id"] == third["run_id"] and log[-1]["skipped"] is True
+
+
+def test_old_archive_entries_are_compared_with_the_current_hash(loaded, tmp_path):
+    """旧档案按旧算法记录的校验值不直接比较：重新计算上一归档结果，结论与解释都相同时照常跳过。"""
+    arch = tmp_path / "archive"
+    first = run_study(loaded, write_study(loaded))
+    archive.save(loaded, arch)
+    log_path = arch / "archive.jsonl"
+    entries = [json.loads(x) for x in log_path.read_text().splitlines()]
+    entries[0]["substantive_hash"] = "旧算法的校验值"
+    entries[0].pop("hash_version")
+    log_path.write_text("".join(json.dumps(e, ensure_ascii=False) + "\n" for e in entries), encoding="utf-8")
+    run_study(loaded, write_study(loaded))
+    assert archive.save(loaded, arch) == []  # 不因校验值算法变化而误判为结论变化
+    assert first["run_id"] in archive.archived_runs(arch)

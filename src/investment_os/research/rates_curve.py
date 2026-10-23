@@ -30,7 +30,7 @@ PERIOD_STAT_KEYS = ("min", "min_date", "max", "max_date", "mean")
 
 # 完整性判断结果
 COMPLETE = "complete"  # 所有预期观测日都有数据，日历已核验
-COMPLETE_TO_DATE = "complete_to_date"  # 应已发布的日期都有数据，另有日期尚未到发布时间
+COMPLETE_TO_DATE = "complete_to_date"  # 已到保守可用时点的日期都有数据，另有日期下载时未到可用时点
 GAPS = "gaps"  # 有应已发布但缺失的日期（覆盖仍达标）
 UNVERIFIED_CALENDAR = "unverified_calendar"  # 没有缺失，但相关日期超出日历核验范围，无法证明完整
 INSUFFICIENT = "insufficient"  # 覆盖低于要求
@@ -50,28 +50,31 @@ def _in_period(df: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp) -> pd.D
     return df[(df["observation_at"] >= start) & (df["observation_at"] <= end)]
 
 
-def _pending_mask(expected: pd.DatetimeIndex, spec: DatasetSpec, evaluated_at: str | None) -> pd.Series:
-    """按数据集的可用时间规则，判断哪些预期日期在评估时尚未到发布时间。
+def _pending_mask(expected: pd.DatetimeIndex, spec: DatasetSpec, retrieved_at: Any) -> pd.Series:
+    """按数据集的保守可用时间规则，判断哪些预期日期在数据下载时尚未到可用时点。
 
-    没有评估时间（旧运行）或规则无法给出时间时，一律视为应已发布，不放宽缺失判断。
+    可用时间规则是「最早可用于研究决策」的保守时点，不是实际发布时间：这类日期没有数据，
+    只能说明下载时还不应期望它有数据，不能确认它尚未发布。
+    没有下载时间或规则无法给出时间时，一律视为应已可用，不放宽缺失判断。
     """
-    if evaluated_at is None or not len(expected):
+    if retrieved_at is None or pd.isna(retrieved_at) or not len(expected):
         return pd.Series(False, index=expected)
     obs = pd.Series(expected, index=expected)
     avail = available_at(obs, pd.Series(None, index=expected, dtype="object"), spec.frequency,
                          spec.availability, spec.timezone)
-    at = pd.Timestamp(evaluated_at)
+    at = pd.Timestamp(retrieved_at)
     at = at.tz_localize("UTC") if at.tzinfo is None else at.tz_convert("UTC")
     return avail.notna() & (avail > at)
 
 
 def _date_coverage(curve: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp,
                    calendar: CalendarSpec | None, spec: DatasetSpec, min_cov: float,
-                   evaluated_at: str | None) -> dict[str, Any]:
-    """日期覆盖：对照经核验的预期观测日历，区分已观测、尚未发布与缺失。
+                   retrieved_at: Any) -> dict[str, Any]:
+    """日期覆盖：对照经核验的预期观测日历，区分已观测、未取得（下载时未到可用时点）与缺失。
 
-    - 尚未发布：评估时尚未到可用时间、且还没有数据的预期日期；不计入分母，单独列出
-    - 缺失：应已发布但没有数据的预期日期
+    - 未取得：数据下载时尚未到保守可用时点、且没有数据的预期日期；不计入分母，单独列出。
+      这不代表已确认尚未发布——也可能已发布但下载时还不应期望取得
+    - 缺失：下载时已过保守可用时点，却没有数据的预期日期
     - coverage_acceptable：覆盖是否达到 min_cov，决定期间统计能否输出
     - period_complete / completeness：所有应考虑的日期都有数据，且这些日期在日历核验范围内
     """
@@ -96,8 +99,8 @@ def _date_coverage(curve: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp,
         return out
 
     expected = calendar.expected_dates(start, end)
-    not_due = _pending_mask(expected, spec, evaluated_at)
-    pending = expected[not_due.to_numpy()].difference(observed)  # 已有数据的日期不算尚未发布
+    not_due = _pending_mask(expected, spec, retrieved_at)
+    pending = expected[not_due.to_numpy()].difference(observed)  # 已有数据的日期照常计入
     considered = expected.difference(pending)
     missing = considered.difference(observed)
     unexpected = observed.difference(expected)
@@ -181,7 +184,19 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
     limitations = list(study.limitations)
 
     # ---- 日期覆盖与期限覆盖（分别判断） ------------------------------------
-    coverage = _date_coverage(curve, start, end, calendar, spec, min_cov, study.scope.get("evaluated_at"))
+    # 以数据的下载时间（而不是评估时间）判断哪些日期还不应期望有数据：取数据版本的下载时间与
+    # 运行时固定的「最近一次成功下载」（内容未变时不产生新版本）中较晚者；两者都随运行固定，复现时不变
+    candidates = [curve_in.frame["retrieved_at"].max()] if len(curve_in.frame) else []
+    checked = (study.scope.get("data_checked_at") or {}).get(curve_in.dataset_id)
+    if checked:
+        candidates.append(pd.Timestamp(checked))
+    candidates = [pd.Timestamp(t).tz_convert("UTC") if pd.Timestamp(t).tzinfo else pd.Timestamp(t).tz_localize("UTC")
+                  for t in candidates if t is not None and not pd.isna(t)]
+    retrieved = max(candidates) if candidates else None
+    coverage = _date_coverage(curve, start, end, calendar, spec, min_cov, retrieved)
+    if retrieved is not None and not pd.isna(retrieved):
+        coverage["data_retrieved_at"] = pd.Timestamp(retrieved).isoformat()
+    coverage["availability_rule"] = spec.availability.describe()
     acceptable = coverage["coverage_acceptable"]
     complete_state = coverage["completeness"] in COMPLETE_STATES
     considered = None
@@ -215,8 +230,9 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
             "该段的预期日期按规则推定，临时休市或额外发布日可能使日期覆盖略有偏差，无法证明没有缺失")
     if coverage.get("pending_days"):
         limitations.append(
-            f"研究窗口内有 {coverage['pending_days']} 个预期观测日在评估时尚未到发布时间"
-            f"（{'、'.join(coverage['pending_dates'][:5])}），不计入覆盖；结果截至 {coverage['last']}")
+            f"研究窗口内有 {coverage['pending_days']} 个预期观测日未取得（{'、'.join(coverage['pending_dates'][:5])}）："
+            f"数据下载时（{str(coverage.get('data_retrieved_at', '—'))[:16].replace('T', ' ')} UTC）尚未到保守可用时点"
+            f"（{coverage['availability_rule']}），不计入覆盖；这不代表已确认尚未发布。结果截至 {coverage['last']}")
     covered = f"{coverage['first']} 至 {coverage['last']}" if coverage["curve_days"] else "无"
     if not acceptable:
         limitations.append(

@@ -99,35 +99,56 @@ def test_spread_completeness_requires_both_ends_on_the_same_day(project):
     assert "已观测的 3 个交易日中" in text and "缺 1 天" in text
 
 
-def test_not_yet_published_is_not_missing(project):
-    """评估时 1 月 5 日尚未到发布时间（次日 0 点规则）：不计入分母，也不算缺失。"""
+def _load_at(project, csv, at):
+    """以指定时间下载（快照的 retrieved_at 与取得记录的完成时间都固定为 at）。"""
+    from investment_os.data import DataStore
+
+    from .test_study_e2e import AtTime
+    return ingest(Registry.load(project), DataStore(project), "ust_par_yield_curve", {"start": 2024, "end": 2024},
+                  AtTime(treasury_connector({2024: csv}), at), clock=lambda: at)
+
+
+def test_not_available_at_download_is_not_missing(project):
+    """1 月 5 日 20:00 UTC（美东 15:00）下载：1 月 5 日尚未到保守可用时点（次日 0 点），记为未取得、不算缺失。
+    判断以下载时间为准：之后再评估（运行更晚）也不会把它改判为缺失。"""
     days = _expected(project, "2024-01-02", "2024-01-05")
-    _load(project, _csv(days[:-1]))  # 没有 1 月 5 日
-    at = datetime(2024, 1, 5, 20, 0, tzinfo=timezone.utc)
-    m, r = _run(project, "2024-01-02", "2024-01-05", clock=lambda: at)
+    downloaded = datetime(2024, 1, 5, 20, 0, tzinfo=timezone.utc)
+    _load_at(project, _csv(days[:-1]), downloaded)  # 没有 1 月 5 日
+    evaluated = datetime(2024, 1, 9, 12, 0, tzinfo=timezone.utc)  # 评估时间更晚，不影响判断
+    m, r = _run(project, "2024-01-02", "2024-01-05", clock=lambda: evaluated)
     cov = r["coverage"]
     assert (cov["due_days"], cov["missing_days"], cov["pending_days"]) == (3, 0, 1)
     assert cov["pending_dates"] == ["2024-01-05"]
+    assert cov["data_retrieved_at"] == downloaded.isoformat()
     assert cov["completeness"] == "complete_to_date" and cov["period_complete"] is False
     assert m["status"] == "success"
-    assert "另 1 天尚未发布" in coverage_summary(cov)
+    summary = coverage_summary(cov)
+    assert "另 1 天未取得（下载时尚未到保守可用时点）" in summary and "尚未发布" not in summary
+    assert any("这不代表已确认尚未发布" in x for x in r["limitations"])
     spread = next(f["text"] for f in findings(r) if f["id"] == "spread_2Y-10Y")
     assert "截至 2024-01-04 倒挂 3 天" in spread and "期间倒挂" not in spread
-    # 评估时间写入清单；日后复现仍按当时判断，不会把 1 月 5 日改判为缺失
-    assert m["study_config"]["scope"]["evaluated_at"] == at.isoformat()
+    # 最近一次成功下载时间写入清单；日后复现按当时的下载时间判断
+    assert m["study_config"]["scope"]["data_checked_at"]["ust_par_yield_curve"] == downloaded.isoformat()
     assert verify_run(project, m["run_id"])["reproduced"] is True
 
-    # 同样的数据在 1 月 8 日评估：1 月 5 日应已发布，记为缺失
-    later = datetime(2024, 1, 8, 20, 0, tzinfo=timezone.utc)
-    _, r2 = _run(project, "2024-01-02", "2024-01-05", min_cov=0.7, clock=lambda: later)
-    assert (r2["coverage"]["completeness"], r2["coverage"]["missing_dates"]) == ("gaps", ["2024-01-05"])
+
+def test_refetch_after_availability_turns_absence_into_missing(project):
+    """1 月 8 日重新下载，内容未变（不产生新版本），但已过 1 月 5 日的保守可用时点：记为缺失。"""
+    days = _expected(project, "2024-01-02", "2024-01-05")
+    _load_at(project, _csv(days[:-1]), datetime(2024, 1, 5, 20, 0, tzinfo=timezone.utc))
+    again = datetime(2024, 1, 8, 20, 0, tzinfo=timezone.utc)
+    assert _load_at(project, _csv(days[:-1]), again).status == "unchanged"
+    _, r = _run(project, "2024-01-02", "2024-01-05", min_cov=0.7, clock=lambda: again)
+    cov = r["coverage"]
+    assert (cov["completeness"], cov["missing_dates"]) == ("gaps", ["2024-01-05"])
+    assert cov["data_retrieved_at"] == again.isoformat()
 
 
 def test_data_arriving_before_its_availability_time_counts(project):
-    """规则偏保守：数据比规则时间更早出现时，按已观测计入，不算尚未发布。"""
+    """规则偏保守：数据比规则时间更早出现时，按已观测计入，不算未取得。"""
     days = _expected(project, "2024-01-02", "2024-01-05")
-    _load(project, _csv(days))
     at = datetime(2024, 1, 5, 20, 0, tzinfo=timezone.utc)
+    _load_at(project, _csv(days), at)
     _, r = _run(project, "2024-01-02", "2024-01-05", clock=lambda: at)
     assert r["coverage"]["completeness"] == "complete" and "pending_days" not in r["coverage"]
 

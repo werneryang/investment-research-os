@@ -8,7 +8,8 @@
                       结论未变的运行记为 skipped（不复制文件，以后也不再考虑）
 
 只追加、不修改已归档的运行。固定期间的研究每天重跑时结果相同，只有实质内容
-（结果、覆盖、限制、核验结论）变化时才归档，避免档案无意义地增长。
+（结果、覆盖、限制、核验结论，以及运行时记录的解释）变化时才归档，避免档案无意义地增长。
+只有解释变化、数字不变时也归档，原因记为「解释变化（结果不变）」。
 原始数据只归档登记为 archive_data: true 的数据集（公开再分发须先确认许可），
 且只归档已归档运行实际使用的数据版本：
 
@@ -50,13 +51,33 @@ ARCHIVE_README = """# Investment Research OS 运行档案
 _RECORD_FILES = ("manifest.json", "result.json", "verifications.jsonl")
 
 
-def substantive_hash(result: dict[str, Any]) -> str:
+# 实质内容校验值的版本。v2 起包含运行时记录的解释（发现、状态、规则版本、指纹与参数），
+# 只改解释规则、数字不变时也会归档
+SUBSTANTIVE_HASH_VERSION = 2
+
+
+def _core_doc(result: dict[str, Any]) -> dict[str, Any]:
     doc = {k: result.get(k) for k in _SUBSTANTIVE_KEYS}
-    # 评估时间每次运行都不同，本身不是结论；它的影响已体现在覆盖（尚未发布的日期）中
-    doc["scope"] = {k: v for k, v in (doc.get("scope") or {}).items() if k != "evaluated_at"}
+    # 评估时间每次运行都不同，本身不是结论；它影响的覆盖判断已体现在 coverage 中
+    doc["scope"] = {k: v for k, v in (doc.get("scope") or {}).items()
+                    if k not in ("evaluated_at", "data_checked_at")}
     doc["validation"] = {k: (v or {}).get("status") for k, v in (result.get("validation") or {}).items()}
+    return doc
+
+
+def _digest(doc: dict[str, Any]) -> str:
     canon = json.dumps(doc, sort_keys=True, ensure_ascii=False, default=str)
     return hashlib.sha256(canon.encode("utf-8")).hexdigest()
+
+
+def core_hash(result: dict[str, Any]) -> str:
+    """不含解释的实质内容（结果、覆盖、限制、核验结论）。"""
+    return _digest(_core_doc(result))
+
+
+def substantive_hash(result: dict[str, Any]) -> str:
+    """实质内容（当前版本）：核心内容 + 运行时记录的解释。"""
+    return _digest({**_core_doc(result), "interpretation": result.get("interpretation")})
 
 
 def _log(archive: Path) -> list[dict[str, Any]]:
@@ -112,10 +133,12 @@ def save(root: Path, archive: Path) -> list[dict[str, Any]]:
         readme.write_text(ARCHIVE_README, encoding="utf-8")
     log = _log(archive)
     archived = {e["run_id"] for e in log}
-    last_hash = {}
+    # 每项研究最后一次归档的结果；比较时按当前版本重新计算，校验值版本变化不会被误判为结论变化
+    last_result: dict[str, dict[str, Any] | None] = {}
     for e in log:
         if not e.get("skipped"):
-            last_hash[e["study_id"]] = e["substantive_hash"]
+            path = archive / "runs" / e["run_id"] / "result.json"
+            last_result[e["study_id"]] = json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
     added = []
     manifests = sorted((root / "runs").glob("*/manifest.json")) if (root / "runs").exists() else []
@@ -130,15 +153,23 @@ def save(root: Path, archive: Path) -> list[dict[str, Any]]:
         result = json.loads((run_dir / "result.json").read_text(encoding="utf-8"))
         digest = substantive_hash(result)
         entry = {"run_id": m["run_id"], "study_id": m["study_id"], "started_at": m.get("started_at"),
-                 "substantive_hash": digest, "archived_at": now_utc().isoformat()}
-        if last_hash.get(m["study_id"]) == digest:
-            # 结论相同：只记一笔「已检查、未归档」，以后不再重新考虑这次运行
+                 "substantive_hash": digest, "hash_version": SUBSTANTIVE_HASH_VERSION,
+                 "archived_at": now_utc().isoformat()}
+        study = m["study_id"]
+        previous = last_result.get(study)
+        if study in last_result and previous is not None and substantive_hash(previous) == digest:
+            # 结论与解释都相同：只记一笔「已检查、未归档」，以后不再重新考虑这次运行
             entry.update(skipped=True, reason="结论与上一归档相同")
         else:
-            entry["reason"] = "首次归档" if m["study_id"] not in last_hash else "实质内容变化"
+            if study not in last_result:
+                entry["reason"] = "首次归档"
+            elif previous is not None and core_hash(previous) == core_hash(result):
+                entry["reason"] = "解释变化（结果不变）"
+            else:
+                entry["reason"] = "实质内容变化"
             _copy_run(root, archive, m)
             entry["data_archived"] = _archive_inputs(root, archive, m, allowed)
-            last_hash[m["study_id"]] = digest
+            last_result[study] = result
             added.append(entry)
         with (archive / "archive.jsonl").open("a", encoding="utf-8") as f:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")

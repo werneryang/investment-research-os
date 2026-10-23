@@ -227,6 +227,19 @@ def execute(root: Path, study: StudySpec, pins: dict[str, str] | None = None,
     return result, loaded
 
 
+def latest_fetch_times(root: Path, data: dict[str, Any]) -> dict[str, str]:
+    """每个输入数据集最近一次成功下载（新版本或内容未变）的完成时间。"""
+    store = DataStore(root)
+    out = {}
+    for value in data.values():
+        ds = value["dataset"] if isinstance(value, dict) else str(value)
+        times = [e.get("finished_at") for e in store.fetch_log(ds)
+                 if e.get("status") in ("created", "unchanged") and e.get("finished_at")]
+        if times:
+            out[ds] = max(times)
+    return out
+
+
 def _status(result: ResearchResult) -> RunStatus:
     failed_checks = [k for k, v in result.validation.items()
                      if isinstance(v, dict) and v.get("status") == "fail"]
@@ -240,8 +253,10 @@ def run_study(root: Path, study_path: Path, pins: dict[str, str] | None = None,
     root = Path(root)
     started = clock()
     raw = resolve_relative_dates(load_study(study_path).raw, started.date())
-    # 评估时间写入研究定义：判断哪些日期「尚未发布」依赖它，复现时使用同一时间
+    # 评估时间写入研究定义，作为运行记录展示；覆盖判断以数据的下载时间为准，不依赖它
     raw.setdefault("scope", {})["evaluated_at"] = started.isoformat()
+    # 各输入最近一次成功下载的时间（含内容未变、未产生新版本的下载），固定在研究定义里供复现
+    raw["scope"]["data_checked_at"] = latest_fetch_times(root, raw.get("data", {}))
     study = parse_study(raw, Path(study_path).name)
     # 随机后缀保证同一秒内的运行也不碰撞；目录排他创建，已有记录绝不覆盖
     run_id = f"{study.study_id}-{compact(started)}-{uuid.uuid4().hex[:8]}"

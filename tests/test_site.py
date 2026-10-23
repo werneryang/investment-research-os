@@ -74,6 +74,7 @@ def test_build_site_from_runs(loaded):
 
     cap = (site / "map.html").read_text(encoding="utf-8")
     assert "美国国债收益率曲线" in cap and "规划，未开始" in cap
+    assert "研究模块渐进扩展 <span class=\"chip chip-partial\">部分完成</span>" in cap  # P3 已有两类研究
     methods = (site / "methods.html").read_text(encoding="utf-8")
     assert 'id="status"' in methods and "us_treasury_daily" in methods
 

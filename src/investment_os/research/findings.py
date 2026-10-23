@@ -93,7 +93,7 @@ def rates_curve_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
         whole_period = sp.get("sample", "complete" if state_ == "complete" else None) == "complete"
         if inv and (whole_period or sp.get("sample") == "observed"):
             if whole_period:
-                # 截至目前完整：研究窗口里还有尚未发布的日期，只描述到最后一个已发布日
+                # 截至已覆盖日期完整：窗口里还有下载时未到可用时点的日期，只描述到最后一个有数据的日期
                 span = f"截至 {cov['last']} " if state_ == "complete_to_date" else "期间"
                 text += (f"；{span}倒挂 {inv['inverted_days']} 天，占有效观测 {inv['inverted_share']:.0%}"
                          if inv["inverted_days"] else f"；{span}未出现倒挂")
@@ -140,14 +140,15 @@ def rates_curve_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
     elif state_ == "complete_to_date":
         out.append(_finding(
             "coverage_to_date",
-            f"截至 {cov['last']}，应已发布的 {cov['due_days']} 个观测日均有数据；"
-            f"另有 {cov.get('pending_days', 0)} 个日期在评估时尚未到发布时间，不计入。", evidence))
+            f"截至 {cov['last']}，已到保守可用时点的 {cov['due_days']} 个观测日均有数据；"
+            f"另有 {cov.get('pending_days', 0)} 个日期未取得（数据下载时尚未到保守可用时点，不代表已确认尚未发布），不计入。",
+            evidence))
     return out
 
 
 COVERAGE_LABEL = {
     "complete": "完整",
-    "complete_to_date": "截至目前完整",
+    "complete_to_date": "截至已覆盖日期完整",
     "gaps": "有缺失",
     "unverified_calendar": "日历未核验",
     "insufficient": "覆盖不足",
@@ -170,7 +171,8 @@ def coverage_summary(cov: dict[str, Any]) -> str:
     head = f"{observed}/{due} 个应已发布的观测日有数据" if due is not None else f"{observed} 个观测日"
     tail = {
         "complete": "，期间完整",
-        "complete_to_date": f"，截至 {cov.get('last')} 完整；另 {cov.get('pending_days', 0)} 天尚未发布",
+        "complete_to_date": (f"，截至 {cov.get('last')} 完整；另 {cov.get('pending_days', 0)} 天未取得"
+                             "（下载时尚未到保守可用时点）"),
         "gaps": f"，缺 {cov.get('missing_days', 0)} 天；期间统计为已观测样本",
         "unverified_calendar": "；相关日期超出日历核验范围，无法证明完整",
         "insufficient": "，覆盖不足；期间统计不输出",
@@ -257,7 +259,8 @@ def par_bond_state(result: dict[str, Any]) -> dict[str, str]:
 _FINDERS = {"rates_curve": rates_curve_findings, "par_bond_scenarios": par_bond_findings}
 
 # 规则版本：人工维护的名称；规则改动时递增。指纹会自动反映代码改动，两者一起展示
-RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v1", "par_bond_scenarios": "par_bond-findings.v1"}
+# rates_curve v2（2026-10-23）：「尚未发布」改为「未取得（下载时尚未到保守可用时点）」
+RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v2", "par_bond_scenarios": "par_bond-findings.v1"}
 
 
 def findings(result: dict[str, Any]) -> list[dict[str, Any]]:

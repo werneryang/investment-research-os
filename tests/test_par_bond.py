@@ -125,6 +125,10 @@ def test_site_renders_scenario_study_with_its_own_components(loaded):
     # 不套用曲线研究的说明
     assert "倒挂" not in page and "不是预测或交易回测" not in page and "数据覆盖条" not in page
     assert "<th>基准日</th>" in page and "<th>10Y − 2Y 期末 bp</th>" not in page
+    # 卡片与历史表统一为「最大绝对误差」，并注明对应的有符号误差
+    assert "久期 + 凸性最大绝对误差" in page and "<th>最大绝对误差 pp</th>" in page
+    assert "对应误差 −" in page or "对应误差 +" in page
+    assert "最大误差</div>" not in page
     chart = json.loads((site / "runs" / m["run_id"] / "chart.json").read_text(encoding="utf-8"))
     assert chart["kind"] == "scenarios" and chart["focus"] == "10Y" and len(chart["scenarios"]["30Y"]) == 4
     curve_page = (site / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")

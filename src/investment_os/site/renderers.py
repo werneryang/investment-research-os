@@ -70,7 +70,7 @@ def _curve_stats(result: dict[str, Any]) -> Html:
         due = cov.get("due_days", cov["expected_days"])
         note = COVERAGE_LABEL[completeness(cov)]
         if cov.get("pending_days"):
-            note += f"；另 {cov['pending_days']} 天尚未发布"
+            note += f"；另 {cov['pending_days']} 天未取得（未到保守可用时点）"
         stats.append(stat("日期覆盖", f"{due - cov.get('missing_days', 0)} / {due} 天", note))
     return _stats(stats)
 
@@ -87,7 +87,8 @@ def _curve_method(result: dict[str, Any]) -> list[Html]:
         f"<li>比较基准：{e(m.get('benchmark') or '—')}。</li>",
         f"<li>覆盖要求：关键期限有效观测占应已发布观测日的比例不低于 {params.get('min_coverage', 0):.0%}，"
         "不足时依赖它的结论不输出。达到要求不等于期间完整：期间完整另需所有预期日期都有数据、且日期在日历核验范围内；"
-        "有缺口的指标，期间统计只描述已观测日期。尚未到发布时间的日期单独列出，不计入覆盖。</li>",
+        "有缺口的指标，期间统计只描述已观测日期。数据下载时尚未到保守可用时点的日期单独列为「未取得」，不计入覆盖；"
+        "保守可用时点不是实际发布时间，未取得不代表已确认尚未发布。</li>",
         "<li>倒挂定义为利差严格小于 0；恰为 0 的日期单独计数，不计入倒挂。</li>",
         f"<li>时间规则：{e(m.get('availability_rule') or '—')}；版本策略：{e(USE_LABEL[use_key(result)])}。</li>",
     ]
@@ -100,11 +101,16 @@ def _curve_evidence(result: dict[str, Any]) -> list[tuple[str, Html]]:
         text += (f"<div class='small muted'>研究窗口内预期观测日 {cov['expected_days']} 天"
                  f"（日历 <code>{e(cov['calendar'])}</code>）")
         if cov.get("pending_days"):
-            text += f"；评估时尚未发布 {cov['pending_days']} 天（{e('、'.join(cov['pending_dates'][:5]))}）"
+            text += (f"；未取得 {cov['pending_days']} 天（{e('、'.join(cov['pending_dates'][:5]))}，"
+                     "数据下载时尚未到保守可用时点，不代表已确认尚未发布）")
         if cov.get("missing_days"):
             text += f"；应已发布但缺失 {cov['missing_days']} 天（如 {e('、'.join(cov['missing_examples'][:3]))}）"
         if cov.get("calendar_unverified"):
             text += f"；日历未核验区间 {e('、'.join(cov['calendar_unverified']))}"
+        if cov.get("data_retrieved_at"):
+            text += f"；数据最近一次下载 {e(str(cov['data_retrieved_at'])[:16].replace('T', ' '))} UTC"
+        if cov.get("availability_rule"):
+            text += f"；保守可用时点规则：{e(cov['availability_rule'])}"
         if result["scope"].get("evaluated_at"):
             text += f"；评估时间 {e(str(result['scope']['evaluated_at'])[:16].replace('T', ' '))} UTC"
         text += "</div>"
@@ -184,8 +190,9 @@ def _bond_stats(result: dict[str, Any]) -> Html:
                           f"久期近似误差 {num(up['duration_error_pp'], 2, True)} pp"))
     if longest:
         w = worst[longest]
-        stats.append(stat("久期 + 凸性最大误差", f"{num(w['duration_convexity_error_pp'], 3, True)} pp",
-                          f"{longest}，冲击 {w['shock_bp']:+.0f} bp"))
+        stats.append(stat("久期 + 凸性最大绝对误差", f"{num(abs(w['duration_convexity_error_pp']), 3)} pp",
+                          f"{longest}，冲击 {w['shock_bp']:+.0f} bp；对应误差 "
+                          f"{num(w['duration_convexity_error_pp'], 3, True)} pp（近似 − 完整重新定价）"))
     return _stats(stats)
 
 
@@ -254,7 +261,7 @@ BOND = Renderer(
     history_columns=(("基准日", lambda r: r["results"].get("base_date") or "—"),
                      ("10Y 修正久期", lambda r: num(((r["results"].get("bonds") or {}).get("10Y") or {})
                                                    .get("modified_duration"))),
-                     ("最大近似误差 pp", lambda r: num(max((abs(w["duration_convexity_error_pp"]) for w in
+                     ("最大绝对误差 pp", lambda r: num(max((abs(w["duration_convexity_error_pp"]) for w in
                                                          (r["results"].get("worst_duration_convexity_error") or {})
                                                          .values()), default=None), 3))),
     chart_data=_bond_chart,

@@ -35,9 +35,9 @@ def coverage_strip(result: dict[str, Any]) -> str:
         for j, day in enumerate(days):
             row = observed.get(day)
             if row is None and day in pending:
-                cls, tip = "cov-pending", "评估时尚未到发布时间"
+                cls, tip = "cov-pending", "未取得：数据下载时尚未到保守可用时点（不代表已确认尚未发布）"
             elif row is None:
-                cls, tip = "cov-miss", "应已发布，来源未提供"
+                cls, tip = "cov-miss", "下载时已过保守可用时点，仍没有数据"
             elif tenor is None or row.get(tenor) is not None:
                 cls, tip = "cov-ok", "有合格观测"
             else:
@@ -62,8 +62,8 @@ def coverage_strip(result: dict[str, Any]) -> str:
   <svg viewBox="0 0 {width} {height}" width="100%" preserveAspectRatio="xMinYMin meet" role="img"
        aria-label="数据覆盖：{len(observed)} 个观测日，{len(missing)} 个缺失日">{''.join(parts)}</svg>
   <figcaption class="small muted"><span class="key cov-ok"></span>有合格观测
-  <span class="key cov-gap"></span>当日有曲线但该期限缺失 <span class="key cov-miss"></span>应已发布但来源未提供
-  <span class="key cov-pending"></span>尚未到发布时间
+  <span class="key cov-gap"></span>当日有曲线但该期限缺失 <span class="key cov-miss"></span>已过可用时点仍无数据
+  <span class="key cov-pending"></span>未取得（下载时未到保守可用时点）
   · 横轴为预期观测日（{len(days)} 天）。悬停单元格可看日期。</figcaption>
   {note}
 </figure>"""
