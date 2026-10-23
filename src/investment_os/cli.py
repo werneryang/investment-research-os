@@ -3,6 +3,7 @@
     iros sources                         来源与核验状态
     iros datasets                        数据集、最新版本与质量概况
     iros fetch <dataset> --start 2024    取得并版本化
+    iros fetch --all                     取得全部登记了 scheduled_fetch 的数据集（定时快照）
     iros import <dataset> <file> --declared-source "..."
     iros run config/studies/x.yaml       运行研究，生成报告与运行记录
     iros verify <run_id>                 用固定数据版本复现运行结果
@@ -20,10 +21,11 @@ import argparse
 import json
 import os
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 from .data import DataStore, ingest
-from .registry import Registry, RegistryError
+from .registry import Registry, RegistryError, scheduled_request
 from .runs import list_runs, run_study, verify_run
 
 
@@ -74,12 +76,35 @@ def cmd_datasets(args: argparse.Namespace) -> int:
 
 def cmd_fetch(args: argparse.Namespace) -> int:
     root = _root(args.root)
+    if args.all:
+        if args.dataset or args.start or args.end:
+            raise SystemExit("--all 不能与数据集或 --start/--end 同时使用；请求写在 scheduled_fetch 中")
+        return _fetch_all(root)
+    if not args.dataset:
+        raise SystemExit("需要数据集 ID，或使用 --all")
     request = {k: v for k, v in {"start": args.start, "end": args.end}.items() if v}
     result = ingest(Registry.load(root), DataStore(root), args.dataset, request)
     print(f"[{result.status}] {args.dataset}：{result.message}")
     if result.status == "failed" and result.version:
         print(f"    已保留旧版本 {result.version.version_id}，未更新数据")
     return 1 if result.status == "failed" else 0
+
+
+def _fetch_all(root: Path) -> int:
+    """逐个取得登记了 scheduled_fetch 的数据集；一个失败不影响其他，任一失败时返回 1。"""
+    reg, store = Registry.load(root), DataStore(root)
+    scheduled = [d for d in reg.datasets.values() if d.scheduled_fetch is not None]
+    if not scheduled:
+        print("没有登记 scheduled_fetch 的数据集")
+        return 0
+    today = datetime.now(timezone.utc).date()
+    failed = 0
+    print(f"定时取得 {datetime.now(timezone.utc).replace(microsecond=0).isoformat()}：{len(scheduled)} 个数据集")
+    for d in scheduled:
+        result = ingest(reg, store, d.id, scheduled_request(d, today))
+        print(f"[{result.status}] {d.id}：{result.message}")
+        failed += result.status == "failed"
+    return 1 if failed else 0
 
 
 def cmd_import(args: argparse.Namespace) -> int:
@@ -204,7 +229,8 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("datasets", help="数据集与最新版本").set_defaults(func=cmd_datasets)
 
     f = sub.add_parser("fetch", help="取得数据并创建版本")
-    f.add_argument("dataset")
+    f.add_argument("dataset", nargs="?")
+    f.add_argument("--all", action="store_true", help="取得全部登记了 scheduled_fetch 的数据集")
     f.add_argument("--start", help="起始（年份或 YYYY-MM-DD）")
     f.add_argument("--end", help="结束（年份或 YYYY-MM-DD）")
     f.set_defaults(func=cmd_fetch)

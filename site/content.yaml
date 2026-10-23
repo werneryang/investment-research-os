@@ -24,22 +24,32 @@ branches:
     directions:
       - id: us_inflation_macro
         name: 通胀
-        summary: CPI 等宏观序列；时点研究需要 ALFRED 历史版本
+        summary: CPI、盈亏平衡通胀率与 TIPS 实际收益率；时点研究需要 ALFRED 历史版本
         risk: [inflation]
-        datasets: [fred_cpiaucsl, alfred_cpiaucsl]
+        datasets: [fred_cpiaucsl, fred_t10yie, fred_dfii10, alfred_cpiaucsl]
         studies: []
         can_answer: []
         cannot_answer:
           - 当时可获知的通胀数据（ALFRED 尚未用真实 key 接入）
+          - 市场的通胀预期本身（盈亏平衡通胀率含通胀风险溢价与流动性溢价）
       - id: policy_liquidity
         name: 政策利率与流动性
+        summary: 联邦基金有效利率与美联储资产负债表规模
         risk: [rates, liquidity]
-        planned: true
-        needs: 需要政策利率等 FRED 序列（可复用现有接入器）；解释曲线变化的前提之一
+        datasets: [fred_dff, fred_walcl]
+        studies: []
+        can_answer: []
+        cannot_answer:
+          - 市场对未来政策利率的预期（需要期货或调查数据）
       - id: growth_labor
         name: 增长与就业
-        planned: true
-        needs: 需要增长与就业序列；调查与模型估计（SPF、GDPNow 等）须与观测值分开登记
+        summary: 失业率与非农就业人数（当前修订版本）
+        datasets: [fred_unrate, fred_payems]
+        studies: []
+        can_answer: []
+        cannot_answer:
+          - 当时公布的就业数据（非农就业会随基准修订改变，需要 ALFRED 或当时的快照）
+          - 产出与增长（尚未接入 GDP 等序列；调查与模型估计须与观测值分开登记）
 
   - id: markets_assets
     name: 市场与大类资产
@@ -158,7 +168,7 @@ phases:
     status: partial
     summary: >-
       市场与大类资产分支已有两个研究方向：美国国债期限结构（描述性研究）与债券利率敏感性（假设平价债券情景）；
-      宏观与政策分支已接入 CPI，尚无研究。研究页按实现分支注册展示组件。解释、预测与组合研究，
+      宏观与政策分支已接入通胀、政策利率与就业序列（只有数据，尚无研究），本机每个工作日定时保存快照。研究页按实现分支注册展示组件。解释、预测与组合研究，
       以及地区与行业、证券与基金分支尚未开始
   - id: P4
     name: 高级研究或可选应用

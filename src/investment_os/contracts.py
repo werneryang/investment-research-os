@@ -283,6 +283,8 @@ class DatasetSpec:
     description: str = ""
     params: dict[str, Any] = field(default_factory=dict)
     value_range: tuple[float, float] | None = None
+    # 定时取得（iros fetch --all）的请求；None 表示不参加定时取得
+    scheduled_fetch: dict[str, str] | None = None
 
 
 @dataclass

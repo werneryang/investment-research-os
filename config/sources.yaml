@@ -127,12 +127,11 @@ sources:
     redistribution: per_series
     coverage: 按序列不同；只有当前修订版本
     offers:
-      - 政策利率与货币市场利率（如 DFF）
-      - 通胀预期与实际利率（如 T10YIE、DFII10）
-      - 就业与增长（如 UNRATE、PAYEMS）
+      - 其他政策与货币市场利率（如 SOFR）
+      - 增长序列（如 GDP、工业生产）
       - 信用利差（如 ICE BofA 序列；第三方权利与可得历史待核验）
     notes: 复用 fred_graph_csv 接入器，新增序列只需在 datasets.yaml 登记
-    next_step: 登记政策利率与通胀预期序列，并开始积累快照
+    next_step: 逐个序列确认许可；需要时登记更多序列（如信用利差，先核验第三方权利与可得历史）
     verification:
       - dataset: fred_dgs10
         status: access_verified
@@ -144,6 +143,36 @@ sources:
         date: "2026-10-22"
         evidence: CPIAUCSL 全历史样本取得成功
         scope: 当前版本月度序列下载
+      - dataset: fred_dff
+        status: access_verified
+        date: "2026-10-23"
+        evidence: DFF 全历史 1954-07-01 至 2026-10-21，26411 行全部合格（版本 v20261023T192738Z-c71dbed8）；2026-10-23 15:26 EDT 时最新观测为 10-21
+        scope: 当前版本日度序列全历史下载
+      - dataset: fred_walcl
+        status: access_verified
+        date: "2026-10-23"
+        evidence: WALCL 全历史 2002-12-18 至 2026-10-21，1245 个周三观测全部合格（版本 v20261023T192738Z-1690b202）
+        scope: 当前版本周度序列全历史下载
+      - dataset: fred_t10yie
+        status: access_verified
+        date: "2026-10-23"
+        evidence: T10YIE 全历史 2003-01-02 至 2026-10-22，5956 行合格、255 个假日空值（版本 v20261023T192738Z-93ea6852）
+        scope: 当前版本日度序列全历史下载
+      - dataset: fred_dfii10
+        status: access_verified
+        date: "2026-10-23"
+        evidence: DFII10 全历史 2003-01-02 至 2026-10-21，5955 行合格、255 个假日空值（版本 v20261023T192738Z-a0fd90dd）
+        scope: 当前版本日度序列全历史下载
+      - dataset: fred_unrate
+        status: access_verified
+        date: "2026-10-23"
+        evidence: UNRATE 全历史 1948-01 至 2026-09，944 行合格；2025-10 缺值（政府停摆期间未调查，上游缺失）（版本 v20261023T192738Z-a1f1ba56）
+        scope: 当前版本月度序列全历史下载
+      - dataset: fred_payems
+        status: access_verified
+        date: "2026-10-23"
+        evidence: PAYEMS 全历史 1939-01 至 2026-09，1053 行全部合格（版本 v20261023T192739Z-5735c4ff）
+        scope: 当前版本月度序列全历史下载
 
   - id: fred_api
     name: FRED API / ALFRED

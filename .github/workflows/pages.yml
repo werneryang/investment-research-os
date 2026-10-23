@@ -2,7 +2,7 @@
 #
 # 任何必需步骤失败（测试、Treasury 取得、研究运行、复现不一致、归档推送）都不会发布，线上保留上一版页面；
 # 页面上的「站点更新」时间与工作流徽章会显示更新已停滞。
-# FRED 只用于交叉核验，取得失败时研究照常运行，页面显示交叉核验「跳过」。
+# FRED 取得失败不阻断发布：研究照常运行，交叉核验显示「跳过」，其余序列显示为本次构建未取得。
 #
 # 运行档案保存在 archive 分支（只追加）：运行清单、结果、报告，以及允许公开再分发的数据
 # （config/datasets.yaml 中 archive_data: true，目前只有 Treasury 曲线）。
@@ -46,13 +46,11 @@ jobs:
       - name: Fetch Treasury par yield curve (2024 onward)
         run: uv run iros fetch ust_par_yield_curve --start 2024
 
-      - name: Fetch FRED DGS10 for cross-check
+      # FRED：DGS10 用于交叉核验，其余只接入数据，显示在能力地图与资源目录上。
+      # CI 中取得的数据随运行环境丢弃，不是快照积累；快照由本机 launchd 保存（scripts/snapshot-agent.sh）
+      - name: Fetch scheduled datasets (FRED; failures do not block)
         continue-on-error: true
-        run: uv run iros fetch fred_dgs10 --start 2024-01-01
-
-      - name: Fetch FRED CPI (data only; shown on the capability map)
-        continue-on-error: true
-        run: uv run iros fetch fred_cpiaucsl
+        run: uv run iros fetch --all
 
       - name: Run studies
         run: |

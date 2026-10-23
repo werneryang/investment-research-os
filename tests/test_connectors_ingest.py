@@ -11,9 +11,11 @@ from investment_os.connectors.manual import ManualCsvConnector
 from investment_os.contracts import VintageSupport
 from investment_os.data import as_of, ingest, normalize
 from investment_os.data.store import eligibility_as_of
+from investment_os.registry import Registry
 
 from .conftest import (
     NO_RETRY,
+    PROJECT_ROOT,
     TREASURY_2024,
     TREASURY_2025,
     FakeHttp,
@@ -261,3 +263,47 @@ def test_current_revision_cannot_enter_past_point_in_time_view(registry):
     # 本系统在当时确已取得的快照则可以使用
     df_then = normalize(spec, staging, pd.Timestamp("2024-03-20", tz="UTC"), "local:20240320T000000Z")
     assert len(as_of(df_then, at, VintageSupport.NONE)) == 1
+
+
+def test_scheduled_request_resolves_relative_dates(registry):
+    from datetime import date
+
+    from investment_os.registry import scheduled_request
+    ust = registry.dataset("ust_par_yield_curve")
+    # 一月初取最近 30 天，覆盖上一年末
+    assert scheduled_request(ust, date(2027, 1, 10)) == {"start": "2026-12-11"}
+    assert scheduled_request(registry.dataset("fred_dff"), date(2027, 1, 10)) == {}
+    assert registry.dataset("alfred_cpiaucsl").scheduled_fetch is None  # 没有 key 时不参加定时取得
+
+
+def test_scheduled_fetch_rejects_unknown_keys(tmp_path: Path):
+    from investment_os.registry import RegistryError, load_datasets
+    (tmp_path / "d.yaml").write_text("""
+datasets:
+  a: {source_id: s, upstream_id: u, connector: c, frequency: daily, unit: percent,
+      timezone: UTC, availability: {type: unknown}, scheduled_fetch: {series: X}}
+""", encoding="utf-8")
+    src = Registry.load(PROJECT_ROOT).sources["fred_graph"]
+    with pytest.raises(RegistryError, match="scheduled_fetch"):
+        load_datasets(tmp_path / "d.yaml", {"s": src})
+
+
+def test_fetch_all_runs_every_scheduled_dataset_and_reports_failure(project, monkeypatch, capsys):
+    import investment_os.cli as cli
+    from investment_os.data.ingest import IngestResult
+
+    calls = []
+
+    def fake_ingest(reg, store, dataset_id, request):
+        calls.append((dataset_id, request))
+        return IngestResult(dataset_id, "failed" if dataset_id == "fred_dff" else "unchanged", "x", None)
+
+    monkeypatch.setattr(cli, "ingest", fake_ingest)
+    assert cli.main(["--root", str(project), "fetch", "--all"]) == 1  # 一个失败不影响其他，但返回非零
+    scheduled = {d.id for d in Registry.load(project).datasets.values() if d.scheduled_fetch is not None}
+    assert {c[0] for c in calls} == scheduled and "fred_payems" in scheduled
+    assert "manual_example" not in scheduled and "alfred_cpiaucsl" not in scheduled
+    assert dict(calls)["ust_par_yield_curve"]["start"][:2] == "20"  # 相对日期已换算
+    assert "[failed] fred_dff" in capsys.readouterr().out
+    with pytest.raises(SystemExit):
+        cli.main(["--root", str(project), "fetch", "--all", "--start", "2024"])
