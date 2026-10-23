@@ -38,6 +38,22 @@ FIGURES = (("curve_snapshots.png", "期初与期末收益率曲线"), ("key_teno
            ("spreads.png", "利差与曲率"))
 
 
+def chart_panel(run_href: str, available: list[str], wanted: tuple[tuple[str, str], ...]) -> str:
+    """图表面板：静态图默认可见；交互图表加载并生成成功后才替换显示（渐进增强）。
+
+    脚本或数据加载失败、浏览器禁用脚本时，读者仍能看到与完整报告相同的静态图。
+    """
+    figs = "".join(
+        f'<a href="{run_href}/figures/{f}" target="_blank" rel="noopener" title="查看大图">'
+        f'<img loading="lazy" src="{run_href}/figures/{f}" alt="{e(alt)}"></a>'
+        for f, alt in wanted if f in available)
+    static = figs or '<p class="muted small">该运行没有静态图。</p>'
+    return (f'<div class="chart-panel" data-src="{run_href}/daily.json">'
+            f'<div class="chart-static figs">{static}</div>'
+            '<div class="interactive" hidden></div>'
+            '<p class="chart-status small muted" role="status"></p></div>')
+
+
 def key_stats(result: dict[str, Any]) -> str:
     res, cov = result["results"], result["coverage"]
     stats = []
@@ -245,10 +261,6 @@ def study_page(study_id: str, runs: list[dict[str, Any]], archived: dict[str, An
     up = "../../"
     run_href = f"{up}runs/{m['run_id']}"
     meta = content.get("studies", {}).get(study_id, {})
-    figs = "".join(
-        f'<a href="{run_href}/figures/{f}" target="_blank" rel="noopener" title="查看大图">'
-        f'<img loading="lazy" src="{run_href}/figures/{f}" alt="{e(alt)}"></a>'
-        for f, alt in FIGURES if f in latest.get("figures", []))
     body = f"""
 <header class="top"><div class="wrap">
   <p class="eyebrow">{e(meta.get('label', '研究'))} · {e(RESULT_TYPE_LABEL.get(r['result_type'], ''))}</p>
@@ -260,9 +272,8 @@ def study_page(study_id: str, runs: list[dict[str, Any]], archived: dict[str, An
 <section><h2>研究问题</h2><p class="lead">{e(r['question'])}</p></section>
 <section><h2>关键发现</h2>{findings_list(latest['findings'])}{interpretation_note(latest.get('interpretation'))}{key_stats(r)}</section>
 <section><h2>可视化证据</h2>
-  <div class="interactive" data-src="{run_href}/daily.json"></div>
+  {chart_panel(run_href, latest.get("figures", []), FIGURES)}
   <h3 class="sub">数据覆盖</h3>{coverage_strip(r)}
-  <details class="static-figs"><summary>静态图（与完整报告相同）</summary><div class="figs">{figs}</div></details>
 </section>
 <section><h2>方法</h2>{_method(r)}</section>
 <section><h2>证据与限制</h2>

@@ -1,6 +1,9 @@
 /* 交互图表：读取每次运行的 daily.json（已是合格数据），只做呈现，不重新计算。
  * 缺失值保持为断点（spanGaps: false），与计算中不插值的规则一致。
- * Chart.js 未能加载时，展开静态图并提示。 */
+ *
+ * 渐进增强：每个 .chart-panel 默认显示静态图；只有 Chart.js 已加载、数据取得、
+ * 图表生成都成功后，才显示交互图表并收起静态图。任何一步失败，静态图保持可见，
+ * 并按实际情况说明（有没有静态图）。禁用脚本时页面同样只显示静态图。 */
 (function () {
   "use strict";
 
@@ -156,10 +159,45 @@
     render();
   }
 
-  function fail(box, message) {
-    box.appendChild(el("p", { class: "chart-error" }, message));
-    var details = box.parentNode.querySelector("details.static-figs");
-    if (details) details.open = true;
+  function enhance(panel) {
+    var box = panel.querySelector(".interactive");
+    var still = panel.querySelector(".chart-static");
+    var status = panel.querySelector(".chart-status");
+    var hasStatic = !!(still && still.querySelector("img"));
+
+    function fallback(reason) {
+      box.hidden = true;
+      box.innerHTML = "";
+      if (still) still.hidden = false;
+      status.textContent = reason + (hasStatic ? "，以下为静态图（与完整报告相同）。" : "；本页没有可用的静态图。");
+      status.classList.add("warn");
+    }
+
+    if (!window.Chart) { fallback("交互图表脚本未能加载"); return; }
+    fetch(panel.getAttribute("data-src"))
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (data) {
+        var grid = el("div", { class: "chart-grid" });
+        var left = el("div"), right = el("div");
+        grid.appendChild(left); grid.appendChild(right); box.appendChild(grid);
+        try {
+          seriesChart(left, data); curveChart(right, data);
+        } catch (err) {
+          fallback("交互图表生成失败");
+          return;
+        }
+        box.hidden = false;
+        if (!hasStatic) return;
+        still.hidden = true;
+        var toggleStatic = el("button", { type: "button", class: "toggle", "aria-expanded": "false" }, "显示静态图");
+        toggleStatic.addEventListener("click", function () {
+          still.hidden = !still.hidden;
+          toggleStatic.setAttribute("aria-expanded", String(!still.hidden));
+          toggleStatic.textContent = still.hidden ? "显示静态图" : "隐藏静态图";
+        });
+        status.appendChild(toggleStatic);
+      })
+      .catch(function () { fallback("图表数据未能加载"); });
   }
 
   function staleness() {
@@ -180,17 +218,6 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     staleness();
-    document.querySelectorAll(".interactive[data-src]").forEach(function (box) {
-      if (!window.Chart) { fail(box, "交互图表未能加载，已显示静态图。"); return; }
-      fetch(box.getAttribute("data-src"))
-        .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then(function (data) {
-          var grid = el("div", { class: "chart-grid" });
-          var left = el("div"), right = el("div");
-          grid.appendChild(left); grid.appendChild(right); box.appendChild(grid);
-          seriesChart(left, data); curveChart(right, data);
-        })
-        .catch(function () { fail(box, "图表数据未能加载，已显示静态图。"); });
-    });
+    document.querySelectorAll(".chart-panel[data-src]").forEach(enhance);
   });
 })();

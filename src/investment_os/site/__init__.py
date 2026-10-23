@@ -19,6 +19,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
@@ -64,6 +65,13 @@ def _copy_run(root: Path, item: dict[str, Any], dest: Path) -> list[str]:
     return figures
 
 
+def _asset_version(assets: Path) -> str:
+    digest = hashlib.sha256()
+    for path in sorted(p for p in assets.rglob("*") if p.is_file()):
+        digest.update(path.relative_to(assets).as_posix().encode("utf-8") + b"\0" + path.read_bytes())
+    return digest.hexdigest()[:10]
+
+
 def build_site(root: Path, out: Path, archive: Path | None = None) -> Path:
     """生成网站。给出 archive 时，研究历史只列已归档运行（地址长期有效）与本次最新运行。"""
     root, out = Path(root), Path(out)
@@ -95,6 +103,7 @@ def build_site(root: Path, out: Path, archive: Path | None = None) -> Path:
         "commit": os.environ.get("GITHUB_SHA") or commit,
         "repo_url": repo_url(root),
         "tagline": content.get("tagline", ""),
+        "asset_version": _asset_version(out / "assets"),
     }
 
     for study_id in studies:

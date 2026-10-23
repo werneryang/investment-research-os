@@ -21,7 +21,8 @@ CHECK_NOTES = {
     "raw_spot_check": "等距抽取标准化观测，用独立解析路径与原始下载文件逐点比对。",
     "reproduce": "发布前用该次运行固定的研究定义与数据版本重新计算，结果校验值一致；不代表其他环境或其他数据版本。",
 }
-CHART_JS = "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
+# Chart.js 随站点托管（site/assets/vendor，来源与校验值见其中 README），不依赖外部 CDN
+CHART_JS = "assets/vendor/chart.umd.min.js"
 
 NAV = (("index.html", "研究总览"), ("map.html", "研究能力地图"), ("methods.html", "数据、方法与状态"))
 
@@ -110,9 +111,12 @@ def shell(title: str, body: str, build: dict[str, Any], *, depth: int = 0, activ
     系统状态放在页脚，视觉权重低；只有页面过期（自动更新停滞）时才在顶部显示提示。
     """
     up = "../" * depth
-    scripts = f'<script defer src="{up}assets/charts.js"></script>'
+    # 资源地址带内容校验值：样式或脚本改动后地址随之变化，访客不会用到浏览器缓存的旧文件
+    v = build.get("asset_version", "")
+    q = f"?v={v}" if v else ""
+    scripts = f'<script defer src="{up}assets/charts.js{q}"></script>'
     if charts:
-        scripts = f'<script defer src="{CHART_JS}"></script>\n' + scripts
+        scripts = f'<script defer src="{up}{CHART_JS}{q}"></script>\n' + scripts
     current = ' aria-current="page"'
     nav = "".join(f'<a href="{up}{href}"{current if href == active else ""}>{e(label)}</a>'
                   for href, label in NAV)
@@ -126,7 +130,7 @@ def shell(title: str, body: str, build: dict[str, Any], *, depth: int = 0, activ
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{e(title)}</title>
 <meta name="description" content="{e(description or build.get('tagline', ''))}">
-<link rel="stylesheet" href="{up}assets/style.css">
+<link rel="stylesheet" href="{up}assets/style.css{q}">
 {scripts}
 </head>
 <body data-built-at="{e(build['built_at'])}">

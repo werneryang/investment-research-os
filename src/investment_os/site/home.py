@@ -6,7 +6,10 @@ from typing import Any
 
 from ..research.findings import coverage_summary
 from .common import STATUS_LABEL, chip, e, shell
-from .study import findings_list, interpretation_note, key_stats
+from .study import chart_panel, findings_list, interpretation_note, key_stats
+
+# 首页只放两张最能概括的静态图；完整三张在研究页
+HOME_FIGURES = (("curve_snapshots.png", "期初与期末收益率曲线"), ("spreads.png", "利差与曲率"))
 
 
 def _evidence_summary(item: dict[str, Any]) -> str:
@@ -49,7 +52,7 @@ def _featured(study_id: str, item: dict[str, Any], meta: dict[str, Any]) -> str:
   <p class="meta">研究期间 {e(r['scope'].get('start'))} 至 {e(r['scope'].get('end'))} · 数据截止 {e(r['data_cutoff'])}</p>
   <h3 class="sub">关键发现</h3>{findings_list(item['findings'], limit=4)}{interpretation_note(item.get('interpretation'))}
   {key_stats(r)}
-  <div class="interactive" data-src="{run_href}/daily.json"></div>
+  {chart_panel(run_href, item.get("figures", []), HOME_FIGURES)}
   <p class="evidence-line small">证据：{_evidence_summary(item)}</p>
   <div class="card-links"><a class="button" href="studies/{e(study_id)}/">查看完整研究：方法、证据与历史 →</a></div>
 </article>"""

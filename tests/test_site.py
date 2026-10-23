@@ -107,3 +107,35 @@ def test_site_without_runs(project):
     page = build_site(project, project / "_site").read_text(encoding="utf-8")
     assert "暂无研究运行记录" in page
     assert (project / "_site" / "map.html").exists() and (project / "_site" / "methods.html").exists()
+
+
+def test_charts_are_static_first_and_self_hosted(loaded):
+    """静态图默认可见、交互图表区默认隐藏；Chart.js 随站点托管，不引用外部 CDN。"""
+    import base64
+    import hashlib
+    import re
+
+    shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
+    m = run_study(loaded, write_study(loaded))
+    build_site(loaded, loaded / "_site")
+    site = loaded / "_site"
+    home = (site / "index.html").read_text(encoding="utf-8")
+    study = (site / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")
+    run = f"runs/{m['run_id']}"
+    for page, prefix, figs in ((home, "", ("curve_snapshots.png", "spreads.png")),
+                               (study, "../../", ("curve_snapshots.png", "key_tenors.png", "spreads.png"))):
+        panel = re.search(r'<div class="chart-panel".*?</p></div>', page, re.S).group(0)
+        static = re.search(r'<div class="chart-static figs">(.*?)</div>', panel, re.S).group(1)
+        for f in figs:
+            assert f'src="{prefix}{run}/figures/{f}"' in static
+        assert '<div class="interactive" hidden></div>' in panel
+        assert re.search(rf'<script defer src="{prefix}assets/vendor/chart\.umd\.min\.js\?v=[0-9a-f]{{10}}"></script>', page)
+        assert re.search(rf'<link rel="stylesheet" href="{prefix}assets/style\.css\?v=[0-9a-f]{{10}}">', page)
+        assert "cdnjs" not in page and "cdn.jsdelivr" not in page
+    vendored = (site / "assets" / "vendor" / "chart.umd.min.js").read_bytes()
+    sri = "sha512-" + base64.b64encode(hashlib.sha512(vendored).digest()).decode()
+    readme = (PROJECT_ROOT / "site" / "assets" / "vendor" / "README.md").read_text(encoding="utf-8")
+    assert sri in readme  # 托管文件与登记的来源校验值一致
+    # 回退提示只在确有静态图时才说「以下为静态图」
+    js = (site / "assets" / "charts.js").read_text(encoding="utf-8")
+    assert "hasStatic ?" in js and "已显示静态图" not in js

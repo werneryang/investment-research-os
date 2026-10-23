@@ -72,9 +72,6 @@ padding:3px 10px;font-size:.8rem;cursor:pointer;font:inherit;font-size:.8rem}
 .chart-grid{display:grid;grid-template-columns:3fr 2fr;gap:12px}
 @media (max-width:900px){.chart-grid{grid-template-columns:1fr}}
 select{font:inherit;font-size:.82rem;padding:2px 6px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--fg)}
-details.static-figs{margin-top:10px}
-details.static-figs summary{cursor:pointer;color:var(--muted);font-size:.85rem}
-.chart-error{color:var(--warn);font-size:.85rem}
 .card-links{display:flex;flex-wrap:wrap;gap:8px}
 .button.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent)}
 nav.crumbs{padding:20px 0 0;font-size:.9rem}
@@ -133,3 +130,9 @@ tr.planned td{color:var(--muted)}
 table.compact{width:auto;min-width:50%}
 .two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
 @media (max-width:600px){.study-row{flex-direction:column}.evidence table th{width:auto;white-space:normal}}
+
+/* ---- 图表面板（静态图默认可见，交互图表为增强） ---- */
+[hidden]{display:none !important}
+.chart-panel{margin:12px 0 4px}
+.chart-status{margin:.5rem 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.chart-status:empty{display:none}
