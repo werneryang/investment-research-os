@@ -33,7 +33,27 @@ def _root(arg: str | None) -> Path:
     root = Path(arg or os.environ.get("IROS_HOME") or Path.cwd()).resolve()
     if not (root / "config" / "sources.yaml").exists():
         raise SystemExit(f"{root} 不是项目根目录（缺少 config/sources.yaml）；用 --root 或 IROS_HOME 指定")
+    load_env_file(root / ".env")
     return root
+
+
+def load_env_file(path: Path) -> None:
+    """读取项目根目录的 .env（KEY=VALUE，# 开头为注释），只设置环境中尚未设置的变量。
+
+    用于 FRED_API_KEY 等凭证：.env 不入库，launchd 定时任务也能读到。值不打印、不写入日志。
+    """
+    if not path.is_file():
+        return
+    for line in path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.removeprefix("export ").split("=", 1)
+        key, value = key.strip(), value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "\"'":
+            value = value[1:-1]
+        if key and key not in os.environ:
+            os.environ[key] = value
 
 
 def cmd_sources(args: argparse.Namespace) -> int:

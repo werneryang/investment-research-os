@@ -1,8 +1,8 @@
 """原始快照、标准化版本与目录（模块 S）。
 
 布局（均在 <root>/data 下，默认不提交 Git）：
-    raw/<dataset>/<时间>_<sha8>.<ext>      原始字节，原样保存
-    raw/<dataset>/<时间>_<sha8>.meta.json  取得记录
+    raw/<dataset>/<时间>_<sha8>.<ext>      原始字节，原样保存；内容相同的再次取得不另存（2026-10-23 起）
+    raw/<dataset>/<时间>_<sha8>.meta.json  首次取得该内容的记录
     normalized/<dataset>/<version>.parquet 标准化版本，只追加不覆盖
     catalog/<dataset>.jsonl                版本目录（含血缘与质量报告）
     catalog/fetch_log.jsonl                每次取得尝试，含失败
@@ -67,24 +67,39 @@ class DataStore:
 
     # ---- 原始快照 -------------------------------------------------------
     def save_raw(self, dataset_id: str, payload: RawPayload) -> dict[str, Any]:
+        """保存原始字节并返回引用。
+
+        同一数据集已有内容完全相同的文件时不再另存，引用指向已有文件（reused: true）；
+        本次取得的时间、地址与请求仍记在返回的引用里，由取得记录保存。
+        """
         digest = sha256_bytes(payload.content)
         folder = self.base / "raw" / dataset_id
         folder.mkdir(parents=True, exist_ok=True)
-        stem = f"{compact(payload.retrieved_at)}_{digest[:8]}"
-        path = folder / f"{stem}.{payload.extension}"
-        if not path.exists():
-            path.write_bytes(payload.content)
         ref = {
-            "path": str(path.relative_to(self.base)),
             "sha256": digest,
             "bytes": len(payload.content),
             "url": payload.url,
             "request": payload.request,
             "retrieved_at": payload.retrieved_at.isoformat(),
         }
+        existing = self._find_raw(folder, digest, payload.extension)
+        if existing is not None:
+            return {"path": str(existing.relative_to(self.base)), **ref, "reused": True}
+        stem = f"{compact(payload.retrieved_at)}_{digest[:8]}"
+        path = folder / f"{stem}.{payload.extension}"
+        if not path.exists():
+            path.write_bytes(payload.content)
+        ref = {"path": str(path.relative_to(self.base)), **ref}
         (folder / f"{stem}.meta.json").write_text(
             json.dumps(ref, ensure_ascii=False, indent=2), encoding="utf-8")
         return ref
+
+    def _find_raw(self, folder: Path, digest: str, extension: str) -> Path | None:
+        """同一文件夹中内容校验值为 digest 的最早文件；按完整校验值确认，不只看文件名中的前缀。"""
+        for path in sorted(folder.glob(f"*_{digest[:8]}.{extension}")):
+            if sha256_bytes(path.read_bytes()) == digest:
+                return path
+        return None
 
     def read_raw(self, ref: dict[str, Any]) -> bytes:
         data = (self.base / ref["path"]).read_bytes()

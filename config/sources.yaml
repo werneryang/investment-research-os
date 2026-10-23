@@ -191,13 +191,21 @@ sources:
     signup: free_key
     redistribution: per_series
     coverage: ALFRED 历史版本，按序列不同
-    notes: 时点研究的官方路径；接入器（含分页）已实现，只用离线样本测试
-    next_step: 用真实 key 取得 CPIAUCSL 样本，记录 access_verified
+    notes: 时点研究的官方路径；key 放在项目根目录的 .env（不入库），CLI 启动时读取。供应方保留全部历史版本，不需要本机定时快照
+    next_step: 按研究需要登记更多序列的历史版本（如 UNRATE、PAYEMS）
     verification:
       - dataset: alfred_cpiaucsl
         status: docs_verified
         date: "2026-10-22"
         evidence: 官方说明要求 key；ALFRED 提供历史版本。本项目尚未用真实 key 测试接入
+      - dataset: alfred_cpiaucsl
+        status: access_verified
+        date: "2026-10-23"
+        evidence: >-
+          用真实 key 取得 CPIAUCSL 全部历史版本：670 个版本（1972-07-21 至 2026-10-14），957 个观测月（1947-01 至 2026-09），
+          3104 行合格（版本 v20261023T221556Z-9afb0747）。抽查 2025-09：2025-10-24 首次公布 324.368，2026-02-13 修订为 324.245。
+          key 未出现在原始快照、取得记录与日志中
+        scope: 历史版本全量下载（含分页）；发布日期取 realtime_start
 
   - id: manual
     name: 人工导入

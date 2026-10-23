@@ -136,7 +136,7 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - 每次运行的 `report.html`、图表、`daily.json`、`manifest.json`、`result.json` 发布在 `runs/<run_id>/`；`latest/<study_id>/report.html` 为最新完整报告的稳定地址；旧的 `history/<study_id>.html` 转到研究页的历史部分。
 - 利差显示名写明减法方向（`10Y − 2Y`）；结果文件中的键（`2Y-10Y`）保持不变。
 
-**本机定时快照**：Treasury 与 FRED 只提供当前修订版本，时点研究只能依靠当时已取得的快照，而 CI 取得的数据随运行环境丢弃。因此快照在本机积累：`scripts/snapshot-agent.sh install` 安装 launchd 任务（`com.investment-research-os.snapshots`），每个工作日 19:45（本机时间）运行 `iros fetch --all`，取得 `config/datasets.yaml` 中登记了 `scheduled_fetch` 的数据集，存入本地 `data/`。内容未变时只记录取得、不建新版本，取得记录本身证明「当时已知道什么」。电脑睡眠时错过的运行在唤醒后补跑；关机时错过的运行不补，那些日期的快照永久缺失。日志在 `~/Library/Logs/investment-research-os/snapshots.log`；`status`、`run`、`uninstall` 用于查看、立即运行与移除。`data/` 不入库，目前没有备份。
+**本机定时快照**：Treasury 与 FRED 只提供当前修订版本，时点研究只能依靠当时已取得的快照，而 CI 取得的数据随运行环境丢弃。因此快照在本机积累：`scripts/snapshot-agent.sh install` 安装 launchd 任务（`com.investment-research-os.snapshots`），每个工作日 19:45（本机时间）运行 `iros fetch --all`，取得 `config/datasets.yaml` 中登记了 `scheduled_fetch` 的数据集，存入本地 `data/`。内容未变时只记录取得、不建新版本，取得记录本身证明「当时已知道什么」。原始文件也按内容去重（2026-10-23 起）：同一数据集已有完全相同的原始字节时不另存，取得记录引用已有文件（`reused: true`），并保留本次取得的时间与请求；此前已存的重复文件保持原样，因为版本目录与取得记录引用了它们的路径。电脑睡眠时错过的运行在唤醒后补跑；关机时错过的运行不补，那些日期的快照永久缺失。日志在 `~/Library/Logs/investment-research-os/snapshots.log`；`status`、`run`、`uninstall` 用于查看、立即运行与移除。`data/` 不入库，目前没有备份。
 
 **运行档案**（`iros archive save|restore <dir>`）：CI 把运行记录与报告保存到 `archive` 分支的工作树，只追加、不覆盖。每项研究只在实质内容（结果、覆盖、限制、核验结论，以及运行时记录的解释；不含运行 ID、输入版本号、评估与下载时间）变化时归档新运行，比较对象是上一次归档运行的结果按当前算法重新计算的校验值；只有解释变化时原因记为「解释变化（结果不变）」；结论相同的运行在 `archive.jsonl` 中记为 skipped，以后不再考虑。数据只归档 `archive_data: true` 的数据集中被已归档运行使用的版本（目前只有 Treasury 曲线，2026-10-22 经用户确认）。
 
@@ -182,7 +182,7 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - Treasury 与 FRED 图表 CSV 都不提供历史版本，本地快照只能证明「何时取得了什么」，不能恢复过去的版本。时点研究需要 ALFRED（需 key）或本机定时快照（2026-10-23 起；只覆盖登记了 `scheduled_fetch` 的数据集，依赖本机开机，没有备份）。
 - `fred_dgs10` 的可用时间规则为 `next_day`，但 2026-10-23 15:26 EDT 时 FRED 上的 DGS10 仍止于 10-21，规则早于该渠道的实际可得时间。它只用于交叉核验，暂未修改；改为保守规则会产生新的数据版本。
 - CPI 的 45 天可用规则是对当前版本的保守近似，不是实际发布日期。
-- ALFRED 接入器（含分页）只用离线样本测试，状态保持 `docs_verified`，直到用真实 key 取得样本。
+- ALFRED 已于 2026-10-23 用真实 key 接入 CPIAUCSL 全部历史版本（`access_verified`）。key 放在项目根目录的 `.env`，CLI 启动时读取（只设置环境中尚未设置的变量），launchd 定时任务也因此能读到；GitHub CI 未配置 key，不取得 ALFRED。ALFRED 由供应方保留全部历史版本，所以不参加本机定时快照。
 - 预期日历核验到 2026-10-22；之后的额外休市或发布日（如耶稣受难日、临时国丧日）需要逐年核验并追加。
 - 2026-10-22 首次运行 `ust_curve_2024-20261022T221917Z` 的清单记录了未提交代码（`dirty=true`）和旧的输入格式，保留原样作为历史记录；以上方基线运行为准。
 - 存储为单写入者流程，没有并发锁；没有实现备份。数据规模小，DuckDB 暂未引入，需要跨数据集查询时再加。

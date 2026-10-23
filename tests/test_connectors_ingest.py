@@ -68,6 +68,25 @@ def test_ingest_creates_then_dedupes_unchanged(registry, store):
     assert [e["status"] for e in log] == ["started", "created", "started", "unchanged"]
     # 每次尝试都有开始与终态，按 attempt_id 成对
     assert log[0]["attempt_id"] == log[1]["attempt_id"] != log[2]["attempt_id"]
+    # 内容相同的原始文件只存一份；第二次取得的记录指向已有文件，并保留自己的取得时间
+    first, again = log[1]["raw_snapshots"][0], log[3]["raw_snapshots"][0]
+    assert again["path"] == first["path"] and again["reused"] is True and "reused" not in first
+    assert again["sha256"] == first["sha256"] and again["retrieved_at"] >= first["retrieved_at"]
+    raw = store.base / "raw" / "ust_par_yield_curve"
+    assert len(list(raw.glob("*.csv"))) == 1 and len(list(raw.glob("*.meta.json"))) == 1
+    assert store.read_raw(again) == TREASURY_2024.encode()
+
+
+def test_changed_raw_content_is_stored_separately(registry, store):
+    ingest(registry, store, "ust_par_yield_curve", {"start": 2024, "end": 2024},
+           treasury_connector({2024: TREASURY_2024}))
+    revised = TREASURY_2024.replace("01/05/2024,5.54", "01/05/2024,5.53")
+    r = ingest(registry, store, "ust_par_yield_curve", {"start": 2024, "end": 2024},
+               treasury_connector({2024: revised}))
+    assert r.status == "created"
+    raw = store.base / "raw" / "ust_par_yield_curve"
+    assert len(list(raw.glob("*.csv"))) == 2
+    assert not r.version.raw_snapshots[-1].get("reused")
 
 
 def test_ingest_failure_keeps_previous_version(registry, store):
@@ -307,3 +326,16 @@ def test_fetch_all_runs_every_scheduled_dataset_and_reports_failure(project, mon
     assert "[failed] fred_dff" in capsys.readouterr().out
     with pytest.raises(SystemExit):
         cli.main(["--root", str(project), "fetch", "--all", "--start", "2024"])
+
+
+def test_env_file_sets_only_missing_variables(tmp_path: Path, monkeypatch):
+    from investment_os.cli import load_env_file
+    (tmp_path / ".env").write_text("# 注释\nexport FRED_API_KEY='abc'\nIROS_TEST_X=from-file\nNOT_A_PAIR\n",
+                                   encoding="utf-8")
+    monkeypatch.delenv("FRED_API_KEY", raising=False)
+    monkeypatch.setenv("IROS_TEST_X", "from-env")
+    load_env_file(tmp_path / ".env")
+    import os
+    assert os.environ["FRED_API_KEY"] == "abc"  # 去掉 export 与引号
+    assert os.environ["IROS_TEST_X"] == "from-env"  # 已有的环境变量优先
+    load_env_file(tmp_path / "missing.env")  # 文件不存在时不报错
