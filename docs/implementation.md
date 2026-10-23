@@ -171,6 +171,8 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 
 **新增同类数据集**：在 `config/datasets.yaml` 登记，复用已有接入器（如另一个 FRED 序列只需改 `params.series`），写明保守的 `availability`；需要积累快照时加上 `scheduled_fetch`。用 `iros fetch` 取得样本后在 `config/sources.yaml` 追加 `access_verified` 记录，并在 `site/content.yaml` 把数据集挂到研究方向（方向原为 `planned: true` 时去掉）。
 
+**French 数据库接入器**（`connectors/french.py`，`french_csv`）：每个文件是一个 zip 内的多段 CSV。数据集用 `params.file` 指明文件，`params.section` 指明表格标题（不写为第一段），`params.columns` 与表头逐一核对，版式变化时报错而不是读错表。月度表的日期必须是 `YYYYMM`。缺失值 `-99.99`、`-999` 转为空值，不能交给取值范围判断（`-99.99` 看起来是合法收益）。文件头的 CRSP 数据库月份记在序列元数据中。
+
 **新增来源**：在 `connectors/` 实现 `fetch` 与 `parse`（输出暂存表的 5 列），在 `connectors/__init__.py` 注册，在 `sources.yaml` 补齐来源的 §5.1 字段与核验状态（候选来源缺这些字段时，登记数据集会报错）。数值转换、时间规则、质量与版本由公共流程处理，接入器不重复实现。
 
 **新增研究分支**：在 `research/` 中写一个接收 `(StudySpec, dict[str, StudyInput])`、返回 `ResearchResult` 的函数，用 `@register_branch("名称")` 注册，并在 `research/__init__.py` 导入。报告只读取结构化结果；目前的报告模板针对曲线类结果，其他成果类型需要增加相应的报告段落。

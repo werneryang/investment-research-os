@@ -43,7 +43,6 @@ phrases:
   非平移的曲线形变（需要零息曲线与关键利率久期）: Non-parallel curve changes (need a zero-coupon curve and key-rate durations)
   冲击发生的概率或未来利率走势（需要预测模型与样本外验证）: How likely a shock is, or where rates go next (needs forecasting models and out-of-sample validation)
   股票: Equity
-  需要指数总收益与估值数据源，以及公司行动与成分变化的处理: Needs index total-return and valuation data, plus handling of corporate actions and constituent changes
   信用: Credit
   需要免费、可核验的信用利差或公司债指数来源: Needs a free, verifiable source of credit spreads or corporate bond indices
   波动率: Volatility
@@ -51,7 +50,6 @@ phrases:
   跨市场比较: Cross-market comparison
   需要多市场数据、交易日历与汇率换算（架构 §4、§7.1）: Needs multi-market data, trading calendars and currency conversion (architecture §4, §7.1)
   行业与地区结构: Sector & regional structure
-  需要行业分类标准及其有效时间，以及行业或地区指数收益数据: Needs a sector classification standard with effective dates, and sector or regional index return data
   公司财报: Company filings
   需要接入 SEC EDGAR（说明已核验）、财报期间与申报时间的时间契约及证券标识: Needs SEC EDGAR access (docs verified), a timing contract for reporting periods and filing times, and security identifiers
   基金费用与持仓: Fund fees & holdings
@@ -59,7 +57,6 @@ phrases:
   真实债券与债券基金: Real bonds & bond funds
   需要真实现金流、价格或总收益数据，才能与假设平价债券对比: Needs real cash flows, prices or total-return data to compare with the hypothetical par bonds
   模拟组合风险: Simulated portfolio risk
-  依赖上游资产收益与风险数据；只做模拟组合，不需要真实账户: Depends on upstream asset return and risk data; simulated portfolios only, no real account needed
   信号与预测检验: Signal & forecast tests
   需要时点数据（ALFRED 或持续积累的本地快照），以及预设基准、样本外评估与预登记: Needs point-in-time data (ALFRED or locally accumulated snapshots), plus preset benchmarks, out-of-sample evaluation and pre-registration
   基于公开免费数据、可追溯、可复现的市场研究: Market research on free public data, traceable and reproducible
@@ -194,7 +191,6 @@ phrases:
   各机构公开的资本市场假设: Capital market assumptions published by institutions
   同 FRED 使用条款；部分序列含第三方权利: Same terms of use as FRED; some series carry third-party rights
   名义票面收益率曲线 1990 年起，日度；期限列随年份变化: Nominal par yield curve, daily since 1990; the tenor columns change over the years
-  因子收益（市场、规模、价值等）: Factor returns (market, size, value, etc.)
   国家外汇管理局: State Administration of Foreign Exchange
   国家统计局: National Bureau of Statistics of China
   国库券利率与长期平均利率: Treasury bill rates and long-term average rates
@@ -217,7 +213,6 @@ phrases:
   按数据集确认免费范围、接口与可比口径: Confirm the free scope, interfaces and comparable definitions per dataset
   "其他政策与货币市场利率（如 SOFR）": "Other policy and money-market rates (e.g. SOFR)"
   数据权利另受上游条款约束；作为可替换接入，不保证持续可用；不进入公开存档: Data rights are also subject to upstream terms; treated as a replaceable connection with no guarantee of continued availability; never put in the public archive
-  方法与历史修订需核验；数据会随方法更新整体重算: Methods and historical revisions need verifying; the whole dataset is recomputed when methods change
   无需注册或 key: No sign-up or key needed
   "时点研究的官方路径；key 放在项目根目录的 .env（不入库），CLI 启动时读取。供应方保留全部历史版本，不需要本机定时快照": "The official path for point-in-time studies; the key lives in .env at the project root (not committed) and is read when the CLI starts. The supplier keeps every vintage, so local scheduled snapshots are not needed"
   有效汇率: Effective exchange rates
@@ -228,7 +223,6 @@ phrases:
   核验 API 说明与许可: Verify the API documentation and license
   核验下载、方法与许可: Verify downloads, methods and license
   核验下载格式、方法与更新频率: Verify the download format, methods and update frequency
-  核验下载格式、方法说明与许可: Verify the download format, method notes and license
   核验下载格式与历史估计的保留方式: Verify the download format and how historical estimates are kept
   核验下载格式与调查方法说明: Verify the download format and survey method notes
   核验披露与行情资料的入口和访问规则: Verify the entry points and access rules for disclosures and market data
@@ -248,7 +242,6 @@ phrases:
   美国股票、国债与公司债的年度历史回报: Annual historical returns on US stocks, Treasuries and corporate bonds
   聚合接口有口径与覆盖限制；接入时遵守访问规则（须声明 User-Agent）: The aggregate interfaces have definition and coverage limits; access follows the access rules (a User-Agent must be declared)
   股票、ETF 与指数的日度价格及分红拆股: Daily prices, dividends and splits for stocks, ETFs and indices
-  行业组合收益: Industry portfolio returns
   视原始来源而定: Depends on the original source
   证券行情: Securities market data
   评估作为总收益数据的可靠性；寻找可交叉核验的官方或发行方来源: Assess reliability as total-return data; look for official or issuer sources to cross-check
@@ -273,6 +266,26 @@ phrases:
   "观测期间结束后第 4 天结束时（来源时区）": "End of the 4th day after the observation period ends (source time zone)"
   "失业率（季调）全部历史版本：每次公布与修订的数值及其发布日期（需要 FRED_API_KEY）": "Unemployment rate (seasonally adjusted), every vintage: each published and revised value with its release date (needs FRED_API_KEY)"
   "非农就业人数（季调）全部历史版本：首次公布、逐月修订与年度基准修订（需要 FRED_API_KEY）": "Nonfarm payrolls (seasonally adjusted), every vintage: first releases, monthly revisions and annual benchmark revisions (needs FRED_API_KEY)"
+  "12 个行业组合的价值加权月度收益（每年 6 月末按 SIC 代码重新分组）": "Value-weighted monthly returns of 12 industry portfolios (regrouped by SIC code at the end of each June)"
+  "Fama/French 三因子月度收益：市场超额收益（Mkt-RF）、规模（SMB）、价值（HML）与无风险利率（RF）": "Fama/French three-factor monthly returns: market excess return (Mkt-RF), size (SMB), value (HML) and the risk-free rate (RF)"
+  "Fama/French 五因子月度收益（2x3 分组）：在三因子之外加盈利（RMW）与投资（CMA）": "Fama/French five-factor monthly returns (2x3 sorts): profitability (RMW) and investment (CMA) on top of the three factors"
+  "动量因子月度收益（Mom，过去 12 至 2 个月收益高减低）": "Momentum factor monthly returns (Mom: high minus low prior 12-to-2-month returns)"
+  "个股或具体指数基金的回报（只有组合层面的因子收益）": "Returns of individual stocks or specific index funds (only portfolio-level factor returns)"
+  "估值水平（市盈率、CAPE 等，尚未接入 Shiller、Damodaran）": "Valuation levels (P/E, CAPE, etc.; Shiller and Damodaran not yet connected)"
+  "美国以外的股票市场": "Stock markets outside the US"
+  "美国以外的地区与行业": "Regions and industries outside the US"
+  "行业估值、集中度与成分变化（只接入了收益）": "Industry valuations, concentration and membership changes (only returns are connected)"
+  "美国 12 个行业组合的价值加权月度收益": "Value-weighted monthly returns of 12 US industry portfolios"
+  "美国股票市场与 Fama/French 因子的月度收益（市场超额收益加无风险利率即市场总收益）": "Monthly returns of the US stock market and Fama/French factors (market excess return plus the risk-free rate gives the market's total return)"
+  "股票市场与无风险利率的月度收益已接入；还需要债券等其他资产的收益数据。只做模拟组合，不需要真实账户": "Monthly stock-market and risk-free returns are connected; returns for other assets such as bonds are still needed. Simulated portfolios only, no real accounts"
+  "市场因子 Mkt-RF 加 RF 即美国股票市场的月度总收益（价值加权，含分红）；RF 在 202406 之前取自 Ibbotson， 之后为 ICE BofA 1 个月国库券指数。数值为百分比，缺失写作 -99.99 或 -999": "The market factor Mkt-RF plus RF is the monthly total return of the US stock market (value-weighted, dividends included); RF comes from Ibbotson before 202406 and from the ICE BofA 1-month Treasury bill index afterwards. Values are percentages; missing values are written as -99.99 or -999"
+  "按研究需要登记日度因子或更细的行业组合": "Register daily factors or finer industry portfolios as studies need them"
+  "文件带「Copyright Eugene F. Fama and Kenneth R. French」声明，未见再分发许可；只在本地使用，不进公开存档": "Files carry a \"Copyright Eugene F. Fama and Kenneth R. French\" notice and no redistribution permission was found; used locally only, not in the public archive"
+  "美国股票因子 1926-07 起（五因子 1963-07 起），月度；另有日度、周度与年度文件": "US equity factors from 1926-07 (five factors from 1963-07), monthly; daily, weekly and annual files also exist"
+  "日度因子与动量": "Daily factors and momentum"
+  "更细的行业组合（30、49 个行业）与规模、价值分组组合": "Finer industry portfolios (30 and 49 industries) and size and value sorted portfolios"
+  "国际与发达市场因子": "International and developed-market factors"
+  "观测期间结束后第 90 天结束时（来源时区）": "End of the 90th day after the observation period ends (source time zone)"
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'

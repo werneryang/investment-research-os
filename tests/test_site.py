@@ -49,7 +49,8 @@ def test_build_site_from_runs(loaded):
     page = index.read_text(encoding="utf-8")
     # 首页先列六个分支的总览（规划中的分支链接到能力地图），再列已有研究；每项研究只有一句发现与用途
     assert "<h2>研究框架</h2>" in page and page.count('class="branch-tile') == 6
-    assert '<li class="branch-tile planned"><a href="map.html#sectors_regions">地区与行业</a>' in page
+    assert '<li class="branch-tile planned"><a href="map.html#securities_funds">证券与基金</a>' in page
+    assert '<li class="branch-tile"><a href="#sectors_regions">地区与行业</a>' in page  # 已接入行业收益
     assert "每项研究的形成：" in page and "研究焦点" in page
     assert "未归入研究方向的研究" in page  # 测试研究不在 content.yaml 的任何方向中
     assert "10 年期收益率由 3.95% 升至 4.05%" in page
@@ -223,7 +224,7 @@ def test_home_places_studies_in_their_branch(loaded):
     card = card[:card.index("</article>")]
     assert "研究焦点" in card and 'href="studies/ust_curve_test/"' in card and "美国国债期限结构" in card
     # 分支写明具体覆盖，不用一个「已有研究」概括整个分支
-    assert "6 个方向：1 个已有研究，1 个只有数据；规划中：股票 · 信用 · 波动率 · 跨市场比较" in card
+    assert "6 个方向：1 个已有研究，2 个只有数据；规划中：信用 · 波动率 · 跨市场比较" in card
     assert "未归入研究方向的研究" not in page
     # 已有研究的分支排在只有数据的分支之前
     assert page.index('id="markets_assets"') < page.index('id="macro_policy"')

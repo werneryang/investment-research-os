@@ -6,13 +6,14 @@ from typing import Any
 
 from .base import Connector, FetchError, ParsedPayload, RawPayload
 from .fred import FredApiVintagesConnector, FredGraphCsvConnector
+from .french import FrenchLibraryConnector
 from .manual import ManualCsvConnector
 from .treasury import TreasuryParCurveConnector
 
 _CONNECTORS = {
     c.name: c
     for c in (TreasuryParCurveConnector, FredGraphCsvConnector, FredApiVintagesConnector,
-              ManualCsvConnector)
+              FrenchLibraryConnector, ManualCsvConnector)
 }
 
 
