@@ -133,6 +133,11 @@ def cmd_site(args: argparse.Namespace) -> int:
 
     index = build_site(_root(args.root), Path(args.out), Path(args.archive) if args.archive else None)
     print(f"网站已生成：{index}")
+    untranslated = json.loads((index.parent / "summary.json").read_text(encoding="utf-8")).get("untranslated", [])
+    if untranslated:
+        print(f"英文页面有 {len(untranslated)} 段文字没有译文，显示中文原文（在 site/en.yaml 补译文）：")
+        for text in untranslated:
+            print(f"  - {text[:80]}")
     return 0
 
 

@@ -15,7 +15,10 @@
     latest/<study_id>/report.html   最新完整报告的稳定地址
     history/<study_id>.html         旧地址，转到研究页的历史部分
     map.html、methods.html           研究能力地图；数据、方法与状态
+    en/…                            上述页面的英文版（index、map、methods、studies/<id>/）；与中文共用 assets/、runs/
     summary.json                    页面所示内容的机器可读摘要
+
+页面顶端可切换中英文（见 i18n.py）；完整报告 report.html 只有中文。
 """
 
 from __future__ import annotations
@@ -38,6 +41,7 @@ from .capability import capability_page, framework, summary
 from .collect import collect_runs, datasets, ordered_studies
 from .common import repo_url
 from .home import home_page
+from .i18n import LANGS, load_phrases, use
 from .methods import methods_page
 from .renderers import get_renderer
 from .study import redirect, study_page
@@ -123,10 +127,6 @@ def build_site(root: Path, out: Path, archive: Path | None = None) -> Path:
     }
 
     for study_id in studies:
-        page_dir = out / "studies" / study_id
-        page_dir.mkdir(parents=True)
-        (page_dir / "index.html").write_text(
-            study_page(study_id, shown[study_id], archived, registry, content, build), encoding="utf-8")
         run_id = latest[study_id]["manifest"]["run_id"]
         (out / "latest" / study_id).mkdir(parents=True)
         shutil.copy2(out / "runs" / run_id / "report.html", out / "latest" / study_id / "report.html")
@@ -136,16 +136,29 @@ def build_site(root: Path, out: Path, archive: Path | None = None) -> Path:
 
     calendar_checks = _calendar_checks(root, registry)
     cap = summary(content, registry, ds_by_id, latest)
-    (out / "index.html").write_text(home_page(studies, latest, content, build, framework(content, registry, ds_by_id, latest)),
-                                     encoding="utf-8")
-    (out / "map.html").write_text(capability_page(content, registry, ds_by_id, latest, build), encoding="utf-8")
-    (out / "methods.html").write_text(methods_page(content, registry, ds_rows, latest, build, calendar_checks),
-                                      encoding="utf-8")
+    # 中文页面在根目录，英文页面在 en/；英文页面上没有译文的原文记入 untranslated
+    phrases, untranslated = load_phrases(root), set()
+    for language in LANGS:
+        base = out if language == "zh" else out / language
+        base.mkdir(exist_ok=True)
+        with use(language, phrases, untranslated if language == "en" else None):
+            for study_id in studies:
+                page_dir = base / "studies" / study_id
+                page_dir.mkdir(parents=True)
+                (page_dir / "index.html").write_text(
+                    study_page(study_id, shown[study_id], archived, registry, content, build), encoding="utf-8")
+            frame = framework(content, registry, ds_by_id, latest)
+            (base / "index.html").write_text(home_page(studies, latest, content, build, frame), encoding="utf-8")
+            (base / "map.html").write_text(capability_page(content, registry, ds_by_id, latest, build), encoding="utf-8")
+            (base / "methods.html").write_text(
+                methods_page(content, registry, ds_rows, latest, build, calendar_checks), encoding="utf-8")
     (out / ".nojekyll").write_text("", encoding="utf-8")
 
     doc = {
         "build": build,
         "capability": cap,
+        # 英文页面上仍显示中文原文的文字（需要在 site/en.yaml 补译文）
+        "untranslated": sorted(untranslated),
         "calendar_checks": calendar_checks,
         "datasets": ds_rows,
         "runs": [{

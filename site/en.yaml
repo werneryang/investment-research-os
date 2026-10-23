@@ -1,0 +1,181 @@
+# 英文页面的译文（见 src/investment_os/site/i18n.py）。
+#
+# phrases：登记、研究定义、网站内容与运行记录中的原文 → 英文。键必须与原文完全一致
+#   （YAML 折叠文本按显示时的样子，换行处为一个空格）。原文改动后，旧译文不再匹配，
+#   英文页面会显示中文原文并标为 lang="zh-CN"；`iros site` 会列出这些文字。
+# patterns：运行时带日期、数字生成的句子。zh 是整句匹配的正则，命名分组在 en 中以 {name} 引用；
+#   分组内容本身再查 phrases（列表中的「、」换成英文逗号）。
+phrases:
+  Federal Reserve Bank of St. Louis（上游为各统计机构）: Federal Reserve Bank of St. Louis (upstream from the original statistical agencies)
+  Federal Reserve Bank of St. Louis（ALFRED 历史版本）: Federal Reserve Bank of St. Louis (ALFRED vintages)
+  人工导入（每次导入另行声明原始发布者与取得方式）: Manual import (each import declares its original publisher and how it was obtained)
+  宏观与政策: Macro & policy
+  增长、通胀、信用、流动性和政策如何变化？: How are growth, inflation, credit, liquidity and policy changing?
+  市场与大类资产: Markets & asset classes
+  不同资产的收益、估值和风险如何比较？: How do returns, valuations and risks compare across assets?
+  地区与行业: Regions & sectors
+  结构、周期、集中度和相对表现有何差异？: How do structure, cycles, concentration and relative performance differ?
+  证券与基金: Securities & funds
+  财务、估值、费用、持仓及工具结构有何特点？: What are the financials, valuations, fees, holdings and instrument structures?
+  组合与情景: Portfolios & scenarios
+  资产如何共同影响风险，假设变化会造成什么结果？: How do assets jointly drive risk, and what happens under assumed changes?
+  预测与策略实验: Forecasts & strategy experiments
+  某种信号是否改善预测或模拟表现？: Does a given signal improve forecasts or simulated performance?
+  通胀: Inflation
+  CPI 等宏观序列；时点研究需要 ALFRED 历史版本: CPI and other macro series; point-in-time studies need ALFRED vintages
+  当时可获知的通胀数据（ALFRED 尚未用真实 key 接入）: Inflation data as knowable at the time (ALFRED not yet connected with a real key)
+  政策利率与流动性: Policy rates & liquidity
+  需要政策利率等 FRED 序列（可复用现有接入器）；解释曲线变化的前提之一: Needs FRED series such as policy rates (the existing connector can be reused); one prerequisite for explaining curve moves
+  增长与就业: Growth & employment
+  需要增长与就业序列；调查与模型估计（SPF、GDPNow 等）须与观测值分开登记: Needs growth and employment series; surveys and model estimates (SPF, GDPNow, etc.) must be registered separately from observations
+  美国国债期限结构: US Treasury term structure
+  名义票面收益率曲线的水平、斜率、曲率与倒挂: Level, slope, curvature and inversion of the nominal par yield curve
+  指定期间内各期限收益率、利差与曲率如何变化: How yields, spreads and curvature by tenor changed over a given period
+  期间内倒挂持续了多少天、何时由倒挂转为正斜率: How many days the curve was inverted, and when it turned from inverted to positive
+  持有国债或债券基金的回报（票面收益率不是持有期回报）: Returns from holding Treasuries or bond funds (par yield is not holding-period return)
+  曲线变化的原因（需要解释性研究与宏观数据）: Why the curve moved (needs explanatory research and macro data)
+  未来曲线走势（需要预测模型与样本外验证）: Where the curve goes next (needs forecasting models and out-of-sample validation)
+  债券利率敏感性: Bond rate sensitivity
+  假设平价债券的久期、凸性、DV01 与收益率冲击情景: Duration, convexity, DV01 and yield-shock scenarios for hypothetical par bonds
+  以最近票面收益率构造的假设平价债券，收益率平移若干 bp 时价格变化多少: How much the price of a hypothetical par bond built from the latest par yields changes for a parallel yield shift of a given number of bp
+  久期、久期 + 凸性近似相对完整重新定价的误差有多大、随期限如何变化: How large the duration and duration + convexity approximation errors are versus full repricing, and how they vary by tenor
+  某只真实国债或债券基金（如 TLT）的风险与回报（需要真实现金流、价格或总收益数据）: The risk and return of a real Treasury or bond fund such as TLT (needs real cash flows, prices or total-return data)
+  非平移的曲线形变（需要零息曲线与关键利率久期）: Non-parallel curve changes (need a zero-coupon curve and key-rate durations)
+  冲击发生的概率或未来利率走势（需要预测模型与样本外验证）: How likely a shock is, or where rates go next (needs forecasting models and out-of-sample validation)
+  股票: Equity
+  需要指数总收益与估值数据源，以及公司行动与成分变化的处理: Needs index total-return and valuation data, plus handling of corporate actions and constituent changes
+  信用: Credit
+  需要免费、可核验的信用利差或公司债指数来源: Needs a free, verifiable source of credit spreads or corporate bond indices
+  波动率: Volatility
+  需要隐含波动率与已实现波动率数据；完整历史期权链目前列为能力缺口: Needs implied and realized volatility data; full historical option chains are currently a capability gap
+  跨市场比较: Cross-market comparison
+  需要多市场数据、交易日历与汇率换算（架构 §4、§7.1）: Needs multi-market data, trading calendars and currency conversion (architecture §4, §7.1)
+  行业与地区结构: Sector & regional structure
+  需要行业分类标准及其有效时间，以及行业或地区指数收益数据: Needs a sector classification standard with effective dates, and sector or regional index return data
+  公司财报: Company filings
+  需要接入 SEC EDGAR（说明已核验）、财报期间与申报时间的时间契约及证券标识: Needs SEC EDGAR access (docs verified), a timing contract for reporting periods and filing times, and security identifiers
+  基金费用与持仓: Fund fees & holdings
+  需要逐家核验基金发行方的费用、净值与持仓资料；净值不替代成交价: Needs each fund issuer's fee, NAV and holdings data verified one by one; NAV does not substitute for traded prices
+  真实债券与债券基金: Real bonds & bond funds
+  需要真实现金流、价格或总收益数据，才能与假设平价债券对比: Needs real cash flows, prices or total-return data to compare with the hypothetical par bonds
+  模拟组合风险: Simulated portfolio risk
+  依赖上游资产收益与风险数据；只做模拟组合，不需要真实账户: Depends on upstream asset return and risk data; simulated portfolios only, no real account needed
+  信号与预测检验: Signal & forecast tests
+  需要时点数据（ALFRED 或持续积累的本地快照），以及预设基准、样本外评估与预登记: Needs point-in-time data (ALFRED or locally accumulated snapshots), plus preset benchmarks, out-of-sample evaluation and pre-registration
+  基于公开免费数据、可追溯、可复现的市场研究: Market research on free public data, traceable and reproducible
+  滚动研究: Rolling study
+  情景研究: Scenario study
+  历史案例: Historical case
+  近一年美国国债收益率曲线变化: US Treasury yield curve over the past year
+  最近一年美国国债名义票面收益率曲线的水平、斜率与曲率如何变化？: How did the level, slope and curvature of the US Treasury nominal par yield curve change over the past year?
+  2024 年美国国债收益率曲线变化: US Treasury yield curve in 2024
+  2024 年美国国债名义票面收益率曲线的水平、斜率与曲率如何变化？: How did the level, slope and curvature of the US Treasury nominal par yield curve change in 2024?
+  假设平价国债的利率敏感性情景: Rate-sensitivity scenarios for hypothetical par Treasuries
+  以最近一个交易日的美国国债票面收益率构造假设平价债券，收益率平移时价格如何变化？ 久期与久期 + 凸性近似相对完整重新定价的误差有多大？: Using hypothetical par bonds built from the latest trading day's US Treasury par yields, how do prices change under parallel yield shifts? How large are the duration and duration + convexity approximation errors versus full repricing?
+  按日对齐合格观测，计算关键期限水平、利差（长端−短端）与蝶式曲率（2×中端−短端−长端）；不插值、不填补缺失: Aligns valid observations by date and computes key-tenor levels, spreads (long − short) and butterfly curvature (2 × middle − short − long); no interpolation, no filling of gaps
+  以基准日各期限票面收益率为票息与到期收益率构造假设平价债券（每年 2 次付息、估值日为付息日、无应计利息）；对债券自身收益率施加平移冲击，比较完整重新定价与修正久期、久期 + 凸性近似。: Builds hypothetical par bonds whose coupon and yield equal each tenor's par yield on the base date (2 coupons a year, valued on a coupon date, no accrued interest); applies parallel shocks to each bond's own yield and compares full repricing with the modified-duration and duration + convexity approximations.
+  期初曲线（研究期间首个有效交易日）: Starting curve (first valid trading day of the study period)
+  期初曲线（窗口内首个有效交易日）: Starting curve (first valid trading day in the window)
+  完整重新定价（按冲击后收益率贴现全部现金流）: Full repricing (all cash flows discounted at the shocked yield)
+  票面收益率（par yield）曲线，不是零息或远期曲线，也不是债券或债券基金的持有期回报: This is the par yield curve, not a zero-coupon or forward curve, and not the holding-period return of bonds or bond funds
+  名义收益率，未扣除通胀: Nominal yields, not adjusted for inflation
+  期间描述，不含预测或交易含义；相关变化不构成因果解释: A description of the period, with no forecast or trading implication; co-movements are not causal explanations
+  Treasury 官网不提供历史版本，使用本地快照；结果对应快照内容: The Treasury website provides no historical vintages, so local snapshots are used; results correspond to the snapshot contents
+  窗口终点为运行当天，最新一两个交易日可能尚未发布: The window ends on the run date, so the latest one or two trading days may not be published yet
+  假设债券：票息等于基准日票面收益率、恰在付息日估值、无应计利息；不是任何真实国债或债券基金（如 TLT）的风险: 'Hypothetical bonds: coupon equals the base-date par yield, valued exactly on a coupon date, no accrued interest; this is not the risk of any real Treasury or bond fund (such as TLT)'
+  冲击施加在每只债券自身的收益率上（平移），不是对整条曲线的一致重定价；票面收益率不等于零息利率: Shocks are applied to each bond's own yield (parallel), not as a consistent repricing of the whole curve; par yields are not zero-coupon rates
+  冲击幅度是假设情景，不代表概率或预测: Shock sizes are hypothetical scenarios, not probabilities or forecasts
+  只计算价格变化，不含持有期票息收入、再投资与融资成本: Only price changes are computed, excluding coupon income over the holding period, reinvestment and funding costs
+  美国国债日度票面收益率曲线（par yield，按债券等价收益率报价）: Daily US Treasury par yield curve (quoted as bond-equivalent yields)
+  10 年期国债固定期限收益率（H.15，与 Treasury 曲线同一上游）: 10-year Treasury constant-maturity yield (H.15, same upstream as the Treasury curve)
+  美国 CPI-U 季调指数（当前修订版本，非当时版本）: US CPI-U seasonally adjusted index (current revision, not as-of vintages)
+  CPI-U 季调指数全部历史版本（需要 FRED_API_KEY）: All historical vintages of the CPI-U seasonally adjusted index (needs FRED_API_KEY)
+  人工导入通道示例；CSV 需含 observation_at 与 value 列，可选 series_id: Example manual-import channel; the CSV needs observation_at and value columns, with optional series_id
+  观测日次日 0 点（来源时区）: 00:00 on the day after the observation date (source time zone)
+  观测期间结束后第 45 天结束时（来源时区）: End of the 45th day after the observation period ends (source time zone)
+  供应方发布日次日 0 点（来源时区）: 00:00 on the day after the supplier's release date (source time zone)
+  未知，留空: Unknown, left blank
+  美国财政部日度利率发布日：工作日，扣除联邦假日及逐年核验的额外休市日: 'US Treasury daily rate release days: weekdays, excluding federal holidays and additional closures verified year by year'
+  ? 2026-10-22 与 Treasury 2024、2025 年全年及 2026 年截至 10 月 22 日的 CSV 日期集合逐日比对， 预期日期与实际发布日期完全一致（2024 年 250 日、2026 年截至 10 月 22 日 203 日）。
+  : On 2026-10-22, compared day by day with the dates in Treasury's CSV files for all of 2024 and 2025 and for 2026 through 22 October; expected and actual release dates match exactly (250 days in 2024; 203 days in 2026 through 22 October).
+  ? 名义票面收益率曲线的期间描述：关键期限水平、利差（长端 − 短端）、蝶式曲率与倒挂天数， 使用最新修订数据；观测日期 2024-01-01 至 2026-10-22（预期日历核验范围）。不包括时点研究、 持有期或债券基金回报、预测与交易回测；核验范围之外的日期须先扩展日历核验。
+  : 'Period descriptions of the nominal par yield curve: key-tenor levels, spreads (long − short), butterfly curvature and inversion days, using the latest revised data; observation dates 2024-01-01 to 2026-10-22 (the verified range of the expected calendar). Excludes point-in-time studies, holding-period or bond-fund returns, forecasts and trading backtests; dates outside the verified range need the calendar verification extended first.'
+  ? 基线运行 ust_curve_2024-20261022T225910Z-1121d74b（代码 5c922ef，改写作者前为 f66ecca，dirty=false）： 预期观测日 250/250，关键期限覆盖 100%，原始快照抽查 12/12 一致，与 FRED DGS10 的 250 个共同日期一致 （同源，只证明接入与解析正确），iros verify 以固定输入重算结果校验值 9937d7eb… 一致。 独立审查（2026-10-22，reports/reviews/2026-10-22-p1-p2-review.md，未入库）用标准库 CSV 与 Decimal 直接从原始快照重算：250 个观测日，10Y 3.95% → 4.58%，2s10s 严格倒挂 166 日、零利差 3 日； 审查发现的 F1–F9 已修复并有反例测试；预期发布日历与 2024 年至 2026-10-22 的实际发布日逐日一致。 2026-10-23 经用户确认登记。
+  : 'Baseline run ust_curve_2024-20261022T225910Z-1121d74b (code 5c922ef, f66ecca before the author rewrite, dirty=false): 250/250 expected observation dates, 100% key-tenor coverage, 12/12 raw snapshot spot checks matched, and all 250 common dates matched FRED DGS10 (same upstream, so this only shows the download and parsing are correct); iros verify recomputed the result hash 9937d7eb… from pinned inputs and it matched. An independent review (2026-10-22, reports/reviews/2026-10-22-p1-p2-review.md, not committed) recomputed directly from the raw snapshots with the standard-library CSV module and Decimal: 250 observation dates, 10Y 3.95% → 4.58%, 2s10s strictly inverted on 166 days with 3 days at zero; review findings F1–F9 are fixed and have counterexample tests; the expected release calendar matches actual release dates day by day from 2024 to 2026-10-22. Registered on 2026-10-23 after the user confirmed.'
+  总体架构: Overall architecture
+  目标、范围、模块契约、资源地图与可靠性规则（架构 V0.3）: Goals, scope, module contracts, resource map and reliability rules (architecture V0.3)
+  公共契约与资源核验: Shared contracts & resource verification
+  首个案例所需的来源登记、时间与质量契约、成果与运行规范已实现；其他市场与对象待扩展: Source registry, timing and quality contracts, and result and run specifications needed for the first case are implemented; other markets and objects are still to come
+  小规模贯通验证: Small end-to-end validation
+  美国国债收益率曲线案例：取得 → 快照 → 标准化 → 分析 → 报告 → 复现，含异常反例测试: 'US Treasury yield curve case: fetch → snapshot → standardize → analyze → report → reproduce, with counterexample tests for failures'
+  研究模块渐进扩展: Gradual expansion of research modules
+  市场与大类资产分支已有两个研究方向：美国国债期限结构（描述性研究）与债券利率敏感性（假设平价债券情景）； 宏观与政策分支已接入 CPI，尚无研究。研究页按实现分支注册展示组件。解释、预测与组合研究， 以及地区与行业、证券与基金分支尚未开始: 'The markets & asset classes branch has two research directions: US Treasury term structure (descriptive) and bond rate sensitivity (hypothetical par-bond scenarios); the macro & policy branch has CPI connected but no studies yet. Study pages register display components per implementation branch. Explanatory, forecasting and portfolio research, and the regions & sectors and securities & funds branches, have not started'
+  高级研究或可选应用: Advanced research or optional applications
+  复杂预测、策略模拟、新市场或个人账户等应用，按需启用: Complex forecasts, strategy simulation, new markets or personal accounts, enabled as needed
+  研究定义: Study definitions
+  问题、范围、方法与用途: Questions, scope, methods and uses
+  资源接入: Data access
+  Treasury、FRED、ALFRED、人工导入: Treasury, FRED, ALFRED, manual import
+  数据与版本: Data & versions
+  原始快照、标准化版本、时间契约、时点视图: Raw snapshots, standardized versions, timing contracts, point-in-time views
+  公共分析: Shared analytics
+  利率曲线、收益、风险: Yield curves, returns, risk
+  研究分支: Research branches
+  描述、解释、预测、模拟成果: Descriptive, explanatory, forecast and simulation results
+  成果与档案: Results & archive
+  报告、图表、运行清单: Reports, charts, run manifests
+  质量与验证: Quality & validation
+  缺失与隔离、交叉核验、快照抽查、复现: Missing data and quarantine, cross-checks, snapshot spot checks, reproduction
+  来源可追溯: Traceable sources
+  每次取得原样保存原始文件及校验值；标准化版本只追加、不覆盖，记录上游快照与上一版本。: Every fetch keeps the raw file as downloaded, with its hash; standardized versions are append-only, never overwritten, and record the upstream snapshot and previous version.
+  缺失显式表达: Missing data stays explicit
+  不填零、不沿用前值、不插值；冲突数据隔离；覆盖不足时，依赖它的结论标为不支持。: No zero-filling, no carrying values forward, no interpolation; conflicting data is quarantined; when coverage is insufficient, conclusions that depend on it are marked unsupported.
+  期间覆盖对照日历: Period coverage checked against a calendar
+  日期覆盖对照经核验的发布日历计算；期间不完整时只保留首尾对比，不输出均值、极值与计数。: Date coverage is measured against a verified release calendar; when a period is incomplete, only the first-to-last comparison is kept, without means, extremes or counts.
+  时点资格需要证据: Point-in-time use needs evidence
+  只有当前修订的数据，不能凭假定的发布延迟进入过去的时点视图；必须是当时已取得的快照或供应方历史版本。: Data available only in its current revision cannot enter a past point-in-time view on an assumed release lag; it must be a snapshot taken at the time or a supplier vintage.
+  失败留痕: Failures leave a trace
+  每次取得记录开始与终态；任何阶段失败都保留旧版本与诊断快照；凭证不进入日志。: Every fetch records its start and end state; a failure at any stage keeps the previous version and a diagnostic snapshot; credentials never enter logs.
+  固定输入可复现: Reproducible from pinned inputs
+  运行清单固定研究定义、数据版本、输入角色与代码内容校验值；verify 重算并比较结果校验值。: Run manifests pin the study definition, data versions, input roles and code content hash; verify recomputes and compares the result hash.
+  首次归档: First archived
+  解释变化（结果不变）: Interpretation changed (results unchanged)
+  实质内容变化: Substantive change
+  所需期限覆盖不足: Insufficient coverage of required tenors
+  未提供交叉核验数据: No cross-check data provided
+  曲线缺少 10Y: Curve has no 10Y
+  固定版本不在本地（未归档）: Pinned version not available locally (not archived)
+  数据集未登记预期观测日历，无法证明期间完整: No expected calendar is registered for the dataset, so the period cannot be shown complete
+  期间统计（均值、极值、倒挂天数）: Period statistics (means, extremes, inversion days)
+  无: none
+patterns:
+- zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
+  en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'
+- zh: 预期观测日历 (?P<cal>\S+) 未在 (?P<spans>.+) 核验，该段的预期日期按规则推定，临时休市或额外发布日可能使日期覆盖略有偏差，无法证明没有缺失
+  en: The expected observation calendar {cal} is not verified for {spans}; expected dates there are inferred by rule, so ad-hoc closures or extra release days may skew date coverage slightly, and the absence of gaps cannot be shown
+- zh: 研究期间 (?P<start>\S+) 至 (?P<end>\S+) 覆盖不足（(?P<reason>.+)；实际覆盖 (?P<covered>.+)）。只保留首尾有效观测的对比，均值、极值与倒挂天数等期间统计不输出
+  en: Coverage of the study period {start} to {end} is insufficient ({reason}; actual coverage {covered}). Only the first and last valid observations are compared; period statistics such as means, extremes and inversion days are not reported
+- zh: 研究期间未能证明完整（(?P<reason>.+)）。均值、极值与倒挂天数只基于已观测日期，是已观测样本统计，不能推及整个期间
+  en: The study period could not be shown complete ({reason}). Means, extremes and inversion days use observed dates only; they are observed-sample statistics and cannot be extended to the whole period
+- zh: 基准日 (?P<date>\S+) 距研究窗口终点 (?P<days>\d+) 天；结果对应该日的收益率
+  en: The base date {date} is {days} days before the end of the study window; results reflect yields on that day
+- zh: 应已发布 (?P<due>\d+) 个观测日，实际 (?P<have>\d+) 个（(?P<share>[\d.]+%)），低于要求 (?P<req>\d+%)
+  en: '{have} of {due} due observation dates have data ({share}), below the required {req}'
+- zh: 应已发布的 (?P<due>\d+) 个观测日中缺少 (?P<miss>\d+) 个
+  en: '{miss} of {due} due observation dates are missing'
+- zh: 预期日历未在 (?P<spans>.+) 核验，无法证明这些日期没有缺失
+  en: The expected calendar is not verified for {spans}, so these dates cannot be shown to have no gaps
+- zh: 有效观测占比 (?P<share>[\d.]+%) 低于要求 (?P<req>\d+%)
+  en: Valid observations {share}, below the required {req}
+- zh: 期限 (?P<t>\S+) 冲击 (?P<s>\S+) bp
+  en: Tenor {t}, shock {s} bp
+- zh: 期限 (?P<t>\S+)
+  en: Tenor {t}
+- zh: 利差 (?P<n>.+)
+  en: Spread {n}
+- zh: 曲率 (?P<n>.+)
+  en: Curvature {n}
+- zh: 按原运行固定为不使用：(?P<reason>.+)
+  en: 'Pinned as unused by the original run: {reason}'
+- zh: (?P<a>\d{4}-\d\d-\d\d) 至 (?P<b>\d{4}-\d\d-\d\d)
+  en: '{a} to {b}'
