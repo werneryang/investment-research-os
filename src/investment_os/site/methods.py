@@ -25,11 +25,26 @@ def _datasets_table(rows: list[dict[str, Any]]) -> str:
             f"<td>{e(d['rows']) if d['rows'] is not None else '—'}<div class='small muted'>{e(quality)}</div></td>"
             f"<td>{L('是', 'Yes') if d['archive_data'] else L('否', 'No')}</td></tr>")
     head = L("<th>数据集</th><th>来源</th><th>频率</th><th>历史版本与可用时间</th><th>核验状态</th><th>行数 / 质量</th>"
-             "<th>数据存档</th>",
+             "<th>公开存档</th>",
              "<th>Dataset</th><th>Source</th><th>Frequency</th><th>Vintages and availability</th><th>Verification</th>"
-             "<th>Rows / quality</th><th>Data archived</th>")
+             "<th>Rows / quality</th><th>Public archive</th>")
+    scheduled = [d["dataset_id"] for d in rows if d.get("scheduled")]
+    names = L("、", ", ").join(f"<code>{e(x)}</code>" for x in scheduled)
+    snapshots = (L(f"本机定时快照目前覆盖 {len(scheduled)} 个数据集：{names}。",
+                   f"Local scheduled snapshots currently cover {len(scheduled)} datasets: {names}.")
+                 if scheduled else L("目前没有数据集登记本机定时快照。", "No dataset is registered for local scheduled snapshots yet."))
+    note = L("<strong>公开存档</strong>表示该数据集的原始与标准化数据是否随研究运行存入公开的运行档案（GitHub 上的 archive 分支），"
+             "供他人复现；只有确认可以公开再分发的数据才会开启。它和<strong>本机定时快照</strong>是两回事："
+             "本机每个工作日取得登记了定时取得的数据集，保存在本地 <code>data/</code>，用于积累时点研究需要的历史快照，"
+             "不公开，也不出现在本网站上（网站由 CI 生成，CI 取得的数据用后即弃）。" + snapshots,
+             f"""<strong>Public archive</strong> shows whether a dataset's raw and normalized data are stored with study runs in the public
+run archive (the archive branch on GitHub) so others can reproduce them; it is enabled only for data confirmed to be publicly
+redistributable. It is not the same as <strong>local scheduled snapshots</strong>: every weekday the local machine fetches the datasets
+registered for scheduled fetching and keeps them in a local <code>data/</code> folder, building the history of snapshots that
+point-in-time studies need. Those snapshots are not public and do not appear on this site (the site is built in CI, which discards
+what it fetches). {snapshots}""")
     return (f'<div class="scroll"><table><thead><tr>{head}</tr></thead>'
-            f'<tbody>{"".join(body)}</tbody></table></div>')
+            f'<tbody>{"".join(body)}</tbody></table></div><p class="muted small">{note}</p>')
 
 
 CHECK_STATUS = {"up_to_date": "pass", "extendable": "partial", "partial": "partial", "blocked": "fail",
