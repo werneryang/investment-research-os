@@ -29,7 +29,8 @@ CHECK_NOTES = {
 # Chart.js 随站点托管（site/assets/vendor，来源与校验值见其中 README），不依赖外部 CDN
 CHART_JS = "assets/vendor/chart.umd.min.js"
 
-NAV = (("index.html", "研究总览"), ("map.html", "研究能力地图"), ("methods.html", "数据、方法与状态"))
+NAV = (("index.html", "研究总览"), ("map.html", "研究能力地图"), ("sources.html", "数据资源目录"),
+       ("methods.html", "数据、方法与状态"))
 
 
 def e(v: Any) -> str:

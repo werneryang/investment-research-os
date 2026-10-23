@@ -16,7 +16,11 @@ import yaml
 
 from .calendars import CalendarSpec, load_calendars
 from .contracts import (
+    ACCESS_FIELDS,
     FREQUENCIES,
+    SOURCE_ACCESS,
+    SOURCE_REDISTRIBUTION,
+    SOURCE_SIGNUP,
     AvailabilityRule,
     DatasetSpec,
     ResultType,
@@ -54,22 +58,38 @@ def _date_or_none(value: Any) -> date | None:
     return value if isinstance(value, date) else date.fromisoformat(str(value))
 
 
+def _choice(item: dict[str, Any], key: str, choices: tuple[str, ...], default: str) -> str:
+    value = item.get(key, default)
+    if value not in choices:
+        raise RegistryError(f"来源 {item['id']} 的 {key} 无效：{value}；可用：{', '.join(choices)}")
+    return value
+
+
 def load_sources(path: Path) -> dict[str, SourceSpec]:
-    raw = _load_yaml(path).get("sources") or []
+    """来源登记。候选来源只需发布者与入口；§5.1 的其余字段在登记数据集前补齐（见 load_datasets）。"""
+    data = _load_yaml(path)
+    raw = data.get("sources") or []
+    categories = data.get("categories") or {}
     sources: dict[str, SourceSpec] = {}
-    required = ["id", "publisher", "channel", "url", "license", "registration",
-                "rate_limit", "revisions", "maintenance"]
     for item in raw:
-        _require(item, required, f"来源 {item.get('id', '?')}")
+        _require(item, ["id", "publisher", "url"], f"来源 {item.get('id', '?')}")
         if item["id"] in sources:
             raise RegistryError(f"来源 ID 重复：{item['id']}")
+        if categories and item.get("category") not in categories:
+            raise RegistryError(f"来源 {item['id']} 的类别无效：{item.get('category')}；"
+                                f"可用：{', '.join(categories)}")
         records = []
         for v in item.get("verification") or []:
-            _require(v, ["dataset", "status", "date", "evidence"], f"来源 {item['id']} 的核验记录")
+            _require(v, ["status", "date", "evidence"], f"来源 {item['id']} 的核验记录")
             try:
                 status = VerificationStatus(v["status"])
             except ValueError as e:
                 raise RegistryError(f"来源 {item['id']} 的核验状态无效：{v['status']}") from e
+            dataset = v.get("dataset")
+            # 一个样本取得成功不代表整个来源可用：接入与用途核验必须指明数据集
+            if dataset is None and status is not VerificationStatus.DOCS_VERIFIED:
+                raise RegistryError(f"来源 {item['id']} 的 {status.value} 记录必须指明数据集；"
+                                    f"不指明数据集的记录只能是 docs_verified")
             use = None
             if v.get("use") is not None:
                 try:
@@ -87,16 +107,36 @@ def load_sources(path: Path) -> dict[str, SourceSpec]:
             if valid_from and valid_through and valid_from > valid_through:
                 raise RegistryError(f"来源 {item['id']} 的核验日期范围起点晚于终点")
             records.append(VerificationRecord(
-                dataset=v["dataset"], status=status, date=str(v["date"]),
+                dataset=dataset, status=status, date=str(v["date"]),
                 evidence=v["evidence"], use=use, scope=v.get("scope", ""),
                 valid_from=valid_from, valid_through=valid_through,
             ))
         sources[item["id"]] = SourceSpec(
-            **{k: item[k] for k in required},
+            id=item["id"], publisher=item["publisher"], url=item["url"],
+            **{k: item.get(k) or "" for k in ACCESS_FIELDS},
             alternatives=tuple(item.get("alternatives") or ()),
             verification=tuple(records),
+            name=item.get("name", ""),
+            category=item.get("category", ""),
+            directions=tuple(item.get("directions") or ()),
+            access=_choice(item, "access", SOURCE_ACCESS + ("",), ""),
+            signup=_choice(item, "signup", SOURCE_SIGNUP, "unknown"),
+            redistribution=_choice(item, "redistribution", SOURCE_REDISTRIBUTION, "unknown"),
+            coverage=item.get("coverage", ""),
+            offers=tuple(item.get("offers") or ()),
+            notes=item.get("notes", ""),
+            next_step=item.get("next_step", ""),
         )
     return sources
+
+
+def load_source_index(path: Path) -> tuple[dict[str, str], list[dict[str, Any]]]:
+    """资源目录的类别（id → 名称）与能力缺口。"""
+    data = _load_yaml(path)
+    gaps = data.get("gaps") or []
+    for g in gaps:
+        _require(g, ["name", "detail"], "能力缺口")
+    return dict(data.get("categories") or {}), list(gaps)
 
 
 def load_datasets(path: Path, sources: dict[str, SourceSpec],
@@ -111,6 +151,10 @@ def load_datasets(path: Path, sources: dict[str, SourceSpec],
         if item["frequency"] not in FREQUENCIES:
             raise RegistryError(f"数据集 {ds_id} 的频率 {item['frequency']} 不受支持；"
                                 f"可用：{', '.join(FREQUENCIES)}")
+        missing = sources[item["source_id"]].missing_access_fields()
+        if missing:
+            raise RegistryError(f"数据集 {ds_id} 的来源 {item['source_id']} 是候选登记，接入前须补齐："
+                                f"{', '.join(missing)}（architecture §5.1）")
         calendar = item.get("calendar")
         if calendar is not None and calendar not in (calendars or {}):
             raise RegistryError(f"数据集 {ds_id} 引用了未登记日历 {calendar}")
@@ -233,15 +277,19 @@ class Registry:
     sources: dict[str, SourceSpec]
     datasets: dict[str, DatasetSpec]
     calendars: dict[str, CalendarSpec] = field(default_factory=dict)
+    source_categories: dict[str, str] = field(default_factory=dict)
+    gaps: list[dict[str, Any]] = field(default_factory=list)
 
     @classmethod
     def load(cls, root: Path) -> "Registry":
         root = Path(root)
         sources = load_sources(root / "config" / "sources.yaml")
+        categories, gaps = load_source_index(root / "config" / "sources.yaml")
         cal_path = root / "config" / "calendars.yaml"
         calendars = load_calendars(_load_yaml(cal_path)) if cal_path.exists() else {}
         datasets = load_datasets(root / "config" / "datasets.yaml", sources, calendars)
-        return cls(root=root, sources=sources, datasets=datasets, calendars=calendars)
+        return cls(root=root, sources=sources, datasets=datasets, calendars=calendars,
+                   source_categories=categories, gaps=gaps)
 
     def dataset(self, dataset_id: str) -> DatasetSpec:
         try:

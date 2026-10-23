@@ -1,17 +1,64 @@
-# 来源登记（docs/architecture.md §5.1）
+# 来源登记与资源目录（docs/architecture.md §5）
+#
+# 本文件是免费资源的唯一索引：已接入的来源与候选来源都登记在这里，网站的资源目录页（sources.html）
+# 与 `iros sources` 由它生成。不另写手工维护的资源清单。
 #
 # 核验状态按「来源 × 数据集 × 用途」分别记录：
-#   candidate        候选来源：只有资料入口
-#   docs_verified    说明已核验：已阅读官方说明，不代表程序接入成功
-#   access_verified  接入已验证：指定获取方式和样本取得成功
-#   use_verified     用途已验证：在明确范围内通过相应研究要求；必须声明 use，
+#   candidate        候选来源：只有资料入口（没有核验记录即为候选）
+#   docs_verified    说明已核验：已阅读官方说明，不代表程序接入成功；可以不指明 dataset，表示来源整体的说明
+#   access_verified  接入已验证：指定获取方式和样本取得成功；必须指明 dataset
+#   use_verified     用途已验证：在明确范围内通过相应研究要求；必须指明 dataset 并声明 use，
 #                    且只对该用途有效（descriptive | point_in_time）；
 #                    valid_from / valid_through 为核验覆盖的观测日期（含两端，可省略一端）
 # 说明与接入核验对数据集整体有效；scope 写明核验覆盖的范围。
 # 一个样本下载成功不代表整个来源可用。新增核验请追加记录，不改写旧记录。
+#
+# 字段：
+#   必填            id、publisher、url、category；name 为目录中显示的短名称（默认用 publisher）
+#   §5.1 字段       channel、license、registration、rate_limit、revisions、maintenance；
+#                   候选来源可以暂缺，在 datasets.yaml 登记数据集（开始接入）前必须补齐
+#   索引字段        directions  可服务的研究方向（site/content.yaml 的方向 id）
+#                   access      api 接口 | file 文件下载 | tool 第三方工具 | web 网页资料 | manual 人工导入
+#                   signup      none 无需注册 | free_key 免费注册或 key | unknown 未核验
+#                   redistribution  allowed 可公开再分发 | per_series 按序列确认 | restricted 不可 | unknown 未核验
+#                   coverage    历史与频率覆盖；offers 可提供、尚未登记为数据集的数据
+#                   notes       依据与限制；next_step 下一步核验或接入工作
+# 候选来源的索引字段是资料入口上的初步判断，未经核验，网站上会标明。
+# verification 放在每个来源的最后（iros calendar apply 在来源块末尾追加记录）。
+
+categories:
+  macro: 宏观与历史修订
+  rates: 美国国债曲线
+  filings: 公司申报与财报
+  funds: 基金资料
+  prices: 证券行情
+  factors: 学术因子与估值
+  global_macro: 全球宏观
+  china: 中国宏观与证券
+  surveys: 调查与模型估计
+  manual: 人工导入
+
+# 能力缺口：在取得并验证适用的免费数据之前，不承诺相应的完整历史研究能力（architecture §5.2）
+gaps:
+  - name: 完整历史期权链
+    directions: [vol_premium]
+    detail: 只能做明确标记的理论分析或有限样本研究；隐含波动率指数不等于期权链
+  - name: 逐笔成交与订单簿
+    directions: [vol_premium, global_assets]
+    detail: 不研究日内微观结构与流动性冲击
+  - name: 历史指数成分
+    directions: [equity_risk, sector_structure]
+    detail: 没有成分变化记录时，指数层面的回测有幸存者偏差
+  - name: 退市证券
+    directions: [equity_risk, company_filings, sector_structure]
+    detail: 只用现存证券会产生幸存者偏差，相关结论须注明
+  - name: 免费、可核验的信用利差历史
+    directions: [credit_premium]
+    detail: 尚未找到；FRED 上的信用利差序列涉及第三方权利，可得历史长度待核验
 
 sources:
   - id: ust_treasury
+    name: Treasury 利率数据
     publisher: U.S. Department of the Treasury
     channel: home.treasury.gov 每日利率数据 CSV 按年下载
     url: https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rate-archives
@@ -21,6 +68,17 @@ sources:
     revisions: 按日发布，偶有更正；官网不提供历史版本，本地以快照保存
     maintenance: 期限列会随发行变化（如 2022 年新增 4 Mo、2025 年新增 1.5 Month），解析按列名识别
     alternatives: [fred_graph]
+    category: rates
+    directions: [us_treasury_curve, rates_duration_risk, real_bonds]
+    access: file
+    signup: none
+    redistribution: allowed
+    coverage: 名义票面收益率曲线 1990 年起，日度；期限列随年份变化
+    offers:
+      - 实际票面收益率曲线（TIPS）
+      - 国库券利率与长期平均利率
+    notes: 公开存档已于 2026-10-22 经用户确认；官网不提供历史版本
+    next_step: 按年核验预期发布日历，延长用途核验范围
     verification:
       - dataset: ust_par_yield_curve
         status: docs_verified
@@ -52,6 +110,7 @@ sources:
           持有期或债券基金回报、预测与交易回测；核验范围之外的日期须先扩展日历核验。
 
   - id: fred_graph
+    name: FRED 图表导出
     publisher: Federal Reserve Bank of St. Louis（上游为各统计机构）
     channel: FRED 图表 CSV 导出（fredgraph.csv），无需 key
     url: https://fred.stlouisfed.org/docs/api/terms_of_use.html
@@ -61,6 +120,19 @@ sources:
     revisions: 只返回当前版本，不含历史版本；时点研究需改用 fred_api（ALFRED）
     maintenance: 图表导出接口非正式 API，格式可能变化；空值以空字符串或 "." 表示
     alternatives: [fred_api]
+    category: macro
+    directions: [us_inflation_macro, policy_liquidity, growth_labor, us_treasury_curve, credit_premium]
+    access: file
+    signup: none
+    redistribution: per_series
+    coverage: 按序列不同；只有当前修订版本
+    offers:
+      - 政策利率与货币市场利率（如 DFF）
+      - 通胀预期与实际利率（如 T10YIE、DFII10）
+      - 就业与增长（如 UNRATE、PAYEMS）
+      - 信用利差（如 ICE BofA 序列；第三方权利与可得历史待核验）
+    notes: 复用 fred_graph_csv 接入器，新增序列只需在 datasets.yaml 登记
+    next_step: 登记政策利率与通胀预期序列，并开始积累快照
     verification:
       - dataset: fred_dgs10
         status: access_verified
@@ -74,6 +146,7 @@ sources:
         scope: 当前版本月度序列下载
 
   - id: fred_api
+    name: FRED API / ALFRED
     publisher: Federal Reserve Bank of St. Louis（ALFRED 历史版本）
     channel: FRED API series/observations，需免费 API key（环境变量 FRED_API_KEY）
     url: https://fred.stlouisfed.org/docs/api/api_key.html
@@ -83,6 +156,14 @@ sources:
     revisions: realtime_start 给出每个历史版本的发布日期，可用于时点研究
     maintenance: key 失效或额度变化时降级到 fred_graph（只限描述性研究）
     alternatives: [fred_graph]
+    category: macro
+    directions: [us_inflation_macro, policy_liquidity, growth_labor, signal_tests]
+    access: api
+    signup: free_key
+    redistribution: per_series
+    coverage: ALFRED 历史版本，按序列不同
+    notes: 时点研究的官方路径；接入器（含分页）已实现，只用离线样本测试
+    next_step: 用真实 key 取得 CPIAUCSL 样本，记录 access_verified
     verification:
       - dataset: alfred_cpiaucsl
         status: docs_verified
@@ -90,6 +171,7 @@ sources:
         evidence: 官方说明要求 key；ALFRED 提供历史版本。本项目尚未用真实 key 测试接入
 
   - id: manual
+    name: 人工导入
     publisher: 人工导入（每次导入另行声明原始发布者与取得方式）
     channel: 本地 CSV 文件导入
     url: ""
@@ -99,4 +181,252 @@ sources:
     revisions: 每次导入保存原始文件快照，形成新版本
     maintenance: 人工维护；原始文件与声明一并保存
     alternatives: []
+    category: manual
+    directions: []
+    access: manual
+    signup: unknown
+    redistribution: unknown
+    notes: 没有可程序取得的免费路径时使用；每次导入单独声明原始发布者与取得方式
     verification: []
+
+  # ---- 候选来源（来自架构 V0.3 §5.2 的初始资源地图，2026-10-23 迁入）----
+
+  - id: bls
+    name: BLS
+    publisher: U.S. Bureau of Labor Statistics
+    url: https://www.bls.gov/developers/
+    category: macro
+    directions: [us_inflation_macro, growth_labor]
+    access: api
+    notes: 原始统计机构；CPI、就业等的上游。FRED 已转载的序列优先复用 FRED，需要原始口径或发布日期时再接
+    next_step: 核验 API 说明、注册要求与额度
+
+  - id: bea
+    name: BEA
+    publisher: U.S. Bureau of Economic Analysis
+    url: https://apps.bea.gov/api/signup/
+    category: macro
+    directions: [growth_labor]
+    access: api
+    notes: 原始统计机构；GDP、个人收入与支出等的上游
+    next_step: 核验 API 说明、注册要求与额度
+
+  - id: sec_edgar
+    name: SEC EDGAR
+    publisher: U.S. Securities and Exchange Commission（EDGAR）
+    url: https://www.sec.gov/search-filings/edgar-application-programming-interfaces
+    category: filings
+    directions: [company_filings, fund_costs, sector_structure]
+    access: api
+    signup: none
+    offers:
+      - 公司申报索引与 XBRL 财务数据
+      - 基金持仓申报（如 N-PORT，待核验）
+    notes: 聚合接口有口径与覆盖限制；接入时遵守访问规则（须声明 User-Agent）
+    next_step: 取得一家公司的申报与 XBRL 样本；定义财报期间与申报时间的时间契约
+    verification:
+      - status: docs_verified
+        date: "2026-10-22"
+        evidence: 官方 API 说明：申报与 XBRL API 无需 key；聚合接口有口径与覆盖限制
+        scope: 来源整体的说明核验，未取得样本
+
+  - id: fund_issuers
+    name: 基金发行方资料
+    publisher: 各基金发行方（公开费用、净值、持仓与分配资料）
+    url: ""
+    category: funds
+    directions: [fund_costs, real_bonds]
+    access: web
+    notes: 逐家核验下载与历史覆盖；净值不替代成交价
+    next_step: 选定首批基金（如国债 ETF），逐家核验资料入口
+
+  - id: yfinance
+    name: yfinance
+    publisher: yfinance 项目（社区工具，非 Yahoo 官方）
+    url: https://github.com/ranaroussi/yfinance
+    category: prices
+    directions: [equity_risk, vol_premium, real_bonds, global_assets, sector_structure, portfolio]
+    access: tool
+    redistribution: restricted
+    offers:
+      - 股票、ETF 与指数的日度价格及分红拆股
+      - 波动率指数（如 VIX）
+    notes: 数据权利另受上游条款约束；作为可替换接入，不保证持续可用；不进入公开存档
+    next_step: 评估作为总收益数据的可靠性；寻找可交叉核验的官方或发行方来源
+    verification:
+      - status: docs_verified
+        date: "2026-10-22"
+        evidence: 项目说明：非 Yahoo 官方工具，数据权利另受上游条款约束
+        scope: 项目说明核验，未取得样本
+
+  - id: ken_french
+    name: Kenneth French 数据库
+    publisher: Kenneth R. French Data Library（Dartmouth Tuck）
+    url: https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library.html
+    category: factors
+    directions: [equity_risk, sector_structure, portfolio]
+    access: file
+    offers:
+      - 因子收益（市场、规模、价值等）
+      - 行业组合收益
+    notes: 方法与历史修订需核验；数据会随方法更新整体重算
+    next_step: 核验下载格式、方法说明与许可
+
+  - id: shiller
+    name: Shiller 股市数据
+    publisher: Robert J. Shiller（美国股市长期数据）
+    url: http://www.econ.yale.edu/~shiller/data.htm
+    category: factors
+    directions: [equity_risk]
+    access: file
+    offers:
+      - 标普综合指数价格、股息、盈利与 CAPE 的长期月度数据
+    notes: shillerdata.com 也提供数据，以哪一处为准待核验
+    next_step: 核验下载、方法与许可
+
+  - id: damodaran
+    name: Damodaran 数据
+    publisher: Aswath Damodaran（NYU Stern）
+    url: https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datacurrent.html
+    category: factors
+    directions: [equity_risk, global_assets]
+    access: file
+    offers:
+      - 美国股票、国债与公司债的年度历史回报
+      - 各国股权风险溢价
+    notes: 多为年度数据，按年更新
+    next_step: 核验下载、方法与许可
+
+  - id: world_bank
+    name: 世界银行
+    publisher: World Bank
+    url: https://datahelpdesk.worldbank.org/knowledgebase/articles/889392
+    category: global_macro
+    directions: [global_assets, growth_labor]
+    access: api
+    notes: 按数据集确认免费范围、接口与可比口径
+    next_step: 核验 API 说明与许可
+
+  - id: imf
+    name: IMF
+    publisher: International Monetary Fund
+    url: https://data.imf.org/
+    category: global_macro
+    directions: [global_assets, growth_labor]
+    access: api
+    notes: 按数据集确认免费范围、接口与可比口径
+    next_step: 核验数据入口与接口说明
+
+  - id: bis
+    name: BIS
+    publisher: Bank for International Settlements
+    url: https://data.bis.org/
+    category: global_macro
+    directions: [global_assets, policy_liquidity, credit_premium]
+    access: api
+    offers:
+      - 各国政策利率
+      - 有效汇率
+      - 信贷与债务统计
+    notes: 按数据集确认免费范围、接口与可比口径
+    next_step: 核验数据入口与接口说明
+
+  - id: oecd
+    name: OECD
+    publisher: OECD
+    url: https://data-explorer.oecd.org/
+    category: global_macro
+    directions: [global_assets, growth_labor]
+    access: api
+    notes: 按数据集确认免费范围、接口与可比口径
+    next_step: 核验数据入口与接口说明
+
+  - id: cn_nbs
+    name: 国家统计局
+    publisher: 国家统计局
+    url: https://data.stats.gov.cn/
+    category: china
+    directions: [growth_labor, us_inflation_macro, global_assets]
+    access: web
+    notes: 按数据集核验可获得性、口径变化、历史范围与接口稳定性
+    next_step: 核验数据入口与口径说明
+
+  - id: cn_pboc
+    name: 中国人民银行
+    publisher: 中国人民银行（调查统计）
+    url: https://www.pbc.gov.cn/diaochatongjisi/116219/index.html
+    category: china
+    directions: [policy_liquidity, global_assets]
+    access: web
+    notes: 按数据集核验可获得性、口径变化、历史范围与接口稳定性
+    next_step: 核验数据入口与口径说明
+
+  - id: cn_safe
+    name: 国家外汇管理局
+    publisher: 国家外汇管理局
+    url: https://www.safe.gov.cn/
+    category: china
+    directions: [global_assets]
+    access: web
+    notes: 按数据集核验可获得性、口径变化、历史范围与接口稳定性
+    next_step: 核验数据入口与口径说明
+
+  - id: cn_disclosure
+    name: 交易所与巨潮资讯
+    publisher: 上交所、深交所及巨潮资讯网等公开披露平台
+    url: http://www.cninfo.com.cn/
+    category: china
+    directions: [company_filings, global_assets]
+    access: web
+    notes: 按数据集核验可获得性、历史范围与访问规则
+    next_step: 核验披露与行情资料的入口和访问规则
+
+  - id: akshare
+    name: AKShare
+    publisher: AKShare（社区工具，非官方）
+    url: https://github.com/akfamily/akshare
+    category: china
+    directions: [global_assets, growth_labor]
+    access: tool
+    notes: 社区工具可作接入候选；数据权利受各上游约束，接口稳定性需持续核验
+    next_step: 核验项目说明，确认各接口的上游来源
+
+  - id: phil_fed_spf
+    name: SPF 专业预测者调查
+    publisher: Federal Reserve Bank of Philadelphia（Survey of Professional Forecasters）
+    url: https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/survey-of-professional-forecasters
+    category: surveys
+    directions: [growth_labor, us_inflation_macro, signal_tests]
+    access: file
+    notes: 调查预期，不是观测值；须与观测值分开登记
+    next_step: 核验下载格式与调查方法说明
+
+  - id: atl_fed_gdpnow
+    name: GDPNow
+    publisher: Federal Reserve Bank of Atlanta（GDPNow）
+    url: https://www.atlantafed.org/research-and-data/data/gdpnow
+    category: surveys
+    directions: [growth_labor, signal_tests]
+    access: file
+    notes: 模型估计，不是观测值；历史估计是否完整保留待核验
+    next_step: 核验下载格式与历史估计的保留方式
+
+  - id: ny_fed_acm
+    name: ACM 期限溢价
+    publisher: Federal Reserve Bank of New York（ACM 期限溢价）
+    url: https://www.newyorkfed.org/research/data_indicators/term-premia-tabs
+    category: surveys
+    directions: [us_treasury_curve]
+    access: file
+    notes: 模型估计，不是观测值；不能与其他期限溢价模型无条件替代
+    next_step: 核验下载格式、方法与更新频率
+
+  - id: cma_publications
+    name: 机构资本市场假设
+    publisher: 各机构公开的资本市场假设
+    url: ""
+    category: surveys
+    directions: [portfolio]
+    access: web
+    notes: 机构的长期假设，各自方法不同；不能当作直接观测或相互无条件替代
+    next_step: 选定首批机构，逐家记录发布时间与方法
