@@ -103,8 +103,10 @@ def test_incomplete_period_is_disclosed(loaded):
     manifest = run_study(loaded, write_study(loaded, scope={**STUDY["scope"], "end": "2024-03-31"}))
     assert manifest["status"] == "partial"
     result = load_result(loaded, manifest)
-    assert result["coverage"]["period_complete"] is False
-    assert any("未能证明完整覆盖" in x for x in result["limitations"])
+    cov = result["coverage"]
+    assert cov["period_complete"] is False and cov["coverage_acceptable"] is False
+    assert cov["completeness"] == "insufficient"
+    assert any("覆盖不足" in x for x in result["limitations"])
 
 
 def test_missing_optional_input_skips_cross_check(project, registry, store):
@@ -200,22 +202,25 @@ def test_two_observations_in_a_year_is_not_complete(project, registry, store):
     assert result["results"]["levels"] == {}  # 期限覆盖不足，水平也不输出
 
 
-def test_incomplete_period_keeps_endpoints_but_withholds_period_stats(loaded):
-    # 数据只到 1 月 5 日，研究期间到 1 月 31 日；降低门槛使期限仍被支持，单独检验期间统计的限制
+def test_gaps_with_acceptable_coverage_give_observed_sample_stats(loaded):
+    # 数据只到 1 月 5 日，研究期间到 1 月 31 日；降低门槛使覆盖达标但有缺口
     scope = {**STUDY["scope"], "end": "2024-01-31"}
-    method = {**STUDY["method"], "min_coverage": 0.15}  # 实际 4 / 预期 21 日
+    method = {**STUDY["method"], "min_coverage": 0.15}  # 实际 4 / 应已发布 21 日
     manifest = run_study(loaded, write_study(loaded, scope=scope, method=method))
     assert manifest["status"] == "partial"
     result = load_result(loaded, manifest)
-    assert result["coverage"]["period_complete"] is False
-    assert result["coverage"]["expected_days"] == 21
+    cov = result["coverage"]
+    assert (cov["completeness"], cov["coverage_acceptable"], cov["period_complete"]) == ("gaps", True, False)
+    assert (cov["due_days"], cov["missing_days"]) == (21, 17)
     ten = result["results"]["levels"]["10Y"]
     assert (ten["start"], ten["end"], ten["change_bp"]) == (3.95, 4.05, pytest.approx(10))
-    assert ten["mean"] is None and ten["min"] is None and ten["max"] is None
-    assert result["results"]["spreads"]["2Y-10Y"]["inversion"] is None
+    # 期间统计照常输出，但标为已观测样本，不称为完整期间统计
+    assert ten["mean"] is not None and ten["sample"] == "observed" and ten["missing_days"] == 17
+    assert result["results"]["spreads"]["2Y-10Y"]["inversion"]["observations"] == 4
+    assert any("已观测样本统计" in x for x in result["limitations"])
     html = next((loaded / o["path"]).read_text() for o in manifest["outputs"]
                 if o["path"].endswith(".html"))
-    assert "未能证明完整" in html
+    assert "标 * 的指标有缺口" in html and "10Y *" in html
 
 
 def test_same_second_runs_do_not_overwrite(loaded):

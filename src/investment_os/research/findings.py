@@ -40,7 +40,7 @@ def rates_curve_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
     res, cov = result.get("results", {}), result.get("coverage", {})
     levels, spreads, curvature = res.get("levels", {}), res.get("spreads", {}), res.get("curvature", {})
     out: list[dict[str, Any]] = []
-    complete = cov.get("period_complete", False)
+    state_ = completeness(cov)
 
     ten = levels.get("10Y")
     if ten and ten.get("observations"):
@@ -85,14 +85,23 @@ def rates_curve_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
         evidence = {f"results.spreads.{key}.start": start, f"results.spreads.{key}.end": end,
                     f"results.spreads.{key}.change_bp": chg}
         inv = sp.get("inversion")
-        if complete and inv:
-            if inv["inverted_days"]:
-                text += f"；期间倒挂 {inv['inverted_days']} 天，占有效观测 {inv['inverted_share']:.0%}"
+        whole_period = sp.get("sample", "complete" if state_ == "complete" else None) == "complete"
+        if inv and (whole_period or sp.get("sample") == "observed"):
+            if whole_period:
+                # 截至目前完整：研究窗口里还有尚未发布的日期，只描述到最后一个已发布日
+                span = f"截至 {cov['last']} " if state_ == "complete_to_date" else "期间"
+                text += (f"；{span}倒挂 {inv['inverted_days']} 天，占有效观测 {inv['inverted_share']:.0%}"
+                         if inv["inverted_days"] else f"；{span}未出现倒挂")
             else:
-                text += "；期间未出现倒挂"
+                # 有缺口：只能描述已观测日期，不能推及整个期间
+                gap = f"缺 {sp['missing_days']} 天，" if sp.get("missing_days") else ""
+                text += (f"；已观测的 {inv['observations']} 个交易日中倒挂 {inv['inverted_days']} 天"
+                         if inv["inverted_days"] else f"；已观测的 {inv['observations']} 个交易日中未出现倒挂")
+                text += f"（{gap}不能推及整个期间）"
             if inv.get("zero_days"):
                 text += f"，另有 {inv['zero_days']} 天恰为 0（不计入倒挂）"
             evidence[f"results.spreads.{key}.inversion.inverted_days"] = inv["inverted_days"]
+            evidence[f"results.spreads.{key}.sample"] = sp.get("sample", "complete")
         out.append(_finding(f"spread_{key}", text + "。", evidence))
 
     for key, cv in curvature.items():
@@ -104,13 +113,65 @@ def rates_curve_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
             f"（{_bp(cv['change_bp'])}，中段相对两端{_direction(cv['change_bp'], '抬升', '下沉')}）。",
             {f"results.curvature.{key}.start": cv["start"], f"results.curvature.{key}.end": cv["end"]}))
 
-    if not complete:
+    evidence = {"coverage.completeness": state_}
+    if state_ == "insufficient":
         out.append(_finding(
             "coverage_limit",
-            f"研究期间未能证明完整覆盖（{cov.get('incomplete_reason', '原因见覆盖说明')}），"
-            "以上只比较首尾有效观测；均值、极值与倒挂天数不输出。",
-            {"coverage.period_complete": False}))
+            f"研究期间覆盖不足（{cov.get('incomplete_reason', '原因见覆盖说明')}），"
+            "以上只比较首尾有效观测；均值、极值与倒挂天数不输出。", evidence))
+    elif state_ == "no_calendar":
+        out.append(_finding("coverage_limit", "数据集未登记预期观测日历，无法判断覆盖是否完整；期间统计不输出。",
+                            evidence))
+    elif state_ == "gaps":
+        out.append(_finding(
+            "coverage_gaps",
+            f"应已发布的 {cov['due_days']} 个观测日中缺少 {cov['missing_days']} 个；"
+            "倒挂天数等期间统计只描述已观测日期，不能推及整个期间。", evidence))
+    elif state_ == "unverified_calendar":
+        out.append(_finding(
+            "coverage_unverified",
+            f"预期发布日历未在 {'、'.join(cov.get('calendar_unverified', []))} 核验，无法证明这些日期没有缺失；"
+            "期间统计按已观测日期计算。", evidence))
+    elif state_ == "complete_to_date":
+        out.append(_finding(
+            "coverage_to_date",
+            f"截至 {cov['last']}，应已发布的 {cov['due_days']} 个观测日均有数据；"
+            f"另有 {cov.get('pending_days', 0)} 个日期在评估时尚未到发布时间，不计入。", evidence))
     return out
+
+
+COVERAGE_LABEL = {
+    "complete": "完整",
+    "complete_to_date": "截至目前完整",
+    "gaps": "有缺失",
+    "unverified_calendar": "日历未核验",
+    "insufficient": "覆盖不足",
+    "no_calendar": "无预期日历",
+}
+
+
+def completeness(cov: dict[str, Any]) -> str:
+    """覆盖结论；旧结果没有 completeness 字段时按旧的 period_complete 推断。"""
+    if cov.get("completeness"):
+        return cov["completeness"]
+    return "complete" if cov.get("period_complete") else "insufficient"
+
+
+def coverage_summary(cov: dict[str, Any]) -> str:
+    """一句话的覆盖说明，供页面与报告使用。"""
+    state_ = completeness(cov)
+    due = cov.get("due_days", cov.get("expected_days"))
+    observed = (due - cov.get("missing_days", 0)) if due is not None else cov.get("curve_days")
+    head = f"{observed}/{due} 个应已发布的观测日有数据" if due is not None else f"{observed} 个观测日"
+    tail = {
+        "complete": "，期间完整",
+        "complete_to_date": f"，截至 {cov.get('last')} 完整；另 {cov.get('pending_days', 0)} 天尚未发布",
+        "gaps": f"，缺 {cov.get('missing_days', 0)} 天；期间统计为已观测样本",
+        "unverified_calendar": "；相关日期超出日历核验范围，无法证明完整",
+        "insufficient": "，覆盖不足；期间统计不输出",
+        "no_calendar": "；未登记预期日历，无法判断完整性",
+    }[state_]
+    return head + tail
 
 
 _FINDERS = {"rates_curve": rates_curve_findings}
@@ -132,7 +193,7 @@ def state(result: dict[str, Any]) -> dict[str, str]:
     ten = result.get("results", {}).get("levels", {}).get("10Y")
     if ten and ten.get("observations"):
         out["10Y 期间"] = _direction(ten["change_bp"])
-    out["期间覆盖"] = "完整" if result.get("coverage", {}).get("period_complete") else "未能证明完整"
+    out["期间覆盖"] = COVERAGE_LABEL[completeness(result.get("coverage", {}))]
     return out
 
 

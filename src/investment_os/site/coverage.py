@@ -20,8 +20,9 @@ def coverage_strip(result: dict[str, Any]) -> str:
         return '<p class="muted small">没有可显示的观测。</p>'
     observed = {r["date"]: r for r in daily}
     missing = list(cov.get("missing_dates") or cov.get("missing_examples") or [])
+    pending = set(cov.get("pending_dates") or [])
     partial_list = not cov.get("missing_dates") and (cov.get("missing_days") or 0) > len(missing)
-    days = sorted(set(observed) | set(missing))
+    days = sorted(set(observed) | set(missing) | pending)
     tenors = list(cov.get("tenors", {}))
     rows = [("观测日", None)] + [(t, t) for t in tenors]
     width = LABEL_W + len(days) * CELL_W
@@ -33,8 +34,10 @@ def coverage_strip(result: dict[str, Any]) -> str:
         parts.append(f'<text class="cov-label" x="0" y="{y + ROW_H - 3}">{e(label)}</text>')
         for j, day in enumerate(days):
             row = observed.get(day)
-            if row is None:
-                cls, tip = "cov-miss", "预期有观测，来源未提供"
+            if row is None and day in pending:
+                cls, tip = "cov-pending", "评估时尚未到发布时间"
+            elif row is None:
+                cls, tip = "cov-miss", "应已发布，来源未提供"
             elif tenor is None or row.get(tenor) is not None:
                 cls, tip = "cov-ok", "有合格观测"
             else:
@@ -59,7 +62,8 @@ def coverage_strip(result: dict[str, Any]) -> str:
   <svg viewBox="0 0 {width} {height}" width="100%" preserveAspectRatio="xMinYMin meet" role="img"
        aria-label="数据覆盖：{len(observed)} 个观测日，{len(missing)} 个缺失日">{''.join(parts)}</svg>
   <figcaption class="small muted"><span class="key cov-ok"></span>有合格观测
-  <span class="key cov-gap"></span>当日有曲线但该期限缺失 <span class="key cov-miss"></span>预期有观测但来源未提供
+  <span class="key cov-gap"></span>当日有曲线但该期限缺失 <span class="key cov-miss"></span>应已发布但来源未提供
+  <span class="key cov-pending"></span>尚未到发布时间
   · 横轴为预期观测日（{len(days)} 天）。悬停单元格可看日期。</figcaption>
   {note}
 </figure>"""

@@ -125,7 +125,9 @@ def build_site(root: Path, out: Path, archive: Path | None = None) -> Path:
             "code": i["manifest"]["code"], "inputs": i["manifest"].get("inputs", []),
             "data_cutoff": i["result"]["data_cutoff"], "findings": i["findings"],
             "coverage": {k: i["result"]["coverage"].get(k)
-                         for k in ("expected_days", "curve_days", "period_complete", "calendar_unverified")},
+                         for k in ("expected_days", "due_days", "curve_days", "missing_days", "pending_days",
+                                   "coverage_acceptable", "period_complete", "completeness",
+                                   "calendar_unverified")},
             "unsupported": i["result"].get("unsupported", []),
             "validation": {k: v.get("status") for k, v in i["result"]["validation"].items()},
             "reproduced": i["verification"]["reproduced"] if i["verification"] else None,

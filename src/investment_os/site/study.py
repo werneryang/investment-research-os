@@ -10,7 +10,13 @@ from typing import Any
 
 from ..analytics.rates import curvature_label, spread_label
 from ..registry import Registry
-from ..research.findings import FLAT_BP, changes
+from ..research.findings import (
+    COVERAGE_LABEL,
+    FLAT_BP,
+    changes,
+    completeness,
+    coverage_summary,
+)
 from .common import (
     CHECK_LABEL,
     CHECK_NOTES,
@@ -42,11 +48,19 @@ def key_stats(result: dict[str, Any]) -> str:
     for key, sp in res.get("spreads", {}).items():
         if sp.get("observations"):
             inv = sp.get("inversion")
-            note = (f"倒挂 {inv['inverted_days']} 天" if inv else "期间统计不输出")
+            if not inv:
+                note = "期间统计不输出"
+            elif sp.get("sample") == "observed":
+                note = f"已观测 {inv['observations']} 天中倒挂 {inv['inverted_days']} 天"
+            else:
+                note = f"倒挂 {inv['inverted_days']} 天"
             stats.append(stat(f"{spread_label(key)} 利差", f"{num(sp['start'], 0)} → {num(sp['end'], 0)} bp", note))
     if cov.get("expected_days"):
-        stats.append(stat("日期覆盖", f"{cov['curve_days']} / {cov['expected_days']} 天",
-                          "期间完整" if cov["period_complete"] else "未能证明完整"))
+        due = cov.get("due_days", cov["expected_days"])
+        note = COVERAGE_LABEL[completeness(cov)]
+        if cov.get("pending_days"):
+            note += f"；另 {cov['pending_days']} 天尚未发布"
+        stats.append(stat("日期覆盖", f"{due - cov.get('missing_days', 0)} / {due} 天", note))
     return f'<div class="stats">{"".join(stats)}</div>'
 
 
@@ -100,14 +114,25 @@ def evidence_panel(item: dict[str, Any], registry: Registry, run_href: str) -> s
                      f"（内容校验值 <code>{e(inp['content_hash'][:12])}</code>）· 核验状态："
                      f"{e(VERIFY_LABEL.get(inp['source_status'], inp['source_status']))}"
                      + (f"<div>{use_scope_chip(inp.get('use_scope'))}</div>" if inp.get("use_scope") else "")))
+    text = e(coverage_summary(cov))
     if cov.get("expected_days") is not None:
-        text = (f"预期观测日 {cov['expected_days']} 天（日历 <code>{e(cov['calendar'])}</code>），"
-                f"实际 {cov['curve_days']} 天；期间{'完整' if cov['period_complete'] else '未能证明完整'}")
+        text += (f"<div class='small muted'>研究窗口内预期观测日 {cov['expected_days']} 天"
+                 f"（日历 <code>{e(cov['calendar'])}</code>）")
+        if cov.get("pending_days"):
+            text += f"；评估时尚未发布 {cov['pending_days']} 天（{e('、'.join(cov['pending_dates'][:5]))}）"
+        if cov.get("missing_days"):
+            text += f"；应已发布但缺失 {cov['missing_days']} 天（如 {e('、'.join(cov['missing_examples'][:3]))}）"
         if cov.get("calendar_unverified"):
-            text += f"；日历未核验区间：{e('、'.join(cov['calendar_unverified']))}"
-    else:
-        text = f"实际观测日 {cov.get('curve_days')} 天；未登记预期日历，无法证明期间完整"
+            text += f"；日历未核验区间 {e('、'.join(cov['calendar_unverified']))}"
+        if r["scope"].get("evaluated_at"):
+            text += f"；评估时间 {e(str(r['scope']['evaluated_at'])[:16].replace('T', ' '))} UTC"
+        text += "</div>"
     rows.append(("日期覆盖", text))
+    metric_gaps = [f"{name} 缺 {m['missing']} 天" for group in (cov.get("metrics") or {}).values()
+                   for name, m in group.items() if m.get("missing")]
+    if metric_gaps:
+        rows.append(("指标覆盖", e("；".join(metric_gaps)) + "<span class='muted small'>（利差与曲率要求所需期限同一天都有值；"
+                                                             "有缺口的指标，期间统计标为已观测样本）</span>"))
     shares = [v["share"] for v in cov.get("tenors", {}).values()]
     if shares:
         rows.append(("期限覆盖", f"关键期限最低 {min(shares):.1%}（要求 ≥ {cov.get('min_coverage', 0):.0%}）"))

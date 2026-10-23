@@ -47,7 +47,12 @@ class ResearchResult:
 
     @property
     def is_partial(self) -> bool:
-        return bool(self.unsupported) or not self.coverage.get("period_complete", True)
+        if self.unsupported:
+            return True
+        state = self.coverage.get("completeness")
+        if state is None:  # 旧结果没有 completeness 字段
+            return not self.coverage.get("period_complete", True)
+        return state not in ("complete", "complete_to_date")
 
     def to_dict(self) -> dict[str, Any]:
         d = dict(self.__dict__)

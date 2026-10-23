@@ -230,8 +230,10 @@ def run_study(root: Path, study_path: Path, pins: dict[str, str] | None = None,
 
     root = Path(root)
     started = clock()
-    study = parse_study(resolve_relative_dates(load_study(study_path).raw, started.date()),
-                        Path(study_path).name)
+    raw = resolve_relative_dates(load_study(study_path).raw, started.date())
+    # 评估时间写入研究定义：判断哪些日期「尚未发布」依赖它，复现时使用同一时间
+    raw.setdefault("scope", {})["evaluated_at"] = started.isoformat()
+    study = parse_study(raw, Path(study_path).name)
     # 随机后缀保证同一秒内的运行也不碰撞；目录排他创建，已有记录绝不覆盖
     run_id = f"{study.study_id}-{compact(started)}-{uuid.uuid4().hex[:8]}"
     run_dir = root / "runs" / run_id

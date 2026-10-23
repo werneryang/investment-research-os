@@ -14,15 +14,28 @@ from ..analytics.rates import (
     spread_bp,
 )
 from ..calendars import CalendarSpec
-from ..contracts import ResultType
+from ..contracts import DatasetSpec, ResultType
+from ..data.timing import available_at
 from ..quality import ok_rows
 from ..registry import Registry, StudySpec
 from ..tenor import parse_tenor
 from ..validation.crosscheck import compare_series
 from .base import ResearchResult, StudyInput, input_record, register_branch
 
-# 研究期间首尾允许的空档（日历天）；超过即认为期间未完整覆盖
+# 没有日历时，研究期间首尾允许的空档（日历天）
 PERIOD_EDGE_TOLERANCE_DAYS = 7
+
+# 期间统计：缺日会改变均值、极值与计数。覆盖不达标时不输出；有缺口但达标时标为已观测样本
+PERIOD_STAT_KEYS = ("min", "min_date", "max", "max_date", "mean")
+
+# 完整性判断结果
+COMPLETE = "complete"  # 所有预期观测日都有数据，日历已核验
+COMPLETE_TO_DATE = "complete_to_date"  # 应已发布的日期都有数据，另有日期尚未到发布时间
+GAPS = "gaps"  # 有应已发布但缺失的日期（覆盖仍达标）
+UNVERIFIED_CALENDAR = "unverified_calendar"  # 没有缺失，但相关日期超出日历核验范围，无法证明完整
+INSUFFICIENT = "insufficient"  # 覆盖低于要求
+NO_CALENDAR = "no_calendar"  # 未登记预期日历，无法判断
+COMPLETE_STATES = (COMPLETE, COMPLETE_TO_DATE)
 
 
 def _tenor_map(inp: StudyInput) -> dict[str, str]:
@@ -37,22 +50,35 @@ def _in_period(df: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp) -> pd.D
     return df[(df["observation_at"] >= start) & (df["observation_at"] <= end)]
 
 
-# 只在期间完整时才有意义的统计：缺日会改变均值、极值与计数
-PERIOD_STAT_KEYS = ("min", "min_date", "max", "max_date", "mean")
+def _pending_mask(expected: pd.DatetimeIndex, spec: DatasetSpec, evaluated_at: str | None) -> pd.Series:
+    """按数据集的可用时间规则，判断哪些预期日期在评估时尚未到发布时间。
+
+    没有评估时间（旧运行）或规则无法给出时间时，一律视为应已发布，不放宽缺失判断。
+    """
+    if evaluated_at is None or not len(expected):
+        return pd.Series(False, index=expected)
+    obs = pd.Series(expected, index=expected)
+    avail = available_at(obs, pd.Series(None, index=expected, dtype="object"), spec.frequency,
+                         spec.availability, spec.timezone)
+    at = pd.Timestamp(evaluated_at)
+    at = at.tz_localize("UTC") if at.tzinfo is None else at.tz_convert("UTC")
+    return avail.notna() & (avail > at)
 
 
 def _date_coverage(curve: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp,
-                   calendar: CalendarSpec | None, min_cov: float) -> dict[str, Any]:
-    """日期覆盖：对照经核验的预期观测日历，而不是只看已有日期。
+                   calendar: CalendarSpec | None, spec: DatasetSpec, min_cov: float,
+                   evaluated_at: str | None) -> dict[str, Any]:
+    """日期覆盖：对照经核验的预期观测日历，区分已观测、尚未发布与缺失。
 
-    没有日历时无法证明完整，period_complete 为 False 并说明原因。
+    - 尚未发布：评估时尚未到可用时间、且还没有数据的预期日期；不计入分母，单独列出
+    - 缺失：应已发布但没有数据的预期日期
+    - coverage_acceptable：覆盖是否达到 min_cov，决定期间统计能否输出
+    - period_complete / completeness：所有应考虑的日期都有数据，且这些日期在日历核验范围内
     """
     observed = curve.dropna(how="all").index
     n_obs = int(len(observed))
     first = observed.min() if n_obs else None
     last = observed.max() if n_obs else None
-    tol = pd.Timedelta(days=PERIOD_EDGE_TOLERANCE_DAYS)
-    edges_ok = bool(n_obs) and first - start <= tol and end - last <= tol
     out: dict[str, Any] = {
         "curve_days": n_obs,
         "first": first.date().isoformat() if first is not None else None,
@@ -61,32 +87,72 @@ def _date_coverage(curve: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp,
         "calendar": calendar.id if calendar else None,
     }
     if calendar is None:
-        out.update({"expected_days": None, "date_share": None, "period_complete": False,
+        tol = pd.Timedelta(days=PERIOD_EDGE_TOLERANCE_DAYS)
+        edges_ok = bool(n_obs) and first - start <= tol and end - last <= tol
+        out.update({"expected_days": None, "due_days": None, "date_share": None,
+                    "coverage_acceptable": False, "period_complete": False, "completeness": NO_CALENDAR,
+                    "edges_ok": edges_ok,
                     "incomplete_reason": "数据集未登记预期观测日历，无法证明期间完整"})
         return out
+
     expected = calendar.expected_dates(start, end)
-    unverified = calendar.unverified_span(start, end)
-    if unverified:  # 只在确有未核验日期时记录，已核验期间的结果结构保持不变
-        out["calendar_unverified"] = unverified
-    missing = expected.difference(observed)
-    if len(missing):  # 完整列表供覆盖图使用；没有缺失时不写，保持已核验期间的结果结构不变
-        out["missing_dates"] = [d.date().isoformat() for d in missing]
+    not_due = _pending_mask(expected, spec, evaluated_at)
+    pending = expected[not_due.to_numpy()].difference(observed)  # 已有数据的日期不算尚未发布
+    considered = expected.difference(pending)
+    missing = considered.difference(observed)
     unexpected = observed.difference(expected)
-    share = (len(expected) - len(missing)) / len(expected) if len(expected) else 0.0
-    complete = edges_ok and share >= min_cov
+    share = (len(considered) - len(missing)) / len(considered) if len(considered) else 0.0
+    last_considered = considered.max() if len(considered) else None
+    unverified = calendar.unverified_span(start, last_considered) if last_considered is not None else []
+
+    if not len(considered) or share < min_cov:
+        state = INSUFFICIENT
+    elif len(missing):
+        state = GAPS
+    elif unverified:
+        state = UNVERIFIED_CALENDAR
+    elif len(pending):
+        state = COMPLETE_TO_DATE
+    else:
+        state = COMPLETE
+
     out.update({
         "expected_days": int(len(expected)),
+        "due_days": int(len(considered)),
         "date_share": share,
         "missing_days": int(len(missing)),
         "missing_examples": [d.date().isoformat() for d in missing[:10]],
         "unexpected_days": [d.date().isoformat() for d in unexpected[:10]],
-        "period_complete": complete,
+        "coverage_acceptable": state != INSUFFICIENT,
+        "period_complete": state == COMPLETE,
+        "completeness": state,
     })
-    if not complete:
-        out["incomplete_reason"] = (
-            f"预期 {len(expected)} 个观测日，实际 {len(expected) - len(missing)} 个（{share:.1%}），"
-            f"低于要求 {min_cov:.0%}" if share < min_cov else "数据首尾未覆盖研究期间边界")
+    # 以下列表只在非空时写入
+    if len(missing):
+        out["missing_dates"] = [d.date().isoformat() for d in missing]
+    if len(pending):
+        out["pending_days"] = int(len(pending))
+        out["pending_dates"] = [d.date().isoformat() for d in pending]
+    if unverified:
+        out["calendar_unverified"] = unverified
+    if state not in COMPLETE_STATES:
+        out["incomplete_reason"] = {
+            INSUFFICIENT: f"应已发布 {len(considered)} 个观测日，实际 {len(considered) - len(missing)} 个"
+                          f"（{share:.1%}），低于要求 {min_cov:.0%}",
+            GAPS: f"应已发布的 {len(considered)} 个观测日中缺少 {len(missing)} 个",
+            UNVERIFIED_CALENDAR: f"预期日历未在 {'、'.join(unverified)} 核验，无法证明这些日期没有缺失",
+        }[state]
     return out
+
+
+def _metric_coverage(present: pd.Series, considered: pd.DatetimeIndex | None) -> dict[str, Any]:
+    """单个指标在应考虑日期上的覆盖：present 为该指标有合格值的日期（利差要求两端同时有值）。"""
+    have = present[present].index
+    if considered is None:
+        return {"observed": int(len(have)), "due": None, "missing": None, "complete": False}
+    missing = considered.difference(have)
+    return {"observed": int(len(considered.intersection(have))), "due": int(len(considered)),
+            "missing": int(len(missing)), "complete": not len(missing)}
 
 
 def _restrict_period_stats(summary: dict[str, Any]) -> dict[str, Any]:
@@ -115,10 +181,15 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
     limitations = list(study.limitations)
 
     # ---- 日期覆盖与期限覆盖（分别判断） ------------------------------------
-    coverage = _date_coverage(curve, start, end, calendar, min_cov)
-    period_complete = coverage["period_complete"]
-    # 期限覆盖的分母是预期观测日；没有日历时退回已有日期并在覆盖中注明
-    denominator = coverage["expected_days"] or coverage["curve_days"]
+    coverage = _date_coverage(curve, start, end, calendar, spec, min_cov, study.scope.get("evaluated_at"))
+    acceptable = coverage["coverage_acceptable"]
+    complete_state = coverage["completeness"] in COMPLETE_STATES
+    considered = None
+    if calendar is not None:
+        pending = pd.DatetimeIndex(pd.to_datetime(coverage.get("pending_dates", [])))
+        considered = calendar.expected_dates(start, end).difference(pending)
+    # 期限覆盖的分母是应已发布的观测日；没有日历时退回已有日期并在覆盖中注明
+    denominator = coverage["due_days"] or coverage["curve_days"]
     tenor_cov: dict[str, Any] = {}
     supported: set[str] = set()
     for t in method["key_tenors"]:
@@ -132,7 +203,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
             unsupported.append({"item": f"期限 {code}",
                                 "reason": f"有效观测占比 {share:.1%} 低于要求 {min_cov:.0%}"})
     coverage["tenors"] = tenor_cov
-    coverage["tenor_denominator"] = "expected_days" if coverage["expected_days"] else "observed_days"
+    coverage["tenor_denominator"] = "due_days" if coverage["due_days"] else "observed_days"
     coverage["excluded_rows"] = (period["quality_status"].value_counts()
                                  .drop("ok", errors="ignore").to_dict())
     coverage["dataset_issues"] = [
@@ -141,21 +212,38 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
     if coverage.get("calendar_unverified"):
         limitations.append(
             f"预期观测日历 {coverage['calendar']} 未在 {'、'.join(coverage['calendar_unverified'])} 核验，"
-            "该段的预期日期按规则推定，临时休市或额外发布日可能使日期覆盖略有偏差")
-    if not period_complete:
-        covered = f"{coverage['first']} 至 {coverage['last']}" if coverage["curve_days"] else "无"
+            "该段的预期日期按规则推定，临时休市或额外发布日可能使日期覆盖略有偏差，无法证明没有缺失")
+    if coverage.get("pending_days"):
         limitations.append(
-            f"研究期间 {start.date()} 至 {end.date()} 未能证明完整覆盖（{coverage['incomplete_reason']}；"
+            f"研究窗口内有 {coverage['pending_days']} 个预期观测日在评估时尚未到发布时间"
+            f"（{'、'.join(coverage['pending_dates'][:5])}），不计入覆盖；结果截至 {coverage['last']}")
+    covered = f"{coverage['first']} 至 {coverage['last']}" if coverage["curve_days"] else "无"
+    if not acceptable:
+        limitations.append(
+            f"研究期间 {start.date()} 至 {end.date()} 覆盖不足（{coverage['incomplete_reason']}；"
             f"实际覆盖 {covered}）。只保留首尾有效观测的对比，均值、极值与倒挂天数等期间统计不输出")
         unsupported.append({"item": "期间统计（均值、极值、倒挂天数）",
                             "reason": coverage["incomplete_reason"]})
+    elif not complete_state:
+        limitations.append(
+            f"研究期间未能证明完整（{coverage['incomplete_reason']}）。均值、极值与倒挂天数只基于已观测日期，"
+            "是已观测样本统计，不能推及整个期间")
+
+    metrics: dict[str, dict[str, Any]] = {"levels": {}, "spreads": {}, "curvature": {}}
 
     # ---- 水平、利差与曲率 -----------------------------------------------
-    def summarize(series: pd.Series, unit: str) -> dict[str, Any]:
+    def summarize(series: pd.Series, unit: str, group: str, key: str) -> dict[str, Any]:
+        """期间统计：覆盖不达标时不输出；指标或期间有缺口时标为已观测样本。"""
+        mc = _metric_coverage(series.notna(), considered)
+        metrics[group][key] = mc
         out = level_summary(series, unit)
-        return out if period_complete else _restrict_period_stats(out)
+        if not acceptable:
+            return _restrict_period_stats(out)
+        complete_sample = complete_state and mc["complete"]
+        return {**out, "sample": "complete" if complete_sample else "observed",
+                "missing_days": mc["missing"]}
 
-    levels = {code: summarize(curve[code], "percent") for code in sorted(
+    levels = {code: summarize(curve[code], "percent", "levels", code) for code in sorted(
         supported, key=lambda c: parse_tenor(c).months)}
 
     spreads: dict[str, Any] = {}
@@ -166,10 +254,10 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
         if not {s, l} <= supported:
             unsupported.append({"item": f"利差 {name}", "reason": "所需期限覆盖不足"})
             continue
-        series = spread_bp(curve, s, l)
+        series = spread_bp(curve, s, l)  # 两端同一天都有值才有利差
         spread_series[name] = series
-        spreads[name] = {**summarize(series, "bp"),
-                         "inversion": inversion_stats(series) if period_complete else None}
+        spreads[name] = {**summarize(series, "bp", "spreads", name),
+                         "inversion": inversion_stats(series) if acceptable else None}
 
     curvature: dict[str, Any] = {}
     if method.get("curvature"):
@@ -178,10 +266,11 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
         if {s, m, l} <= supported:
             series = curvature_bp(curve, s, m, l)
             spread_series[f"curvature {name}"] = series
-            curvature[name] = summarize(series, "bp")
+            curvature[name] = summarize(series, "bp", "curvature", name)
         else:
             unsupported.append({"item": f"曲率 {name}", "reason": "所需期限覆盖不足"})
 
+    coverage["metrics"] = metrics
     n_days = coverage["curve_days"]
     first = pd.Timestamp(coverage["first"]) if n_days else None
     last = pd.Timestamp(coverage["last"]) if n_days else None

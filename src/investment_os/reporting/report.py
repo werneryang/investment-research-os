@@ -19,6 +19,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 from ..analytics.rates import curvature_label, spread_label  # noqa: E402
+from ..research.findings import COVERAGE_LABEL, completeness, coverage_summary  # noqa: E402
 from ..tenor import parse_tenor  # noqa: E402
 
 RESULT_TYPE_LABEL = {"descriptive": "描述与比较", "explanatory": "解释与归因",
@@ -32,6 +33,11 @@ def _fmt(v: Any, digits: int = 2) -> str:
     if isinstance(v, float):
         return f"{v:,.{digits}f}"
     return str(v)
+
+
+def _mark(name: str, summary: dict[str, Any]) -> str:
+    """有缺口的指标在名称后加 *：其期间统计只基于已观测日期。"""
+    return f"{name} *" if summary.get("sample") == "observed" else name
 
 
 def _dated(value: Any, day: str | None) -> str:
@@ -107,7 +113,9 @@ def _save(fig: Any, path: Path) -> Path:
 def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
     """返回 [(标题, [段落字符串 | ("table", 表头, 行) | ("figure", 说明, 路径)])]。"""
     cov = result["coverage"]
-    status = "部分结论受限" if result["unsupported"] or not cov.get("period_complete", True) else "完整"
+    state = completeness(cov)
+    status = ("部分结论受限" if result["unsupported"] or state not in ("complete", "complete_to_date")
+              else COVERAGE_LABEL[state])
     overview = [
         f"**研究问题：** {result['question']}",
         f"**成果类型：** {RESULT_TYPE_LABEL.get(result['result_type'], result['result_type'])}"
@@ -125,23 +133,26 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
         first = next(iter(r["levels"].values()))
         note = (f"变化以首个有效观测（{first.get('start_date', '—')}）为基准，"
                 f"至最后有效观测（{first.get('end_date', '—')}）；不是跨年末口径，也不是持有期回报。")
-        if not cov.get("period_complete", True):
-            note += "标为 — 的期间统计因期间未能证明完整而不输出。"
+        if state in ("insufficient", "no_calendar"):
+            note += "标为 — 的期间统计因覆盖不足而不输出。"
+        elif any(v.get("sample") == "observed" for group in ("levels", "spreads", "curvature")
+                 for v in r.get(group, {}).values()):
+            note += "标 * 的指标有缺口，其最低、最高、均值与倒挂天数只基于已观测日期，不能推及整个期间。"
         body.append(note)
         body.append(("table", ["期限", "期初 %", "期末 %", "变化 bp", "最低 %（日期）", "最高 %（日期）", "均值 %"],
-                     [[t, _fmt(v["start"]), _fmt(v["end"]), _fmt(v["change_bp"], 0),
+                     [[_mark(t, v), _fmt(v["start"]), _fmt(v["end"]), _fmt(v["change_bp"], 0),
                        _dated(v["min"], v["min_date"]), _dated(v["max"], v["max_date"]),
                        _fmt(v["mean"])] for t, v in r["levels"].items()]))
     if r.get("spreads"):
         body.append("倒挂定义为利差严格小于 0；恰为 0 的日期单独列出，不计入倒挂。")
         body.append(("table", ["利差（长端 − 短端）", "期初 bp", "期末 bp", "变化 bp", "最低 bp", "最高 bp",
                                "倒挂天数 / 占比", "零利差天数"],
-                     [[spread_label(k), _fmt(v["start"], 0), _fmt(v["end"], 0), _fmt(v["change_bp"], 0),
+                     [[_mark(spread_label(k), v), _fmt(v["start"], 0), _fmt(v["end"], 0), _fmt(v["change_bp"], 0),
                        _fmt(v["min"], 0), _fmt(v["max"], 0), *_inversion_cells(v["inversion"])]
                       for k, v in r["spreads"].items()]))
     if r.get("curvature"):
         body.append(("table", ["曲率", "期初 bp", "期末 bp", "变化 bp", "均值 bp"],
-                     [[curvature_label(k), _fmt(v["start"], 0), _fmt(v["end"], 0), _fmt(v["change_bp"], 0),
+                     [[_mark(curvature_label(k), v), _fmt(v["start"], 0), _fmt(v["end"], 0), _fmt(v["change_bp"], 0),
                        _fmt(v["mean"], 0)] for k, v in r["curvature"].items()]))
     if result["tables"].get("curve_change"):
         body.append(("table", ["期限", "期初 %", "期末 %", "变化 bp"],
@@ -153,19 +164,20 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
                  or ["无可绘制的数据。"]))
 
     cov_rows = [[t, str(v["observations"]), f"{v['share']:.1%}"] for t, v in cov["tenors"].items()]
+    detail = ""
     if cov.get("expected_days") is not None:
-        dates = (f"预期观测日 {cov['expected_days']} 天（日历 {cov['calendar']}），"
-                 f"实际 {cov['curve_days']} 天（{cov['date_share']:.1%}）")
+        detail = f"研究窗口内预期观测日 {cov['expected_days']} 天（日历 {cov['calendar']}）"
+        if cov.get("pending_days"):
+            detail += f"，评估时尚未发布 {cov['pending_days']} 天"
         if cov.get("missing_days"):
-            dates += f"，缺少 {cov['missing_days']} 天（如 {'、'.join(cov['missing_examples'][:3])}）"
-    else:
-        dates = f"实际观测日 {cov['curve_days']} 天，未登记预期日历"
-    verdict = "完整" if cov["period_complete"] else f"未能证明完整：{cov.get('incomplete_reason', '')}"
+            detail += f"，应已发布但缺失 {cov['missing_days']} 天（如 {'、'.join(cov['missing_examples'][:3])}）"
+        detail += "。"
+    reason = f"（{cov['incomplete_reason']}）" if cov.get("incomplete_reason") else ""
     coverage = [
-        f"{dates}；覆盖 {cov['first'] or '—'} 至 {cov['last'] or '—'}。期间覆盖：{verdict}。"
-        f"最低覆盖要求 {cov['min_coverage']:.0%}。",
-        ("table", ["期限", "有效观测", "占比（分母为预期观测日）"
-                   if cov.get("tenor_denominator") == "expected_days" else "占比（分母为实际观测日）"],
+        f"{coverage_summary(cov)}{reason}；覆盖 {cov['first'] or '—'} 至 {cov['last'] or '—'}。{detail}"
+        f"覆盖要求 {cov['min_coverage']:.0%}（决定期间统计能否输出；期间完整另需无缺失且日历已核验）。",
+        ("table", ["期限", "有效观测", "占比（分母为应已发布的观测日）"
+                   if cov.get("tenor_denominator") in ("due_days", "expected_days") else "占比（分母为实际观测日）"],
          cov_rows),
     ]
     if cov.get("excluded_rows"):

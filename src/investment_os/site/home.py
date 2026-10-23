@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from ..research.findings import coverage_summary
 from .common import STATUS_LABEL, chip, e, shell
 from .study import findings_list, key_stats
 
@@ -12,9 +13,7 @@ def _evidence_summary(item: dict[str, Any]) -> str:
     r, ver = item["result"], item["verification"]
     cov, val = r["coverage"], r["validation"]
     parts = []
-    if cov.get("expected_days"):
-        parts.append(f"日期覆盖 {cov['curve_days']}/{cov['expected_days']} 天"
-                     f"（{'完整' if cov['period_complete'] else '未能证明完整'}）")
+    parts.append(f"日期覆盖：{coverage_summary(cov)}")
     spot = val.get("raw_spot_check")
     if spot and spot.get("checked"):
         parts.append(f"原始快照抽查 {spot['checked']} 点{'一致' if spot['status'] == 'pass' else '有不一致'}")

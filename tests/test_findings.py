@@ -49,7 +49,7 @@ def test_small_changes_are_flat_and_incomplete_periods_withhold_counts():
     texts = [f["text"] for f in findings(r)]
     assert texts[0].startswith("10 年期收益率基本持平")
     assert not any("倒挂 166 天" in t for t in texts)  # 期间不完整时不输出倒挂天数
-    assert texts[-1].startswith("研究期间未能证明完整覆盖（预期 250 个观测日，实际 2 个）")
+    assert texts[-1].startswith("研究期间覆盖不足（预期 250 个观测日，实际 2 个）")
 
 
 def test_unknown_branch_has_no_findings():

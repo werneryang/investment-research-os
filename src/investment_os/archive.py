@@ -52,6 +52,8 @@ _RECORD_FILES = ("manifest.json", "result.json", "verifications.jsonl")
 
 def substantive_hash(result: dict[str, Any]) -> str:
     doc = {k: result.get(k) for k in _SUBSTANTIVE_KEYS}
+    # 评估时间每次运行都不同，本身不是结论；它的影响已体现在覆盖（尚未发布的日期）中
+    doc["scope"] = {k: v for k, v in (doc.get("scope") or {}).items() if k != "evaluated_at"}
     doc["validation"] = {k: (v or {}).get("status") for k, v in (result.get("validation") or {}).items()}
     canon = json.dumps(doc, sort_keys=True, ensure_ascii=False, default=str)
     return hashlib.sha256(canon.encode("utf-8")).hexdigest()
