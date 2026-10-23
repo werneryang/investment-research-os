@@ -9,18 +9,20 @@ from typing import Any
 from ..data.store import DataStore
 from ..registry import Registry
 from ..research.findings import interpret, rule_fingerprint, rule_params
-from ..runs import list_runs
+from ..runs import check_artifacts, list_runs
 from .i18n import L
 
 
 def load_run(root: Path, run_id: str) -> dict[str, Any]:
     run_dir = root / "runs" / run_id
+    manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
+    integrity = check_artifacts(root, manifest)
     vpath = run_dir / "verifications.jsonl"
     verifications = [json.loads(x) for x in vpath.read_text(encoding="utf-8").splitlines() if x] \
         if vpath.exists() else []
     result = json.loads((run_dir / "result.json").read_text(encoding="utf-8"))
     interpretation = load_interpretation(result)
-    return {"manifest": json.loads((run_dir / "manifest.json").read_text(encoding="utf-8")),
+    return {"manifest": manifest, "artifact_integrity": integrity,
             "result": result, "interpretation": interpretation,
             "findings": interpretation["items"] if interpretation else [],
             "verification": verifications[-1] if verifications else None}

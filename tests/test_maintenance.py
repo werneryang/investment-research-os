@@ -122,3 +122,15 @@ def test_up_to_date_when_no_new_data(loaded):
     _set_through(loaded, "2024-01-05")
     check = maintenance.check_calendar(loaded)
     assert check["status"] == "up_to_date" and maintenance.build_proposal(loaded, check)["applicable"] is False
+
+
+@pytest.mark.parametrize("through", ["2024-01-05", "2024-01-08"])
+def test_regression_is_reported_even_without_new_dates(project, capsys, through):
+    _set_through(project, through)
+    _load(project, _csv(["2024-01-02", "2024-01-04", "2024-01-05"]))
+    check = maintenance.check_calendar(project)
+    assert check["regressions"]["missing"] == ["2024-01-03"]
+    assert check["status"] == "regression"
+    assert maintenance.build_proposal(project, check)["applicable"] is False
+    assert main(["--root", str(project), "calendar", "check"]) == 1
+    assert "已核验范围内" in capsys.readouterr().out

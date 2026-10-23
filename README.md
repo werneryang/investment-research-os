@@ -99,6 +99,8 @@ uv run iros calendar apply calendar-proposal.json
 uv run iros site --out _site
 ```
 
+输出目录必须是新目录、空目录，或由本工具标记且没有额外文件的网站目录。已有但未标记的旧 `_site` 请先移走，或改用新的输出目录；项目源文件、数据、报告及档案目录不能作为网站输出。构建失败会保留上一版网站。
+
 ```bash
 python3 -m http.server 8765 --directory _site
 ```

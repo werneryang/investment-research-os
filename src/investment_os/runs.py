@@ -309,6 +309,36 @@ def run_study(root: Path, study_path: Path, pins: dict[str, str] | None = None,
 _VOLATILE_RESULT_KEYS = ("run_id", "generated_at", "result_hash")
 
 
+def check_artifacts(root: Path, manifest: dict[str, Any]) -> dict[str, Any]:
+    """核对磁盘产物与运行清单；与固定输入重算分开，网站构建时也必须重新检查。"""
+    root = Path(root).resolve()
+    result_path = root / "runs" / manifest["run_id"] / "result.json"
+    outputs = manifest.get("outputs", [])
+    failures = []
+    if not outputs:
+        failures.append("清单没有输出文件校验值")
+    for ref in outputs:
+        path = (root / ref["path"]).resolve()
+        if not path.is_relative_to(root):
+            failures.append(f"输出路径超出项目目录：{ref['path']}")
+        elif not path.is_file():
+            failures.append(f"输出文件缺失：{ref['path']}")
+        elif sha256_bytes(path.read_bytes()) != ref["sha256"]:
+            failures.append(f"输出文件校验值不一致：{ref['path']}")
+    try:
+        original = json.loads(result_path.read_text(encoding="utf-8"))
+        body = {k: v for k, v in original.items() if k not in _VOLATILE_RESULT_KEYS}
+        digest = hashlib.sha256(json.dumps(body, sort_keys=True, ensure_ascii=False,
+                                          default=str).encode("utf-8")).hexdigest()
+        if digest != manifest["result_hash"]:
+            failures.append("保存结果的内容校验值与运行清单不一致")
+    except (OSError, ValueError) as exc:
+        failures.append(f"无法读取保存结果：{exc}")
+    if failures:
+        raise ValueError(f"运行 {manifest['run_id']} 产物完整性检查失败：" + "；".join(failures))
+    return {"status": "pass", "checked_files": len(outputs), "result_hash": digest}
+
+
 def _partial_hash(result: dict[str, Any], excluded_roles: set[str]) -> str:
     """去掉缺失输入相关部分后的结果校验值：该输入的记录，以及以该角色命名的核验项。"""
     doc = {k: v for k, v in result.items() if k not in _VOLATILE_RESULT_KEYS}
@@ -329,6 +359,7 @@ def verify_run(root: Path, run_id: str) -> dict[str, Any]:
     manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
     if manifest.get("status") == RunStatus.FAILED.value:
         raise ValueError(f"运行 {run_id} 本身失败，没有可复现的结果")
+    integrity = check_artifacts(root, manifest)
     study = parse_study(manifest["study_config"], run_id)
     # 旧清单只列出使用过的输入：未列出的角色视为未使用
     frozen = {i["role"]: dict(i) for i in manifest["inputs"]}
@@ -359,6 +390,7 @@ def verify_run(root: Path, run_id: str) -> dict[str, Any]:
         "original_code": manifest["code"],
         "current_code": current_code,
         "code_changed": code_changed(root, manifest["code"], current_code),
+        "artifact_integrity": integrity,
     }
     if missing:
         record.update(scope="partial", excluded_roles=sorted(missing),

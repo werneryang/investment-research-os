@@ -137,6 +137,10 @@ def rates_curve_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
             "coverage_unverified",
             f"预期发布日历未在 {'、'.join(cov.get('calendar_unverified', []))} 核验，无法证明这些日期没有缺失；"
             "期间统计按已观测日期计算。", evidence))
+    elif state_ == "calendar_conflict":
+        out.append(_finding(
+            "coverage_conflict", "实际观测与预期日历冲突；异常日期已隔离，需核对来源与日历。"
+            "期间统计仅描述符合日历的已观测样本，不能称为完整期间。", evidence))
     elif state_ == "complete_to_date":
         out.append(_finding(
             "coverage_to_date",
@@ -151,6 +155,7 @@ COVERAGE_LABEL = {
     "complete_to_date": "截至已覆盖日期完整",
     "gaps": "有缺失",
     "unverified_calendar": "日历未核验",
+    "calendar_conflict": "日历冲突",
     "insufficient": "覆盖不足",
     "no_calendar": "无预期日历",
 }
@@ -175,6 +180,7 @@ def coverage_summary(cov: dict[str, Any]) -> str:
                              "（下载时尚未到保守可用时点）"),
         "gaps": f"，缺 {cov.get('missing_days', 0)} 天；期间统计为已观测样本",
         "unverified_calendar": "；相关日期超出日历核验范围，无法证明完整",
+        "calendar_conflict": "；异常日期已隔离，日历冲突待核对，不能证明期间完整",
         "insufficient": "，覆盖不足；期间统计不输出",
         "no_calendar": "；未登记预期日历，无法判断完整性",
     }[state_]

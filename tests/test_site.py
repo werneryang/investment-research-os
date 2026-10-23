@@ -4,6 +4,8 @@ import json
 import shutil
 from datetime import date, datetime, timezone
 
+import pytest
+
 from investment_os.cli import main
 from investment_os.registry import resolve_relative_dates
 from investment_os.runs import run_study, verify_run
@@ -129,6 +131,83 @@ def test_site_without_runs(project):
     page = build_site(project, project / "_site").read_text(encoding="utf-8")
     assert "暂无研究运行记录" in page
     assert (project / "_site" / "map.html").exists() and (project / "_site" / "methods.html").exists()
+
+
+def test_site_refuses_unmanaged_output_and_protected_paths(project):
+    shutil.copytree(PROJECT_ROOT / "site", project / "site")
+    out = project / "documents"
+    out.mkdir()
+    sentinel = out / "unrelated.txt"
+    sentinel.write_text("keep me")
+    with pytest.raises(ValueError, match="未标记"):
+        build_site(project, out)
+    assert sentinel.read_text() == "keep me"
+    for target in (project, project.parent, project / "data", project / "reports" / "site",
+                   project / "config"):
+        with pytest.raises(ValueError, match="重叠"):
+            build_site(project, target)
+    assert (project / "config" / "sources.yaml").exists()
+    link = project / "linked-output"
+    link.symlink_to(out, target_is_directory=True)
+    with pytest.raises(ValueError, match="符号链接"):
+        build_site(project, link)
+    archive = project / "custom-archive"
+    with pytest.raises(ValueError, match="重叠"):
+        build_site(project, archive / "site", archive)
+    assert sentinel.read_text() == "keep me"
+
+
+def test_site_rebuilds_owned_output_but_preserves_extra_files(project):
+    shutil.copytree(PROJECT_ROOT / "site", project / "site")
+    out = project / "_site"
+    out.mkdir()  # 新的空目录也可以使用
+    build_site(project, out)
+    (out / "index.html").write_text("old generated page")
+    build_site(project, out)
+    assert "暂无研究运行记录" in (out / "index.html").read_text()
+    sentinel = out / "unrelated.txt"
+    sentinel.write_text("keep me")
+    with pytest.raises(ValueError, match="未登记"):
+        build_site(project, out)
+    assert sentinel.read_text() == "keep me"
+
+
+def test_site_checks_integrity_again_and_preserves_previous_build(loaded):
+    shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
+    m = run_study(loaded, write_study(loaded))
+    verify_run(loaded, m["run_id"])
+    out = loaded / "_site"
+    build_site(loaded, out)
+    page = (out / "studies" / m["study_id"] / "index.html").read_text()
+    assert "保存产物完整性" in page
+    previous = (out / "index.html").read_bytes()
+    result_path = loaded / "runs" / m["run_id"] / "result.json"
+    result = json.loads(result_path.read_text())
+    result["results"]["levels"]["10Y"]["end"] = 99.99
+    result_path.write_text(json.dumps(result))
+    with pytest.raises(ValueError, match="产物完整性检查失败"):
+        build_site(loaded, out)
+    assert (out / "index.html").read_bytes() == previous
+
+
+def test_site_restores_previous_build_if_install_fails(project, monkeypatch):
+    from pathlib import Path
+
+    shutil.copytree(PROJECT_ROOT / "site", project / "site")
+    out = project / "_site"
+    build_site(project, out)
+    previous = (out / "index.html").read_bytes()
+    rename = Path.rename
+
+    def fail_install(path, target):
+        if path.name == "site" and path.parent.name.startswith(".iros-site-"):
+            raise OSError("simulated install failure")
+        return rename(path, target)
+
+    monkeypatch.setattr(Path, "rename", fail_install)
+    with pytest.raises(OSError, match="simulated install failure"):
+        build_site(project, out)
+    assert (out / "index.html").read_bytes() == previous
 
 
 def test_home_places_studies_in_their_branch(loaded):
