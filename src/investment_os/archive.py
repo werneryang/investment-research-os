@@ -61,6 +61,8 @@ def _core_doc(result: dict[str, Any]) -> dict[str, Any]:
     # 评估时间每次运行都不同，本身不是结论；它影响的覆盖判断已体现在 coverage 中
     doc["scope"] = {k: v for k, v in (doc.get("scope") or {}).items()
                     if k not in ("evaluated_at", "data_checked_at")}
+    # 数据下载时间每次运行都不同；它影响的「未取得」日期已体现在覆盖的其他字段中
+    doc["coverage"] = {k: v for k, v in (doc.get("coverage") or {}).items() if k != "data_retrieved_at"}
     doc["validation"] = {k: (v or {}).get("status") for k, v in (result.get("validation") or {}).items()}
     return doc
 

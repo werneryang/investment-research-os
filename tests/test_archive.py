@@ -159,3 +159,25 @@ def test_old_archive_entries_are_compared_with_the_current_hash(loaded, tmp_path
     run_study(loaded, write_study(loaded))
     assert archive.save(loaded, arch) == []  # 不因校验值算法变化而误判为结论变化
     assert first["run_id"] in archive.archived_runs(arch)
+
+
+def test_download_time_alone_does_not_trigger_archiving(project, registry, store, tmp_path):
+    """回归：每天重新下载、内容不变时，固定期间研究的结论相同，不能因为下载时间不同而每天归档。"""
+    from datetime import datetime, timezone
+
+    from investment_os.data import ingest
+
+    from .conftest import TREASURY_2024, treasury_connector
+    from .test_study_e2e import AtTime
+
+    arch = tmp_path / "archive"
+    for day in (8, 9):
+        at = datetime(2024, 1, day, 20, 0, tzinfo=timezone.utc)
+        ingest(registry, store, "ust_par_yield_curve", {"start": 2024, "end": 2024},
+               AtTime(treasury_connector({2024: TREASURY_2024}), at), clock=lambda at=at: at)
+        m = run_study(project, write_study(project))
+        assert json.loads((project / "runs" / m["run_id"] / "result.json").read_text())["coverage"][
+            "data_retrieved_at"] == at.isoformat()
+        archive.save(project, arch)
+    log = [json.loads(x) for x in (arch / "archive.jsonl").read_text().splitlines()]
+    assert [e.get("skipped", False) for e in log] == [False, True]
