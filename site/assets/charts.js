@@ -9,7 +9,10 @@
   "use strict";
 
   var PALETTE = ["#2b6cb0", "#dd6b20", "#2f855a", "#c53030", "#6b46c1", "#718096", "#b7791f"];
-  var RANGES = [["1M", 1], ["3M", 3], ["6M", 6], ["1Y", 12], ["全部", 0]];
+  /* 页面语言：英文页面（html lang="en"）的界面文字用英文 */
+  var EN = document.documentElement.lang === "en";
+  function T(zh, en) { return EN ? en : zh; }
+  var RANGES = [["1M", 1], ["3M", 3], ["6M", 6], ["1Y", 12], [T("全部", "All"), 0]];
 
   function css(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
@@ -54,8 +57,8 @@
 
   function seriesChart(box, data) {
     var groups = [
-      { id: "levels", label: "收益率（%）", unit: "%", series: data.levels.map(function (t) { return { key: t, label: t }; }) },
-      { id: "spreads", label: "利差与曲率（bp）", unit: "bp", series: data.spreads.concat(data.curvature) }
+      { id: "levels", label: T("收益率（%）", "Yield (%)"), unit: "%", series: data.levels.map(function (t) { return { key: t, label: t }; }) },
+      { id: "spreads", label: T("利差与曲率（bp）", "Spreads and curvature (bp)"), unit: "bp", series: data.spreads.concat(data.curvature) }
     ].filter(function (g) { return g.series.length; });
     if (!groups.length) return;
 
@@ -63,7 +66,7 @@
     var controls = el("div", { class: "controls" });
     var seriesControls = el("div", { class: "controls" });
     var canvasBox = el("div", { class: "chart-box" });
-    var canvas = el("canvas", { role: "img", "aria-label": "收益率与利差走势（可交互）" });
+    var canvas = el("canvas", { role: "img", "aria-label": T("收益率与利差走势（可交互）", "Yield and spread history (interactive)") });
     canvasBox.appendChild(canvas);
     box.appendChild(controls); box.appendChild(seriesControls); box.appendChild(canvasBox);
 
@@ -86,7 +89,7 @@
       } } };
       chart.update();
       seriesControls.innerHTML = "";
-      seriesControls.appendChild(el("span", { class: "group-label" }, "序列"));
+      seriesControls.appendChild(el("span", { class: "group-label" }, T("序列", "Series")));
       g.series.forEach(function (s) {
         seriesControls.appendChild(toggle(s.label, !state.hidden[g.id + s.key], function () {
           state.hidden[g.id + s.key] = !state.hidden[g.id + s.key]; render();
@@ -94,7 +97,7 @@
       });
     }
 
-    controls.appendChild(el("span", { class: "group-label" }, "指标"));
+    controls.appendChild(el("span", { class: "group-label" }, T("指标", "Metric")));
     var groupButtons = groups.map(function (g, i) {
       var b = el("button", { type: "button", class: "toggle", "aria-pressed": String(i === 0) }, g.label);
       b.addEventListener("click", function () {
@@ -105,7 +108,7 @@
       controls.appendChild(b);
       return b;
     });
-    controls.appendChild(el("span", { class: "group-label" }, "　区间"));
+    controls.appendChild(el("span", { class: "group-label" }, T("　区间", " Range")));
     var rangeButtons = RANGES.map(function (r) {
       var b = el("button", { type: "button", class: "toggle", "aria-pressed": String(r[1] === 0) }, r[0]);
       b.addEventListener("click", function () {
@@ -123,13 +126,13 @@
     if (!data.tenors.length || !data.rows.length) return;
     var dates = data.rows.map(function (r) { return r.date; });
     var controls = el("div", { class: "controls" });
-    var a = el("select", { "aria-label": "比较日期 A" }), b = el("select", { "aria-label": "比较日期 B" });
+    var a = el("select", { "aria-label": T("比较日期 A", "Comparison date A") }), b = el("select", { "aria-label": T("比较日期 B", "Comparison date B") });
     dates.slice().reverse().forEach(function (d) { a.appendChild(el("option", { value: d }, d)); b.appendChild(el("option", { value: d }, d)); });
     a.value = dates[0]; b.value = dates[dates.length - 1];
-    controls.appendChild(el("span", { class: "group-label" }, "曲线对比"));
+    controls.appendChild(el("span", { class: "group-label" }, T("曲线对比", "Compare curves")));
     controls.appendChild(a); controls.appendChild(el("span", { class: "group-label" }, "vs")); controls.appendChild(b);
     var canvasBox = el("div", { class: "chart-box" });
-    var canvas = el("canvas", { role: "img", "aria-label": "两个日期的收益率曲线对比（可交互）" });
+    var canvas = el("canvas", { role: "img", "aria-label": T("两个日期的收益率曲线对比（可交互）", "Yield curves on two dates (interactive)") });
     canvasBox.appendChild(canvas);
     box.appendChild(controls); box.appendChild(canvasBox);
 
@@ -145,7 +148,7 @@
     var opts = baseOptions("%");
     opts.interaction = { mode: "nearest", intersect: false };
     opts.scales.x = { type: "linear", min: 0, max: pos(maxMonths),
-                      title: { display: true, text: "期限（平方根刻度）", color: css("--muted") },
+                      title: { display: true, text: T("期限（平方根刻度）", "Tenor (square-root scale)"), color: css("--muted") },
                       afterBuildTicks: function (axis) {
                         axis.ticks = Object.keys(tickAt).map(function (v) { return { value: +v }; });
                       },
@@ -178,7 +181,7 @@
     if (!data.tenors || !data.tenors.length) throw new Error("no scenarios");
     var state = { tenor: data.focus || data.tenors[0] };
     var controls = el("div", { class: "controls" });
-    controls.appendChild(el("span", { class: "group-label" }, "假设债券期限"));
+    controls.appendChild(el("span", { class: "group-label" }, T("假设债券期限", "Hypothetical bond tenor")));
     var buttons = data.tenors.map(function (t) {
       var b = el("button", { type: "button", class: "toggle", "aria-pressed": String(t === state.tenor) }, t);
       b.addEventListener("click", function () {
@@ -196,13 +199,13 @@
       var canvas = el("canvas", { role: "img", "aria-label": label });
       box.appendChild(canvas); host.appendChild(box);
       var opts = baseOptions(yTitle);
-      opts.scales.x = { type: "linear", title: { display: true, text: "收益率冲击（bp）", color: css("--muted") },
+      opts.scales.x = { type: "linear", title: { display: true, text: T("收益率冲击（bp）", "Yield shock (bp)"), color: css("--muted") },
                         ticks: { color: css("--muted") }, grid: { color: css("--line") } };
       return new Chart(canvas, { type: "scatter", data: { datasets: [] }, options: opts });
     }
-    var priceChart = lineChart(left, "价格变化：完整重新定价与近似（可交互）", "价格变化（%）");
-    right.appendChild(el("div", { class: "controls" }, "近似误差 = 近似 − 完整重新定价（百分点）"));
-    var errorChart = lineChart(right, "近似误差（可交互）", "误差（pp）");
+    var priceChart = lineChart(left, T("价格变化：完整重新定价与近似（可交互）", "Price change: full repricing and approximations (interactive)"), T("价格变化（%）", "Price change (%)"));
+    right.appendChild(el("div", { class: "controls" }, T("近似误差 = 近似 − 完整重新定价（百分点）", "Approximation error = approximation − full repricing (pp)")));
+    var errorChart = lineChart(right, T("近似误差（可交互）", "Approximation error (interactive)"), T("误差（pp）", "Error (pp)"));
 
     function series(rows, key, label, i, dash) {
       return { label: label, data: rows.map(function (r) { return { x: r.shock_bp, y: r[key] }; }),
@@ -211,11 +214,11 @@
     }
     function render() {
       var rows = data.scenarios[state.tenor] || [];
-      priceChart.data.datasets = [series(rows, "full_pct", "完整重新定价", 0),
-                                  series(rows, "duration_pct", "久期近似", 1, [6, 4]),
-                                  series(rows, "duration_convexity_pct", "久期 + 凸性", 2, [2, 3])];
-      errorChart.data.datasets = [series(rows, "duration_error_pp", "久期近似误差", 1),
-                                  series(rows, "duration_convexity_error_pp", "久期 + 凸性误差", 2)];
+      priceChart.data.datasets = [series(rows, "full_pct", T("完整重新定价", "Full repricing"), 0),
+                                  series(rows, "duration_pct", T("久期近似", "Duration approx."), 1, [6, 4]),
+                                  series(rows, "duration_convexity_pct", T("久期 + 凸性", "Duration + convexity"), 2, [2, 3])];
+      errorChart.data.datasets = [series(rows, "duration_error_pp", T("久期近似误差", "Duration approx. error"), 1),
+                                  series(rows, "duration_convexity_error_pp", T("久期 + 凸性误差", "Duration + convexity error"), 2)];
       priceChart.update(); errorChart.update();
     }
     render();
@@ -236,11 +239,12 @@
       box.hidden = true;
       box.innerHTML = "";
       if (still) still.hidden = false;
-      status.textContent = reason + (hasStatic ? "，以下为静态图（与完整报告相同）。" : "；本页没有可用的静态图。");
+      status.textContent = reason + (hasStatic ? T("，以下为静态图（与完整报告相同）。", "; showing the static figures instead (same as the full report).")
+                                          : T("；本页没有可用的静态图。", "; no static figures are available on this page."));
       status.classList.add("warn");
     }
 
-    if (!window.Chart) { fallback("交互图表脚本未能加载"); return; }
+    if (!window.Chart) { fallback(T("交互图表脚本未能加载", "The interactive chart script did not load")); return; }
     fetch(panel.getAttribute("data-src"))
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (data) {
@@ -252,22 +256,22 @@
           if (!build) throw new Error("unknown chart kind " + data.kind);
           build(left, right, data);
         } catch (err) {
-          fallback("交互图表生成失败");
+          fallback(T("交互图表生成失败", "The interactive chart could not be drawn"));
           return;
         }
         box.hidden = false;
         if (!hasStatic) return;
         still.hidden = true;
         panel.appendChild(still);  // 展开的静态图放在按钮下方，展开时读者不会丢失位置
-        var toggleStatic = el("button", { type: "button", class: "toggle", "aria-expanded": "false" }, "显示静态图");
+        var toggleStatic = el("button", { type: "button", class: "toggle", "aria-expanded": "false" }, T("显示静态图", "Show static figures"));
         toggleStatic.addEventListener("click", function () {
           still.hidden = !still.hidden;
           toggleStatic.setAttribute("aria-expanded", String(!still.hidden));
-          toggleStatic.textContent = still.hidden ? "显示静态图" : "隐藏静态图";
+          toggleStatic.textContent = still.hidden ? T("显示静态图", "Show static figures") : T("隐藏静态图", "Hide static figures");
         });
         status.appendChild(toggleStatic);
       })
-      .catch(function () { fallback("图表数据未能加载"); });
+      .catch(function () { fallback(T("图表数据未能加载", "The chart data did not load")); });
   }
 
   function staleness() {
@@ -279,14 +283,24 @@
     while (d < now) { d.setUTCDate(d.getUTCDate() + 1); if (d <= now && d.getUTCDay() % 6 !== 0) weekdays++; }
     var hours = Math.floor((now - built) / 36e5);
     var age = document.querySelector("[data-age]");
-    if (age) age.textContent = hours < 48 ? hours + " 小时前" : Math.floor(hours / 24) + " 天前";
+    if (age) age.textContent = hours < 48 ? hours + T(" 小时前", " hours ago") : Math.floor(hours / 24) + T(" 天前", " days ago");
     if (weekdays > 2) {
       warn.classList.add("show");
       warn.querySelector("[data-weekdays]").textContent = String(weekdays);
     }
   }
 
+  /* 语言切换：记住读者的选择（中文页面的页头脚本据此转到英文页面）；存储不可用时只切换本次 */
+  function rememberLanguage() {
+    document.querySelectorAll(".lang-switch").forEach(function (a) {
+      a.addEventListener("click", function () {
+        try { localStorage.setItem("lang", a.getAttribute("data-lang")); } catch (e) { /* 忽略 */ }
+      });
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
+    rememberLanguage();
     staleness();
     document.querySelectorAll(".chart-panel[data-src]").forEach(enhance);
   });

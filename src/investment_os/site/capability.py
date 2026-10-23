@@ -23,12 +23,15 @@ from .common import (
     shell,
     use_scope_chip,
 )
+from .i18n import L, Labels, te, tx
 from .renderers import use_key
 
-USE_SHORT = {Use.DESCRIPTIVE: "历史描述", Use.POINT_IN_TIME: "时点研究", Use.SCENARIO: "情景模拟"}
+USE_SHORT = Labels({Use.DESCRIPTIVE: ("历史描述", "Historical description"),
+                    Use.POINT_IN_TIME: ("时点研究", "Point-in-time study"), Use.SCENARIO: ("情景模拟", "Scenario simulation")})
 # 由好到差；分支状态取其方向中最好的一项
 CATEGORIES = ("active", "data_only", "registered", "planned")
-CATEGORY_LABEL = {"active": "已有研究", "data_only": "已有数据", "registered": "数据已登记", "planned": "规划中"}
+CATEGORY_LABEL = Labels({"active": ("已有研究", "Has studies"), "data_only": ("已有数据", "Has data"),
+                         "registered": ("数据已登记", "Data registered"), "planned": ("规划中", "Planned")})
 
 
 def category_chip(category: str) -> str:
@@ -38,7 +41,7 @@ def category_chip(category: str) -> str:
 def risk_chips(direction: dict[str, Any]) -> str:
     """风险来源标签；与方向同名的标签（如「通胀」）不重复显示。"""
     labels = (RISK_LABEL.get(r, r) for r in direction.get("risk", []))
-    return " ".join(chip("tag", x) for x in labels if x != direction.get("name"))
+    return " ".join(chip("tag", x) for x in labels if x != tx(direction.get("name")))
 
 
 def framework(content: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],
@@ -112,42 +115,51 @@ def summary(content: dict[str, Any], registry: Registry, datasets: dict[str, dic
 
 
 def _direction_row(direction: dict[str, Any], st: dict[str, Any]) -> str:
-    can = "".join(f"<li>{e(x)}</li>" for x in direction.get("can_answer", []))
-    cannot = "".join(f"<li>{e(x)}</li>" for x in direction.get("cannot_answer", []))
-    scope = (f'<details class="basis"><summary>能回答 / 还不能回答</summary>'
-             f'{f"<p class=small>能回答：</p><ul>{can}</ul>" if can else ""}'
-             f'{f"<p class=small>还不能可靠回答：</p><ul>{cannot}</ul>" if cannot else ""}</details>'
-             if can or cannot else "")
+    can = "".join(f"<li>{te(x)}</li>" for x in direction.get("can_answer", []))
+    cannot = "".join(f"<li>{te(x)}</li>" for x in direction.get("cannot_answer", []))
+    scope = (f'<details class="basis"><summary>{L("能回答 / 还不能回答", "Can answer / cannot yet answer")}</summary>'
+             + (f'<p class=small>{L("能回答：", "Can answer:")}</p><ul>{can}</ul>' if can else "")
+             + (f'<p class=small>{L("还不能可靠回答：", "Cannot yet answer reliably:")}</p><ul>{cannot}</ul>' if cannot else "")
+             + "</details>" if can or cannot else "")
     tags = risk_chips(direction)
-    name = (f"<strong>{e(direction['name'])}</strong> {tags}"
-            f"<div class='small muted'>{e(direction.get('summary', ''))}</div>{scope}")
+    name = (f"<strong>{te(direction['name'])}</strong> {tags}"
+            f"<div class='small muted'>{te(direction.get('summary', ''))}</div>{scope}")
     if st["category"] == "planned":
-        needs = e(direction.get("needs", ""))
-        return (f"<tr class='planned'><td>{name}</td><td colspan='3'>{chip('planned', '规划，未开始')} "
-                f"<span class='small muted'>{needs}</span></td></tr>")
+        return (f"<tr class='planned'><td>{name}</td><td colspan='3'>"
+                f"{chip('planned', L('规划，未开始', 'Planned, not started'))} "
+                f"<span class='small muted'>{te(direction.get('needs', ''))}</span></td></tr>")
     data = "".join(
         f"<div>{chip('pass' if d['has_data'] else 'skipped', VERIFY_LABEL.get(d['status'], d['status']))} "
-        f"<code class='small'>{e(d['id'])}</code>{'' if d['has_data'] else ' <span class=small>（未取得）</span>'}</div>"
-        for d in st["datasets"]) or '<span class="muted">待接入</span>'
+        f"<code class='small'>{e(d['id'])}</code>"
+        f"{'' if d['has_data'] else ' <span class=small>' + L('（未取得）', '(not fetched)') + '</span>'}</div>"
+        for d in st["datasets"]) or f'<span class="muted">{L("待接入", "Not connected yet")}</span>'
     if st["runs"]:
         types = branch_result_types()
         analysis = "".join(
             f"<div>{chip(r['status'], STATUS_LABEL.get(r['status'], r['status']))} <code class='small'>{e(r['study_id'])}</code>"
-            f"<div class='small muted'>分支 {e(r['branch'])}：支持 "
-            f"{e('、'.join(RESULT_TYPE_LABEL[t.value] for t in types.get(r['branch'], ())))}</div></div>"
+            f"<div class='small muted'>{L('分支 ', 'Branch ')}{e(r['branch'])}{L('：支持 ', ': supports ')}"
+            f"{e(L('、', ', ').join(RESULT_TYPE_LABEL[t.value] for t in types.get(r['branch'], ())))}</div></div>"
             for r in st["runs"])
     else:
-        analysis = ('<span class="muted">尚无研究（数据已接入）</span>' if st["category"] == "data_only"
-                    else '<span class="muted">尚无研究；数据已登记，本次构建未取得</span>')
+        analysis = ('<span class="muted">' + (L("尚无研究（数据已接入）", "No studies yet (data connected)")
+                                              if st["category"] == "data_only" else
+                                              L("尚无研究；数据已登记，本次构建未取得",
+                                                "No studies yet; data registered but not fetched in this build"))
+                    + "</span>")
     if st["validated"]:
         validation = "".join(_validated_entry(ds, u, rec, cov) for ds, u, rec, cov in st["validated"])
         if st["unvalidated"]:
-            validation += (f"<div class='small muted'>未登记用途核验："
-                           f"{e('、'.join(st['unvalidated']))}（只用于交叉检查或尚未核验）</div>")
+            ids = e(L("、", ", ").join(st["unvalidated"]))
+            validation += ("<div class='small muted'>" + L(f"未登记用途核验：{ids}（只用于交叉检查或尚未核验）",
+                                                           f"No use verification registered: {ids} (cross-check only "
+                                                           "or not yet verified)") + "</div>")
     elif st["runs"]:
         ok = all(r["status"] == "success" for r in st["runs"])
-        validation = (f"{chip('skipped', '未登记用途核验')}<div class='small muted'>"
-                      f"{'每次运行的数据与计算检查通过' if ok else '最近运行有受限结论'}；尚未在来源登记中记录用途核验</div>")
+        validation = (f"{chip('skipped', L('未登记用途核验', 'No use verification registered'))}<div class='small muted'>"
+                      + (L("每次运行的数据与计算检查通过", "Each run's data and calculation checks passed") if ok
+                         else L("最近运行有受限结论", "The latest run has limited conclusions"))
+                      + L("；尚未在来源登记中记录用途核验", "; no use verification recorded in the source registry yet")
+                      + "</div>")
     else:
         validation = '<span class="muted">—</span>'
     return f"<tr><td>{name}</td><td>{data}</td><td>{analysis}</td><td>{validation}</td></tr>"
@@ -156,17 +168,19 @@ def _direction_row(direction: dict[str, Any], st: dict[str, Any]) -> str:
 def _validated_entry(ds: str, use: Use, rec: Any, coverage: list[tuple[str, dict[str, Any]]]) -> str:
     statuses = {c["status"] for _, c in coverage}
     if statuses == {"in_scope"}:
-        head = chip("pass", "用途已验证")
+        head = chip("pass", L("用途已验证", "Use verified"))
     elif "in_scope" in statuses or "partial" in statuses:
-        head = chip("partial", "用途已验证 · 部分在范围内")
+        head = chip("partial", L("用途已验证 · 部分在范围内", "Use verified · partly within scope"))
     else:
-        head = chip("fail", "研究期间在核验范围外")
-    valid = f"{rec.valid_from or '不限'} 至 {rec.valid_through or '不限'}"
+        head = chip("fail", L("研究期间在核验范围外", "Study period outside verified scope"))
+    any_ = L("不限", "open")
+    valid = f"{rec.valid_from or any_}{L(' 至 ', ' to ')}{rec.valid_through or any_}"
     per_study = "".join(f"<div class='small'><code>{e(s)}</code> {use_scope_chip(c)}</div>" for s, c in coverage)
     return (f"<div>{head} {e(USE_SHORT[use])} · <code class='small'>{e(ds)}</code>"
-            f"<div class='small muted'>核验覆盖的观测日期 {e(valid)}；登记于 {e(rec.date)}</div>{per_study}"
-            f"<details class='basis'><summary>范围说明与核验证据</summary><p class='small'>{e(rec.scope)}</p>"
-            f"<p class='small'>{e(rec.evidence)}</p></details></div>")
+            f"<div class='small muted'>{L('核验覆盖的观测日期 ', 'Observation dates covered: ')}{e(valid)}"
+            f"{L('；登记于 ', '; registered ')}{e(rec.date)}</div>{per_study}"
+            f"<details class='basis'><summary>{L('范围说明与核验证据', 'Scope and verification evidence')}</summary>"
+            f"<p class='small'>{te(rec.scope)}</p><p class='small'>{te(rec.evidence)}</p></details></div>")
 
 
 def _types_table() -> str:
@@ -176,52 +190,69 @@ def _types_table() -> str:
             implemented[t.value].append(branch)
     rows = "".join(
         f"<tr><td>{e(RESULT_TYPE_LABEL[t])}</td><td>"
-        + (" ".join(f"<code>{e(b)}</code>" for b in branches) if branches else '<span class="muted">尚未实现</span>')
+        + (" ".join(f"<code>{e(b)}</code>" for b in branches) if branches
+           else f'<span class="muted">{L("尚未实现", "Not implemented yet")}</span>')
         + "</td></tr>" for t, branches in implemented.items())
-    return f'<table class="compact"><thead><tr><th>成果类型</th><th>已实现的研究分支</th></tr></thead><tbody>{rows}</tbody></table>'
+    head = L("<th>成果类型</th><th>已实现的研究分支</th>", "<th>Result type</th><th>Implemented in branches</th>")
+    return f'<table class="compact"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table>'
 
 
 def _phases(content: dict[str, Any]) -> str:
-    labels = {"done": "完成", "partial": "部分完成", "planned": "未开始"}
+    labels = Labels({"done": ("完成", "Done"), "partial": ("部分完成", "Partly done"), "planned": ("未开始", "Not started")})
     return '<ol class="phases">' + "".join(
         f'<li class="phase phase-{e(p["status"])}"><div class="phase-id">{e(p["id"])}</div>'
-        f'<div><div class="phase-name">{e(p["name"])} {chip(p["status"], labels.get(p["status"], p["status"]))}</div>'
-        f'<p class="muted">{e(p["summary"])}</p></div></li>' for p in content.get("phases", [])) + "</ol>"
+        f'<div><div class="phase-name">{te(p["name"])} {chip(p["status"], labels.get(p["status"], p["status"]))}</div>'
+        f'<p class="muted">{te(p["summary"])}</p></div></li>' for p in content.get("phases", [])) + "</ol>"
 
 
 def _modules(content: dict[str, Any]) -> str:
     return '<div class="modules">' + "".join(
-        f'<div class="module"><div class="module-id">{e(m["id"])}</div><div class="module-name">{e(m["name"])}</div>'
-        f'<div class="muted small">{e(m["role"])}</div><code class="small">{e(m["code"])}</code></div>'
+        f'<div class="module"><div class="module-id">{e(m["id"])}</div><div class="module-name">{te(m["name"])}</div>'
+        f'<div class="muted small">{te(m["role"])}</div><code class="small">{e(m["code"])}</code></div>'
         for m in content.get("modules", [])) + "</div>"
 
 
 def _branch_rows(branch: dict[str, Any]) -> str:
-    head = (f"<tr class='branch' id='{e(branch['id'])}'><th colspan='4'>{e(branch['name'])} "
-            f"{category_chip(branch['category'])}<div class='small muted'>{e(branch.get('question', ''))}</div></th></tr>")
+    head = (f"<tr class='branch' id='{e(branch['id'])}'><th colspan='4'>{te(branch['name'])} "
+            f"{category_chip(branch['category'])}<div class='small muted'>{te(branch.get('question', ''))}</div></th></tr>")
     return head + "".join(_direction_row(d, st) for d, st in branch["directions"])
 
 
 def capability_page(content: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],
                     latest: dict[str, dict[str, Any]], build: dict[str, Any]) -> str:
     rows = "".join(_branch_rows(b) for b in framework(content, registry, datasets, latest))
+    head = L("<th>研究方向</th><th>数据能力</th><th>分析能力（工程）</th><th>研究验证</th>",
+             "<th>Research direction</th><th>Data</th><th>Analysis (engineering)</th><th>Research verification</th>")
     body = f"""
-<header class="top"><div class="wrap"><h1>研究能力地图</h1>
-<p class="tagline">系统现在能研究什么、证据成熟到什么程度、下一步研究什么。</p></div></header>
+<header class="top"><div class="wrap"><h1>{L("研究能力地图", "Research capability map")}</h1>
+<p class="tagline">{L("系统现在能研究什么、证据成熟到什么程度、下一步研究什么。",
+                      "What the system can study now, how mature the evidence is, and what comes next.")}</p></div></header>
 <main class="wrap">
-<section><h2>研究分支与方向</h2>
-<p class="muted small">研究按架构 §4 的六个研究分支组织，分支下是研究方向；标签是方向涉及的风险来源。
+<section><h2>{L("研究分支与方向", "Research branches and directions")}</h2>
+<p class="muted small">{L("""研究按架构 §4 的六个研究分支组织，分支下是研究方向；标签是方向涉及的风险来源。
 方向的状态由数据登记、来源核验与最新运行自动得出，只有「规划」由人工维护。
 <strong>工程完成</strong>（代码可运行、测试与每次运行的检查通过）与<strong>研究验证完成</strong>
-（在来源登记中记录了针对该用途的核验）是两回事，分列显示。不使用笼统的完成百分比：研究范围会持续扩大，分母并不固定。</p>
-<div class="scroll"><table class="capability"><thead><tr><th>研究方向</th><th>数据能力</th><th>分析能力（工程）</th>
-<th>研究验证</th></tr></thead><tbody>{rows}</tbody></table></div></section>
-<section><h2>成果类型</h2>
-<p class="muted small">描述、解释、预测、模拟的证据要求不同（架构 V0.3 §6.3、§8），各自需要独立的验证方式与展示模板。</p>
+（在来源登记中记录了针对该用途的核验）是两回事，分列显示。不使用笼统的完成百分比：研究范围会持续扩大，分母并不固定。""",
+"""Research is organized into the six research branches of architecture §4, each split into research directions;
+tags show the risk sources a direction involves. A direction's status is derived from data registration, source
+verification and the latest runs; only \u201cplanned\u201d is maintained by hand.
+<strong>Engineering done</strong> (code runs, tests and per-run checks pass) and <strong>research verification
+done</strong> (a verification for that use is recorded in the source registry) are different things and are shown
+separately. There is no overall completion percentage: the scope of research keeps growing, so there is no fixed
+denominator.""")}</p>
+<div class="scroll"><table class="capability"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div></section>
+<section><h2>{L("成果类型", "Result types")}</h2>
+<p class="muted small">{L("描述、解释、预测、模拟的证据要求不同（架构 V0.3 §6.3、§8），各自需要独立的验证方式与展示模板。",
+                          "Description, explanation, forecasts and simulations need different evidence (architecture "
+                          "V0.3 §6.3, §8), each with its own validation method and display template.")}</p>
 {_types_table()}</section>
-<section><h2>建设进度</h2>{_phases(content)}</section>
-<section><h2>系统结构</h2>{_modules(content)}
-<p class="muted small">流程：研究定义 → 资源接入 → 数据与版本 → 公共分析 → 研究分支 → 成果与档案；质量与验证贯穿每一步。
-网站只是发布层：复杂计算在本地或 CI 中完成，网页读取结构化结果。</p></section>
+<section><h2>{L("建设进度", "Build progress")}</h2>{_phases(content)}</section>
+<section><h2>{L("系统结构", "System structure")}</h2>{_modules(content)}
+<p class="muted small">{L("""流程：研究定义 → 资源接入 → 数据与版本 → 公共分析 → 研究分支 → 成果与档案；质量与验证贯穿每一步。
+网站只是发布层：复杂计算在本地或 CI 中完成，网页读取结构化结果。""",
+"""Flow: study definition → data access → data and versions → shared analytics → research branches → results and
+archive, with quality and validation at every step. The website is only the publishing layer: heavy computation runs
+locally or in CI, and pages read structured results.""")}</p></section>
 </main>"""
-    return shell("研究能力地图 · Investment Research OS", body, build, active="map.html")
+    return shell(L("研究能力地图", "Capability map") + " · Investment Research OS", body, build, page="map.html",
+                 active="map.html")
