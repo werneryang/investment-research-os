@@ -52,9 +52,9 @@ gaps:
   - name: 退市证券
     directions: [equity_risk, company_filings, sector_structure]
     detail: 只用现存证券会产生幸存者偏差，相关结论须注明
-  - name: 免费、可核验的信用利差历史
+  - name: 期权调整利差与公司债指数回报
     directions: [credit_premium]
-    detail: 尚未找到；FRED 上的信用利差序列涉及第三方权利，可得历史长度待核验
+    detail: 已接入穆迪收益率利差（日度）与由收益率推算的 Baa 年度回报；期权调整利差、高收益债与公司债指数的实际持有回报仍无免费可核验来源
 
 sources:
   - id: ust_treasury
@@ -121,17 +121,16 @@ sources:
     maintenance: 图表导出接口非正式 API，格式可能变化；空值以空字符串或 "." 表示
     alternatives: [fred_api]
     category: macro
-    directions: [us_inflation_macro, policy_liquidity, growth_labor, us_treasury_curve, credit_premium]
+    directions: [us_inflation_macro, policy_liquidity, growth_labor, us_treasury_curve, credit_premium, vol_premium]
     access: file
     signup: none
     redistribution: per_series
     coverage: 按序列不同；只有当前修订版本
     offers:
-      - 其他政策与货币市场利率（如 SOFR）
-      - 增长序列（如 GDP、工业生产）
-      - 信用利差（如 ICE BofA 序列；第三方权利与可得历史待核验）
+      - 实际 GDP、工业生产、零售销售等增长序列
+      - ICE BofA 期权调整利差（第三方权利与可得历史待核验）
     notes: 复用 fred_graph_csv 接入器，新增序列只需在 datasets.yaml 登记
-    next_step: 逐个序列确认许可；需要时登记更多序列（如信用利差，先核验第三方权利与可得历史）
+    next_step: 逐个序列确认许可；按研究需要登记实际 GDP 等增长序列
     verification:
       - dataset: fred_dgs10
         status: access_verified
@@ -173,6 +172,36 @@ sources:
         date: "2026-10-23"
         evidence: PAYEMS 全历史 1939-01 至 2026-09，1053 行全部合格（版本 v20261023T192739Z-5735c4ff）
         scope: 当前版本月度序列全历史下载
+      - dataset: fred_vixcls
+        status: access_verified
+        date: "2026-10-23"
+        evidence: VIXCLS 全历史 1990-01-02 至 2026-10-22，9301 行合格、302 个假日空值（版本 v20261023T235035Z-2db76a0e）；最高 82.69（2020-03-16），最低 9.14（2017-11-03）
+        scope: 当前版本日度序列全历史下载；有版权，需注明出处，只在本机使用
+      - dataset: fred_baa10y
+        status: access_verified
+        date: "2026-10-23"
+        evidence: BAA10Y 全历史 1986-01-02 至 2026-10-22，10202 行合格（版本 v20261023T235036Z-3a7f2b40）；与 AAA10Y 的 10202 个共同日期中 Baa 利差均高于 Aaa，差值中位数 0.89 个百分点
+        scope: 当前版本日度序列全历史下载；有版权，需注明出处，只在本机使用
+      - dataset: fred_aaa10y
+        status: access_verified
+        date: "2026-10-23"
+        evidence: AAA10Y 全历史 1983-01-03 至 2026-10-22，10949 行合格（版本 v20261023T235037Z-27ebee7c）
+        scope: 当前版本日度序列全历史下载；有版权，需注明出处，只在本机使用
+      - dataset: fred_dtb3
+        status: access_verified
+        date: "2026-10-23"
+        evidence: DTB3 全历史 1954-01-04 至 2026-10-22，18193 行合格（版本 v20261023T235038Z-345f4b12）；与 SOFR 的 2137 个共同日期相关系数 0.993，差值中位数 0.00
+        scope: 当前版本日度序列全历史下载
+      - dataset: fred_sofr
+        status: access_verified
+        date: "2026-10-23"
+        evidence: SOFR 全历史 2018-04-03 至 2026-10-22，2137 行合格（版本 v20261023T235039Z-29fa5eef）
+        scope: 当前版本日度序列全历史下载
+      - dataset: fred_gdp
+        status: access_verified
+        date: "2026-10-23"
+        evidence: GDP 全历史 1947Q1 至 2026Q2，318 个季度全部合格（版本 v20261023T235040Z-5ac10ae8）
+        scope: 当前版本季度序列全历史下载
 
   - id: fred_api
     name: FRED API / ALFRED
@@ -192,7 +221,7 @@ sources:
     redistribution: per_series
     coverage: ALFRED 历史版本，按序列不同
     notes: 时点研究的官方路径；key 放在项目根目录的 .env（不入库），CLI 启动时读取。供应方保留全部历史版本，不需要本机定时快照
-    next_step: 按研究需要登记更多序列的历史版本（如 GDP 等季度序列）
+    next_step: 按研究需要登记更多序列的历史版本（如实际 GDP）
     verification:
       - dataset: alfred_cpiaucsl
         status: docs_verified
@@ -221,6 +250,14 @@ sources:
           PAYEMS 全部历史版本：860 个版本（1955-05-06 至 2026-10-02），观测 1939-01 至 2026-09，13691 行全部合格
           （版本 v20261023T223432Z-aadaeec8）。每个观测的最后发布值与当前修订序列 1053 个月完全一致；抽查 2024-03：
           2024-04-05 首次公布 158133，2025-02-07 年度基准修订为 157517。key 未出现在快照、取得记录与日志中
+        scope: 历史版本全量下载（含分页）；发布日期取 realtime_start
+      - dataset: alfred_gdp
+        status: access_verified
+        date: "2026-10-23"
+        evidence: >-
+          GDP 全部历史版本：415 个版本（1991-12-04 至 2026-09-30），观测 1946Q1 至 2026Q2，3018 行合格（版本 v20261023T235041Z-c3563edd）。
+          每个季度的最后发布值与当前修订序列 318 个季度完全一致；抽查 2025Q3：2025-12-23 初值 31095.1（停摆推迟），2026-01-22 修正为 31098.0，
+          2026-09-30 年度修订为 31180.5。key 未出现在快照、取得记录与日志中
         scope: 历史版本全量下载（含分页）；发布日期取 realtime_start
 
   - id: manual
@@ -382,15 +419,38 @@ sources:
   - id: damodaran
     name: Damodaran 数据
     publisher: Aswath Damodaran（NYU Stern）
+    channel: 数据集目录下的 .xls 文件直接下载（pages.stern.nyu.edu/~adamodar/pc/datasets/）
     url: https://pages.stern.nyu.edu/~adamodar/New_Home_Page/datacurrent.html
+    license: 个人网站公开发布，未见使用或再分发条款；只在本地使用，不进公开存档
+    registration: 无需注册或 key
+    rate_limit: 未公布；本项目串行请求，失败有界重试
+    revisions: 只有当前版本；每年 1 月更新上一年，过去年份的数值偶有修正
+    maintenance: 表格为人工排版，版式可能随年份调整；按表头文字逐字核对，找不到即报错
+    alternatives: []
     category: factors
-    directions: [equity_risk, global_assets]
+    directions: [equity_risk, portfolio, credit_premium, global_assets]
     access: file
+    signup: none
+    redistribution: restricted
+    coverage: histretSP：1928 年起的年度回报；其他文件多为年度横截面数据
     offers:
-      - 美国股票、国债与公司债的年度历史回报
-      - 各国股权风险溢价
-    notes: 多为年度数据，按年更新
-    next_step: 核验下载、方法与许可
+      - 各国股权风险溢价（ctryprem）
+      - 行业估值倍数与资本成本（年度横截面）
+    notes: >-
+      多为年度数据，按年更新。histretSP 的债券回报由收益率推算（10 年期国债、Baa 公司债），不是指数实际回报；
+      房地产为房价变化，不含租金
+    next_step: 按研究需要登记各国股权风险溢价等表格
+    verification:
+      - dataset: damodaran_histret
+        status: access_verified
+        date: "2026-10-23"
+        evidence: >-
+          取得 histretSP.xls「Returns by year」：1928–2025 年 × 7 个序列共 686 个值全部合格（版本 v20261023T235157Z-864ffa5e）。
+          由数据重算的 1928–2025 算术平均与表中汇总行完全一致；几何平均除小盘股外完全一致——表中小盘股的「$100 价值」列未逐年复利，
+          其几何平均（0.16%）有误，年度回报本身不受影响。标普 500 与 French 数据库的 CRSP 市场年度总收益相关系数 0.990（指数不同，
+          单年差异最大 7.2 个百分点）；3 个月国库券与 FRED DTB3 年均值相关系数 0.9995，差异不超过 0.49 个百分点。
+          表内说明核实：债券回报由收益率重新定价推算，国库券为年内平均利率，房地产为 Case-Shiller 房价变化（不含租金）
+        scope: 年度回报表的七个序列；「$100 价值」与平均值汇总不读入
 
   - id: world_bank
     name: 世界银行

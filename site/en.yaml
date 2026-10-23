@@ -25,9 +25,7 @@ phrases:
   "CPI、盈亏平衡通胀率与 TIPS 实际收益率；时点研究需要 ALFRED 历史版本": "CPI, breakeven inflation and TIPS real yields; point-in-time studies need ALFRED vintages"
   "盈亏平衡通胀率与 TIPS 收益率当时公布的数值（只有当前修订版本；CPI 的历史版本已由 ALFRED 接入）": "Breakeven inflation and TIPS yields as published at the time (current revision only; CPI vintages are connected through ALFRED)"
   政策利率与流动性: Policy rates & liquidity
-  "联邦基金有效利率与美联储资产负债表规模": "Effective federal funds rate and the size of the Fed's balance sheet"
   增长与就业: Growth & employment
-  "失业率与非农就业人数：当前修订版本，以及 ALFRED 的全部历史版本（当时公布的数值）": "Unemployment rate and nonfarm payrolls: the current revision, plus every ALFRED vintage (the values as published at the time)"
   美国国债期限结构: US Treasury term structure
   名义票面收益率曲线的水平、斜率、曲率与倒挂: Level, slope, curvature and inversion of the nominal par yield curve
   指定期间内各期限收益率、利差与曲率如何变化: How yields, spreads and curvature by tenor changed over a given period
@@ -44,9 +42,7 @@ phrases:
   冲击发生的概率或未来利率走势（需要预测模型与样本外验证）: How likely a shock is, or where rates go next (needs forecasting models and out-of-sample validation)
   股票: Equity
   信用: Credit
-  需要免费、可核验的信用利差或公司债指数来源: Needs a free, verifiable source of credit spreads or corporate bond indices
   波动率: Volatility
-  需要隐含波动率与已实现波动率数据；完整历史期权链目前列为能力缺口: Needs implied and realized volatility data; full historical option chains are currently a capability gap
   跨市场比较: Cross-market comparison
   需要多市场数据、交易日历与汇率换算（架构 §4、§7.1）: Needs multi-market data, trading calendars and currency conversion (architecture §4, §7.1)
   行业与地区结构: Sector & regional structure
@@ -171,9 +167,7 @@ phrases:
   中国宏观与证券: China macro & securities
   交易所与巨潮资讯: Exchanges and CNINFO
   人工导入: Manual import
-  信用利差（如 ICE BofA 序列；第三方权利与可得历史待核验）: Credit spreads (e.g. ICE BofA series; third-party rights and available history to be verified)
   信贷与债务统计: Credit and debt statistics
-  免费、可核验的信用利差历史: Free, verifiable credit spread history
   免费注册取得 API key；key 不进入 Git: Free sign-up for an API key; the key is never committed to Git
   全球宏观: Global macro
   公司申报与财报: Company filings & financial statements
@@ -198,20 +192,16 @@ phrases:
   基金持仓申报（如 N-PORT，待核验）: Fund holdings filings (e.g. N-PORT, to be verified)
   基金资料: Fund information
   复用 fred_graph_csv 接入器，新增序列只需在 datasets.yaml 登记: Reuses the fred_graph_csv connector; a new series only needs an entry in datasets.yaml
-  多为年度数据，按年更新: Mostly annual data, updated yearly
   学术因子与估值: Academic factors & valuations
   完整历史期权链: Full historical option chains
   宏观与历史修订: Macro & historical revisions
   实际票面收益率曲线（TIPS）: Real par yield curve (TIPS)
-  尚未找到；FRED 上的信用利差序列涉及第三方权利，可得历史长度待核验: Not found yet; credit spread series on FRED carry third-party rights, and the available history length is still to be verified
-  "增长序列（如 GDP、工业生产）": "Growth series (e.g. GDP, industrial production)"
   按原始来源确认: Confirmed per original source
   按年核验预期发布日历，延长用途核验范围: Verify the expected release calendar year by year and extend the use-verification range
   按序列不同；只有当前修订版本: Varies by series; current revision only
   按数据集核验可获得性、历史范围与访问规则: Verify availability, history and access rules per dataset
   按数据集核验可获得性、口径变化、历史范围与接口稳定性: Verify availability, definition changes, history and interface stability per dataset
   按数据集确认免费范围、接口与可比口径: Confirm the free scope, interfaces and comparable definitions per dataset
-  "其他政策与货币市场利率（如 SOFR）": "Other policy and money-market rates (e.g. SOFR)"
   数据权利另受上游条款约束；作为可替换接入，不保证持续可用；不进入公开存档: Data rights are also subject to upstream terms; treated as a replaceable connection with no guarantee of continued availability; never put in the public archive
   无需注册或 key: No sign-up or key needed
   "时点研究的官方路径；key 放在项目根目录的 .env（不入库），CLI 启动时读取。供应方保留全部历史版本，不需要本机定时快照": "The official path for point-in-time studies; the key lives in .env at the project root (not committed) and is read when the CLI starts. The supplier keeps every vintage, so local scheduled snapshots are not needed"
@@ -221,7 +211,6 @@ phrases:
   标普综合指数价格、股息、盈利与 CAPE 的长期月度数据: Long-run monthly S&P Composite prices, dividends, earnings and CAPE
   核验 API 说明、注册要求与额度: Verify the API documentation, sign-up requirements and quotas
   核验 API 说明与许可: Verify the API documentation and license
-  核验下载、方法与许可: Verify downloads, methods and license
   核验下载格式、方法与更新频率: Verify the download format, methods and update frequency
   核验下载格式与历史估计的保留方式: Verify the download format and how historical estimates are kept
   核验下载格式与调查方法说明: Verify the download format and survey method notes
@@ -234,8 +223,6 @@ phrases:
   没有可程序取得的免费路径时使用；每次导入单独声明原始发布者与取得方式: Used when there is no free programmatic route; each import declares its original publisher and how it was obtained
   没有成分变化记录时，指数层面的回测有幸存者偏差: Without records of constituent changes, index-level backtests have survivorship bias
   波动率指数（如 VIX）: Volatility indices (e.g. VIX)
-  "按研究需要登记更多序列的历史版本（如 GDP 等季度序列）": "Register vintages for more series as studies need them (e.g. quarterly series such as GDP)"
-  "逐个序列确认许可；需要时登记更多序列（如信用利差，先核验第三方权利与可得历史）": "Confirm the license series by series; register more series when needed (e.g. credit spreads, after checking third-party rights and available history)"
   社区工具可作接入候选；数据权利受各上游约束，接口稳定性需持续核验: Community tools are access candidates; data rights follow each upstream, and interface stability needs ongoing checks
   美国国债曲线: US Treasury curve
   美国联邦政府发布信息；以官网条款为准，再分发前另行确认: US federal government information; the website's terms apply, and redistribution is confirmed separately first
@@ -255,7 +242,6 @@ phrases:
   部分序列含第三方权利；按序列确认，公开取得不等于可自由再分发: Some series carry third-party rights; confirmed per series, and public access does not mean free redistribution
   "市场的通胀预期本身（盈亏平衡通胀率含通胀风险溢价与流动性溢价）": "Market inflation expectations as such (breakeven inflation includes inflation-risk and liquidity premia)"
   "市场对未来政策利率的预期（需要期货或调查数据）": "Market expectations of future policy rates (needs futures or survey data)"
-  "产出与增长（尚未接入 GDP 等序列；调查与模型估计须与观测值分开登记）": "Output and growth (GDP and similar series not yet connected; surveys and model estimates must be registered separately from observations)"
   "10 年期 TIPS 固定期限实际收益率": "10-year TIPS constant-maturity real yield"
   "10 年期盈亏平衡通胀率（名义收益率 − TIPS 实际收益率；含通胀风险溢价与流动性溢价，不等于通胀预期）": "10-year breakeven inflation (nominal yield − TIPS real yield; includes inflation-risk and liquidity premia, so it is not the same as expected inflation)"
   "失业率（季调，当前修订版本）": "Unemployment rate (seasonally adjusted, current revision)"
@@ -277,7 +263,6 @@ phrases:
   "行业估值、集中度与成分变化（只接入了收益）": "Industry valuations, concentration and membership changes (only returns are connected)"
   "美国 12 个行业组合的价值加权月度收益": "Value-weighted monthly returns of 12 US industry portfolios"
   "美国股票市场与 Fama/French 因子的月度收益（市场超额收益加无风险利率即市场总收益）": "Monthly returns of the US stock market and Fama/French factors (market excess return plus the risk-free rate gives the market's total return)"
-  "股票市场与无风险利率的月度收益已接入；还需要债券等其他资产的收益数据。只做模拟组合，不需要真实账户": "Monthly stock-market and risk-free returns are connected; returns for other assets such as bonds are still needed. Simulated portfolios only, no real accounts"
   "市场因子 Mkt-RF 加 RF 即美国股票市场的月度总收益（价值加权，含分红）；RF 在 202406 之前取自 Ibbotson， 之后为 ICE BofA 1 个月国库券指数。数值为百分比，缺失写作 -99.99 或 -999": "The market factor Mkt-RF plus RF is the monthly total return of the US stock market (value-weighted, dividends included); RF comes from Ibbotson before 202406 and from the ICE BofA 1-month Treasury bill index afterwards. Values are percentages; missing values are written as -99.99 or -999"
   "按研究需要登记日度因子或更细的行业组合": "Register daily factors or finer industry portfolios as studies need them"
   "文件带「Copyright Eugene F. Fama and Kenneth R. French」声明，未见再分发许可；只在本地使用，不进公开存档": "Files carry a \"Copyright Eugene F. Fama and Kenneth R. French\" notice and no redistribution permission was found; used locally only, not in the public archive"
@@ -286,6 +271,41 @@ phrases:
   "更细的行业组合（30、49 个行业）与规模、价值分组组合": "Finer industry portfolios (30 and 49 industries) and size and value sorted portfolios"
   "国际与发达市场因子": "International and developed-market factors"
   "观测期间结束后第 90 天结束时（来源时区）": "End of the 90th day after the observation period ends (source time zone)"
+  "3 个月国库券二级市场利率（贴现率口径）": "3-month Treasury bill secondary market rate (discount basis)"
+  "Cboe VIX 波动率指数日收盘值（标普 500 期权隐含的 30 天波动率，年化百分点）": "Cboe VIX daily close (30-day volatility implied by S&P 500 options, annualized percentage points)"
+  "Cboe VIX 波动率指数（标普 500 期权隐含的 30 天波动率，日度）": "Cboe VIX volatility index (30-day volatility implied by S&P 500 options, daily)"
+  "ICE BofA 期权调整利差（第三方权利与可得历史待核验）": "ICE BofA option-adjusted spreads (third-party rights and available history still to be checked)"
+  "histretSP：1928 年起的年度回报；其他文件多为年度横截面数据": "histretSP: annual returns from 1928; most other files are annual cross-sections"
+  "个人网站公开发布，未见使用或再分发条款；只在本地使用，不进公开存档": "Published openly on a personal website with no terms of use or redistribution found; used locally only, not in the public archive"
+  "交易成本、税负与真实账户的执行": "Trading costs, taxes and execution in real accounts"
+  "公司债指数的实际持有回报（Damodaran 的 Baa 回报由收益率推算）": "Actual holding returns on corporate bond indexes (Damodaran's Baa returns are derived from yields)"
+  "各国股权风险溢价（ctryprem）": "Equity risk premiums by country (ctryprem)"
+  "名义 GDP 全部历史版本：初值、修正值与年度、综合修订（需要 FRED_API_KEY）": "Nominal GDP, every vintage: advance and revised estimates plus annual and comprehensive revisions (needs FRED_API_KEY)"
+  "名义 GDP、失业率与非农就业人数：当前修订版本，以及 ALFRED 的全部历史版本（当时公布的数值）": "Nominal GDP, unemployment rate and nonfarm payrolls: the current revision, plus every ALFRED vintage (the values as published at the time)"
+  "名义 GDP（季调年率，十亿美元；当前修订版本，历史值会随年度与综合修订改变）": "Nominal GDP (seasonally adjusted annual rate, billions of dollars; current revision, history changes with annual and comprehensive revisions)"
+  "增长预期（SPF、GDPNow 等调查与模型估计尚未接入，须与观测值分开登记）": "Growth expectations (surveys and model estimates such as SPF and GDPNow are not yet connected and must be registered separately from observations)"
+  "多为年度数据，按年更新。histretSP 的债券回报由收益率推算（10 年期国债、Baa 公司债），不是指数实际回报； 房地产为房价变化，不含租金": "Mostly annual data, updated yearly. In histretSP, bond returns are derived from yields (10-year Treasury, Baa corporate), not actual index returns; real estate is house-price change without rent"
+  "实际 GDP 与产出缺口（只接入了名义 GDP）": "Real GDP and the output gap (only nominal GDP is connected)"
+  "实际 GDP、工业生产、零售销售等增长序列": "Growth series such as real GDP, industrial production and retail sales"
+  "已接入穆迪收益率利差（日度）与由收益率推算的 Baa 年度回报；期权调整利差、高收益债与公司债指数的实际持有回报仍无免费可核验来源": "Moody's yield spreads (daily) and yield-derived annual Baa returns are connected; option-adjusted spreads, high-yield spreads and actual holding returns on corporate bond indexes still have no free, verifiable source"
+  "担保隔夜融资利率（SOFR），纽约联储次一工作日公布": "Secured Overnight Financing Rate (SOFR), published by the New York Fed the next business day"
+  "按研究需要登记各国股权风险溢价等表格": "Register tables such as country equity risk premiums as studies need them"
+  "按研究需要登记更多序列的历史版本（如实际 GDP）": "Register vintages for more series as studies need them (e.g. real GDP)"
+  "月度或日度的多资产组合风险（债券等只有年度回报）": "Monthly or daily multi-asset portfolio risk (bonds and other assets have annual returns only)"
+  "期权定价与波动率曲面（完整历史期权链列为能力缺口）": "Option pricing and volatility surfaces (complete historical option chains are listed as a capability gap)"
+  "期权调整利差与公司债指数回报": "Option-adjusted spreads and corporate bond index returns"
+  "期权调整利差与高收益债利差（只有穆迪收益率利差）": "Option-adjusted and high-yield spreads (only Moody's yield spreads)"
+  "穆迪 Aaa 级公司债收益率减 10 年期国债固定期限收益率（收益率利差，不是期权调整利差）": "Moody's Aaa corporate bond yield minus the 10-year Treasury constant-maturity yield (a yield spread, not an option-adjusted spread)"
+  "穆迪 Baa 级经调整公司债收益率减 10 年期国债固定期限收益率（收益率利差，不是期权调整利差）": "Moody's seasoned Baa corporate bond yield minus the 10-year Treasury constant-maturity yield (a yield spread, not an option-adjusted spread)"
+  "穆迪 Baa、Aaa 公司债收益率相对 10 年期国债的利差（日度），以及由收益率推算的 Baa 公司债年度回报": "Moody's Baa and Aaa corporate yield spreads over the 10-year Treasury (daily), plus yield-derived annual Baa corporate bond returns"
+  "美国主要资产的年度回报（1928 年起）：标普 500（含分红）、小盘股、3 个月国库券、10 年期国债、Baa 公司债、房地产与黄金": "Annual returns on major US assets from 1928: S&P 500 (with dividends), small caps, 3-month T-bills, 10-year Treasuries, Baa corporate bonds, real estate and gold"
+  "联邦基金有效利率、SOFR、3 个月国库券利率与美联储资产负债表规模": "Effective federal funds rate, SOFR, the 3-month T-bill rate and the size of the Fed's balance sheet"
+  "股票、国库券、国债、公司债、房地产与黄金的年度回报（1928 年起），以及股票市场与无风险利率的月度收益；只做模拟组合，不需要真实账户": "Annual returns on stocks, T-bills, Treasuries, corporate bonds, real estate and gold (from 1928), plus monthly stock-market and risk-free returns; simulated portfolios only, no real accounts"
+  "行业估值倍数与资本成本（年度横截面）": "Industry valuation multiples and cost of capital (annual cross-sections)"
+  "观测期间结束后第 60 天结束时（来源时区）": "End of the 60th day after the observation period ends (source time zone)"
+  "逐个序列确认许可；按研究需要登记实际 GDP 等增长序列": "Confirm the license series by series; register growth series such as real GDP as studies need them"
+  "隐含波动率相对已实现波动率的溢价（需要股票日度收益，尚未接入）": "The premium of implied over realized volatility (needs daily stock returns, not yet connected)"
+  "核验下载、方法与许可": "Check downloads, methods and license"
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'

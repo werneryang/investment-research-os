@@ -34,21 +34,22 @@ branches:
           - 市场的通胀预期本身（盈亏平衡通胀率含通胀风险溢价与流动性溢价）
       - id: policy_liquidity
         name: 政策利率与流动性
-        summary: 联邦基金有效利率与美联储资产负债表规模
+        summary: 联邦基金有效利率、SOFR、3 个月国库券利率与美联储资产负债表规模
         risk: [rates, liquidity]
-        datasets: [fred_dff, fred_walcl]
+        datasets: [fred_dff, fred_sofr, fred_dtb3, fred_walcl]
         studies: []
         can_answer: []
         cannot_answer:
           - 市场对未来政策利率的预期（需要期货或调查数据）
       - id: growth_labor
         name: 增长与就业
-        summary: 失业率与非农就业人数：当前修订版本，以及 ALFRED 的全部历史版本（当时公布的数值）
-        datasets: [fred_unrate, fred_payems, alfred_unrate, alfred_payems]
+        summary: 名义 GDP、失业率与非农就业人数：当前修订版本，以及 ALFRED 的全部历史版本（当时公布的数值）
+        datasets: [fred_gdp, fred_unrate, fred_payems, alfred_gdp, alfred_unrate, alfred_payems]
         studies: []
         can_answer: []
         cannot_answer:
-          - 产出与增长（尚未接入 GDP 等序列；调查与模型估计须与观测值分开登记）
+          - 实际 GDP 与产出缺口（只接入了名义 GDP）
+          - 增长预期（SPF、GDPNow 等调查与模型估计尚未接入，须与观测值分开登记）
 
   - id: markets_assets
     name: 市场与大类资产
@@ -84,7 +85,7 @@ branches:
         name: 股票
         summary: 美国股票市场与 Fama/French 因子的月度收益（市场超额收益加无风险利率即市场总收益）
         risk: [equity]
-        datasets: [french_ff3, french_ff5, french_mom]
+        datasets: [french_ff3, french_ff5, french_mom, damodaran_histret]
         studies: []
         can_answer: []
         cannot_answer:
@@ -93,14 +94,24 @@ branches:
           - 美国以外的股票市场
       - id: credit_premium
         name: 信用
+        summary: 穆迪 Baa、Aaa 公司债收益率相对 10 年期国债的利差（日度），以及由收益率推算的 Baa 公司债年度回报
         risk: [credit]
-        planned: true
-        needs: 需要免费、可核验的信用利差或公司债指数来源
+        datasets: [fred_baa10y, fred_aaa10y, damodaran_histret]
+        studies: []
+        can_answer: []
+        cannot_answer:
+          - 期权调整利差与高收益债利差（只有穆迪收益率利差）
+          - 公司债指数的实际持有回报（Damodaran 的 Baa 回报由收益率推算）
       - id: vol_premium
         name: 波动率
+        summary: Cboe VIX 波动率指数（标普 500 期权隐含的 30 天波动率，日度）
         risk: [instrument]
-        planned: true
-        needs: 需要隐含波动率与已实现波动率数据；完整历史期权链目前列为能力缺口
+        datasets: [fred_vixcls]
+        studies: []
+        can_answer: []
+        cannot_answer:
+          - 隐含波动率相对已实现波动率的溢价（需要股票日度收益，尚未接入）
+          - 期权定价与波动率曲面（完整历史期权链列为能力缺口）
       - id: global_assets
         name: 跨市场比较
         risk: [fx]
@@ -148,8 +159,13 @@ branches:
     directions:
       - id: portfolio
         name: 模拟组合风险
-        planned: true
-        needs: 股票市场与无风险利率的月度收益已接入；还需要债券等其他资产的收益数据。只做模拟组合，不需要真实账户
+        summary: 股票、国库券、国债、公司债、房地产与黄金的年度回报（1928 年起），以及股票市场与无风险利率的月度收益；只做模拟组合，不需要真实账户
+        datasets: [damodaran_histret, french_ff3]
+        studies: []
+        can_answer: []
+        cannot_answer:
+          - 月度或日度的多资产组合风险（债券等只有年度回报）
+          - 交易成本、税负与真实账户的执行
 
   - id: forecast_strategy
     name: 预测与策略实验
