@@ -26,6 +26,8 @@ class CalendarSpec:
     evidence: str
     verified_from: pd.Timestamp | None = None
     verified_through: pd.Timestamp | None = None
+    # 每次延长核验范围追加的条目（iros calendar apply 写入）
+    checks: tuple[dict[str, Any], ...] = ()
 
     def unverified_span(self, start: pd.Timestamp, end: pd.Timestamp) -> list[str]:
         """[start, end] 中超出核验范围的部分（ISO 日期区间描述）；全部已核验时为空。"""
@@ -64,5 +66,6 @@ def load_calendars(doc: dict[str, Any]) -> dict[str, CalendarSpec]:
             verified_from=pd.Timestamp(str(item["verified_from"])) if item.get("verified_from") else None,
             verified_through=(pd.Timestamp(str(item["verified_through"]))
                               if item.get("verified_through") else None),
+            checks=tuple(dict(c) for c in item.get("checks") or ()),
         )
     return out

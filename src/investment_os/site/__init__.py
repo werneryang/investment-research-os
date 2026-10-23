@@ -31,6 +31,7 @@ import yaml
 
 from ..archive import archived_runs
 from ..data.store import DataStore
+from ..maintenance import check_calendar
 from ..registry import Registry
 from .capability import capability_page, summary
 from .collect import collect_runs, datasets, ordered_studies
@@ -66,6 +67,17 @@ def _copy_run(root: Path, item: dict[str, Any], dest: Path) -> list[str]:
     if chart is not None:
         (dest / "chart.json").write_text(json.dumps(chart, ensure_ascii=False), encoding="utf-8")
     return figures
+
+
+def _calendar_checks(root: Path, registry: Registry) -> dict[str, Any]:
+    """每个日历的核验状态（只读，不写入登记）；本次构建没有数据时如实说明。"""
+    out: dict[str, Any] = {}
+    for cal_id in registry.calendars:
+        try:
+            out[cal_id] = check_calendar(root, cal_id)
+        except (ValueError, LookupError) as exc:
+            out[cal_id] = {"status": "unavailable", "message": str(exc)}
+    return out
 
 
 def _asset_version(assets: Path) -> str:
@@ -121,15 +133,18 @@ def build_site(root: Path, out: Path, archive: Path | None = None) -> Path:
         (out / "history" / f"{study_id}.html").write_text(
             redirect(f"../studies/{study_id}/#history"), encoding="utf-8")
 
+    calendar_checks = _calendar_checks(root, registry)
     cap = summary(content, registry, ds_by_id, latest)
     (out / "index.html").write_text(home_page(studies, latest, content, build, cap), encoding="utf-8")
     (out / "map.html").write_text(capability_page(content, registry, ds_by_id, latest, build), encoding="utf-8")
-    (out / "methods.html").write_text(methods_page(content, registry, ds_rows, latest, build), encoding="utf-8")
+    (out / "methods.html").write_text(methods_page(content, registry, ds_rows, latest, build, calendar_checks),
+                                      encoding="utf-8")
     (out / ".nojekyll").write_text("", encoding="utf-8")
 
     doc = {
         "build": build,
         "capability": cap,
+        "calendar_checks": calendar_checks,
         "datasets": ds_rows,
         "runs": [{
             "run_id": i["manifest"]["run_id"], "study_id": s,

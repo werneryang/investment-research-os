@@ -9,6 +9,8 @@
     iros verify --all                    复现全部运行
     iros site --out _site [--archive D]  生成项目静态网站
     iros archive save|restore <dir>      运行档案的保存与恢复
+    iros calendar check [--out F]        核对发布日历，提出核验延长建议（只报告）
+    iros calendar apply F [--confirm]    预览或确认写入延长建议
     iros runs                            运行记录列表
 """
 
@@ -150,6 +152,35 @@ def cmd_archive(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_calendar(args: argparse.Namespace) -> int:
+    from . import maintenance
+
+    root = _root(args.root)
+    if args.action == "check":
+        check = maintenance.check_calendar(root, args.calendar, args.dataset)
+        proposal = maintenance.build_proposal(root, check)
+        print(maintenance.render_markdown(check, proposal) if args.markdown else check["message"])
+        if args.out and proposal["applicable"]:
+            Path(args.out).write_text(json.dumps(proposal, ensure_ascii=False, indent=2), encoding="utf-8")
+            if not args.markdown:
+                print(f"建议已写入 {args.out}；确认后运行：iros calendar apply {args.out} --confirm")
+        # 只报告：发现回归时返回非零，便于 CI 显示；正常延长建议不算失败
+        return 1 if check["status"] == "regression" else 0
+    if not args.file:
+        raise SystemExit("apply 需要建议文件路径")
+    proposal = json.loads(Path(args.file).read_text(encoding="utf-8"))
+    summary = maintenance.apply_proposal(root, proposal, confirm=args.confirm)
+    a, b = summary["verified_through"]
+    if not args.confirm:
+        print(f"预览（未写入）：日历 {summary['calendar']} 核验范围 {a} → {b}；追加 {summary['use_records']} 条用途核验记录")
+        for name, diff in summary["preview"].items():
+            print(f"--- {name}\n{diff}")
+        print("确认后加 --confirm 写入。")
+    else:
+        print(f"已写入：日历 {summary['calendar']} 核验到 {b}；追加 {summary['use_records']} 条用途核验记录")
+    return 0
+
+
 def cmd_runs(args: argparse.Namespace) -> int:
     for r in list_runs(_root(args.root)):
         print(json.dumps(r, ensure_ascii=False))
@@ -195,6 +226,16 @@ def build_parser() -> argparse.ArgumentParser:
     a.add_argument("dir", help="档案目录（CI 中为 archive 分支的工作树）")
     a.add_argument("--with-data", action="store_true", help="restore 时同时恢复归档的数据版本（用于复现）")
     a.set_defaults(func=cmd_archive)
+
+    c = sub.add_parser("calendar", help="核对发布日历并提出核验延长；确认后写入")
+    c.add_argument("action", choices=["check", "apply"])
+    c.add_argument("file", nargs="?", help="apply：建议文件")
+    c.add_argument("--calendar", help="日历 ID（只有一个时可省略）")
+    c.add_argument("--dataset", help="用于核对的数据集（默认第一个使用该日历的数据集）")
+    c.add_argument("--out", help="check：把可写入的建议保存到文件")
+    c.add_argument("--markdown", action="store_true", help="check：输出 Markdown 报告（CI 摘要用）")
+    c.add_argument("--confirm", action="store_true", help="apply：确认写入；不加时只预览")
+    c.set_defaults(func=cmd_calendar)
 
     sub.add_parser("runs", help="运行记录").set_defaults(func=cmd_runs)
     return p

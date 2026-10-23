@@ -60,6 +60,11 @@ jobs:
       - name: Verify runs reproduce from pinned inputs
         run: uv run iros verify --all
 
+      # 只报告、不写入：日历与用途核验的延长需要人工确认（iros calendar apply --confirm）
+      - name: Calendar verification report (report only)
+        continue-on-error: true
+        run: uv run iros calendar check --markdown >> "$GITHUB_STEP_SUMMARY"
+
       - name: Open archive branch
         run: |
           if git fetch --depth=1 origin archive; then

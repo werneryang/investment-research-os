@@ -27,14 +27,27 @@ def _datasets_table(rows: list[dict[str, Any]]) -> str:
             f'<tbody>{"".join(body)}</tbody></table></div>')
 
 
-def _calendars(registry: Registry) -> str:
-    rows = "".join(
-        f"<tr><td><code>{e(c.id)}</code><div class='small muted'>{e(c.description)}</div></td>"
-        f"<td>{e(c.verified_from.date() if c.verified_from is not None else '—')} 至 "
-        f"{e(c.verified_through.date() if c.verified_through is not None else '—')}</td>"
-        f"<td class='small'>{e(c.evidence)}</td></tr>" for c in registry.calendars.values())
-    return ('<div class="scroll"><table><thead><tr><th>日历</th><th>核验范围</th><th>证据</th></tr></thead>'
-            f'<tbody>{rows}</tbody></table></div>')
+CHECK_STATUS = {"up_to_date": ("pass", "已核验到最新数据"), "extendable": ("partial", "有待确认的延长"),
+                "partial": ("partial", "可部分延长，有异常待判断"), "blocked": ("fail", "有异常待判断"),
+                "regression": ("fail", "已核验范围出现回归"), "unavailable": ("skipped", "本次构建无法核对")}
+
+
+def _calendars(registry: Registry, checks: dict[str, Any]) -> str:
+    rows = []
+    for c in registry.calendars.values():
+        chk = checks.get(c.id, {})
+        status, label = CHECK_STATUS.get(chk.get("status"), ("skipped", "—"))
+        history = f"<div class='small muted'>延长记录 {len(c.checks)} 条</div>" if c.checks else ""
+        rows.append(
+            f"<tr><td><code>{e(c.id)}</code><div class='small muted'>{e(c.description)}</div></td>"
+            f"<td>{e(c.verified_from.date() if c.verified_from is not None else '—')} 至 "
+            f"{e(c.verified_through.date() if c.verified_through is not None else '—')}{history}</td>"
+            f"<td>{chip(status, label)}<div class='small'>{e(chk.get('message', ''))}</div></td>"
+            f"<td class='small'>{e(c.evidence)}</td></tr>")
+    return ('<div class="scroll"><table><thead><tr><th>日历</th><th>核验范围</th><th>本次核对</th><th>首次核验证据</th>'
+            f'</tr></thead><tbody>{"".join(rows)}</tbody></table></div>'
+            '<p class="small muted">核对由 <code>iros calendar check</code> 用最新数据完成，只报告不写入；'
+            '延长核验范围与相应的用途核验需要人工确认后用 <code>iros calendar apply --confirm</code> 写入。</p>')
 
 
 def _guarantees(content: dict[str, Any]) -> str:
@@ -68,7 +81,8 @@ def _status(datasets: list[dict[str, Any]], latest: dict[str, dict[str, Any]], b
 
 
 def methods_page(content: dict[str, Any], registry: Registry, datasets: list[dict[str, Any]],
-                 latest: dict[str, dict[str, Any]], build: dict[str, Any]) -> str:
+                 latest: dict[str, dict[str, Any]], build: dict[str, Any],
+                 calendar_checks: dict[str, Any] | None = None) -> str:
     repo = build.get("repo_url")
     body = f"""
 <header class="top"><div class="wrap"><h1>数据、方法与系统状态</h1>
@@ -80,7 +94,7 @@ def methods_page(content: dict[str, Any], registry: Registry, datasets: list[dic
 {_datasets_table(datasets)}</section>
 <section><h2>预期观测日历</h2>
 <p class="muted small">日期覆盖对照经核验的发布日历计算。核验范围之外的日期按规则推定，研究会在限制中注明。</p>
-{_calendars(registry)}</section>
+{_calendars(registry, calendar_checks or {})}</section>
 <section><h2>可靠性机制</h2>{_guarantees(content)}</section>
 <section><h2>复现方法</h2>
 <p>每次运行的清单固定研究定义、数据版本、输入角色与代码内容校验值。结论变化的运行连同允许公开的数据

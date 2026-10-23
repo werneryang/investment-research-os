@@ -65,6 +65,22 @@ uv run iros verify <run_id>
 
 FRED 交叉核验数据未归档，复现时该部分不重算，结果标为「部分复现」。
 
+**日历与用途核验的维护**：新数据发布后，预期发布日历与用途核验需要延长才能覆盖新日期。CI 每次运行都会核对并把结论写到工作流摘要（只报告，不写入）。确认延长时在本地：
+
+```bash
+uv run iros fetch ust_par_yield_curve --start 2024
+```
+
+```bash
+uv run iros calendar check --out calendar-proposal.json
+```
+
+```bash
+uv run iros calendar apply calendar-proposal.json
+```
+
+预览无误后加 `--confirm` 写入，再提交 `config/` 的改动。规则预期与实际发布日期不一致（例如临时休市）时，工具只列出异常、延长停在异常前一天，需要人工判断后修改日历。
+
 本地生成与预览：
 
 ```bash
