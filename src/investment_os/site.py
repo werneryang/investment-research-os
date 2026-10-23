@@ -302,7 +302,7 @@ def _index(content: dict[str, Any], datasets: list[dict[str, Any]], build: dict[
 <header class="top"><div class="wrap">
   <h1>{_e(content.get('title'))}</h1>
   <p class="tagline">{_e(content.get('tagline'))}</p>
-  <p class="meta">{f'代码 <code>{_e(commit)}</code> · ' if commit else ''}{' · '.join(links)}</p>
+  <p class="meta">{' · '.join(([f'代码 <code>{_e(commit)}</code>'] if commit else []) + links)}</p>
   {_status_bar(build)}
 </div></header>
 <main class="wrap">

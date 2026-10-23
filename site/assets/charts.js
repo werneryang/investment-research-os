@@ -34,7 +34,8 @@
       interaction: { mode: "index", intersect: false },
       plugins: { legend: { labels: { color: text, boxWidth: 12 } } },
       scales: {
-        x: { ticks: { color: text, maxTicksLimit: 8, autoSkip: true }, grid: { color: grid } },
+        x: { ticks: { color: text, maxTicksLimit: 6, autoSkip: true, autoSkipPadding: 16, maxRotation: 0 },
+             grid: { color: grid } },
         y: { title: { display: true, text: yTitle, color: text }, ticks: { color: text }, grid: { color: grid } }
       }
     };
