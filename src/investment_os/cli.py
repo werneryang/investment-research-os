@@ -151,6 +151,7 @@ def cmd_verify(args: argparse.Namespace) -> int:
         failed += not ok
         scope = "（部分：未重算 " + "、".join(record["excluded_roles"]) + "）" if record.get("scope") == "partial" else ""
         print(f"[{'reproduced' if ok else 'mismatch'}] {run_id}{scope}")
+        print(f"    保存产物完整性通过（{record['artifact_integrity']['checked_files']} 个输出文件）")
         print(f"    原结果 {record['original_hash'][:16]}，重算 {record['new_hash'][:16]}")
         if record["code_changed"]:
             print("    注意：代码或配置与原运行不同")

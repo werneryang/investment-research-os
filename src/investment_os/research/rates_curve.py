@@ -33,6 +33,7 @@ COMPLETE = "complete"  # 所有预期观测日都有数据，日历已核验
 COMPLETE_TO_DATE = "complete_to_date"  # 已到保守可用时点的日期都有数据，另有日期下载时未到可用时点
 GAPS = "gaps"  # 有应已发布但缺失的日期（覆盖仍达标）
 UNVERIFIED_CALENDAR = "unverified_calendar"  # 没有缺失，但相关日期超出日历核验范围，无法证明完整
+CALENDAR_CONFLICT = "calendar_conflict"  # 有日历预期之外的观测，隔离并等待核对
 INSUFFICIENT = "insufficient"  # 覆盖低于要求
 NO_CALENDAR = "no_calendar"  # 未登记预期日历，无法判断
 COMPLETE_STATES = (COMPLETE, COMPLETE_TO_DATE)
@@ -79,6 +80,10 @@ def _date_coverage(curve: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp,
     - period_complete / completeness：所有应考虑的日期都有数据，且这些日期在日历核验范围内
     """
     observed = curve.dropna(how="all").index
+    expected = calendar.expected_dates(start, end) if calendar is not None else None
+    unexpected = observed.difference(expected) if expected is not None else pd.DatetimeIndex([])
+    if expected is not None:
+        observed = observed.intersection(expected)
     n_obs = int(len(observed))
     first = observed.min() if n_obs else None
     last = observed.max() if n_obs else None
@@ -98,17 +103,17 @@ def _date_coverage(curve: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp,
                     "incomplete_reason": "数据集未登记预期观测日历，无法证明期间完整"})
         return out
 
-    expected = calendar.expected_dates(start, end)
     not_due = _pending_mask(expected, spec, retrieved_at)
     pending = expected[not_due.to_numpy()].difference(observed)  # 已有数据的日期照常计入
     considered = expected.difference(pending)
     missing = considered.difference(observed)
-    unexpected = observed.difference(expected)
     share = (len(considered) - len(missing)) / len(considered) if len(considered) else 0.0
     last_considered = considered.max() if len(considered) else None
     unverified = calendar.unverified_span(start, last_considered) if last_considered is not None else []
 
-    if not len(considered) or share < min_cov:
+    if len(unexpected):
+        state = CALENDAR_CONFLICT
+    elif not len(considered) or share < min_cov:
         state = INSUFFICIENT
     elif len(missing):
         state = GAPS
@@ -125,8 +130,8 @@ def _date_coverage(curve: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp,
         "date_share": share,
         "missing_days": int(len(missing)),
         "missing_examples": [d.date().isoformat() for d in missing[:10]],
-        "unexpected_days": [d.date().isoformat() for d in unexpected[:10]],
-        "coverage_acceptable": state != INSUFFICIENT,
+        "unexpected_days": [d.date().isoformat() for d in unexpected],
+        "coverage_acceptable": bool(len(considered)) and share >= min_cov,
         "period_complete": state == COMPLETE,
         "completeness": state,
     })
@@ -140,6 +145,8 @@ def _date_coverage(curve: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp,
         out["calendar_unverified"] = unverified
     if state not in COMPLETE_STATES:
         out["incomplete_reason"] = {
+            CALENDAR_CONFLICT: f"发现 {len(unexpected)} 个日历预期之外的观测日，已隔离并等待核对："
+                               + "、".join(d.date().isoformat() for d in unexpected[:10]),
             INSUFFICIENT: f"应已发布 {len(considered)} 个观测日，实际 {len(considered) - len(missing)} 个"
                           f"（{share:.1%}），低于要求 {min_cov:.0%}",
             GAPS: f"应已发布的 {len(considered)} 个观测日中缺少 {len(missing)} 个",
@@ -203,6 +210,8 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
     if calendar is not None:
         pending = pd.DatetimeIndex(pd.to_datetime(coverage.get("pending_dates", [])))
         considered = calendar.expected_dates(start, end).difference(pending)
+        # 日历之外的观测只留在覆盖异常记录与原数据中，不进入任何研究统计或图表。
+        curve = curve.loc[curve.index.isin(considered)]
     # 期限覆盖的分母是应已发布的观测日；没有日历时退回已有日期并在覆盖中注明
     denominator = coverage["due_days"] or coverage["curve_days"]
     tenor_cov: dict[str, Any] = {}

@@ -81,6 +81,8 @@ def check_calendar(root: Path, calendar_id: str | None = None, dataset_id: str |
                     "anomalies": {"missing": [], "unexpected": []}, "proposed_verified_through": None,
                     "status": "up_to_date",
                     "message": f"数据只到 {_iso(last_obs)}，日历已核验到 {_iso(vt)}，没有可核验的新日期"})
+        if regressions["missing"] or regressions["unexpected"]:
+            out.update(status="regression", message="已核验范围内出现与规则不一致的日期，需先人工处理，不提出延长")
         return out
 
     expected = cal.expected_dates(start, last_obs)

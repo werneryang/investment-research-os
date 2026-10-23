@@ -17,6 +17,7 @@ COVERAGE_LABEL_EN = {
     "complete_to_date": "complete to date",
     "gaps": "has gaps",
     "unverified_calendar": "calendar not verified",
+    "calendar_conflict": "calendar conflict",
     "insufficient": "insufficient coverage",
     "no_calendar": "no expected calendar",
 }
@@ -34,6 +35,7 @@ STATE_EN = {
     "截至目前完整": "complete to date",
     **{v: COVERAGE_LABEL_EN[k] for k, v in {
         "complete": "完整", "complete_to_date": "截至已覆盖日期完整", "gaps": "有缺失",
+        "calendar_conflict": "日历冲突",
         "unverified_calendar": "日历未核验", "insufficient": "覆盖不足", "no_calendar": "无预期日历"}.items()},
 }
 
@@ -71,6 +73,7 @@ def coverage_summary_en(cov: dict[str, Any]) -> str:
                              "not yet retrieved (not past the conservative availability time when downloaded)"),
         "gaps": f"; {cov.get('missing_days', 0)} missing; period statistics use observed dates only",
         "unverified_calendar": "; some dates are outside the verified calendar, so completeness cannot be shown",
+        "calendar_conflict": "; unexpected dates are excluded pending calendar review; completeness cannot be shown",
         "insufficient": "; coverage is insufficient, so period statistics are not reported",
         "no_calendar": "; no expected calendar is registered, so completeness cannot be judged",
     }[state_]
@@ -159,6 +162,10 @@ def _curve(result: dict[str, Any]) -> dict[str, str]:
         out["coverage_unverified"] = (f"The expected release calendar is not verified for "
                                       f"{', '.join(cov.get('calendar_unverified', []))}, so these dates cannot be "
                                       "shown to be complete; period statistics use observed dates.")
+    elif state_ == "calendar_conflict":
+        out["coverage_conflict"] = ("Observed dates conflict with the expected calendar. Unexpected dates are "
+                                    "excluded pending source and calendar review; statistics describe only "
+                                    "calendar-aligned observed dates, not a complete period.")
     elif state_ == "complete_to_date":
         out["coverage_to_date"] = (f"Through {cov['last']}, all {cov['due_days']} observation dates past the "
                                    f"conservative availability time have data; {cov.get('pending_days', 0)} more "

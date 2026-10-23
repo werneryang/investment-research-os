@@ -64,5 +64,10 @@ def test_old_manifest_without_use_scope_still_reproduces(loaded):
     body = {k: v for k, v in result.items() if k not in ("run_id", "generated_at", "result_hash")}
     manifest["result_hash"] = hashlib.sha256(
         json.dumps(body, sort_keys=True, ensure_ascii=False, default=str).encode("utf-8")).hexdigest()
+    result["result_hash"] = manifest["result_hash"]
+    (path / "result.json").write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
+    for out in manifest["outputs"]:
+        if out["path"].endswith("result.json"):
+            out["sha256"] = hashlib.sha256((path / "result.json").read_bytes()).hexdigest()
     (path / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False), encoding="utf-8")
     assert verify_run(loaded, m["run_id"])["reproduced"] is True

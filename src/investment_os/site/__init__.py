@@ -29,6 +29,7 @@ import hashlib
 import json
 import os
 import shutil
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -50,6 +51,44 @@ from .sources import catalog, sources_page
 from .study import redirect, study_page
 
 __all__ = ["build_site"]
+
+_OUTPUT_MARKER = ".iros-site.json"
+_PROTECTED_DIRS = ("src", "config", "data", "runs", "reports", "site", "tests", "scripts", "docs",
+                   ".git", ".claude", ".venv")
+
+
+def _check_output(root: Path, out: Path, archive: Path | None) -> None:
+    """只允许新目录、空目录或本工具登记过且没有额外文件的输出目录。"""
+    if out.is_symlink():
+        raise ValueError(f"网站输出不能是符号链接：{out}")
+    target, root = out.resolve(), root.resolve()
+    protected = [(root / name).resolve() for name in _PROTECTED_DIRS]
+    if archive is not None:
+        protected.append(archive.resolve())
+    if root.is_relative_to(target) or any(
+            target.is_relative_to(p) or p.is_relative_to(target) for p in protected):
+        raise ValueError(f"网站输出与项目源文件、数据或档案目录重叠：{out}")
+    if not out.exists():
+        return
+    if not out.is_dir():
+        raise ValueError(f"网站输出不是目录：{out}")
+    if not any(out.iterdir()):
+        return
+    marker = out / _OUTPUT_MARKER
+    try:
+        recorded = json.loads(marker.read_text(encoding="utf-8"))
+        if (not isinstance(recorded, dict) or recorded.get("kind") != "iros-site.v1"
+                or not isinstance(recorded.get("paths"), list)
+                or not all(isinstance(p, str) for p in recorded["paths"])):
+            raise ValueError("无效的输出目录标记")
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"拒绝清空未标记的网站目录：{out}；请选择新目录或先移走旧目录") from exc
+    paths = list(out.rglob("*"))
+    if any(p.is_symlink() for p in paths):
+        raise ValueError(f"网站输出中含符号链接，拒绝清空：{out}")
+    extra = {p.relative_to(out).as_posix() for p in paths} - set(recorded["paths"]) - {_OUTPUT_MARKER}
+    if extra:
+        raise ValueError(f"网站输出中含未登记文件或目录，拒绝清空：{', '.join(sorted(extra))}")
 
 
 def _copy_run(root: Path, item: dict[str, Any], dest: Path) -> list[str]:
@@ -98,10 +137,31 @@ def _asset_version(assets: Path) -> str:
 def build_site(root: Path, out: Path, archive: Path | None = None) -> Path:
     """生成网站。给出 archive 时，研究历史只列已归档运行（地址长期有效）与本次最新运行。"""
     root, out = Path(root), Path(out)
+    _check_output(root, out, archive)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    # 先在同一文件系统完成生成与完整性检查；失败时保留上一版网站。
+    with tempfile.TemporaryDirectory(prefix=".iros-site-", dir=out.parent) as temp:
+        staged = Path(temp) / "site"
+        _build_site(root, staged, archive)
+        paths = sorted(p.relative_to(staged).as_posix() for p in staged.rglob("*"))
+        (staged / _OUTPUT_MARKER).write_text(
+            json.dumps({"kind": "iros-site.v1", "paths": paths}, ensure_ascii=False), encoding="utf-8")
+        _check_output(root, out, archive)
+        backup = Path(temp) / "previous"
+        if out.exists():
+            out.rename(backup)
+        try:
+            staged.rename(out)
+        except OSError:
+            if backup.exists():
+                backup.rename(out)
+            raise
+    return out / "index.html"
+
+
+def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
     content = yaml.safe_load((root / "site" / "content.yaml").read_text(encoding="utf-8")) or {}
     registry, store = Registry.load(root), DataStore(root)
-    if out.exists():
-        shutil.rmtree(out)
     out.mkdir(parents=True)
     shutil.copytree(root / "site" / "assets", out / "assets")
     archived = archived_runs(archive) if archive is not None else None
@@ -178,6 +238,7 @@ def build_site(root: Path, out: Path, archive: Path | None = None) -> Path:
             "unsupported": i["result"].get("unsupported", []),
             "validation": {k: v.get("status") for k, v in i["result"]["validation"].items()},
             "reproduced": i["verification"]["reproduced"] if i["verification"] else None,
+            "artifact_integrity": i["artifact_integrity"],
             "history": len(shown[s]),
         } for s, i in latest.items()],
     }

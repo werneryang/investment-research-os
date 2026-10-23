@@ -81,6 +81,41 @@ def test_full_coverage_on_unverified_calendar_is_not_complete(project):
     assert r["results"]["spreads"]["2Y-10Y"]["sample"] == "observed"
 
 
+def test_unexpected_dates_are_excluded_from_all_statistics(project):
+    # 预期为 1 月 2–5 日；加入假日与周末，异常日的极端值不能影响首末值、均值或图表。
+    days = ["2024-01-01", "2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05", "2024-01-06"]
+    body = _csv(days)
+    body = "\n".join(line.replace("4.05", "20.00") if line.startswith(("01/01/2024", "01/06/2024"))
+                     else line for line in body.splitlines()) + "\n"
+    _load(project, body)
+    m, r = _run(project, "2024-01-01", "2024-01-06")
+    cov = r["coverage"]
+    assert m["status"] == "partial" and cov["completeness"] == "calendar_conflict"
+    assert cov["unexpected_days"] == ["2024-01-01", "2024-01-06"]
+    assert cov["period_complete"] is False and cov["curve_days"] == cov["due_days"] == 4
+    assert all(t["share"] == 1.0 for t in cov["tenors"].values())
+    ten = r["results"]["levels"]["10Y"]
+    assert (ten["start_date"], ten["end_date"]) == ("2024-01-02", "2024-01-05")
+    assert ten["mean"] == 4.05 and ten["max"] == 4.05 and ten["sample"] == "observed"
+    assert r["results"]["spreads"]["2Y-10Y"]["inversion"]["observations"] == 4
+    assert [d["date"] for d in r["tables"]["daily"]] == days[1:-1]
+    assert [s["date"] for s in r["results"]["snapshots"]] == [days[1], days[-2]]
+    assert "异常日期已隔离" in coverage_summary(cov)
+    from investment_os.site.findings_en import coverage_summary_en, english_findings
+    assert "unexpected dates" in coverage_summary_en(cov)
+    assert any(f["id"] == "coverage_conflict" and f["translated"]
+               for f in english_findings(r, findings(r)))
+    assert verify_run(project, m["run_id"])["reproduced"] is True
+
+
+def test_only_unexpected_dates_cannot_supply_period_statistics(project):
+    _load(project, _csv(["2024-01-01", "2024-01-06"]))
+    m, r = _run(project, "2024-01-01", "2024-01-06")
+    assert m["status"] == "partial" and r["coverage"]["coverage_acceptable"] is False
+    assert r["coverage"]["curve_days"] == 0 and r["data_cutoff"] is None
+    assert r["results"]["levels"] == {} and r["tables"]["daily"] == []
+
+
 def test_spread_completeness_requires_both_ends_on_the_same_day(project):
     """某天有 10Y 但没有 2Y：10Y 完整，2Y 与 10Y − 2Y 利差不完整。"""
     days = _expected(project, "2024-01-02", "2024-01-05")

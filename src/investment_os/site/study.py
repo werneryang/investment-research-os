@@ -99,6 +99,12 @@ def evidence_panel(item: dict[str, Any], registry: Registry, run_href: str) -> s
                      f"{e(VERIFY_LABEL.get(inp['source_status'], inp['source_status']))}"
                      + (f"<div>{use_scope_chip(inp.get('use_scope'))}</div>" if inp.get("use_scope") else "")))
     rows += renderer.evidence_rows(r)
+    integrity = item.get("artifact_integrity")
+    if integrity:
+        rows.append((L("保存产物完整性", "Saved artifact integrity"),
+                     chip(integrity["status"], CHECK_LABEL[integrity["status"]]) + " "
+                     + L(f"本次构建核对 {integrity['checked_files']} 个输出文件及保存结果的内容校验值。",
+                         f"This build checked {integrity['checked_files']} output files and the saved result hash.")))
     spot = val.get("raw_spot_check")
     if spot:
         n, bad = spot.get("checked", 0), len(spot.get("failures", []))

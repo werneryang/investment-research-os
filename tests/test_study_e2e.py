@@ -87,6 +87,44 @@ def test_run_is_reproducible_with_pinned_versions(loaded, registry, store):
     assert rerun["result_hash"] != manifest["result_hash"]
 
 
+@pytest.mark.parametrize("target", ["result.json", "report.html", "curve_snapshots.png", "missing_report"])
+def test_verify_rejects_modified_or_missing_outputs(loaded, target, capsys):
+    manifest = run_study(loaded, write_study(loaded))
+    record = verify_run(loaded, manifest["run_id"])
+    assert record["reproduced"] and record["artifact_integrity"]["status"] == "pass"
+    name = "report.html" if target == "missing_report" else target
+    path = loaded / next(o["path"] for o in manifest["outputs"] if o["path"].endswith(name))
+    if target == "result.json":
+        result = json.loads(path.read_text())
+        result["results"]["levels"]["10Y"]["end"] = 99.99
+        path.write_text(json.dumps(result))
+    elif target == "missing_report":
+        path.unlink()
+    else:
+        path.write_bytes(path.read_bytes() + b"changed")
+    with pytest.raises(ValueError, match="产物完整性检查失败"):
+        verify_run(loaded, manifest["run_id"])
+    assert main(["--root", str(loaded), "verify", manifest["run_id"]]) == 2
+    assert "产物完整性检查失败" in capsys.readouterr().err
+
+
+def test_verify_checks_saved_result_content_even_if_file_hash_is_updated(loaded):
+    from investment_os.data.store import sha256_bytes
+
+    m = run_study(loaded, write_study(loaded))
+    run_dir = loaded / "runs" / m["run_id"]
+    path = run_dir / "result.json"
+    result = json.loads(path.read_text())
+    result["results"]["levels"]["10Y"]["end"] = 99.99
+    path.write_text(json.dumps(result))
+    for out in m["outputs"]:
+        if out["path"].endswith("result.json"):
+            out["sha256"] = sha256_bytes(path.read_bytes())
+    (run_dir / "manifest.json").write_text(json.dumps(m))
+    with pytest.raises(ValueError, match="保存结果的内容校验值"):
+        verify_run(loaded, m["run_id"])
+
+
 def test_insufficient_coverage_limits_dependent_conclusions(loaded):
     path = write_study(loaded, method={**STUDY["method"], "key_tenors": ["2Y", "10Y", "6W"]})
     manifest = run_study(loaded, path)
