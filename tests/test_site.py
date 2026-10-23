@@ -199,3 +199,107 @@ def test_charts_are_static_first_and_self_hosted(loaded):
     # 回退提示只在确有静态图时才说「以下为静态图」
     js = (site / "assets" / "charts.js").read_text(encoding="utf-8")
     assert "hasStatic ?" in js and "已显示静态图" not in js
+
+
+def _visible_chinese(html: str) -> list[str]:
+    """正文中未标为 lang="zh-CN" 的中文（语言切换链接除外）。"""
+    import re
+
+    body = html[html.index("<body"):]
+    body = re.sub(r'<span lang="zh-CN">.*?</span>', "", body, flags=re.S)
+    body = re.sub(r'<a class="lang-switch"[^>]*>.*?</a>', "", body)
+    return re.findall(r".{0,20}[一-鿿　-〿＀-￯].{0,20}", body)
+
+
+def test_english_pages_mirror_chinese_pages(loaded):
+    """英文页面在 en/ 下镜像中文页面，共用根目录的资源与运行记录；页面顶端可以互相切换。"""
+    shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
+    m = run_study(loaded, write_study(loaded))
+    verify_run(loaded, m["run_id"])
+    build_site(loaded, loaded / "_site")
+    site = loaded / "_site"
+    for page in ("index.html", "map.html", "sources.html", "methods.html", "studies/ust_curve_test/index.html"):
+        assert (site / "en" / page).exists()
+    zh_home = (site / "index.html").read_text(encoding="utf-8")
+    en_home = (site / "en" / "index.html").read_text(encoding="utf-8")
+    assert '<html lang="zh-CN">' in zh_home and '<html lang="en">' in en_home
+    assert '<a class="lang-switch" href="en/index.html" hreflang="en"' in zh_home
+    assert '<a class="lang-switch" href="../index.html" hreflang="zh-CN"' in en_home
+    assert 'href="../assets/style.css' in en_home and "Research framework" in en_home
+    # 选过英文的读者打开中文地址时转到英文页面；?lang=zh 可以强制中文
+    assert 'localStorage.getItem("lang")==="en"' in zh_home and "localStorage" not in en_home.split("</head>")[0]
+
+    en_study = (site / "en" / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")
+    assert '<a class="lang-switch" href="../../../studies/ust_curve_test/"' in en_study
+    assert f'src="../../../runs/{m["run_id"]}/figures/' in en_study and "Key findings" in en_study
+    # 发现由英文措辞从同一结果生成；记录中的中文原文不改写
+    assert "The 10-year yield rose from 3.95% to 4.05%" in en_study
+    assert "10 年期收益率由 3.95% 升至 4.05%" in (site / "studies" / "ust_curve_test" / "index.html").read_text()
+    for page in ("index.html", "map.html", "sources.html", "methods.html", "studies/ust_curve_test/index.html"):
+        assert _visible_chinese((site / "en" / page).read_text(encoding="utf-8")) == [], page
+    # 旧的历史页地址只在中文站点保留
+    assert not (site / "en" / "history").exists()
+
+
+def test_untranslated_record_text_is_marked_and_reported(loaded):
+    """没有译文的记录文字在英文页面保留原文、标为中文，并在 summary.json 中列出。"""
+    shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
+    run_study(loaded, write_study(loaded))
+    build_site(loaded, loaded / "_site")
+    en_study = (loaded / "_site" / "en" / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")
+    assert '<span lang="zh-CN">测试曲线</span>' in en_study  # 测试研究的标题没有译文
+    summary = json.loads((loaded / "_site" / "summary.json").read_text(encoding="utf-8"))
+    assert {"测试曲线", "2024 年初曲线如何变化？", "测试数据"} <= set(summary["untranslated"])
+
+
+def test_site_content_has_english_text():
+    """site/content.yaml 中显示在页面上的文字都有英文译文（与 site/en.yaml 一起维护）。"""
+    import yaml
+
+    from investment_os.site.i18n import has_cjk, load_phrases, tx, use
+
+    content = yaml.safe_load((PROJECT_ROOT / "site" / "content.yaml").read_text(encoding="utf-8"))
+    texts = [content["tagline"]] + [m["label"] for m in content["studies"].values()]
+    for b in content["branches"]:
+        texts += [b["name"], b["question"]]
+        for d in b["directions"]:
+            texts += [d["name"], d.get("summary", ""), d.get("needs", "")]
+            texts += d.get("can_answer", []) + d.get("cannot_answer", [])
+    for p in content["phases"]:
+        texts += [p["name"], p["summary"]]
+    for m in content["modules"]:
+        texts += [m["name"], m["role"]]
+    for g in content["guarantees"]:
+        texts += [g["title"], g["detail"]]
+    missing: set[str] = set()
+    with use("en", load_phrases(PROJECT_ROOT), missing):
+        for t in texts:
+            tx(" ".join(str(t).split()) if t else t)
+    assert not missing, sorted(missing)
+    assert all(not has_cjk(x) for x in load_phrases(PROJECT_ROOT)["phrases"].values())
+
+
+def test_english_findings_cover_every_rule():
+    """英文页面的发现与记录一一对应；每条中文规则都有英文措辞。"""
+    from investment_os.research.findings import par_bond_findings, rates_curve_findings
+    from investment_os.site.findings_en import english_findings
+
+    curve = {"branch": "rates_curve", "results": {
+        "levels": {t: {"observations": 5, "start": 4.0, "end": 4.2, "change_bp": 20,
+                       "start_date": "2024-01-02", "end_date": "2024-01-08"} for t in ("3M", "2Y", "10Y")},
+        "spreads": {"2Y-10Y": {"observations": 5, "start": -10, "end": 5, "change_bp": 15,
+                               "inversion": {"inverted_days": 2, "inverted_share": 0.4, "observations": 5,
+                                             "zero_days": 1}}},
+        "curvature": {"2Y/5Y/10Y": {"observations": 5, "start": -3, "end": -9, "change_bp": -6}}},
+        "coverage": {"completeness": "gaps", "due_days": 6, "missing_days": 1}}
+    recorded = rates_curve_findings(curve)
+    en = english_findings(curve, recorded)
+    assert [f["id"] for f in en] == [f["id"] for f in recorded] and all(f["translated"] for f in en)
+    assert "turning from inverted to positive" in en[2]["text"] and "sank" in en[3]["text"]
+    bond = {"branch": "par_bond_scenarios", "results": {
+        "base_date": "2026-10-22",
+        "bonds": {"2Y": {"coupon_pct": 4.0, "modified_duration": 1.9, "convexity": 4.6}},
+        "scenarios": {"2Y": [{"shock_bp": 100, "full_pct": -1.85, "duration_pct": -1.9, "duration_error_pp": -0.05,
+                              "duration_convexity_pct": -1.87, "duration_convexity_error_pp": -0.001}]}}}
+    en = english_findings(bond, par_bond_findings(bond))
+    assert all(f["translated"] for f in en) and en[0]["text"].startswith("A hypothetical 2Y par bond")

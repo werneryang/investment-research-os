@@ -51,6 +51,8 @@ uv run iros verify <run_id>
 - **系统能研究什么**：`map.html` 研究能力地图由登记与运行记录生成，区分工程完成与研究验证；研究框架与规划中的方向在 `site/content.yaml` 维护。系统状态放在页脚与 `methods.html#status`，只有更新停滞时才在页面顶部提示。
 - **可以用哪些免费资源**：`sources.html` 数据资源目录由 `config/sources.yaml` 生成，列出已接入与候选来源的取得方式、许可、核验状态、可服务的研究方向与下一步，并按研究方向索引能力缺口。
 
+页面顶端右侧可切换中英文：英文页面在 `en/` 下，研究发现按同一规则的英文措辞生成；完整报告只有中文。译文维护在 `site/en.yaml`。
+
 **运行档案**（`archive` 分支，只追加）：运行清单、结果、报告，以及允许公开再分发的数据（`config/datasets.yaml` 中 `archive_data: true`，目前只有 Treasury 曲线）。只有结论实质变化时才归档新运行。日后复现旧运行：
 
 ```bash

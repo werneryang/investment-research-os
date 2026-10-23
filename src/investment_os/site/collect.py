@@ -10,6 +10,7 @@ from ..data.store import DataStore
 from ..registry import Registry
 from ..research.findings import interpret, rule_fingerprint, rule_params
 from ..runs import list_runs
+from .i18n import L
 
 
 def load_run(root: Path, run_id: str) -> dict[str, Any]:
@@ -47,28 +48,31 @@ def run_differences(prev: dict[str, Any], cur: dict[str, Any]) -> list[str]:
     out = []
     ps, cs = prev["result"]["scope"], cur["result"]["scope"]
     if (ps.get("start"), ps.get("end")) != (cs.get("start"), cs.get("end")):
-        out.append(f"研究窗口 {ps.get('start')}—{ps.get('end')} → {cs.get('start')}—{cs.get('end')}")
+        out.append(L("研究窗口 ", "Study window ") + f"{ps.get('start')}—{ps.get('end')} → {cs.get('start')}—{cs.get('end')}")
     prev_inputs = {i["role"]: i for i in prev["manifest"].get("inputs", []) if i.get("used", True)}
     for i in cur["manifest"].get("inputs", []):
         if not i.get("used", True):
             continue
         before = prev_inputs.get(i["role"])
         if before is None:
-            out.append(f"新增输入 {i['dataset_id']}")
+            out.append(L("新增输入 ", "New input ") + i["dataset_id"])
         elif before.get("content_hash") != i.get("content_hash"):
-            out.append(f"数据版本 {i['dataset_id']}：{before['version_id']} → {i['version_id']}")
+            out.append(L(f"数据版本 {i['dataset_id']}：", f"Data version {i['dataset_id']}: ")
+                       + f"{before['version_id']} → {i['version_id']}")
     pc, cc = prev["manifest"].get("code", {}), cur["manifest"].get("code", {})
     if pc.get("source_hash") and cc.get("source_hash"):
         if pc["source_hash"] != cc["source_hash"]:
-            out.append(f"代码或配置 {pc['source_hash'][:8]} → {cc['source_hash'][:8]}")
+            out.append(L("代码或配置 ", "Code or config ") + f"{pc['source_hash'][:8]} → {cc['source_hash'][:8]}")
     elif pc.get("git_commit") != cc.get("git_commit"):
-        out.append(f"代码提交 {(pc.get('git_commit') or '—')[:7]} → {(cc.get('git_commit') or '—')[:7]}")
+        out.append(L("代码提交 ", "Code commit ") + f"{(pc.get('git_commit') or '—')[:7]} → {(cc.get('git_commit') or '—')[:7]}")
     pi, ci = prev.get("interpretation") or {}, cur.get("interpretation") or {}
     if pi.get("origin") == "retrospective" or ci.get("origin") == "retrospective":
-        out.append("至少一次运行的发现为事后生成")
+        out.append(L("至少一次运行的发现为事后生成", "Findings of at least one run were generated retrospectively"))
     elif pi.get("rule_fingerprint") != ci.get("rule_fingerprint") or pi.get("params") != ci.get("params"):
-        out.append(f"解释规则 {pi.get('rule_version')}（{(pi.get('rule_fingerprint') or '—')[:8]}）→ "
-                   f"{ci.get('rule_version')}（{(ci.get('rule_fingerprint') or '—')[:8]}）")
+        lp, rp = L("（", " ("), L("）", ")")
+        out.append(L("解释规则 ", "Interpretation rule ")
+                   + f"{pi.get('rule_version')}{lp}{(pi.get('rule_fingerprint') or '—')[:8]}{rp} → "
+                   f"{ci.get('rule_version')}{lp}{(ci.get('rule_fingerprint') or '—')[:8]}{rp}")
     return out
 
 
