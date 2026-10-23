@@ -37,6 +37,14 @@ uv run iros run config/studies/ust_curve_2024.yaml
 uv run iros verify <run_id>
 ```
 
+本机定时快照：每个工作日取得登记了 `scheduled_fetch` 的数据集（Treasury 曲线与 FRED 序列），存入本地 `data/`。Treasury 与 FRED 只提供当前修订版本，漏掉的日期补不回来。
+
+```bash
+scripts/snapshot-agent.sh install
+```
+
+`scripts/snapshot-agent.sh status` 查看最近日志；手动取得全部定时数据集用 `uv run iros fetch --all`。
+
 ## 项目网站
 
 线上地址：<https://werneryang.github.io/investment-research-os/>
@@ -95,7 +103,7 @@ python3 -m http.server 8765 --directory _site
 
 页面说明性内容在 `site/content.yaml`，样式与图表脚本在 `site/assets/`；研究结果、数据与核验状态从运行记录和登记中生成。
 
-其他命令：`iros sources`（已接入与候选来源及核验状态）、`iros datasets`（版本与质量概况）、`iros runs`、`iros import <dataset> <file> --declared-source "..."`（人工导入）。
+其他命令：`iros fetch --all`（全部定时数据集）、`iros sources`（已接入与候选来源及核验状态）、`iros datasets`（版本与质量概况）、`iros runs`、`iros import <dataset> <file> --declared-source "..."`（人工导入）。
 
 ```bash
 uv run pytest

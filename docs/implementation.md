@@ -131,6 +131,8 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - 每次运行的 `report.html`、图表、`daily.json`、`manifest.json`、`result.json` 发布在 `runs/<run_id>/`；`latest/<study_id>/report.html` 为最新完整报告的稳定地址；旧的 `history/<study_id>.html` 转到研究页的历史部分。
 - 利差显示名写明减法方向（`10Y − 2Y`）；结果文件中的键（`2Y-10Y`）保持不变。
 
+**本机定时快照**：Treasury 与 FRED 只提供当前修订版本，时点研究只能依靠当时已取得的快照，而 CI 取得的数据随运行环境丢弃。因此快照在本机积累：`scripts/snapshot-agent.sh install` 安装 launchd 任务（`com.investment-research-os.snapshots`），每个工作日 19:45（本机时间）运行 `iros fetch --all`，取得 `config/datasets.yaml` 中登记了 `scheduled_fetch` 的数据集，存入本地 `data/`。内容未变时只记录取得、不建新版本，取得记录本身证明「当时已知道什么」。电脑睡眠时错过的运行在唤醒后补跑；关机时错过的运行不补，那些日期的快照永久缺失。日志在 `~/Library/Logs/investment-research-os/snapshots.log`；`status`、`run`、`uninstall` 用于查看、立即运行与移除。`data/` 不入库，目前没有备份。
+
 **运行档案**（`iros archive save|restore <dir>`）：CI 把运行记录与报告保存到 `archive` 分支的工作树，只追加、不覆盖。每项研究只在实质内容（结果、覆盖、限制、核验结论，以及运行时记录的解释；不含运行 ID、输入版本号、评估与下载时间）变化时归档新运行，比较对象是上一次归档运行的结果按当前算法重新计算的校验值；只有解释变化时原因记为「解释变化（结果不变）」；结论相同的运行在 `archive.jsonl` 中记为 skipped，以后不再考虑。数据只归档 `archive_data: true` 的数据集中被已归档运行使用的版本（目前只有 Treasury 曲线，2026-10-22 经用户确认）。
 
 复现档案中的运行：`iros archive restore <dir> --with-data` 恢复记录与数据（目录按创建时间重排），再 `iros verify <run_id>`。固定版本不在本地的**可选**输入（FRED 交叉核验）不重算，比较去掉该输入及其核验项后的结果，记为部分复现；必需输入缺失则报错。
@@ -156,7 +158,7 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 
 **新增候选来源**：在 `config/sources.yaml` 登记 `id`、`publisher`、`url`、`category`，以及能写的索引字段（`directions`、`access`、`signup`、`redistribution`、`offers`、`notes`、`next_step` 等，见文件开头的说明）。读过官方说明后追加不指明数据集的 `docs_verified` 记录。资源目录与 `iros sources` 自动更新。
 
-**新增同类数据集**：在 `config/datasets.yaml` 登记，复用已有接入器（如另一个 FRED 序列只需改 `params.series`），并在 `config/sources.yaml` 追加核验记录。
+**新增同类数据集**：在 `config/datasets.yaml` 登记，复用已有接入器（如另一个 FRED 序列只需改 `params.series`），写明保守的 `availability`；需要积累快照时加上 `scheduled_fetch`。用 `iros fetch` 取得样本后在 `config/sources.yaml` 追加 `access_verified` 记录，并在 `site/content.yaml` 把数据集挂到研究方向（方向原为 `planned: true` 时去掉）。
 
 **新增来源**：在 `connectors/` 实现 `fetch` 与 `parse`（输出暂存表的 5 列），在 `connectors/__init__.py` 注册，在 `sources.yaml` 补齐来源的 §5.1 字段与核验状态（候选来源缺这些字段时，登记数据集会报错）。数值转换、时间规则、质量与版本由公共流程处理，接入器不重复实现。
 
@@ -166,7 +168,8 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 
 ## 8. 已知限制与后续工作
 
-- Treasury 与 FRED 图表 CSV 都不提供历史版本，本地快照只能证明「何时取得了什么」，不能恢复过去的版本。时点研究需要 ALFRED（需 key）或从现在起持续保存快照。
+- Treasury 与 FRED 图表 CSV 都不提供历史版本，本地快照只能证明「何时取得了什么」，不能恢复过去的版本。时点研究需要 ALFRED（需 key）或本机定时快照（2026-10-23 起；只覆盖登记了 `scheduled_fetch` 的数据集，依赖本机开机，没有备份）。
+- `fred_dgs10` 的可用时间规则为 `next_day`，但 2026-10-23 15:26 EDT 时 FRED 上的 DGS10 仍止于 10-21，规则早于该渠道的实际可得时间。它只用于交叉核验，暂未修改；改为保守规则会产生新的数据版本。
 - CPI 的 45 天可用规则是对当前版本的保守近似，不是实际发布日期。
 - ALFRED 接入器（含分页）只用离线样本测试，状态保持 `docs_verified`，直到用真实 key 取得样本。
 - 预期日历核验到 2026-10-22；之后的额外休市或发布日（如耶稣受难日、临时国丧日）需要逐年核验并追加。

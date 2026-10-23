@@ -11,6 +11,9 @@
 #   none      只有当前修订版本；时点研究只能使用当时已取得（retrieved_at）的本地快照，
 #             可用时间规则本身不能证明修订值当时已知
 # calendar 引用 config/calendars.yaml 中经核验的预期观测日历，用于日期覆盖检查
+# scheduled_fetch 登记定时快照（iros fetch --all，本机 launchd 每个工作日运行，见 scripts/snapshot-agent.sh）
+#   的请求：{} 取得全部历史；start/end 可用 today、today-30d 等相对日期，运行当天换算。
+#   不登记表示不参加定时取得。只有当前修订的数据，时点研究只能依靠这些当时取得的快照。
 # archive_data: true 表示允许把该数据集的原始与标准化数据存入公开的运行档案（archive 分支）；
 #   默认不允许。开启前须确认来源许可允许公开再分发。
 
@@ -30,6 +33,8 @@ datasets:
     # 联邦政府公开信息；2026-10-22 经用户确认存入公开档案
     archive_data: true
     value_range: [-5, 30]
+    # 按年下载；取最近 30 天所在年份，一月初也覆盖上一年末的更正
+    scheduled_fetch: {start: today-30d}
 
   fred_dgs10:
     source_id: fred_graph
@@ -44,6 +49,7 @@ datasets:
     availability: {type: next_day}
     vintages: none
     value_range: [-5, 30]
+    scheduled_fetch: {}
 
   fred_cpiaucsl:
     source_id: fred_graph
@@ -59,6 +65,7 @@ datasets:
     availability: {type: period_end_lag_days, days: 45}
     vintages: none
     value_range: [0, 1000]
+    scheduled_fetch: {}
 
   alfred_cpiaucsl:
     source_id: fred_api
@@ -73,6 +80,102 @@ datasets:
     availability: {type: published_next_day}
     vintages: supplier
     value_range: [0, 1000]
+
+  # ---- 第一批 FRED 序列（2026-10-23）：只接入数据，尚无研究 ----
+  # H.15 日度序列在 FRED 上通常次一工作日下午才出现（2026-10-23 15:26 EDT 时 DFF、DFII10 仍止于 10-21）；
+  # 可用时间取观测日后第 4 天结束，覆盖周末加周一假日。这是保守规则，不是实际发布时间。
+
+  fred_dff:
+    source_id: fred_graph
+    upstream_id: "Board of Governors of the Federal Reserve System (H.15) via FRED: DFF"
+    connector: fred_graph_csv
+    description: 联邦基金有效利率（日度，含周末与假日，沿用前一工作日利率）
+    params: {series: DFF}
+    frequency: daily
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 4}
+    vintages: none
+    value_range: [-5, 30]
+    scheduled_fetch: {}
+
+  fred_walcl:
+    source_id: fred_graph
+    upstream_id: "Board of Governors of the Federal Reserve System (H.4.1) via FRED: WALCL"
+    connector: fred_graph_csv
+    description: 美联储总资产（每周三余额，H.4.1 通常周四发布）
+    params: {series: WALCL}
+    # 观测日期是周三余额，不是期间起点；按周度处理时可用时间晚于实际发布约一周，偏保守
+    frequency: weekly
+    unit: millions_usd
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 0}
+    vintages: none
+    value_range: [0, 100000000]
+    scheduled_fetch: {}
+
+  fred_t10yie:
+    source_id: fred_graph
+    upstream_id: "Federal Reserve Bank of St. Louis via FRED: T10YIE（由 H.15 的 DGS10 与 DFII10 计算）"
+    connector: fred_graph_csv
+    description: 10 年期盈亏平衡通胀率（名义收益率 − TIPS 实际收益率；含通胀风险溢价与流动性溢价，不等于通胀预期）
+    params: {series: T10YIE}
+    frequency: daily
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 4}
+    vintages: none
+    value_range: [-5, 10]
+    scheduled_fetch: {}
+
+  fred_dfii10:
+    source_id: fred_graph
+    upstream_id: "Board of Governors of the Federal Reserve System (H.15) via FRED: DFII10"
+    connector: fred_graph_csv
+    description: 10 年期 TIPS 固定期限实际收益率
+    params: {series: DFII10}
+    frequency: daily
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 4}
+    vintages: none
+    value_range: [-10, 15]
+    scheduled_fetch: {}
+
+  fred_unrate:
+    source_id: fred_graph
+    upstream_id: "U.S. Bureau of Labor Statistics via FRED: UNRATE"
+    connector: fred_graph_csv
+    description: 失业率（季调，当前修订版本）
+    params: {series: UNRATE}
+    frequency: monthly
+    unit: percent
+    currency: null
+    timezone: America/New_York
+    # 就业报告通常在次月第一个周五发布，政府停摆时会推迟；与 CPI 一样取 45 天作为保守规则
+    availability: {type: period_end_lag_days, days: 45}
+    vintages: none
+    value_range: [0, 100]
+    scheduled_fetch: {}
+
+  fred_payems:
+    source_id: fred_graph
+    upstream_id: "U.S. Bureau of Labor Statistics via FRED: PAYEMS"
+    connector: fred_graph_csv
+    description: 非农就业人数（季调，当前修订版本；历史值会随基准修订改变）
+    params: {series: PAYEMS}
+    frequency: monthly
+    unit: thousands_of_persons
+    currency: null
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 45}
+    vintages: none
+    value_range: [0, 1000000]
+    scheduled_fetch: {}
 
   manual_example:
     source_id: manual

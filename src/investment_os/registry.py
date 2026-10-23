@@ -139,6 +139,14 @@ def load_source_index(path: Path) -> tuple[dict[str, str], list[dict[str, Any]]]
     return dict(data.get("categories") or {}), list(gaps)
 
 
+def _scheduled(ds_id: str, value: Any) -> dict[str, Any] | None:
+    if value is None:
+        return None
+    if not isinstance(value, dict) or set(value) - {"start", "end"}:
+        raise RegistryError(f"数据集 {ds_id} 的 scheduled_fetch 只能包含 start、end")
+    return {k: str(v) for k, v in value.items()}
+
+
 def load_datasets(path: Path, sources: dict[str, SourceSpec],
                   calendars: dict[str, CalendarSpec] | None = None) -> dict[str, DatasetSpec]:
     raw = _load_yaml(path).get("datasets") or {}
@@ -184,6 +192,7 @@ def load_datasets(path: Path, sources: dict[str, SourceSpec],
             description=item.get("description", ""),
             params=dict(item.get("params") or {}),
             value_range=(float(vr[0]), float(vr[1])) if vr else None,
+            scheduled_fetch=_scheduled(ds_id, item.get("scheduled_fetch")),
         )
     return datasets
 
@@ -221,6 +230,17 @@ class StudySpec:
 _RELATIVE = re.compile(r"^today(?:-(\d+)([dmy]))?$")
 
 
+def _resolve_relative(value: Any, today: date) -> str | None:
+    """today、today-30d、today-6m、today-1y → 具体日期；其他值返回 None。"""
+    m = _RELATIVE.match(value) if isinstance(value, str) else None
+    if not m:
+        return None
+    n, unit = m.groups()
+    delta = pd.DateOffset(**{{"d": "days", "m": "months", "y": "years"}[unit]: int(n)}) if n else None
+    day = (pd.Timestamp(today) - delta) if delta is not None else pd.Timestamp(today)
+    return day.date().isoformat()
+
+
 def resolve_relative_dates(raw: dict[str, Any], today: date) -> dict[str, Any]:
     """把 scope.start/end 中的 today、today-30d、today-6m、today-1y 换算为具体日期。
 
@@ -230,18 +250,24 @@ def resolve_relative_dates(raw: dict[str, Any], today: date) -> dict[str, Any]:
     scope = out.get("scope") or {}
     resolved = {}
     for key in ("start", "end"):
-        value = scope.get(key)
-        m = _RELATIVE.match(str(value)) if isinstance(value, str) else None
-        if not m:
+        day = _resolve_relative(scope.get(key), today)
+        if day is None:
             continue
-        n, unit = m.groups()
-        delta = pd.DateOffset(**{{"d": "days", "m": "months", "y": "years"}[unit]: int(n)}) if n else None
-        day = (pd.Timestamp(today) - delta) if delta is not None else pd.Timestamp(today)
-        scope[key] = day.date().isoformat()
-        resolved[key] = value
+        resolved[key] = scope[key]
+        scope[key] = day
     if resolved:
         scope["relative_dates"] = resolved
     return out
+
+
+def scheduled_request(spec: DatasetSpec, today: date) -> dict[str, Any]:
+    """定时取得的请求：scheduled_fetch 中的相对日期按当天换算。"""
+    request = dict(spec.scheduled_fetch or {})
+    for key in ("start", "end"):
+        day = _resolve_relative(request.get(key), today)
+        if day is not None:
+            request[key] = day
+    return request
 
 
 def load_study(path: Path) -> StudySpec:
