@@ -1,0 +1,136 @@
+{
+  "run_id": "ust_curve_2024-20261023T002555Z-891df095",
+  "study_id": "ust_curve_2024",
+  "study_path": "config/studies/ust_curve_2024.yaml",
+  "study_config": {
+    "study_id": "ust_curve_2024",
+    "title": "2024 年美国国债收益率曲线变化",
+    "question": "2024 年美国国债名义票面收益率曲线的水平、斜率与曲率如何变化？",
+    "result_type": "descriptive",
+    "branch": "rates_curve",
+    "scope": {
+      "market": "US",
+      "currency": "USD",
+      "start": "2024-01-01",
+      "end": "2024-12-31",
+      "frequency": "daily",
+      "vintage_policy": "latest"
+    },
+    "data": {
+      "curve": "ust_par_yield_curve",
+      "cross_check": {
+        "dataset": "fred_dgs10",
+        "required": false
+      }
+    },
+    "method": {
+      "key_tenors": [
+        "3M",
+        "2Y",
+        "5Y",
+        "10Y",
+        "30Y"
+      ],
+      "spreads": [
+        [
+          "2Y",
+          "10Y"
+        ],
+        [
+          "3M",
+          "10Y"
+        ]
+      ],
+      "curvature": [
+        "2Y",
+        "5Y",
+        "10Y"
+      ],
+      "curve_snapshots": [
+        "start",
+        "end"
+      ],
+      "min_coverage": 0.95
+    },
+    "benchmark": "期初曲线（研究期间首个有效交易日）",
+    "evaluation": [
+      "标准化结果与原始快照逐点抽查一致（独立解析路径）",
+      "Treasury 10 年与 FRED DGS10 一致性检查（同一上游，不构成独立验证）",
+      "固定数据版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "票面收益率（par yield）曲线，不是零息或远期曲线，也不是债券或债券基金的持有期回报",
+      "名义收益率，未扣除通胀",
+      "期间描述，不含预测或交易含义；相关变化不构成因果解释",
+      "Treasury 官网不提供历史版本，使用本地快照；结果对应快照内容"
+    ]
+  },
+  "study_config_hash": "e9ba5cc5ee0518fa7161227ce96902432365c9558fdeb63cc6d3afc38b4205c8",
+  "started_at": "2026-10-23T00:25:55+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "e184b909be1162d5a4f8a1e7b48d8bb68e61ec71d19656dab2daf803ca02166a",
+    "git_commit": "2604f5e357818cae5fe3d8d9b0227e5c75330993",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.3",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "success",
+  "inputs": [
+    {
+      "role": "curve",
+      "used": true,
+      "dataset_id": "ust_par_yield_curve",
+      "version_id": "v20261023T002554Z-4a3743d9",
+      "content_hash": "4a3743d903e43b5d6ba7ce9175354e5c7a55c4da3d400ee8c8e906c6e4167343",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "cross_check",
+      "used": true,
+      "dataset_id": "fred_dgs10",
+      "version_id": "v20261023T002555Z-da34e249",
+      "content_hash": "da34e249beb2dc931fe9d1f46f6a85c670c48182b34a477b17ab510783a03cd9",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    }
+  ],
+  "result_hash": "0e4a04ba687499fb3442171899e8d95db844a9dad03965e0aa7c26669ce23a05",
+  "warnings": [],
+  "unsupported": [],
+  "outputs": [
+    {
+      "path": "runs/ust_curve_2024-20261023T002555Z-891df095/result.json",
+      "sha256": "655f7299445e21b826e7f608d26921ccbe69b27ec5bef37895d3e5045c4403e8"
+    },
+    {
+      "path": "reports/ust_curve_2024/ust_curve_2024-20261023T002555Z-891df095/report.md",
+      "sha256": "b845b6114239a240de82efc322f0ae54d1c34fc311833a48ad0bd4267d15b099"
+    },
+    {
+      "path": "reports/ust_curve_2024/ust_curve_2024-20261023T002555Z-891df095/report.html",
+      "sha256": "91214892cee22ccf633904177d3cd561078d920fb8ead018057be8e9819fceee"
+    },
+    {
+      "path": "reports/ust_curve_2024/ust_curve_2024-20261023T002555Z-891df095/figures/curve_snapshots.png",
+      "sha256": "2cb2d8feaed573a895fddf8bd20985f23620d8cdb9b383d75547d37938179aea"
+    },
+    {
+      "path": "reports/ust_curve_2024/ust_curve_2024-20261023T002555Z-891df095/figures/key_tenors.png",
+      "sha256": "b3e929dd953010bdebfc6bdc6b917a1d24420477ada28da5674e79f7a4ee8018"
+    },
+    {
+      "path": "reports/ust_curve_2024/ust_curve_2024-20261023T002555Z-891df095/figures/spreads.png",
+      "sha256": "231fee646b49edd4a4e12abe49e367c59843984a8d442a2f1f891267ac93cc17"
+    }
+  ],
+  "finished_at": "2026-10-23T00:25:56+00:00"
+}
