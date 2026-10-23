@@ -95,5 +95,9 @@ def test_capability_categories_come_from_registry_and_runs():
     assert active["category"] == "active" and active["validated"] == []  # 尚无用途核验记录
     assert domain_status({"datasets": ["fred_cpiaucsl"], "studies": []}, reg, ds, {})["category"] == "data_only"
     assert domain_status({"planned": True}, reg, ds, {})["category"] == "planned"
+    # 已登记但本次未取得的数据集不是「规划」
+    assert domain_status({"datasets": ["alfred_cpiaucsl"], "studies": []}, reg,
+                         {"alfred_cpiaucsl": {"status": "docs_verified", "version_id": None,
+                                              "verified_uses": []}}, {})["category"] == "registered"
     content = {"domains": [{"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, {"planned": True}]}
-    assert summary(content, reg, ds, _latest()) == {"active": 1, "data_only": 0, "planned": 1}
+    assert summary(content, reg, ds, _latest()) == {"active": 1, "data_only": 0, "registered": 0, "planned": 1}

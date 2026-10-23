@@ -37,7 +37,12 @@ def domain_status(domain: dict[str, Any], registry: Registry, datasets: dict[str
             spec = registry.datasets.get(ds)
             if spec and registry.sources[spec.source_id].status_for(ds, run["use"]) is VerificationStatus.USE_VERIFIED:
                 validated.append((ds, run["use"]))
-    category = "active" if runs else ("data_only" if any(r["has_data"] for r in ds_rows) else "planned")
+    if runs:
+        category = "active"
+    elif any(r["has_data"] for r in ds_rows):
+        category = "data_only"
+    else:
+        category = "registered" if ds_rows else "planned"  # 已登记数据集但本次构建未取得，不是「规划」
     return {"category": category, "datasets": ds_rows, "runs": runs, "validated": sorted(set(validated))}
 
 
@@ -47,7 +52,7 @@ def _use(result: dict[str, Any]) -> Use:
 
 def summary(content: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],
             latest: dict[str, dict[str, Any]]) -> dict[str, int]:
-    out = {"active": 0, "data_only": 0, "planned": 0}
+    out = {"active": 0, "data_only": 0, "registered": 0, "planned": 0}
     for d in content.get("domains", []):
         out[domain_status(d, registry, datasets, latest)["category"]] += 1
     return out
@@ -77,7 +82,8 @@ def _domain_row(domain: dict[str, Any], st: dict[str, Any]) -> str:
             f"{e('、'.join(RESULT_TYPE_LABEL[t.value] for t in types.get(r['branch'], ())))}</div></div>"
             for r in st["runs"])
     else:
-        analysis = '<span class="muted">尚无研究（数据已接入）</span>'
+        analysis = ('<span class="muted">尚无研究（数据已接入）</span>' if st["category"] == "data_only"
+                    else '<span class="muted">尚无研究；数据已登记，本次构建未取得</span>')
     if st["validated"]:
         validation = "".join(f"<div>{chip('pass', '用途已验证')} {e(USE_SHORT[u])} · <code class='small'>{e(ds)}</code></div>"
                              for ds, u in st["validated"])

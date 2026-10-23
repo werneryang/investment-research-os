@@ -79,8 +79,9 @@ def home_page(studies: list[str], latest: dict[str, dict[str, Any]], content: di
   <section class="about-strip">
     <div><h3>这些发现有多可靠？</h3><p class="muted small">每项研究都有证据面板：数据来源与版本、覆盖、核验、复现与限制，
     不汇总成一个笼统的可信度分数。</p><a href="methods.html">数据、方法与状态 →</a></div>
-    <div><h3>系统现在能研究什么？</h3><p class="muted small">已覆盖 {capability_summary.get('active', 0)} 个研究领域，
-    {capability_summary.get('data_only', 0)} 个已有数据、尚无研究，{capability_summary.get('planned', 0)} 个规划中。</p>
+    <div><h3>系统现在能研究什么？</h3><p class="muted small">已有研究的领域 {capability_summary.get('active', 0)} 个；
+    已接入数据、尚无研究 {capability_summary.get('data_only', 0) + capability_summary.get('registered', 0)} 个；
+    规划中 {capability_summary.get('planned', 0)} 个。</p>
     <a href="map.html">研究能力地图 →</a></div>
   </section>
 </main>"""

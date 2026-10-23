@@ -47,6 +47,10 @@ jobs:
         continue-on-error: true
         run: uv run iros fetch fred_dgs10 --start 2024-01-01
 
+      - name: Fetch FRED CPI (data only; shown on the capability map)
+        continue-on-error: true
+        run: uv run iros fetch fred_cpiaucsl
+
       - name: Run studies
         run: |
           uv run iros run config/studies/ust_curve_2024.yaml
