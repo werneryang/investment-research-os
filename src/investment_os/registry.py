@@ -163,7 +163,9 @@ class StudySpec:
 
     @property
     def use(self) -> Use:
-        """研究用途由版本策略决定：as_of 为时点研究，其余为使用最新修订的描述。"""
+        """研究用途：情景模拟为 scenario；否则由版本策略决定（as_of 为时点研究，其余为描述）。"""
+        if self.result_type is ResultType.SIMULATION:
+            return Use.SCENARIO
         return Use.POINT_IN_TIME if self.scope.get("vintage_policy") == "as_of" else Use.DESCRIPTIVE
 
     @property

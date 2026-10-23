@@ -6,12 +6,10 @@ import json
 from pathlib import Path
 from typing import Any
 
-from ..analytics.rates import curvature_label, spread_label
 from ..data.store import DataStore
 from ..registry import Registry
 from ..research.findings import interpret, rule_fingerprint, rule_params
 from ..runs import list_runs
-from ..tenor import is_tenor, parse_tenor
 
 
 def load_run(root: Path, run_id: str) -> dict[str, Any]:
@@ -120,19 +118,3 @@ def datasets(registry: Registry, store: DataStore) -> list[dict[str, Any]]:
             if last else None,
         })
     return rows
-
-
-def daily_json(result: dict[str, Any]) -> dict[str, Any]:
-    """交互图表数据：直接取结果中的合格日度表，不插值、不填补。"""
-    res = result.get("results", {})
-    daily = result.get("tables", {}).get("daily", [])
-    columns = {k for row in daily for k in row if k != "date"}
-    tenors = sorted((c for c in columns if is_tenor(c)), key=lambda c: parse_tenor(c).months)
-    return {
-        "run_id": result.get("run_id"),
-        "levels": list(res.get("levels", {})),
-        "tenors": [{"code": t, "months": parse_tenor(t).months} for t in tenors],
-        "spreads": [{"key": k, "label": spread_label(k)} for k in res.get("spreads", {})],
-        "curvature": [{"key": f"curvature {k}", "label": curvature_label(k)} for k in res.get("curvature", {})],
-        "rows": daily,
-    }

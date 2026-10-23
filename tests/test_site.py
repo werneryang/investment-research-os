@@ -64,7 +64,7 @@ def test_build_site_from_runs(loaded):
     assert 'class="coverage"' in study and "cov-ok" in study
     assert old["run_id"] in study and latest["run_id"] in study  # 无档案时历史列出全部运行
     run_dir = site / "runs" / latest["run_id"]
-    for name in ("report.html", "manifest.json", "result.json", "daily.json", "figures/spreads.png"):
+    for name in ("report.html", "manifest.json", "result.json", "chart.json", "figures/spreads.png"):
         assert (run_dir / name).exists()
     report = (run_dir / "report.html").read_text(encoding="utf-8")
     assert '<a href="../../index.html">' in report and "10Y − 2Y" in report and "a {" in report
@@ -77,7 +77,8 @@ def test_build_site_from_runs(loaded):
     methods = (site / "methods.html").read_text(encoding="utf-8")
     assert 'id="status"' in methods and "us_treasury_daily" in methods
 
-    daily = json.loads((run_dir / "daily.json").read_text(encoding="utf-8"))
+    daily = json.loads((run_dir / "chart.json").read_text(encoding="utf-8"))
+    assert daily["kind"] == "curve"
     assert daily["spreads"] == [{"key": "2Y-10Y", "label": "10Y − 2Y"}]
     assert [t["code"] for t in daily["tenors"]][:2] == ["1M", "2M"]
     assert daily["rows"][0]["date"] == "2024-01-02" and daily["rows"][0]["10Y"] == 3.95
@@ -89,7 +90,8 @@ def test_build_site_from_runs(loaded):
 
 
 def test_daily_json_keeps_gaps(loaded):
-    from investment_os.site import daily_json as _daily_json
+    from investment_os.site.renderers import CURVE
+    _daily_json = CURVE.chart_data
     result = {"results": {"levels": {"10Y": {}}, "spreads": {}, "curvature": {}},
               "tables": {"daily": [{"date": "2024-01-02", "10Y": 3.95}, {"date": "2024-01-03", "10Y": None}]}}
     assert _daily_json(result)["rows"][1]["10Y"] is None  # 缺失保持为空，不插值

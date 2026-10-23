@@ -4,19 +4,16 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..research.findings import coverage_summary
 from .common import STATUS_LABEL, chip, e, shell
-from .study import chart_panel, findings_list, interpretation_note, key_stats
-
-# 首页只放两张最能概括的静态图；完整三张在研究页
-HOME_FIGURES = (("curve_snapshots.png", "期初与期末收益率曲线"), ("spreads.png", "利差与曲率"))
+from .renderers import get_renderer
+from .study import chart_panel, findings_list, interpretation_note
 
 
 def _evidence_summary(item: dict[str, Any]) -> str:
     r, ver = item["result"], item["verification"]
-    cov, val = r["coverage"], r["validation"]
-    parts = []
-    parts.append(f"日期覆盖：{coverage_summary(cov)}")
+    val = r["validation"]
+    renderer = get_renderer(r["branch"])
+    parts = list(renderer.evidence_summary(r))
     spot = val.get("raw_spot_check")
     if spot and spot.get("checked"):
         parts.append(f"原始快照抽查 {spot['checked']} 点{'一致' if spot['status'] == 'pass' else '有不一致'}")
@@ -35,13 +32,14 @@ def _evidence_summary(item: dict[str, Any]) -> str:
             parts.append(f"研究期间在 {inp['dataset_id']} 的用途核验范围外")
         elif scope.get("status") == "in_scope":
             parts.append(f"{inp['dataset_id']} 用途已验证")
-    parts.append("用途：历史描述，不是预测或交易回测")
+    parts.append(f"用途：{renderer.use_note}")
     return " · ".join(e(p) for p in parts)
 
 
 def _featured(study_id: str, item: dict[str, Any], meta: dict[str, Any]) -> str:
     m, r = item["manifest"], item["result"]
     run_href = f"runs/{m['run_id']}"
+    renderer = get_renderer(r["branch"])
     return f"""
 <article class="card featured">
   <header class="card-head">
@@ -50,9 +48,9 @@ def _featured(study_id: str, item: dict[str, Any], meta: dict[str, Any]) -> str:
     {chip(m['status'], '本次运行 · ' + STATUS_LABEL.get(m['status'], m['status']))}
   </header>
   <p class="meta">研究期间 {e(r['scope'].get('start'))} 至 {e(r['scope'].get('end'))} · 数据截止 {e(r['data_cutoff'])}</p>
-  <h3 class="sub">关键发现</h3>{findings_list(item['findings'], limit=4)}{interpretation_note(item.get('interpretation'))}
-  {key_stats(r)}
-  {chart_panel(run_href, item.get("figures", []), HOME_FIGURES)}
+  <h3 class="sub">关键发现</h3>{findings_list(item['findings'], limit=4)}{interpretation_note(item.get('interpretation'), r['branch'])}
+  {renderer.key_stats(r)}
+  {chart_panel(run_href, item.get("figures", []), renderer.home_figures, renderer.chart_data(r) is not None)}
   <p class="evidence-line small">证据：{_evidence_summary(item)}</p>
   <div class="card-links"><a class="button" href="studies/{e(study_id)}/">查看完整研究：方法、证据与历史 →</a></div>
 </article>"""

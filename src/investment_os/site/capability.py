@@ -21,8 +21,9 @@ from .common import (
     shell,
     use_scope_chip,
 )
+from .renderers import use_key
 
-USE_SHORT = {Use.DESCRIPTIVE: "历史描述", Use.POINT_IN_TIME: "时点研究"}
+USE_SHORT = {Use.DESCRIPTIVE: "历史描述", Use.POINT_IN_TIME: "时点研究", Use.SCENARIO: "情景模拟"}
 
 
 def domain_status(domain: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],
@@ -71,7 +72,7 @@ def domain_status(domain: dict[str, Any], registry: Registry, datasets: dict[str
 
 
 def _use(result: dict[str, Any]) -> Use:
-    return Use.POINT_IN_TIME if result["scope"].get("vintage_policy") == "as_of" else Use.DESCRIPTIVE
+    return Use(use_key(result))
 
 
 def summary(content: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],

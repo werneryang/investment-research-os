@@ -5,10 +5,11 @@ title: Investment Research OS
 tagline: 基于公开免费数据、可追溯、可复现的市场研究
 
 # 首页研究的显示顺序：第一项为研究焦点（日常查看的滚动研究），其余列在「全部研究」
-study_order: [ust_curve_last_year, ust_curve_2024]
+study_order: [ust_curve_last_year, ust_par_bond_rate_risk, ust_curve_2024]
 
 studies:
   ust_curve_last_year: {label: 滚动研究}
+  ust_par_bond_rate_risk: {label: 情景研究}
   ust_curve_2024: {label: 历史案例}
 
 # 研究能力地图的领域。数据、分析与验证状态由登记和运行记录自动得出；
@@ -36,8 +37,16 @@ domains:
       - 当时可获知的通胀数据（ALFRED 尚未用真实 key 接入）
   - id: rates_duration_risk
     name: 国债久期与利率风险
-    planned: true
-    needs: 需要国债价格或总收益数据，或基于曲线的定价模型；票面收益率本身不是回报，不能直接复用
+    summary: 假设平价债券的久期、凸性、DV01 与收益率冲击情景
+    datasets: [ust_par_yield_curve]
+    studies: [ust_par_bond_rate_risk]
+    can_answer:
+      - 以最近票面收益率构造的假设平价债券，收益率平移若干 bp 时价格变化多少
+      - 久期、久期 + 凸性近似相对完整重新定价的误差有多大、随期限如何变化
+    cannot_answer:
+      - 某只真实国债或债券基金（如 TLT）的风险与回报（需要真实现金流、价格或总收益数据）
+      - 非平移的曲线形变（需要零息曲线与关键利率久期）
+      - 冲击发生的概率或未来利率走势（需要预测模型与样本外验证）
   - id: equity_risk
     name: 股票市场风险
     planned: true

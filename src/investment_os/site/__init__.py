@@ -10,7 +10,7 @@
 
     index.html                      研究总览
     studies/<study_id>/index.html   研究页（最新运行；地址不变）
-    runs/<run_id>/                  每次运行：完整报告、图表、daily.json、manifest.json、result.json
+    runs/<run_id>/                  每次运行：完整报告、图表、chart.json（交互图表数据）、manifest.json、result.json
     latest/<study_id>/report.html   最新完整报告的稳定地址
     history/<study_id>.html         旧地址，转到研究页的历史部分
     map.html、methods.html           研究能力地图；数据、方法与状态
@@ -33,13 +33,14 @@ from ..archive import archived_runs
 from ..data.store import DataStore
 from ..registry import Registry
 from .capability import capability_page, summary
-from .collect import collect_runs, daily_json, datasets, ordered_studies
+from .collect import collect_runs, datasets, ordered_studies
 from .common import repo_url
 from .home import home_page
 from .methods import methods_page
+from .renderers import get_renderer
 from .study import redirect, study_page
 
-__all__ = ["build_site", "daily_json"]
+__all__ = ["build_site"]
 
 
 def _copy_run(root: Path, item: dict[str, Any], dest: Path) -> list[str]:
@@ -61,7 +62,9 @@ def _copy_run(root: Path, item: dict[str, Any], dest: Path) -> list[str]:
     run_dir = root / "runs" / manifest["run_id"]
     for name in ("manifest.json", "result.json"):
         shutil.copy2(run_dir / name, dest / name)
-    (dest / "daily.json").write_text(json.dumps(daily_json(item["result"]), ensure_ascii=False), encoding="utf-8")
+    chart = get_renderer(item["result"]["branch"]).chart_data(item["result"])
+    if chart is not None:
+        (dest / "chart.json").write_text(json.dumps(chart, ensure_ascii=False), encoding="utf-8")
     return figures
 
 

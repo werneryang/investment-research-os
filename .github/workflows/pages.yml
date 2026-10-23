@@ -55,6 +55,7 @@ jobs:
         run: |
           uv run iros run config/studies/ust_curve_2024.yaml
           uv run iros run config/studies/ust_curve_last_year.yaml
+          uv run iros run config/studies/ust_par_bond_rate_risk.yaml
 
       - name: Verify runs reproduce from pinned inputs
         run: uv run iros verify --all

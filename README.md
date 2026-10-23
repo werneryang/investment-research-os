@@ -41,7 +41,7 @@ uv run iros verify <run_id>
 
 线上地址：<https://werneryang.github.io/investment-research-os/>
 
-`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 重新取得 Treasury 与 FRED 数据 → 运行 `ust_curve_2024` 与滚动的 `ust_curve_last_year` → `iros verify --all` → 归档到 `archive` 分支 → 生成静态网站 → 发布到 GitHub Pages。任何必需步骤失败都不发布，线上保留上一版，页面顶部的更新时间、工作流徽章与「已过期」提示会显示更新停滞。
+`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 重新取得 Treasury 与 FRED 数据 → 运行 `ust_curve_2024`、滚动的 `ust_curve_last_year` 与情景研究 `ust_par_bond_rate_risk` → `iros verify --all` → 归档到 `archive` 分支 → 生成静态网站 → 发布到 GitHub Pages。任何必需步骤失败都不发布，线上保留上一版，页面顶部的更新时间、工作流徽章与「已过期」提示会显示更新停滞。
 
 网站定位为研究门户，分工回答三个问题：
 

@@ -8,14 +8,8 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..analytics.rates import curvature_label, spread_label
 from ..registry import Registry
-from ..research.findings import (
-    COVERAGE_LABEL,
-    completeness,
-    coverage_summary,
-    state_changes,
-)
+from ..research.findings import state_changes
 from .collect import run_differences
 from .common import (
     CHECK_LABEL,
@@ -29,16 +23,13 @@ from .common import (
     e,
     num,
     shell,
-    stat,
     use_scope_chip,
 )
-from .coverage import coverage_strip
-
-FIGURES = (("curve_snapshots.png", "期初与期末收益率曲线"), ("key_tenors.png", "关键期限收益率"),
-           ("spreads.png", "利差与曲率"))
+from .renderers import Renderer, get_renderer, use_key
 
 
-def chart_panel(run_href: str, available: list[str], wanted: tuple[tuple[str, str], ...]) -> str:
+def chart_panel(run_href: str, available: list[str], wanted: tuple[tuple[str, str], ...],
+                interactive: bool = True) -> str:
     """图表面板：静态图默认可见；交互图表加载并生成成功后才替换显示（渐进增强）。
 
     脚本或数据加载失败、浏览器禁用脚本时，读者仍能看到与完整报告相同的静态图。
@@ -48,36 +39,11 @@ def chart_panel(run_href: str, available: list[str], wanted: tuple[tuple[str, st
         f'<img loading="lazy" src="{run_href}/figures/{f}" alt="{e(alt)}"></a>'
         for f, alt in wanted if f in available)
     static = figs or '<p class="muted small">该运行没有静态图。</p>'
-    return (f'<div class="chart-panel" data-src="{run_href}/daily.json">'
+    src = f' data-src="{run_href}/chart.json"' if interactive else ""
+    return (f'<div class="chart-panel"{src}>'
             f'<div class="chart-static figs">{static}</div>'
             '<div class="interactive" hidden></div>'
             '<p class="chart-status small muted" role="status"></p></div>')
-
-
-def key_stats(result: dict[str, Any]) -> str:
-    res, cov = result["results"], result["coverage"]
-    stats = []
-    ten = res.get("levels", {}).get("10Y")
-    if ten and ten.get("observations"):
-        stats.append(stat("10 年期收益率", f"{num(ten['start'])}% → {num(ten['end'])}%",
-                          f"{num(ten['change_bp'], 0, True)} bp"))
-    for key, sp in res.get("spreads", {}).items():
-        if sp.get("observations"):
-            inv = sp.get("inversion")
-            if not inv:
-                note = "期间统计不输出"
-            elif sp.get("sample") == "observed":
-                note = f"已观测 {inv['observations']} 天中倒挂 {inv['inverted_days']} 天"
-            else:
-                note = f"倒挂 {inv['inverted_days']} 天"
-            stats.append(stat(f"{spread_label(key)} 利差", f"{num(sp['start'], 0)} → {num(sp['end'], 0)} bp", note))
-    if cov.get("expected_days"):
-        due = cov.get("due_days", cov["expected_days"])
-        note = COVERAGE_LABEL[completeness(cov)]
-        if cov.get("pending_days"):
-            note += f"；另 {cov['pending_days']} 天尚未发布"
-        stats.append(stat("日期覆盖", f"{due - cov.get('missing_days', 0)} / {due} 天", note))
-    return f'<div class="stats">{"".join(stats)}</div>'
 
 
 def findings_list(items: list[dict[str, Any]], limit: int | None = None) -> str:
@@ -92,34 +58,19 @@ def findings_list(items: list[dict[str, Any]], limit: int | None = None) -> str:
     return f'<ol class="findings">{"".join(rows)}</ol>'
 
 
-def _method(result: dict[str, Any]) -> str:
-    m = result["methods"]
-    params = m.get("parameters", {})
-    spreads = "、".join(spread_label(f"{a}-{b}") for a, b in params.get("spreads", []))
-    curv = params.get("curvature")
-    items = [
-        f"<li>{e(m['description'])}</li>",
-        f"<li>关键期限：{e('、'.join(params.get('key_tenors', [])))}；利差（长端 − 短端）：{e(spreads or '无')}"
-        + (f"；曲率：{e(curvature_label('/'.join(curv)))}" if curv else "") + "。</li>",
-        f"<li>比较基准：{e(m.get('benchmark') or '—')}。</li>",
-        f"<li>覆盖要求：关键期限有效观测占应已发布观测日的比例不低于 {params.get('min_coverage', 0):.0%}，"
-        "不足时依赖它的结论不输出。达到要求不等于期间完整：期间完整另需所有预期日期都有数据、且日期在日历核验范围内；"
-        "有缺口的指标，期间统计只描述已观测日期。尚未到发布时间的日期单独列出，不计入覆盖。</li>",
-        "<li>倒挂定义为利差严格小于 0；恰为 0 的日期单独计数，不计入倒挂。</li>",
-        "<li>关键发现由固定规则在运行时生成并记录（规则版本、指纹与阈值见「关键发现」下方）；只描述，不作预测或交易判断。</li>",
-        f"<li>时间规则：{e(m.get('availability_rule') or '—')}；版本策略："
-        f"{e(USE_LABEL.get('point_in_time' if result['scope'].get('vintage_policy') == 'as_of' else 'descriptive'))}。</li>",
-    ]
+def _method(result: dict[str, Any], renderer: Renderer) -> str:
+    items = renderer.method_items(result) + [
+        "<li>关键发现由固定规则在运行时生成并记录（规则版本、指纹与参数见「关键发现」下方）；只描述，不作预测或交易判断。</li>"]
     return f'<ul class="method">{"".join(items)}</ul>'
 
 
 def evidence_panel(item: dict[str, Any], registry: Registry, run_href: str) -> str:
     """证据面板：逐项列出证据，不汇总成一个可信度分数。"""
     m, r, ver = item["manifest"], item["result"], item["verification"]
-    cov, val = r["coverage"], r["validation"]
-    use = "point_in_time" if r["scope"].get("vintage_policy") == "as_of" else "descriptive"
-    rows = [("研究用途", f"{e(RESULT_TYPE_LABEL.get(r['result_type'], r['result_type']))} · {e(USE_LABEL[use])}；"
-                         "不是预测或交易回测")]
+    val = r["validation"]
+    renderer = get_renderer(r["branch"])
+    rows = [("研究用途", f"{e(RESULT_TYPE_LABEL.get(r['result_type'], r['result_type']))} · "
+                         f"{e(USE_LABEL[use_key(r)])}；{e(renderer.use_note)}")]
     for inp in m.get("inputs", []):
         if not inp.get("used", True):
             rows.append((f"输入 · {e(inp['role'])}", f'<span class="muted">未使用：{e(inp.get("reason", ""))}</span>'))
@@ -131,28 +82,7 @@ def evidence_panel(item: dict[str, Any], registry: Registry, run_href: str) -> s
                      f"（内容校验值 <code>{e(inp['content_hash'][:12])}</code>）· 核验状态："
                      f"{e(VERIFY_LABEL.get(inp['source_status'], inp['source_status']))}"
                      + (f"<div>{use_scope_chip(inp.get('use_scope'))}</div>" if inp.get("use_scope") else "")))
-    text = e(coverage_summary(cov))
-    if cov.get("expected_days") is not None:
-        text += (f"<div class='small muted'>研究窗口内预期观测日 {cov['expected_days']} 天"
-                 f"（日历 <code>{e(cov['calendar'])}</code>）")
-        if cov.get("pending_days"):
-            text += f"；评估时尚未发布 {cov['pending_days']} 天（{e('、'.join(cov['pending_dates'][:5]))}）"
-        if cov.get("missing_days"):
-            text += f"；应已发布但缺失 {cov['missing_days']} 天（如 {e('、'.join(cov['missing_examples'][:3]))}）"
-        if cov.get("calendar_unverified"):
-            text += f"；日历未核验区间 {e('、'.join(cov['calendar_unverified']))}"
-        if r["scope"].get("evaluated_at"):
-            text += f"；评估时间 {e(str(r['scope']['evaluated_at'])[:16].replace('T', ' '))} UTC"
-        text += "</div>"
-    rows.append(("日期覆盖", text))
-    metric_gaps = [f"{name} 缺 {m['missing']} 天" for group in (cov.get("metrics") or {}).values()
-                   for name, m in group.items() if m.get("missing")]
-    if metric_gaps:
-        rows.append(("指标覆盖", e("；".join(metric_gaps)) + "<span class='muted small'>（利差与曲率要求所需期限同一天都有值；"
-                                                             "有缺口的指标，期间统计标为已观测样本）</span>"))
-    shares = [v["share"] for v in cov.get("tenors", {}).values()]
-    if shares:
-        rows.append(("期限覆盖", f"关键期限最低 {min(shares):.1%}（要求 ≥ {cov.get('min_coverage', 0):.0%}）"))
+    rows += renderer.evidence_rows(r)
     spot = val.get("raw_spot_check")
     if spot:
         rows.append(("原始快照抽查", f"{chip(spot.get('status'), CHECK_LABEL.get(spot.get('status'), ''))} "
@@ -186,12 +116,13 @@ def evidence_panel(item: dict[str, Any], registry: Registry, run_href: str) -> s
 <a href="{run_href}/result.json">结构化结果</a> · <a href="{run_href}/report.html">完整报告</a></p>"""
 
 
-def interpretation_note(interp: dict[str, Any] | None) -> str:
+def interpretation_note(interp: dict[str, Any] | None, branch: str) -> str:
     """发现的来源：运行时记录，还是事后用当前规则生成。"""
     if not interp:
         return ""
-    rule = f"{interp['rule_version']}（指纹 {(interp.get('rule_fingerprint') or '—')[:8]}，" \
-           f"基本持平阈值 {interp.get('params', {}).get('flat_bp', '—')} bp）"
+    params = get_renderer(branch).rule_params_label(interp.get("params", {}))
+    rule = f"{interp['rule_version']}（指纹 {(interp.get('rule_fingerprint') or '—')[:8]}" \
+           + (f"，{params}" if params else "") + "）"
     if interp["origin"] == "retrospective":
         return (f'<p class="small warn">以下发现由当前规则 {e(rule)} 在发布网站时事后生成；'
                 "该运行当时没有记录发现，措辞可能与当时的规则不同。</p>")
@@ -202,7 +133,7 @@ def interpretation_note(interp: dict[str, Any] | None) -> str:
 
 
 def _history(study_id: str, runs: list[dict[str, Any]], archived: dict[str, Any] | None,
-             repo: str | None, up: str) -> str:
+             repo: str | None, up: str, renderer: Renderer) -> str:
     timeline = []
     chronological = list(reversed(runs))
     for prev, cur in zip(chronological, chronological[1:]):  # noqa: B905 - 相邻两次运行
@@ -223,12 +154,11 @@ def _history(study_id: str, runs: list[dict[str, Any]], archived: dict[str, Any]
                        '<th>两次运行之间的差异</th><th></th></tr></thead>'
                        f'<tbody>{change_rows}</tbody></table></div>')
     else:
-        change_html = f'<p class="muted">在已归档的 {len(runs)} 次运行中，定性状态（利差是否倒挂、变陡或变平、覆盖是否完整）没有变化。</p>'
+        change_html = (f'<p class="muted">在已归档的 {len(runs)} 次运行中，定性状态'
+                       f'（{e(renderer.state_description)}）没有变化。</p>')
     rows = []
     for item in runs:
         m, r = item["manifest"], item["result"]
-        ten = r["results"].get("levels", {}).get("10Y") or {}
-        sp = r["results"].get("spreads", {}).get("2Y-10Y") or {}
         note = ""
         if archived is not None:
             note = (archived[m["run_id"]]["reason"] if m["run_id"] in archived
@@ -237,18 +167,18 @@ def _history(study_id: str, runs: list[dict[str, Any]], archived: dict[str, Any]
         rows.append(
             f"<tr><td>{e(m['started_at'][:16].replace('T', ' '))}</td><td>{e(r['data_cutoff'])}</td>"
             f"<td>{chip(m['status'], STATUS_LABEL.get(m['status'], m['status']))}</td>"
-            f"<td>{num(ten.get('end')) + '%' if ten.get('end') is not None else '—'}</td>"
-            f"<td>{num(sp.get('end'), 0)}</td>"
+            + "".join(f"<td>{e(fn(r))}</td>" for _, fn in renderer.history_columns) +
             f"<td>{'一致' if ver and ver['reproduced'] else ('不一致' if ver else '—')}"
             f"{'（部分）' if ver and ver.get('scope') == 'partial' else ''}</td>"
             f"<td><a href=\"{up}runs/{e(m['run_id'])}/report.html\">报告</a>"
             f"<div class='small muted'>{e(note)}</div></td></tr>")
     archive_link = f' <a href="{e(repo)}/tree/archive">运行档案（archive 分支）</a>' if repo else ""
+    columns = "".join(f"<th>{e(label)}</th>" for label, _ in renderer.history_columns)
     return f"""
 <h3 class="sub">发现变化记录</h3>{change_html}
 <h3 class="sub">历次运行</h3>
-<div class="scroll"><table><thead><tr><th>运行时间（UTC）</th><th>数据截止</th><th>状态</th><th>10Y 期末</th>
-<th>10Y − 2Y 期末 bp</th><th>固定输入重算</th><th>报告</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>
+<div class="scroll"><table><thead><tr><th>运行时间（UTC）</th><th>数据截止</th><th>状态</th>{columns}
+<th>固定输入重算</th><th>报告</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>
 <p class="small muted">只有实质结论（结果、覆盖、限制、核验结论）变化时才归档新运行，报告地址长期有效。
 日后复现：<code>iros archive restore &lt;档案&gt; --with-data</code> 后 <code>iros verify &lt;run_id&gt;</code>；
 未归档数据的可选输入（FRED 交叉核验）不重算，标为部分复现。{archive_link}</p>"""
@@ -261,6 +191,7 @@ def study_page(study_id: str, runs: list[dict[str, Any]], archived: dict[str, An
     up = "../../"
     run_href = f"{up}runs/{m['run_id']}"
     meta = content.get("studies", {}).get(study_id, {})
+    renderer = get_renderer(r["branch"])
     body = f"""
 <header class="top"><div class="wrap">
   <p class="eyebrow">{e(meta.get('label', '研究'))} · {e(RESULT_TYPE_LABEL.get(r['result_type'], ''))}</p>
@@ -270,16 +201,16 @@ def study_page(study_id: str, runs: list[dict[str, Any]], archived: dict[str, An
 </div></header>
 <main class="wrap">
 <section><h2>研究问题</h2><p class="lead">{e(r['question'])}</p></section>
-<section><h2>关键发现</h2>{findings_list(latest['findings'])}{interpretation_note(latest.get('interpretation'))}{key_stats(r)}</section>
+<section><h2>关键发现</h2>{findings_list(latest['findings'])}{interpretation_note(latest.get('interpretation'), r['branch'])}{renderer.key_stats(r)}</section>
 <section><h2>可视化证据</h2>
-  {chart_panel(run_href, latest.get("figures", []), FIGURES)}
-  <h3 class="sub">数据覆盖</h3>{coverage_strip(r)}
+  {chart_panel(run_href, latest.get("figures", []), renderer.figures, renderer.chart_data(r) is not None)}
+  <h3 class="sub">{e(renderer.coverage_title)}</h3>{renderer.coverage_section(r)}
 </section>
-<section><h2>方法</h2>{_method(r)}</section>
+<section><h2>方法</h2>{_method(r, renderer)}</section>
 <section><h2>证据与限制</h2>
   <div class="checks">{check_chips(r, latest['verification'])}</div>
   {evidence_panel(latest, registry, run_href)}</section>
-<section id="history"><h2>历史与复现</h2>{_history(study_id, runs, archived, build.get('repo_url'), up)}</section>
+<section id="history"><h2>历史与复现</h2>{_history(study_id, runs, archived, build.get('repo_url'), up, renderer)}</section>
 </main>"""
     return shell(f"{r['title']} · Investment Research OS", body, build, depth=2, charts=True,
                  description=r["question"])

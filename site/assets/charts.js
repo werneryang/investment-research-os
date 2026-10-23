@@ -1,4 +1,5 @@
-/* 交互图表：读取每次运行的 daily.json（已是合格数据），只做呈现，不重新计算。
+/* 交互图表：读取每次运行的 chart.json（由研究分支的展示组件生成），只做呈现，不重新计算。
+ * kind 决定图表类型：curve（收益率走势与曲线对比）、scenarios（假设债券情景）；未知类型回退到静态图。
  * 缺失值保持为断点（spanGaps: false），与计算中不插值的规则一致。
  *
  * 渐进增强：每个 .chart-panel 默认显示静态图；只有 Chart.js 已加载、数据取得、
@@ -159,6 +160,59 @@
     render();
   }
 
+  /* 情景研究：所选期限的价格变化（完整重新定价与两种近似）及近似误差。x 轴为收益率冲击（bp）。 */
+  function scenarioCharts(left, right, data) {
+    if (!data.tenors || !data.tenors.length) throw new Error("no scenarios");
+    var state = { tenor: data.focus || data.tenors[0] };
+    var controls = el("div", { class: "controls" });
+    controls.appendChild(el("span", { class: "group-label" }, "假设债券期限"));
+    var buttons = data.tenors.map(function (t) {
+      var b = el("button", { type: "button", class: "toggle", "aria-pressed": String(t === state.tenor) }, t);
+      b.addEventListener("click", function () {
+        state.tenor = t;
+        buttons.forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+        render();
+      });
+      controls.appendChild(b);
+      return b;
+    });
+    left.appendChild(controls);
+
+    function lineChart(host, label, yTitle) {
+      var box = el("div", { class: "chart-box" });
+      var canvas = el("canvas", { role: "img", "aria-label": label });
+      box.appendChild(canvas); host.appendChild(box);
+      var opts = baseOptions(yTitle);
+      opts.scales.x = { type: "linear", title: { display: true, text: "收益率冲击（bp）", color: css("--muted") },
+                        ticks: { color: css("--muted") }, grid: { color: css("--line") } };
+      return new Chart(canvas, { type: "scatter", data: { datasets: [] }, options: opts });
+    }
+    var priceChart = lineChart(left, "价格变化：完整重新定价与近似（可交互）", "价格变化（%）");
+    right.appendChild(el("div", { class: "controls" }, "近似误差 = 近似 − 完整重新定价（百分点）"));
+    var errorChart = lineChart(right, "近似误差（可交互）", "误差（pp）");
+
+    function series(rows, key, label, i, dash) {
+      return { label: label, data: rows.map(function (r) { return { x: r.shock_bp, y: r[key] }; }),
+               showLine: true, borderColor: PALETTE[i], backgroundColor: PALETTE[i], pointRadius: 2.5,
+               borderWidth: 1.6, borderDash: dash || [] };
+    }
+    function render() {
+      var rows = data.scenarios[state.tenor] || [];
+      priceChart.data.datasets = [series(rows, "full_pct", "完整重新定价", 0),
+                                  series(rows, "duration_pct", "久期近似", 1, [6, 4]),
+                                  series(rows, "duration_convexity_pct", "久期 + 凸性", 2, [2, 3])];
+      errorChart.data.datasets = [series(rows, "duration_error_pp", "久期近似误差", 1),
+                                  series(rows, "duration_convexity_error_pp", "久期 + 凸性误差", 2)];
+      priceChart.update(); errorChart.update();
+    }
+    render();
+  }
+
+  var BUILDERS = {
+    curve: function (left, right, data) { seriesChart(left, data); curveChart(right, data); },
+    scenarios: scenarioCharts
+  };
+
   function enhance(panel) {
     var box = panel.querySelector(".interactive");
     var still = panel.querySelector(".chart-static");
@@ -181,7 +235,9 @@
         var left = el("div"), right = el("div");
         grid.appendChild(left); grid.appendChild(right); box.appendChild(grid);
         try {
-          seriesChart(left, data); curveChart(right, data);
+          var build = BUILDERS[data.kind || "curve"];
+          if (!build) throw new Error("unknown chart kind " + data.kind);
+          build(left, right, data);
         } catch (err) {
           fallback("交互图表生成失败");
           return;

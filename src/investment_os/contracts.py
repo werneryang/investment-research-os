@@ -99,6 +99,7 @@ class Use(str, Enum):
 
     DESCRIPTIVE = "descriptive"  # 使用最新修订历史的描述与比较
     POINT_IN_TIME = "point_in_time"  # 只用当时可获知数据的时点研究
+    SCENARIO = "scenario"  # 在假设输入上计算的情景（如假设债券的利率冲击）
 
 
 class VintageSupport(str, Enum):

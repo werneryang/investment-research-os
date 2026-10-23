@@ -179,10 +179,85 @@ def coverage_summary(cov: dict[str, Any]) -> str:
     return head + tail
 
 
-_FINDERS = {"rates_curve": rates_curve_findings}
+def _pct(v: float, digits: int = 2) -> str:
+    return f"{v:+.{digits}f}%".replace("-", "−")
+
+
+def _pp(v: float, digits: int = 2) -> str:
+    return f"{v:+.{digits}f}".replace("-", "−")
+
+
+# 情景研究：近似误差的档位（百分点），用于定性状态
+ERROR_BANDS_PP = (0.1, 1.0)
+
+
+def par_bond_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
+    """假设平价债券情景的发现。只陈述计算结果与它们之间可验证的关系，不作预测。"""
+    res = result.get("results", {})
+    bonds_, scen = res.get("bonds", {}), res.get("scenarios", {})
+    out: list[dict[str, Any]] = []
+    if not bonds_:
+        return out
+    base = res.get("base_date")
+    focus = "10Y" if "10Y" in bonds_ else next(iter(bonds_))
+    b = bonds_[focus]
+    up = next((r for r in scen.get(focus, []) if r["shock_bp"] == 100), None)
+    text = (f"以 {base} 的票面收益率构造的 {focus} 假设平价债券（票息 {b['coupon_pct']:.2f}%）"
+            f"修正久期 {b['modified_duration']:.2f} 年、凸性 {b['convexity']:.1f}")
+    evidence = {f"results.bonds.{focus}.modified_duration": b["modified_duration"],
+                f"results.bonds.{focus}.convexity": b["convexity"]}
+    if up:
+        text += (f"；收益率上升 100 bp 时，完整重新定价的价格变化为 {_pct(up['full_pct'])}，"
+                 f"只用久期估计为 {_pct(up['duration_pct'])}（误差 {_pp(up['duration_error_pp'])} 个百分点），"
+                 f"加入凸性后误差为 {_pp(up['duration_convexity_error_pp'], 3)} 个百分点")
+        evidence[f"results.scenarios.{focus}[+100].full_pct"] = up["full_pct"]
+        evidence[f"results.scenarios.{focus}[+100].duration_convexity_error_pp"] = up["duration_convexity_error_pp"]
+    out.append(_finding("focus_bond", text + "。", evidence))
+
+    durations = {t: v["modified_duration"] for t, v in bonds_.items()}
+    out.append(_finding(
+        "durations",
+        "各期限修正久期：" + "，".join(f"{t} {d:.2f} 年" for t, d in durations.items())
+        + (("；期限越长，久期越大" if list(durations.values()) == sorted(durations.values()) else "") + "。"),
+        {f"results.bonds.{t}.modified_duration": d for t, d in durations.items()}))
+
+    all_rows = [r for rows in scen.values() for r in rows]
+    if all_rows and all(r["duration_error_pp"] < 0 for r in all_rows):
+        out.append(_finding(
+            "duration_understates",
+            "只用久期时，所有期限与冲击下的估计都低于完整重新定价的价格（收益率下降时少算涨幅、上升时多算跌幅），"
+            "与凸性为正一致。",
+            {"results.scenarios[*].duration_error_pp": max(r["duration_error_pp"] for r in all_rows)}))
+
+    worst = {t: max(abs(r["duration_convexity_error_pp"]) for r in rows) for t, rows in scen.items() if rows}
+    if worst:
+        biggest = max(abs(r["shock_bp"]) for rows in scen.values() for r in rows)
+        monotone = list(worst.values()) == sorted(worst.values())
+        out.append(_finding(
+            "approximation_error",
+            f"在最大 ±{biggest:.0f} bp 的冲击下，久期 + 凸性近似的最大绝对误差："
+            + "，".join(f"{t} {w:.3f}" for t, w in worst.items()) + " 个百分点"
+            + ("；期限越长，误差越大" if monotone else "") + "。",
+            {f"results.worst_duration_convexity_error.{t}": w for t, w in worst.items()}))
+    return out
+
+
+def par_bond_state(result: dict[str, Any]) -> dict[str, str]:
+    scen = result.get("results", {}).get("scenarios", {})
+    rows = [r for rs in scen.values() for r in rs]
+    if not rows:
+        return {}
+    worst = max(abs(r["duration_convexity_error_pp"]) for r in rows)
+    lo, hi = ERROR_BANDS_PP
+    band = f"< {lo} 个百分点" if worst < lo else (f"{lo}–{hi} 个百分点" if worst < hi else f"≥ {hi} 个百分点")
+    return {"久期 + 凸性近似的最大误差": band,
+            "只用久期的误差方向": "全部低估价格" if all(r["duration_error_pp"] < 0 for r in rows) else "方向不一致"}
+
+
+_FINDERS = {"rates_curve": rates_curve_findings, "par_bond_scenarios": par_bond_findings}
 
 # 规则版本：人工维护的名称；规则改动时递增。指纹会自动反映代码改动，两者一起展示
-RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v1"}
+RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v1", "par_bond_scenarios": "par_bond-findings.v1"}
 
 
 def findings(result: dict[str, Any]) -> list[dict[str, Any]]:
@@ -228,12 +303,17 @@ def rule_fingerprint(branch: str) -> str | None:
     finder = _FINDERS.get(branch)
     if finder is None:
         return None
+    if branch == "par_bond_scenarios":
+        parts = [inspect.getsource(f) for f in (finder, par_bond_state, _pct, _pp)] + [repr(ERROR_BANDS_PP)]
+        return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
     parts = [inspect.getsource(f) for f in (finder, state, completeness, coverage_summary, _direction, _bp, _n)]
     parts.append(repr(sorted(COVERAGE_LABEL.items())))
     return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
 
 
 def rule_params(branch: str) -> dict[str, Any]:
+    if branch == "par_bond_scenarios":
+        return {"error_bands_pp": list(ERROR_BANDS_PP)}
     return {"flat_bp": FLAT_BP} if branch in _FINDERS else {}
 
 
@@ -247,5 +327,5 @@ def interpret(result: dict[str, Any]) -> dict[str, Any] | None:
         "rule_fingerprint": rule_fingerprint(branch),
         "params": rule_params(branch),
         "items": findings(result),
-        "state": state(result),
+        "state": par_bond_state(result) if branch == "par_bond_scenarios" else state(result),
     }

@@ -52,7 +52,7 @@ def _inversion_cells(inv: dict[str, Any] | None) -> list[str]:
 
 # ---- 图表 -----------------------------------------------------------------
 
-def _figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
+def _curve_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
     daily = result["tables"].get("daily") or []
     if not daily:
         return []
@@ -101,6 +101,49 @@ def _figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
     return figs
 
 
+def _bond_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
+    scen = result["results"].get("scenarios", {})
+    if not scen:
+        return []
+    out_dir.mkdir(parents=True, exist_ok=True)
+    plt.rcParams.update({"figure.dpi": 110, "axes.spines.top": False, "axes.spines.right": False,
+                         "axes.grid": True, "grid.alpha": 0.3, "font.size": 9})
+    figs: list[tuple[str, Path]] = []
+    focus = "10Y" if "10Y" in scen else next(iter(scen))
+    rows = scen[focus]
+    x = [r["shock_bp"] for r in rows]
+    fig, ax = plt.subplots(figsize=(7, 3.6))
+    ax.plot(x, [r["full_pct"] for r in rows], marker="o", ms=3, label="Full repricing")
+    ax.plot(x, [r["duration_pct"] for r in rows], ls="--", label="Duration")
+    ax.plot(x, [r["duration_convexity_pct"] for r in rows], ls=":", label="Duration + convexity")
+    ax.axhline(0, color="black", lw=0.8)
+    ax.set_xlabel("Yield shock (bp)")
+    ax.set_ylabel("Price change (%)")
+    ax.set_title(f"{focus} hypothetical par bond: price change by method")
+    ax.legend(frameon=False)
+    figs.append((f"{focus} 价格变化：完整重新定价与近似", _save(fig, out_dir / "scenario_price.png")))
+
+    fig, ax = plt.subplots(figsize=(7, 3.6))
+    for tenor, rs in scen.items():
+        ax.plot([r["shock_bp"] for r in rs], [r["duration_convexity_error_pp"] for r in rs], marker="o", ms=3,
+                label=tenor)
+    ax.axhline(0, color="black", lw=0.8)
+    ax.set_xlabel("Yield shock (bp)")
+    ax.set_ylabel("Error (pp)")
+    ax.set_title("Duration + convexity approximation error vs full repricing")
+    ax.legend(frameon=False, ncol=len(scen))
+    figs.append(("久期 + 凸性近似误差（各期限）", _save(fig, out_dir / "approx_error.png")))
+    return figs
+
+
+_FIGURE_BUILDERS = {"rates_curve": _curve_figures, "par_bond_scenarios": _bond_figures}
+
+
+def _figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
+    builder = _FIGURE_BUILDERS.get(result["branch"])
+    return builder(result, out_dir) if builder else []
+
+
 def _save(fig: Any, path: Path) -> Path:
     fig.tight_layout()
     fig.savefig(path)
@@ -110,23 +153,10 @@ def _save(fig: Any, path: Path) -> Path:
 
 # ---- 内容结构 -------------------------------------------------------------
 
-def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
-    """返回 [(标题, [段落字符串 | ("table", 表头, 行) | ("figure", 说明, 路径)])]。"""
+def _curve_sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
+    """收益率曲线描述研究：主要结果表与覆盖说明。"""
     cov = result["coverage"]
     state = completeness(cov)
-    status = ("部分结论受限" if result["unsupported"] or state not in ("complete", "complete_to_date")
-              else COVERAGE_LABEL[state])
-    overview = [
-        f"**研究问题：** {result['question']}",
-        f"**成果类型：** {RESULT_TYPE_LABEL.get(result['result_type'], result['result_type'])}"
-        f"　**研究分支：** {result['branch']}　**结论状态：** {status}",
-        f"**研究范围：** {result['scope'].get('market', '')} · {result['scope'].get('currency', '')} · "
-        f"{result['scope'].get('start')} 至 {result['scope'].get('end')} · {result['scope'].get('frequency', '')}",
-        f"**数据截止：** {result['data_cutoff'] or '—'}　**生成时间：** {result['generated_at']}",
-        f"**运行 ID：** `{result['run_id']}`　**结果校验值：** `{result['result_hash'][:16]}`",
-    ]
-    secs: list[tuple[str, list[Any]]] = [("概要", overview)]
-
     r = result["results"]
     body: list[Any] = []
     if r.get("levels"):
@@ -158,11 +188,7 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
         body.append(("table", ["期限", "期初 %", "期末 %", "变化 bp"],
                      [[c["tenor"], _fmt(c["start"]), _fmt(c["end"]), _fmt(c["change_bp"], 0)]
                       for c in result["tables"]["curve_change"]]))
-    secs.append(("主要结果", body or ["没有可支持的结果。"]))
-
-    secs.append(("图表", [("figure", cap, path) for cap, path in result.get("_figures", [])]
-                 or ["无可绘制的数据。"]))
-
+    results_part = body
     cov_rows = [[t, str(v["observations"]), f"{v['share']:.1%}"] for t, v in cov["tenors"].items()]
     detail = ""
     if cov.get("expected_days") is not None:
@@ -173,7 +199,7 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
             detail += f"，应已发布但缺失 {cov['missing_days']} 天（如 {'、'.join(cov['missing_examples'][:3])}）"
         detail += "。"
     reason = f"（{cov['incomplete_reason']}）" if cov.get("incomplete_reason") else ""
-    coverage = [
+    coverage_part = [
         f"{coverage_summary(cov)}{reason}；覆盖 {cov['first'] or '—'} 至 {cov['last'] or '—'}。{detail}"
         f"覆盖要求 {cov['min_coverage']:.0%}（决定期间统计能否输出；期间完整另需无缺失且日历已核验）。",
         ("table", ["期限", "有效观测", "占比（分母为应已发布的观测日）"
@@ -181,20 +207,84 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
          cov_rows),
     ]
     if cov.get("excluded_rows"):
-        coverage.append("排除的行（缺失或隔离）："
+        coverage_part.append("排除的行（缺失或隔离）："
                         + "，".join(f"{k} {v}" for k, v in cov["excluded_rows"].items()))
+    return results_part, "覆盖与限制范围", coverage_part
+
+
+def _bond_sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
+    """假设平价债券情景：债券性质、情景损益与近似误差；「假设与输入」说明基准日与假设。"""
+    r = result["results"]
+    body: list[Any] = [
+        f"基准日 {r['base_date']}：各期限按当日票面收益率构造票息等于收益率的假设平价债券。"
+        "价格变化为相对基准价格的百分比；误差 = 近似 − 完整重新定价（百分点）。不是预测，冲击幅度不代表概率。",
+        ("table", ["期限", "票息 = 收益率 %", "价格", "麦考利久期（年）", "修正久期（年）", "凸性", "DV01（每 100 面值）"],
+         [[t, _fmt(b["yield_pct"]), _fmt(b["price"], 4), _fmt(b["macaulay_duration"], 3),
+           _fmt(b["modified_duration"], 3), _fmt(b["convexity"], 2), _fmt(b["dv01"], 4)]
+          for t, b in r["bonds"].items()]),
+    ]
+    for tenor, rows in r["scenarios"].items():
+        body.append(("table", [f"{tenor} 冲击 bp", "完整重新定价 %", "久期近似 %", "久期 + 凸性 %",
+                               "久期误差 pp", "久期 + 凸性误差 pp"],
+                     [[f"{x['shock_bp']:+.0f}", _fmt(x["full_pct"], 3), _fmt(x["duration_pct"], 3),
+                       _fmt(x["duration_convexity_pct"], 3), _fmt(x["duration_error_pp"], 3),
+                       _fmt(x["duration_convexity_error_pp"], 4)] for x in rows]))
+    cov = result["coverage"]
+    assumptions = [
+        f"基准日 {cov['base_date']}（研究窗口终点 {cov['window_end']}，相隔 {cov['days_before_window_end']} 天）；"
+        f"窗口内曲线日 {cov['curve_days_in_window']} 天，基准日为所有所需期限同时有值的最后一天。",
+        f"使用期限：{'、'.join(cov['tenors_used'])}（请求 {'、'.join(cov['tenors_requested'])}）。",
+    ]
+    return body, "假设与输入", assumptions
+
+
+_BRANCH_SECTIONS = {"rates_curve": _curve_sections, "par_bond_scenarios": _bond_sections}
+
+
+def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
+    """返回 [(标题, [段落字符串 | ("table", 表头, 行) | ("figure", 说明, 路径)])]。"""
+    if result["branch"] == "rates_curve":
+        state = completeness(result["coverage"])
+        status = ("部分结论受限" if result["unsupported"] or state not in ("complete", "complete_to_date")
+                  else COVERAGE_LABEL[state])
+    else:
+        status = "部分结论受限" if result["unsupported"] else "完整"
+    overview = [
+        f"**研究问题：** {result['question']}",
+        f"**成果类型：** {RESULT_TYPE_LABEL.get(result['result_type'], result['result_type'])}"
+        f"　**研究分支：** {result['branch']}　**结论状态：** {status}",
+        f"**研究范围：** {result['scope'].get('market', '')} · {result['scope'].get('currency', '')} · "
+        f"{result['scope'].get('start')} 至 {result['scope'].get('end')} · {result['scope'].get('frequency', '')}",
+        f"**数据截止：** {result['data_cutoff'] or '—'}　**生成时间：** {result['generated_at']}",
+        f"**运行 ID：** `{result['run_id']}`　**结果校验值：** `{result['result_hash'][:16]}`",
+    ]
+    secs: list[tuple[str, list[Any]]] = [("概要", overview)]
+
+    branch_sections = _BRANCH_SECTIONS.get(result["branch"])
+    results_part, coverage_title, coverage_part = (
+        branch_sections(result) if branch_sections else
+        (["该研究分支暂无报告模板。"], "覆盖与限制范围", []))
+    secs.append(("主要结果", results_part or ["没有可支持的结果。"]))
+
+    secs.append(("图表", [("figure", cap, path) for cap, path in result.get("_figures", [])]
+                 or ["无可绘制的数据。"]))
+
     if result["unsupported"]:
-        coverage.append(("table", ["不支持的结论", "原因"],
-                         [[u["item"], u["reason"]] for u in result["unsupported"]]))
-    secs.append(("覆盖与限制范围", coverage))
+        coverage_part = [*coverage_part, ("table", ["不支持的结论", "原因"],
+                                          [[u["item"], u["reason"]] for u in result["unsupported"]])]
+    secs.append((coverage_title, coverage_part or ["无"]))
 
     val = []
     for name, v in result["validation"].items():
-        label = {"cross_check": "交叉核验", "raw_spot_check": "原始快照抽查"}.get(name, name)
+        label = {"cross_check": "交叉核验", "raw_spot_check": "原始快照抽查",
+                 "closed_form_checks": "封闭解与重新定价核对"}.get(name, name)
         line = f"**{label}：** {STATUS_LABEL.get(v.get('status'), v.get('status'))}"
         if name == "cross_check" and v.get("matched"):
             line += (f"；对照 {v['against']}，共同日期 {v['matched']} 天，最大差 {_fmt(v['max_abs_diff'], 4)}"
                      f"（容差 {v['tolerance']}）。{v['note']}")
+        elif name == "closed_form_checks":
+            line += (f"；{v['checked']} 项核对，未通过 {len(v['failures'])} 项（平价价格 = 面值；"
+                     "解析修正久期 = 平价债券封闭解；解析久期、凸性 ≈ 有限差分完整重新定价）")
         elif name == "raw_spot_check" and v.get("checked"):
             line += f"；抽查 {v['checked']} 个观测，不一致 {len(v['failures'])} 个"
         elif v.get("reason"):

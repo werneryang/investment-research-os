@@ -11,12 +11,14 @@ from typing import Any
 STATUS_LABEL = {"success": "成功", "partial": "部分受限", "failed": "失败"}
 VERIFY_LABEL = {"candidate": "候选", "docs_verified": "说明已核验",
                 "access_verified": "接入已验证", "use_verified": "用途已验证"}
-USE_LABEL = {"descriptive": "历史描述（使用最新修订数据）", "point_in_time": "时点研究（只用当时可获知的数据）"}
+USE_LABEL = {"descriptive": "历史描述（使用最新修订数据）", "point_in_time": "时点研究（只用当时可获知的数据）",
+             "scenario": "情景模拟（假设输入，使用最新修订数据）"}
 RESULT_TYPE_LABEL = {"descriptive": "描述与比较", "explanatory": "解释与归因",
                      "forecast": "预测", "simulation": "情景与策略模拟"}
 CHECK_LABEL = {"pass": "通过", "fail": "未通过", "skipped": "跳过"}
 FETCH_LABEL = {"created": "新版本", "unchanged": "无变化", "failed": "失败"}
 CHECK_NOTES = {
+    "closed_form_checks": "平价债券价格 = 面值；解析修正久期 = 封闭解；解析久期与凸性 ≈ 有限差分完整重新定价。",
     "cross_check": "Treasury 曲线 10Y 与 FRED DGS10 比对。两者同源（H.15），一致只说明接入与解析正确，不是独立验证。",
     "raw_spot_check": "等距抽取标准化观测，用独立解析路径与原始下载文件逐点比对。",
     "reproduce": "发布前用该次运行固定的研究定义与数据版本重新计算，结果校验值一致；不代表其他环境或其他数据版本。",
@@ -95,7 +97,8 @@ def verification_chip(ver: dict[str, Any] | None) -> str:
 
 def check_chips(result: dict[str, Any], ver: dict[str, Any] | None) -> str:
     out = []
-    for key, label in (("cross_check", "同源一致性检查"), ("raw_spot_check", "原始快照抽查")):
+    for key, label in (("closed_form_checks", "封闭解与重新定价核对"), ("cross_check", "同源一致性检查"),
+                       ("raw_spot_check", "原始快照抽查")):
         v = result.get("validation", {}).get(key)
         if v:
             out.append(chip(v.get("status"), f"{label} · {CHECK_LABEL.get(v.get('status'), v.get('status'))}",
