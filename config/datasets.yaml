@@ -208,6 +208,114 @@ datasets:
     value_range: [0, 1000000]
     scheduled_fetch: {}
 
+  # ---- 第二批 FRED 序列（2026-10-23）：只接入数据，尚无研究。日度序列同样取观测日后第 4 天结束 ----
+
+  # VIX 与穆迪序列在 FRED 上标注为「有版权，需注明出处」：只在本机使用，不进公开存档
+  fred_vixcls:
+    source_id: fred_graph
+    upstream_id: "Cboe Global Markets via FRED: VIXCLS（有版权，需注明出处）"
+    connector: fred_graph_csv
+    description: Cboe VIX 波动率指数日收盘值（标普 500 期权隐含的 30 天波动率，年化百分点）
+    params: {series: VIXCLS}
+    frequency: daily
+    unit: index
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 4}
+    vintages: none
+    value_range: [0, 200]
+    scheduled_fetch: {}
+
+  fred_baa10y:
+    source_id: fred_graph
+    upstream_id: "Moody's via FRED: BAA10Y（有版权，需注明出处）"
+    connector: fred_graph_csv
+    description: 穆迪 Baa 级经调整公司债收益率减 10 年期国债固定期限收益率（收益率利差，不是期权调整利差）
+    params: {series: BAA10Y}
+    frequency: daily
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 4}
+    vintages: none
+    value_range: [-5, 20]
+    scheduled_fetch: {}
+
+  fred_aaa10y:
+    source_id: fred_graph
+    upstream_id: "Moody's via FRED: AAA10Y（有版权，需注明出处）"
+    connector: fred_graph_csv
+    description: 穆迪 Aaa 级公司债收益率减 10 年期国债固定期限收益率（收益率利差，不是期权调整利差）
+    params: {series: AAA10Y}
+    frequency: daily
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 4}
+    vintages: none
+    value_range: [-5, 20]
+    scheduled_fetch: {}
+
+  fred_dtb3:
+    source_id: fred_graph
+    upstream_id: "Board of Governors of the Federal Reserve System (H.15) via FRED: DTB3"
+    connector: fred_graph_csv
+    description: 3 个月国库券二级市场利率（贴现率口径）
+    params: {series: DTB3}
+    frequency: daily
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 4}
+    vintages: none
+    value_range: [-5, 30]
+    scheduled_fetch: {}
+
+  fred_sofr:
+    source_id: fred_graph
+    upstream_id: "Federal Reserve Bank of New York via FRED: SOFR"
+    connector: fred_graph_csv
+    description: 担保隔夜融资利率（SOFR），纽约联储次一工作日公布
+    params: {series: SOFR}
+    frequency: daily
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 4}
+    vintages: none
+    value_range: [-5, 30]
+    scheduled_fetch: {}
+
+  # GDP 初值通常在季度结束后约 30 天公布，停摆时会推迟（2025 年三季度初值推迟到 12 月下旬）；取 90 天作为保守规则
+  fred_gdp:
+    source_id: fred_graph
+    upstream_id: "U.S. Bureau of Economic Analysis via FRED: GDP"
+    connector: fred_graph_csv
+    description: 名义 GDP（季调年率，十亿美元；当前修订版本，历史值会随年度与综合修订改变）
+    params: {series: GDP}
+    frequency: quarterly
+    unit: billions_usd_saar
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [0, 10000000]
+    scheduled_fetch: {}
+
+  alfred_gdp:
+    source_id: fred_api
+    upstream_id: "U.S. Bureau of Economic Analysis via ALFRED: GDP"
+    connector: fred_api_vintages
+    description: 名义 GDP 全部历史版本：初值、修正值与年度、综合修订（需要 FRED_API_KEY）
+    params: {series: GDP}
+    frequency: quarterly
+    unit: billions_usd_saar
+    currency: USD
+    timezone: America/New_York
+    availability: {type: published_next_day}
+    vintages: supplier
+    value_range: [0, 10000000]
+
   # ---- Kenneth French 数据库（2026-10-23）：月度因子与行业组合收益，百分比 ----
   # 文件通常在月末后约三到八周更新（202608 数据于 2026-09-24 生成，2026-10-23 时 202609 仍未发布）；
   # 可用时间取月末后第 90 天结束，是保守规则。数据随 CRSP 更新整体重算，只有当前版本，因此参加定时快照。
@@ -274,6 +382,35 @@ datasets:
     availability: {type: period_end_lag_days, days: 90}
     vintages: none
     value_range: [-100, 1000]
+    scheduled_fetch: {}
+
+  # ---- Damodaran 历史回报表（2026-10-23）：年度回报，小数（0.05 即 5%） ----
+  # 每年 1 月更新上一年数据；可用时间取年末后第 60 天结束，是保守规则。表中自带的「更新日期」单元格已过时，不作依据
+
+  damodaran_histret:
+    source_id: damodaran
+    upstream_id: "Aswath Damodaran: histretSP.xls，Returns by year"
+    connector: damodaran_xls
+    description: 美国主要资产的年度回报（1928 年起）：标普 500（含分红）、小盘股、3 个月国库券、10 年期国债、Baa 公司债、房地产与黄金
+    params:
+      file: histretSP.xls
+      sheet: Returns by year
+      columns:
+        SP500: S&P 500 (includes dividends)
+        SMALLCAP: US Small cap (bottom decile)
+        TBILL3M: 3-month T.Bill
+        TBOND10Y: US T. Bond (10-year)
+        BAA: Baa Corporate Bond
+        REALESTATE: Real Estate
+        GOLD: Gold*
+      prefix: DAM_
+    frequency: annual
+    unit: fraction
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 60}
+    vintages: none
+    value_range: [-1, 10]
     scheduled_fetch: {}
 
   manual_example:
