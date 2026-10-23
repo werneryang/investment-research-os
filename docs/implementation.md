@@ -125,6 +125,7 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - **证据面板**逐项列出研究用途、各输入的来源与版本、日期与期限覆盖、原始快照抽查、同源一致性检查、固定输入重算、代码版本与不支持的结论，不汇总成分数。**数据覆盖条**按预期观测日显示曲线与各关键期限是否有合格值；结果中的 `coverage.missing_dates` 提供完整缺失列表（只在有缺失时写入）。
 - **展示组件按研究分支注册**（`site/renderers.py`）：研究页只负责共同结构（六个章节、证据面板的共同行、发现与解释、历史与复现）；每个分支提供自己的指标卡片、方法说明、覆盖或假设部分、证据行、历史列、交互图表数据（`chart.json`，`kind` 决定图表类型）、静态图与用途说明。没有注册展示组件的分支显示「暂无展示组件」，不套用其他分支的说明。
 - `map.html` 研究能力地图：按 `branches` 逐个分支列出研究方向；每个方向的数据能力、分析能力（工程）与研究验证（用途核验）由登记、研究分支声明的成果类型与最新运行自动得出，只有 `planned: true` 的方向人工维护并写明缺什么。分支状态取其方向中最好的一项（已有研究 → 已有数据 → 数据已登记 → 规划中）。
+- `sources.html` 数据资源目录（`site/sources.py`）：`config/sources.yaml` 中全部来源（已接入与候选）的卡片，按类别分组，另有按研究方向的索引与能力缺口。卡片显示来源达到的最高核验状态，逐个列出已登记数据集的状态与已验证用途；候选来源的取得方式等字段标为初步判断。研究方向链接到能力地图的分支。目录同时写入 `summary.json` 的 `sources`。
 - `methods.html` 数据、方法与状态：来源与核验、预期日历、可靠性机制、复现方法与系统状态（`#status`）。
 - 页脚显示发布时间、代码版本与工作流徽章；更新停滞超过 2 个工作日时各页顶部显示提示。
 - 每次运行的 `report.html`、图表、`daily.json`、`manifest.json`、`result.json` 发布在 `runs/<run_id>/`；`latest/<study_id>/report.html` 为最新完整报告的稳定地址；旧的 `history/<study_id>.html` 转到研究页的历史部分。
@@ -153,9 +154,11 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 
 ## 7. 扩展方法
 
+**新增候选来源**：在 `config/sources.yaml` 登记 `id`、`publisher`、`url`、`category`，以及能写的索引字段（`directions`、`access`、`signup`、`redistribution`、`offers`、`notes`、`next_step` 等，见文件开头的说明）。读过官方说明后追加不指明数据集的 `docs_verified` 记录。资源目录与 `iros sources` 自动更新。
+
 **新增同类数据集**：在 `config/datasets.yaml` 登记，复用已有接入器（如另一个 FRED 序列只需改 `params.series`），并在 `config/sources.yaml` 追加核验记录。
 
-**新增来源**：在 `connectors/` 实现 `fetch` 与 `parse`（输出暂存表的 5 列），在 `connectors/__init__.py` 注册，在 `sources.yaml` 登记来源与核验状态。数值转换、时间规则、质量与版本由公共流程处理，接入器不重复实现。
+**新增来源**：在 `connectors/` 实现 `fetch` 与 `parse`（输出暂存表的 5 列），在 `connectors/__init__.py` 注册，在 `sources.yaml` 补齐来源的 §5.1 字段与核验状态（候选来源缺这些字段时，登记数据集会报错）。数值转换、时间规则、质量与版本由公共流程处理，接入器不重复实现。
 
 **新增研究分支**：在 `research/` 中写一个接收 `(StudySpec, dict[str, StudyInput])`、返回 `ResearchResult` 的函数，用 `@register_branch("名称")` 注册，并在 `research/__init__.py` 导入。报告只读取结构化结果；目前的报告模板针对曲线类结果，其他成果类型需要增加相应的报告段落。
 

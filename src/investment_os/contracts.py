@@ -115,10 +115,15 @@ class VintageSupport(str, Enum):
 
 FREQUENCIES = ("daily", "weekly", "monthly", "quarterly", "annual")
 
+# 资源目录的索引字段（config/sources.yaml）；候选来源的取值是资料入口上的初步判断，未经核验
+SOURCE_ACCESS = ("api", "file", "tool", "web", "manual")  # 接口、文件下载、第三方工具、网页资料、人工导入
+SOURCE_SIGNUP = ("none", "free_key", "unknown")  # 无需注册、免费注册或 key、未核验
+SOURCE_REDISTRIBUTION = ("allowed", "per_series", "restricted", "unknown")  # 公开再分发是否允许
+
 
 @dataclass(frozen=True)
 class VerificationRecord:
-    dataset: str
+    dataset: str | None  # None：来源整体的说明核验，不对任何数据集生效
     status: VerificationStatus
     date: str
     evidence: str
@@ -173,9 +178,16 @@ def uncovered_spans(start: date, end: date,
     return spans
 
 
+# 登记数据集之前必须填写的来源字段（architecture §5.1）
+ACCESS_FIELDS = ("channel", "license", "registration", "rate_limit", "revisions", "maintenance")
+
+
 @dataclass(frozen=True)
 class SourceSpec:
-    """来源登记（architecture §5.1 的最低内容）。"""
+    """来源登记（architecture §5.1 的最低内容）与资源目录的索引字段。
+
+    候选来源可以只有发布者、入口与索引字段；§5.1 的其余字段在登记数据集（开始接入）前补齐。
+    """
 
     id: str
     publisher: str
@@ -188,6 +200,29 @@ class SourceSpec:
     maintenance: str
     alternatives: tuple[str, ...] = ()
     verification: tuple[VerificationRecord, ...] = ()
+    name: str = ""  # 目录中显示的短名称
+    category: str = ""
+    directions: tuple[str, ...] = ()  # 可服务的研究方向（site/content.yaml）
+    access: str = ""
+    signup: str = "unknown"
+    redistribution: str = "unknown"
+    coverage: str = ""  # 历史与频率覆盖
+    offers: tuple[str, ...] = ()  # 可提供、尚未登记为数据集的数据
+    notes: str = ""
+    next_step: str = ""
+
+    @property
+    def display_name(self) -> str:
+        return self.name or self.publisher
+
+    def missing_access_fields(self) -> list[str]:
+        """接入前必须填写的 §5.1 字段中还空着的。"""
+        return [k for k in ACCESS_FIELDS if not getattr(self, k)]
+
+    def best_status(self) -> VerificationStatus:
+        """来源整体达到的最高状态（任一数据集或来源说明），只用于资源目录，不代表每个数据集都达到。"""
+        order = list(VerificationStatus)
+        return max((v.status for v in self.verification), key=order.index, default=VerificationStatus.CANDIDATE)
 
     def status_for(self, dataset: str, use: Use | None = None) -> VerificationStatus:
         """按「来源 × 数据集 × 用途」取状态。

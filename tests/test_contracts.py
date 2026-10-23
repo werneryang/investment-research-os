@@ -202,3 +202,61 @@ sources:
 """, encoding="utf-8")
     with pytest.raises(RegistryError, match="起点晚于终点"):
         load_sources(tmp_path / "s.yaml")
+
+
+def test_candidate_source_needs_only_entry_but_full_fields_before_datasets(tmp_path: Path):
+    (tmp_path / "s.yaml").write_text("""
+categories: {macro: 宏观}
+sources:
+  - {id: c, publisher: p, url: u, category: macro, access: api,
+     verification: [{status: docs_verified, date: "2026-01-01", evidence: e}]}
+""", encoding="utf-8")
+    src = load_sources(tmp_path / "s.yaml")["c"]
+    # 来源整体的说明核验不对任何数据集生效
+    assert src.best_status() is VerificationStatus.DOCS_VERIFIED
+    assert src.status_for("d") is VerificationStatus.CANDIDATE
+    assert "channel" in src.missing_access_fields()
+    (tmp_path / "d.yaml").write_text("""
+datasets:
+  a: {source_id: c, upstream_id: u, connector: x, frequency: daily, unit: percent,
+      timezone: UTC, availability: {type: unknown}}
+""", encoding="utf-8")
+    with pytest.raises(RegistryError, match="接入前须补齐"):
+        load_datasets(tmp_path / "d.yaml", {"c": src})
+
+
+def test_access_records_must_name_a_dataset(tmp_path: Path):
+    (tmp_path / "s.yaml").write_text("""
+sources:
+  - {id: c, publisher: p, url: u,
+     verification: [{status: access_verified, date: "2026-01-01", evidence: e}]}
+""", encoding="utf-8")
+    with pytest.raises(RegistryError, match="必须指明数据集"):
+        load_sources(tmp_path / "s.yaml")
+
+
+def test_source_index_fields_are_validated(tmp_path: Path):
+    for bad, match in (("category: nope", "类别无效"), ("category: macro, access: ftp", "access 无效"),
+                       ("category: macro, redistribution: maybe", "redistribution 无效")):
+        (tmp_path / "s.yaml").write_text(f"""
+categories: {{macro: 宏观}}
+sources:
+  - {{id: c, publisher: p, url: u, {bad}}}
+""", encoding="utf-8")
+        with pytest.raises(RegistryError, match=match):
+            load_sources(tmp_path / "s.yaml")
+
+
+def test_project_source_index_is_consistent():
+    """项目登记：每个来源都有类别；引用的研究方向都在 site/content.yaml 中；已接入来源的 §5.1 字段齐全。"""
+    import yaml
+    reg = Registry.load(PROJECT_ROOT)
+    content = yaml.safe_load((PROJECT_ROOT / "site" / "content.yaml").read_text(encoding="utf-8"))
+    directions = {d["id"] for b in content["branches"] for d in b["directions"]}
+    for src in reg.sources.values():
+        assert src.category in reg.source_categories, src.id
+        assert set(src.directions) <= directions, (src.id, set(src.directions) - directions)
+    for gap in reg.gaps:
+        assert set(gap.get("directions") or []) <= directions, gap["name"]
+    for d in reg.datasets.values():
+        assert not reg.sources[d.source_id].missing_access_fields()

@@ -82,6 +82,15 @@ def test_build_site_from_runs(loaded):
     methods = (site / "methods.html").read_text(encoding="utf-8")
     assert 'id="status"' in methods and "us_treasury_daily" in methods
 
+    # 资源目录：已接入与候选来源同在一处，候选标明未核验；方向链接到能力地图的分支
+    src = (site / "sources.html").read_text(encoding="utf-8")
+    assert '<a href="sources.html" aria-current="page">数据资源目录</a>' in src
+    assert 'id="src-ust_treasury"' in src and 'id="src-ken_french"' in src and "未经核验" in src
+    assert "ust_par_yield_curve</code> 接入已验证；用途已验证：历史描述" in src
+    assert 'href="map.html#markets_assets" title="市场与大类资产">美国国债期限结构</a>' in src
+    assert "<h2>能力缺口</h2>" in src and "完整历史期权链" in src
+    assert 'href="sources.html"' in page  # 其他页面的导航也有资源目录
+
     daily = json.loads((run_dir / "chart.json").read_text(encoding="utf-8"))
     assert daily["kind"] == "curve"
     assert daily["spreads"] == [{"key": "2Y-10Y", "label": "10Y − 2Y"}]
@@ -92,6 +101,9 @@ def test_build_site_from_runs(loaded):
     run = summary["runs"][0]
     assert run["run_id"] == latest["run_id"] and run["reproduced"] is True and run["history"] == 2
     assert run["findings"][0]["id"] == "level_10y"
+    by_id = {x["id"]: x for x in summary["sources"]}
+    assert by_id["ust_treasury"]["status"] == "use_verified" and by_id["shiller"]["status"] == "candidate"
+    assert by_id["sec_edgar"]["status"] == "docs_verified" and by_id["sec_edgar"]["datasets"] == []
 
 
 def test_daily_json_keeps_gaps(loaded):
