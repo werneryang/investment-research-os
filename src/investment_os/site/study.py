@@ -86,8 +86,9 @@ def _method(result: dict[str, Any]) -> str:
         f"<li>关键期限：{e('、'.join(params.get('key_tenors', [])))}；利差（长端 − 短端）：{e(spreads or '无')}"
         + (f"；曲率：{e(curvature_label('/'.join(curv)))}" if curv else "") + "。</li>",
         f"<li>比较基准：{e(m.get('benchmark') or '—')}。</li>",
-        f"<li>覆盖要求：关键期限有效观测占预期观测日的比例不低于 {params.get('min_coverage', 0):.0%}；"
-        "不足时依赖它的结论不输出。</li>",
+        f"<li>覆盖要求：关键期限有效观测占应已发布观测日的比例不低于 {params.get('min_coverage', 0):.0%}，"
+        "不足时依赖它的结论不输出。达到要求不等于期间完整：期间完整另需所有预期日期都有数据、且日期在日历核验范围内；"
+        "有缺口的指标，期间统计只描述已观测日期。尚未到发布时间的日期单独列出，不计入覆盖。</li>",
         "<li>倒挂定义为利差严格小于 0；恰为 0 的日期单独计数，不计入倒挂。</li>",
         f"<li>关键发现由固定规则生成：变化幅度小于 {FLAT_BP:.0f} bp 记为「基本持平」；只描述，不作预测或交易判断。</li>",
         f"<li>时间规则：{e(m.get('availability_rule') or '—')}；版本策略："
