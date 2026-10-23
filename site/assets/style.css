@@ -8,7 +8,7 @@
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC",
 "Noto Sans CJK SC","Microsoft YaHei",sans-serif}
 .wrap{max-width:1080px;margin:0 auto;padding:0 16px}
-header.top{padding:48px 0 24px;border-bottom:1px solid var(--line)}
+header.top{padding:28px 0 20px;border-bottom:1px solid var(--line)}
 header.top h1{font-size:2rem;margin:0 0 .3rem}
 .tagline{font-size:1.05rem;color:var(--muted);margin:0 0 1rem}
 .meta{color:var(--muted);font-size:.85rem;margin:.4rem 0}
@@ -79,3 +79,57 @@ details.static-figs summary{cursor:pointer;color:var(--muted);font-size:.85rem}
 .button.secondary{background:transparent;color:var(--accent);border:1px solid var(--accent)}
 nav.crumbs{padding:20px 0 0;font-size:.9rem}
 h3.sub{margin:1.4rem 0 .7rem;font-size:1rem;color:var(--muted)}
+
+/* ---- 导航与页面结构 ---- */
+.topnav{border-bottom:1px solid var(--line);background:var(--panel)}
+.topnav .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding-top:10px;padding-bottom:10px}
+.brand{font-weight:700;color:var(--fg);text-decoration:none}
+.navlinks{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.9rem}
+.navlinks a{color:var(--muted);text-decoration:none;padding:2px 0}
+.navlinks a[aria-current="page"]{color:var(--fg);border-bottom:2px solid var(--accent)}
+.hero{padding:40px 0 8px}.hero h1{font-size:2rem;margin:0 0 .3rem}
+.eyebrow{margin:0 0 .2rem;font-size:.78rem;letter-spacing:.04em;color:var(--accent);font-weight:600}
+.h-feature{font-size:1.35rem;margin:0 0 .2rem}
+.lead{font-size:1.05rem;margin:0}
+.badge{height:20px;vertical-align:middle}
+.nowrap{white-space:nowrap}.warn{color:var(--warn)}
+footer.bottom p{margin:.3rem 0}
+
+/* ---- 关键发现 ---- */
+.findings{margin:0 0 12px;padding-left:1.4em;display:grid;gap:8px}
+.findings li{line-height:1.6}
+details.basis{display:inline;margin-left:6px;font-size:.8rem;color:var(--muted)}
+details.basis[open]{display:block;margin:.2rem 0 .4rem}
+details.basis summary{cursor:pointer;color:var(--accent)}
+details.basis ul{margin:.3rem 0;padding-left:1.2em}
+.evidence-line{color:var(--muted);border-top:1px dashed var(--line);padding-top:10px;margin-top:12px}
+
+/* ---- 证据面板与方法 ---- */
+.evidence table th{width:9em;white-space:nowrap;color:var(--muted);font-weight:600}
+.evidence table td{line-height:1.6}
+.evidence .muted.small{display:block}
+.method,.limits-list{padding-left:1.2em;margin:.4rem 0}.method li,.limits-list li{margin:.25rem 0}
+pre{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 12px;overflow-x:auto;font-size:.85rem}
+
+/* ---- 覆盖条 ---- */
+figure.coverage{margin:8px 0 4px}
+figure.coverage svg{display:block;max-width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px}
+.cov-ok{fill:var(--ok)}.cov-gap{fill:var(--warn)}.cov-miss{fill:var(--bad)}
+.cov-label{font-size:9px;fill:var(--muted)}.cov-tick{font-size:8px;fill:var(--muted)}
+.key{display:inline-block;width:10px;height:10px;border-radius:2px;margin:0 4px 0 10px;vertical-align:-1px}
+.key.cov-ok{background:var(--ok)}.key.cov-gap{background:var(--warn)}.key.cov-miss{background:var(--bad)}
+
+/* ---- 首页研究列表 ---- */
+.card.featured{border-color:var(--accent)}
+.study-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.study-row{display:flex;justify-content:space-between;gap:16px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.study-row p{margin:.2rem 0 0}.study-title{font-weight:600;font-size:1.02rem}
+.about-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.about-strip h3{margin:0 0 .3rem;font-size:1rem}.about-strip p{margin:0 0 .4rem}
+
+/* ---- 能力地图与状态 ---- */
+table.capability td{min-width:150px}
+tr.planned td{color:var(--muted)}
+table.compact{width:auto;min-width:50%}
+.two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+@media (max-width:600px){.study-row{flex-direction:column}.evidence table th{width:auto;white-space:normal}}

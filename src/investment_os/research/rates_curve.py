@@ -69,6 +69,8 @@ def _date_coverage(curve: pd.DataFrame, start: pd.Timestamp, end: pd.Timestamp,
     if unverified:  # 只在确有未核验日期时记录，已核验期间的结果结构保持不变
         out["calendar_unverified"] = unverified
     missing = expected.difference(observed)
+    if len(missing):  # 完整列表供覆盖图使用；没有缺失时不写，保持已核验期间的结果结构不变
+        out["missing_dates"] = [d.date().isoformat() for d in missing]
     unexpected = observed.difference(expected)
     share = (len(expected) - len(missing)) / len(expected) if len(expected) else 0.0
     complete = edges_ok and share >= min_cov
@@ -91,7 +93,7 @@ def _restrict_period_stats(summary: dict[str, Any]) -> dict[str, Any]:
     return {**summary, **{k: None for k in PERIOD_STAT_KEYS if k in summary}}
 
 
-@register_branch("rates_curve")
+@register_branch("rates_curve", result_types=(ResultType.DESCRIPTIVE,))
 def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> ResearchResult:
     if study.result_type is not ResultType.DESCRIPTIVE:
         raise ValueError("rates_curve 分支目前只支持描述性研究")

@@ -72,7 +72,7 @@ def test_restore_then_site_lists_archived_history(loaded, tmp_path):
     assert (fresh / "runs" / earlier["run_id"] / "result.json").exists()
 
     build_site(fresh, fresh / "_site", arch)
-    history = (fresh / "_site" / "history" / "ust_curve_test.html").read_text(encoding="utf-8")
+    history = (fresh / "_site" / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")
     assert earlier["run_id"] in history and today["run_id"] in history
     assert "首次归档" in history and "实质内容变化" in history
     assert (fresh / "_site" / "runs" / earlier["run_id"] / "report.html").exists()

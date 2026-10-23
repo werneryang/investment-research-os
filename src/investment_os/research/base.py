@@ -56,13 +56,21 @@ class ResearchResult:
 # 分支接收研究定义、输入与登记（用于日历等公共参照），返回结构化成果
 Branch = Callable[[StudySpec, dict[str, StudyInput], Registry], ResearchResult]
 _BRANCHES: dict[str, Branch] = {}
+_RESULT_TYPES: dict[str, tuple[ResultType, ...]] = {}
 
 
-def register_branch(name: str) -> Callable[[Branch], Branch]:
+def register_branch(name: str, result_types: tuple[ResultType, ...] = (ResultType.DESCRIPTIVE,)
+                    ) -> Callable[[Branch], Branch]:
+    """注册研究分支，并声明它支持的成果类型（研究能力地图据此显示）。"""
     def deco(fn: Branch) -> Branch:
         _BRANCHES[name] = fn
+        _RESULT_TYPES[name] = tuple(result_types)
         return fn
     return deco
+
+
+def branch_result_types() -> dict[str, tuple[ResultType, ...]]:
+    return dict(_RESULT_TYPES)
 
 
 def get_branch(name: str) -> Branch:

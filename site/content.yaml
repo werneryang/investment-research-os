@@ -2,10 +2,62 @@
 # 研究结果、数据与核验状态不写在这里，由 `iros site` 从运行记录与登记中生成。
 
 title: Investment Research OS
-tagline: 个人投资研究框架——免费数据、可追溯的版本、可复现的研究记录
+tagline: 基于公开免费数据、可追溯、可复现的市场研究
 
-# 首页研究的显示顺序：日常查看的滚动研究在前
+# 首页研究的显示顺序：第一项为研究焦点（日常查看的滚动研究），其余列在「全部研究」
 study_order: [ust_curve_last_year, ust_curve_2024]
+
+studies:
+  ust_curve_last_year: {label: 滚动研究}
+  ust_curve_2024: {label: 历史案例}
+
+# 研究能力地图的领域。数据、分析与验证状态由登记和运行记录自动得出；
+# 只有 planned: true 的领域在这里人工维护，并写明还缺什么（needs）。
+domains:
+  - id: us_treasury_curve
+    name: 美国国债收益率曲线
+    summary: 名义票面收益率曲线的水平、斜率、曲率与倒挂
+    datasets: [ust_par_yield_curve, fred_dgs10]
+    studies: [ust_curve_last_year, ust_curve_2024]
+    can_answer:
+      - 指定期间内各期限收益率、利差与曲率如何变化
+      - 期间内倒挂持续了多少天、何时由倒挂转为正斜率
+    cannot_answer:
+      - 持有国债或债券基金的回报（票面收益率不是持有期回报）
+      - 曲线变化的原因（需要解释性研究与宏观数据）
+      - 未来曲线走势（需要预测模型与样本外验证）
+  - id: us_inflation_macro
+    name: 美国通胀与宏观
+    summary: CPI 等宏观序列；时点研究需要 ALFRED 历史版本
+    datasets: [fred_cpiaucsl, alfred_cpiaucsl]
+    studies: []
+    can_answer: []
+    cannot_answer:
+      - 当时可获知的通胀数据（ALFRED 尚未用真实 key 接入）
+  - id: rates_duration_risk
+    name: 国债久期与利率风险
+    planned: true
+    needs: 需要国债价格或总收益数据，或基于曲线的定价模型；票面收益率本身不是回报，不能直接复用
+  - id: equity_risk
+    name: 股票市场风险
+    planned: true
+    needs: 需要指数总收益与估值数据源，以及公司行动与成分变化的处理
+  - id: credit_premium
+    name: 信用风险溢价
+    planned: true
+    needs: 需要免费、可核验的信用利差或公司债指数来源
+  - id: vol_premium
+    name: 波动率风险溢价
+    planned: true
+    needs: 需要隐含波动率与已实现波动率数据；完整历史期权链目前列为能力缺口
+  - id: global_assets
+    name: 全球资产比较
+    planned: true
+    needs: 需要多市场数据、交易日历与汇率换算（架构 §4、§7.1）
+  - id: portfolio
+    name: 组合与情景研究
+    planned: true
+    needs: 依赖上游资产收益与风险数据；只做模拟组合，不需要真实账户
 
 phases:
   - id: P0
