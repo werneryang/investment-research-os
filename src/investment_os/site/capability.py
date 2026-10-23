@@ -6,12 +6,21 @@
 
 from __future__ import annotations
 
+from datetime import date
 from typing import Any
 
 from ..contracts import ResultType, Use
 from ..registry import Registry
 from ..research import branch_result_types
-from .common import RESULT_TYPE_LABEL, STATUS_LABEL, VERIFY_LABEL, chip, e, shell
+from .common import (
+    RESULT_TYPE_LABEL,
+    STATUS_LABEL,
+    VERIFY_LABEL,
+    chip,
+    e,
+    shell,
+    use_scope_chip,
+)
 
 USE_SHORT = {Use.DESCRIPTIVE: "历史描述", Use.POINT_IN_TIME: "时点研究"}
 
@@ -32,12 +41,20 @@ def domain_status(domain: dict[str, Any], registry: Registry, datasets: dict[str
     runs = [{"study_id": s, "status": latest[s]["manifest"]["status"],
              "branch": latest[s]["result"]["branch"], "use": _use(latest[s]["result"])} for s in studies]
     validated: dict[tuple[str, Use], Any] = {}
+    coverage: dict[tuple[str, Use], list[tuple[str, dict[str, Any]]]] = {}
     for run in runs:
+        scope = latest[run["study_id"]]["result"]["scope"]
         for ds in domain.get("datasets", []):
             spec = registry.datasets.get(ds)
-            record = registry.sources[spec.source_id].use_record(ds, run["use"]) if spec else None
-            if record is not None:
-                validated[(ds, run["use"])] = record
+            source = registry.sources[spec.source_id] if spec else None
+            record = source.use_record(ds, run["use"]) if source else None
+            if record is None:
+                continue
+            validated[(ds, run["use"])] = record
+            # 用当前登记与该研究最新运行的期间计算，地图反映的是现在的核验范围
+            cov = source.use_coverage(ds, run["use"], date.fromisoformat(str(scope["start"])),
+                                      date.fromisoformat(str(scope["end"])))
+            coverage.setdefault((ds, run["use"]), []).append((run["study_id"], cov.to_dict()))
     used = {r["use"] for r in runs}
     unvalidated = [d for d in domain.get("datasets", [])
                    if d in datasets and not any((d, u) in validated for u in used)]
@@ -48,7 +65,8 @@ def domain_status(domain: dict[str, Any], registry: Registry, datasets: dict[str
     else:
         category = "registered" if ds_rows else "planned"  # 已登记数据集但本次构建未取得，不是「规划」
     return {"category": category, "datasets": ds_rows, "runs": runs,
-            "validated": [(ds, u, rec) for (ds, u), rec in sorted(validated.items(), key=lambda kv: kv[0])],
+            "validated": [(ds, u, rec, coverage[(ds, u)])
+                          for (ds, u), rec in sorted(validated.items(), key=lambda kv: kv[0])],
             "unvalidated": unvalidated if runs else []}
 
 
@@ -91,11 +109,7 @@ def _domain_row(domain: dict[str, Any], st: dict[str, Any]) -> str:
         analysis = ('<span class="muted">尚无研究（数据已接入）</span>' if st["category"] == "data_only"
                     else '<span class="muted">尚无研究；数据已登记，本次构建未取得</span>')
     if st["validated"]:
-        validation = "".join(
-            f"<div>{chip('pass', '用途已验证')} {e(USE_SHORT[u])} · <code class='small'>{e(ds)}</code>"
-            f"<div class='small muted'>登记于 {e(rec.date)}；范围：{e(rec.scope)}</div>"
-            f"<details class='basis'><summary>核验证据</summary><p class='small'>{e(rec.evidence)}</p></details></div>"
-            for ds, u, rec in st["validated"])
+        validation = "".join(_validated_entry(ds, u, rec, cov) for ds, u, rec, cov in st["validated"])
         if st["unvalidated"]:
             validation += (f"<div class='small muted'>未登记用途核验："
                            f"{e('、'.join(st['unvalidated']))}（只用于交叉检查或尚未核验）</div>")
@@ -106,6 +120,22 @@ def _domain_row(domain: dict[str, Any], st: dict[str, Any]) -> str:
     else:
         validation = '<span class="muted">—</span>'
     return f"<tr><td>{name}</td><td>{data}</td><td>{analysis}</td><td>{validation}</td></tr>"
+
+
+def _validated_entry(ds: str, use: Use, rec: Any, coverage: list[tuple[str, dict[str, Any]]]) -> str:
+    statuses = {c["status"] for _, c in coverage}
+    if statuses == {"in_scope"}:
+        head = chip("pass", "用途已验证")
+    elif "in_scope" in statuses or "partial" in statuses:
+        head = chip("partial", "用途已验证 · 部分在范围内")
+    else:
+        head = chip("fail", "研究期间在核验范围外")
+    valid = f"{rec.valid_from or '不限'} 至 {rec.valid_through or '不限'}"
+    per_study = "".join(f"<div class='small'><code>{e(s)}</code> {use_scope_chip(c)}</div>" for s, c in coverage)
+    return (f"<div>{head} {e(USE_SHORT[use])} · <code class='small'>{e(ds)}</code>"
+            f"<div class='small muted'>核验覆盖的观测日期 {e(valid)}；登记于 {e(rec.date)}</div>{per_study}"
+            f"<details class='basis'><summary>范围说明与核验证据</summary><p class='small'>{e(rec.scope)}</p>"
+            f"<p class='small'>{e(rec.evidence)}</p></details></div>")
 
 
 def _types_table() -> str:

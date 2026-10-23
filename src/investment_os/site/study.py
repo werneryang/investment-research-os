@@ -24,6 +24,7 @@ from .common import (
     num,
     shell,
     stat,
+    use_scope_chip,
 )
 from .coverage import coverage_strip
 
@@ -97,7 +98,8 @@ def evidence_panel(item: dict[str, Any], registry: Registry, run_href: str) -> s
         rows.append((f"输入 · {e(inp['role'])}",
                      f"{e(source)} · <code>{e(inp['dataset_id'])}</code> 版本 <code>{e(inp['version_id'])}</code>"
                      f"（内容校验值 <code>{e(inp['content_hash'][:12])}</code>）· 核验状态："
-                     f"{e(VERIFY_LABEL.get(inp['source_status'], inp['source_status']))}"))
+                     f"{e(VERIFY_LABEL.get(inp['source_status'], inp['source_status']))}"
+                     + (f"<div>{use_scope_chip(inp.get('use_scope'))}</div>" if inp.get("use_scope") else "")))
     if cov.get("expected_days") is not None:
         text = (f"预期观测日 {cov['expected_days']} 天（日历 <code>{e(cov['calendar'])}</code>），"
                 f"实际 {cov['curve_days']} 天；期间{'完整' if cov['period_complete'] else '未能证明完整'}")

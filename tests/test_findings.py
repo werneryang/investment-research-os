@@ -83,8 +83,9 @@ def test_coverage_strip_discloses_partial_missing_list():
     assert "只记录了部分缺失日期" in coverage_strip(r)
 
 
-def _latest(status="success"):
-    return {"s1": {"manifest": {"status": status}, "result": {"branch": "rates_curve", "scope": {}}}}
+def _latest(status="success", start="2024-01-01", end="2024-12-31"):
+    return {"s1": {"manifest": {"status": status},
+                   "result": {"branch": "rates_curve", "scope": {"start": start, "end": end}}}}
 
 
 def test_capability_categories_come_from_registry_and_runs():
@@ -93,10 +94,11 @@ def test_capability_categories_come_from_registry_and_runs():
           "fred_cpiaucsl": {"status": "access_verified", "version_id": "v2", "verified_uses": []}}
     active = domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
     # 真实登记中已有 ust_par_yield_curve 的描述性用途核验；只对该用途计入
-    assert [(d, u.value) for d, u, _ in active["validated"]] == [("ust_par_yield_curve", "descriptive")]
+    assert [(d, u.value) for d, u, _, _ in active["validated"]] == [("ust_par_yield_curve", "descriptive")]
     assert "2024-01-01 至 2026-10-22" in active["validated"][0][2].scope
     as_of = {"s1": {"manifest": {"status": "success"},
-                    "result": {"branch": "rates_curve", "scope": {"vintage_policy": "as_of"}}}}
+                    "result": {"branch": "rates_curve",
+                               "scope": {"vintage_policy": "as_of", "start": "2024-01-01", "end": "2024-12-31"}}}}
     assert domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, as_of)["validated"] == []
     two = domain_status({"datasets": ["ust_par_yield_curve", "fred_cpiaucsl"], "studies": ["s1"]}, reg, ds, _latest())
     assert two["unvalidated"] == ["fred_cpiaucsl"]
@@ -108,3 +110,19 @@ def test_capability_categories_come_from_registry_and_runs():
                                               "verified_uses": []}}, {})["category"] == "registered"
     content = {"domains": [{"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, {"planned": True}]}
     assert summary(content, reg, ds, _latest()) == {"active": 1, "data_only": 0, "registered": 0, "planned": 1}
+
+
+def test_capability_map_shows_partial_scope():
+    from investment_os.site.capability import _validated_entry
+    reg = Registry.load(PROJECT_ROOT)
+    ds = {"ust_par_yield_curve": {"status": "access_verified", "version_id": "v1", "verified_uses": []}}
+    inside = domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
+    assert inside["validated"][0][3][0][1]["status"] == "in_scope"
+    assert "部分在范围内" not in _validated_entry(*inside["validated"][0])
+
+    past = domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds,
+                         _latest(start="2025-10-23", end="2026-10-25"))
+    cov = past["validated"][0][3][0][1]
+    assert cov["status"] == "partial" and cov["uncovered"] == [["2026-10-23", "2026-10-25"]]
+    html = _validated_entry(*past["validated"][0])
+    assert "用途已验证 · 部分在范围内" in html and "2026-10-23 至 2026-10-25" in html

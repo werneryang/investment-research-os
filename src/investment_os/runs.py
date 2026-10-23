@@ -12,14 +12,16 @@ import platform
 import subprocess
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import date, datetime
 from importlib import metadata
 from pathlib import Path
 from typing import Any, Callable
 
+import pandas as pd
+
 from . import __version__
 from .connectors.base import now_utc
-from .contracts import DatasetSpec, RunStatus, VintageSupport
+from .contracts import DatasetSpec, RunStatus, VerificationStatus, VintageSupport
 from .data.store import (
     DataStore,
     as_of,
@@ -176,11 +178,23 @@ def load_inputs(registry: Registry, store: DataStore, study: StudySpec,
             for reason, n in reasons[reasons != ""].value_counts().items():
                 out.warnings.append(f"{dataset_id} 有 {n} 行在时点视图中排除：{_EXCLUSION_TEXT[reason]}")
             frame = as_of(frame, at, spec.vintages)
-        status = (fixed["source_status"] if fixed
-                  else registry.source_of(dataset_id).status_for(dataset_id, study.use).value)
-        out.inputs[role] = StudyInput(role=role, dataset_id=dataset_id, frame=frame,
-                                      version=version, source_status=status)
+        if fixed:
+            # 按原运行固定：当时的核验状态与范围位置，不受之后新增或修改的核验记录影响
+            status, use_scope = fixed["source_status"], fixed.get("use_scope")
+        else:
+            source = registry.source_of(dataset_id)
+            status = source.status_for(dataset_id, study.use).value
+            use_scope = None
+            if status == VerificationStatus.USE_VERIFIED.value:
+                use_scope = source.use_coverage(dataset_id, study.use, _scope_date(study, "start"),
+                                                _scope_date(study, "end")).to_dict()
+        out.inputs[role] = StudyInput(role=role, dataset_id=dataset_id, frame=frame, version=version,
+                                      source_status=status, use_scope=use_scope)
     return out
+
+
+def _scope_date(study: StudySpec, key: str) -> date:
+    return pd.Timestamp(study.scope[key]).date()
 
 
 _EXCLUSION_TEXT = {
@@ -250,7 +264,8 @@ def run_study(root: Path, study_path: Path, pins: dict[str, str] | None = None,
             # 记录完整角色集合：未使用的输入同样固定，复现时不会被后来的数据补上
             "inputs": [{"role": i.role, "used": True, "dataset_id": i.dataset_id,
                         "version_id": i.version.version_id, "content_hash": i.version.content_hash,
-                        "source_status": i.source_status, "use": study.use.value}
+                        "source_status": i.source_status, "use": study.use.value,
+                        **({"use_scope": i.use_scope} if i.use_scope is not None else {})}
                        for i in loaded.inputs.values()]
             + [{"role": role, "used": False, **info} for role, info in loaded.unused.items()],
             "result_hash": rhash,

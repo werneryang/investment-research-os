@@ -48,6 +48,12 @@ def _require(d: dict[str, Any], keys: list[str], where: str) -> None:
         raise RegistryError(f"{where} 缺少字段：{', '.join(missing)}")
 
 
+def _date_or_none(value: Any) -> date | None:
+    if value in (None, ""):
+        return None
+    return value if isinstance(value, date) else date.fromisoformat(str(value))
+
+
 def load_sources(path: Path) -> dict[str, SourceSpec]:
     raw = _load_yaml(path).get("sources") or []
     sources: dict[str, SourceSpec] = {}
@@ -73,9 +79,17 @@ def load_sources(path: Path) -> dict[str, SourceSpec]:
                                         f"可用：{', '.join(u.value for u in Use)}") from e
             if status is VerificationStatus.USE_VERIFIED and use is None:
                 raise RegistryError(f"来源 {item['id']} 的 use_verified 记录必须声明 use")
+            try:
+                valid_from = _date_or_none(v.get("valid_from"))
+                valid_through = _date_or_none(v.get("valid_through"))
+            except ValueError as e:
+                raise RegistryError(f"来源 {item['id']} 的核验日期范围无效：{e}") from e
+            if valid_from and valid_through and valid_from > valid_through:
+                raise RegistryError(f"来源 {item['id']} 的核验日期范围起点晚于终点")
             records.append(VerificationRecord(
                 dataset=v["dataset"], status=status, date=str(v["date"]),
                 evidence=v["evidence"], use=use, scope=v.get("scope", ""),
+                valid_from=valid_from, valid_through=valid_through,
             ))
         sources[item["id"]] = SourceSpec(
             **{k: item[k] for k in required},

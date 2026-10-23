@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import date, timedelta
 from enum import Enum
 from typing import Any
 
@@ -122,6 +123,53 @@ class VerificationRecord:
     evidence: str
     use: Use | None = None  # 仅 use_verified 需要，且只对该用途有效
     scope: str = ""  # 核验所覆盖的范围说明（期间、样本、方式）
+    # 核验覆盖的观测日期范围（含两端）；留空表示该端不设限
+    valid_from: date | None = None
+    valid_through: date | None = None
+
+
+# 研究期间相对用途核验日期范围的位置
+SCOPE_IN = "in_scope"  # 研究期间完全在核验范围内
+SCOPE_PARTIAL = "partial"  # 部分在范围内：uncovered 列出范围外的日期
+SCOPE_OUT = "out_of_scope"  # 完全在范围外
+SCOPE_NONE = "not_verified"  # 该用途没有用途核验记录
+
+
+@dataclass(frozen=True)
+class UseCoverage:
+    status: str
+    uncovered: tuple[tuple[date, date], ...] = ()
+    records: tuple[VerificationRecord, ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "status": self.status,
+            "uncovered": [[a.isoformat(), b.isoformat()] for a, b in self.uncovered],
+            "verified_ranges": [[(r.valid_from.isoformat() if r.valid_from else None),
+                                 (r.valid_through.isoformat() if r.valid_through else None)]
+                                for r in self.records],
+            "record_dates": [r.date for r in self.records],
+        }
+
+
+def uncovered_spans(start: date, end: date,
+                    ranges: list[tuple[date | None, date | None]]) -> list[tuple[date, date]]:
+    """[start, end] 中不被任何 ranges（含两端，None 为不设限）覆盖的连续日期区间。"""
+    spans: list[tuple[date, date]] = [(start, end)]
+    for lo, hi in ranges:
+        lo = lo or date.min
+        hi = hi or date.max
+        nxt = []
+        for a, b in spans:
+            if b < lo or a > hi:
+                nxt.append((a, b))
+                continue
+            if a < lo:
+                nxt.append((a, lo - timedelta(days=1)))
+            if b > hi:
+                nxt.append((hi + timedelta(days=1), b))
+        spans = nxt
+    return spans
 
 
 @dataclass(frozen=True)
@@ -161,6 +209,18 @@ class SourceSpec:
         records = [v for v in self.verification if v.dataset == dataset
                    and v.status is VerificationStatus.USE_VERIFIED and v.use is use]
         return max(records, key=lambda v: v.date) if records else None
+
+    def use_coverage(self, dataset: str, use: Use, start: date, end: date) -> UseCoverage:
+        """研究期间 [start, end] 相对该用途核验日期范围的位置。多条记录的范围取并集。"""
+        records = tuple(v for v in self.verification if v.dataset == dataset
+                        and v.status is VerificationStatus.USE_VERIFIED and v.use is use)
+        if not records:
+            return UseCoverage(SCOPE_NONE)
+        gaps = uncovered_spans(start, end, [(r.valid_from, r.valid_through) for r in records])
+        if not gaps:
+            return UseCoverage(SCOPE_IN, (), records)
+        status = SCOPE_OUT if gaps == [(start, end)] else SCOPE_PARTIAL
+        return UseCoverage(status, tuple(gaps), records)
 
     def verified_uses(self, dataset: str) -> list[Use]:
         return sorted({v.use for v in self.verification

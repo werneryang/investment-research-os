@@ -61,6 +61,26 @@ def repo_url(root: Path) -> str | None:
     return url.removesuffix(".git") if url.startswith("https://") else None
 
 
+def _span_text(spans: list[list[str]]) -> str:
+    return "、".join(a if a == b else f"{a} 至 {b}" for a, b in spans)
+
+
+def use_scope_chip(use_scope: dict[str, Any] | None) -> str:
+    """用途核验相对研究期间的位置：在范围内 / 部分在范围内（列出范围外日期）/ 范围外。"""
+    if not use_scope:
+        return ""
+    status = use_scope.get("status")
+    ranges = "；".join(f"{a or '不限'} 至 {b or '不限'}" for a, b in use_scope.get("verified_ranges", []))
+    if status == "in_scope":
+        return chip("pass", "用途已验证 · 在核验范围内", f"核验覆盖的观测日期：{ranges}")
+    if status == "partial":
+        return (chip("partial", "用途已验证 · 部分在范围内", f"核验覆盖的观测日期：{ranges}")
+                + f'<span class="small warn"> 核验范围外：{e(_span_text(use_scope.get("uncovered", [])))}</span>')
+    if status == "out_of_scope":
+        return chip("fail", "研究期间在用途核验范围外", f"核验覆盖的观测日期：{ranges}")
+    return ""
+
+
 def verification_chip(ver: dict[str, Any] | None) -> str:
     if not ver:
         return chip("skipped", "固定输入重算 · 未执行", CHECK_NOTES["reproduce"])

@@ -20,6 +20,8 @@ class StudyInput:
     frame: pd.DataFrame
     version: DatasetVersion
     source_status: str
+    # 用途已验证时，研究期间相对核验日期范围的位置（UseCoverage.to_dict()）；其他情况为 None
+    use_scope: dict[str, Any] | None = None
 
 
 @dataclass
@@ -88,4 +90,6 @@ def input_record(inp: StudyInput) -> dict[str, Any]:
         "content_hash": inp.version.content_hash,
         "source_id": inp.frame["source_id"].iloc[0] if len(inp.frame) else None,
         "source_status": inp.source_status,
+        # 只在有值时写入，旧运行的结果结构与校验值保持不变
+        **({"use_scope": inp.use_scope} if inp.use_scope is not None else {}),
     }

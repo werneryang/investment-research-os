@@ -5,7 +5,8 @@
 #   docs_verified    说明已核验：已阅读官方说明，不代表程序接入成功
 #   access_verified  接入已验证：指定获取方式和样本取得成功
 #   use_verified     用途已验证：在明确范围内通过相应研究要求；必须声明 use，
-#                    且只对该用途有效（descriptive | point_in_time）
+#                    且只对该用途有效（descriptive | point_in_time）；
+#                    valid_from / valid_through 为核验覆盖的观测日期（含两端，可省略一端）
 # 说明与接入核验对数据集整体有效；scope 写明核验覆盖的范围。
 # 一个样本下载成功不代表整个来源可用。新增核验请追加记录，不改写旧记录。
 
@@ -34,6 +35,9 @@ sources:
         status: use_verified
         use: descriptive
         date: "2026-10-23"
+        # 核验覆盖的观测日期；研究期间超出时显示为「部分在范围内」
+        valid_from: "2024-01-01"
+        valid_through: "2026-10-22"
         evidence: >-
           基线运行 ust_curve_2024-20261022T225910Z-1121d74b（代码 5c922ef，改写作者前为 f66ecca，dirty=false）：
           预期观测日 250/250，关键期限覆盖 100%，原始快照抽查 12/12 一致，与 FRED DGS10 的 250 个共同日期一致

@@ -24,6 +24,15 @@ def _evidence_summary(item: dict[str, Any]) -> str:
     if ver:
         parts.append(f"固定输入重算{'一致' if ver['reproduced'] else '不一致'}"
                      f"{'（部分）' if ver.get('scope') == 'partial' else ''}")
+    for inp in item["manifest"].get("inputs", []):
+        scope = inp.get("use_scope") or {}
+        if scope.get("status") == "partial":
+            spans = "、".join(a if a == b else f"{a} 至 {b}" for a, b in scope.get("uncovered", []))
+            parts.append(f"用途核验部分在范围内（{inp['dataset_id']} 范围外：{spans}）")
+        elif scope.get("status") == "out_of_scope":
+            parts.append(f"研究期间在 {inp['dataset_id']} 的用途核验范围外")
+        elif scope.get("status") == "in_scope":
+            parts.append(f"{inp['dataset_id']} 用途已验证")
     parts.append("用途：历史描述，不是预测或交易回测")
     return " · ".join(e(p) for p in parts)
 

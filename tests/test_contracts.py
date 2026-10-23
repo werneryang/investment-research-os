@@ -152,3 +152,53 @@ def test_unknown_rule_never_guesses():
     out = available_at(_dates("2024-01-01"), pd.Series([None]), "monthly",
                        AvailabilityRule("unknown"), "UTC")
     assert out.isna().all()
+
+
+def _use_src(*ranges):
+    from datetime import date as d
+    recs = tuple(VerificationRecord("x", VerificationStatus.USE_VERIFIED, "2026-10-23", "e", Use.DESCRIPTIVE,
+                                    valid_from=d.fromisoformat(a) if a else None,
+                                    valid_through=d.fromisoformat(b) if b else None) for a, b in ranges)
+    return SourceSpec("s", "p", "c", "u", "l", "r", "r", "r", "m", verification=recs)
+
+
+def test_use_coverage_in_partial_out_and_none():
+    from datetime import date as d
+    src = _use_src(("2024-01-01", "2026-10-22"))
+
+    def cov(a, b):
+        return src.use_coverage("x", Use.DESCRIPTIVE, d.fromisoformat(a), d.fromisoformat(b))
+
+    assert cov("2024-01-01", "2026-10-22").status == "in_scope"
+    part = cov("2025-10-23", "2026-10-23")
+    assert part.status == "partial" and part.uncovered == ((d(2026, 10, 23), d(2026, 10, 23)),)
+    both = cov("2023-12-30", "2026-10-24")
+    assert [(a.isoformat(), b.isoformat()) for a, b in both.uncovered] == [
+        ("2023-12-30", "2023-12-31"), ("2026-10-23", "2026-10-24")]
+    assert cov("2026-11-01", "2026-12-01").status == "out_of_scope"
+    assert src.use_coverage("x", Use.POINT_IN_TIME, d(2024, 1, 1), d(2024, 2, 1)).status == "not_verified"
+    assert part.to_dict()["uncovered"] == [["2026-10-23", "2026-10-23"]]
+
+
+def test_use_coverage_unions_records_and_open_ends():
+    from datetime import date as d
+    src = _use_src(("2024-01-01", "2024-06-30"), ("2024-07-01", None))
+    assert src.use_coverage("x", Use.DESCRIPTIVE, d(2024, 3, 1), d(2030, 1, 1)).status == "in_scope"
+    gap = _use_src(("2024-01-01", "2024-03-31"), ("2024-05-01", "2024-12-31"))
+    c = gap.use_coverage("x", Use.DESCRIPTIVE, d(2024, 1, 1), d(2024, 12, 31))
+    assert c.status == "partial" and c.uncovered == ((d(2024, 4, 1), d(2024, 4, 30)),)
+
+
+def test_registry_parses_and_validates_use_range(tmp_path: Path):
+    from datetime import date as d
+    rec = Registry.load(PROJECT_ROOT).sources["ust_treasury"].use_record("ust_par_yield_curve", Use.DESCRIPTIVE)
+    assert (rec.valid_from, rec.valid_through) == (d(2024, 1, 1), d(2026, 10, 22))
+    (tmp_path / "s.yaml").write_text("""
+sources:
+  - {id: x, publisher: p, channel: c, url: u, license: l, registration: r,
+     rate_limit: r, revisions: r, maintenance: m,
+     verification: [{dataset: d, status: use_verified, use: descriptive, date: "2026-01-01", evidence: e,
+                     valid_from: "2025-01-01", valid_through: "2024-01-01"}]}
+""", encoding="utf-8")
+    with pytest.raises(RegistryError, match="起点晚于终点"):
+        load_sources(tmp_path / "s.yaml")

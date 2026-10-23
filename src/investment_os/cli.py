@@ -41,7 +41,11 @@ def cmd_sources(args: argparse.Namespace) -> int:
         for d in datasets:
             print(f"    - {d.id}: {src.status_for(d.id).value}")
         for v in src.verification:
-            print(f"      [{v.date}] {v.dataset} {v.status.value}：{v.evidence}")
+            extra = f"（用途 {v.use.value}" if v.use else ""
+            if v.valid_from or v.valid_through:
+                extra += f"{'，' if extra else '（'}观测日期 {v.valid_from or '不限'} 至 {v.valid_through or '不限'}"
+            extra += "）" if extra else ""
+            print(f"      [{v.date}] {v.dataset} {v.status.value}{extra}：{v.evidence[:60]}")
     return 0
 
 
