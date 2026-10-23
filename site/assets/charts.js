@@ -135,10 +135,23 @@
 
     var byDate = {};
     data.rows.forEach(function (r) { byDate[r.date] = r; });
+    /* 横轴按期限（年）的平方根排布：线性轴会把 1M–2Y 挤在左侧几个百分点内，
+     * 对数轴又过度放大短端。刻度直接标期限代码，避免把位置误读为线性年数。 */
+    var TICKS = ["3M", "1Y", "2Y", "5Y", "10Y", "20Y", "30Y"];
+    var pos = function (months) { return Math.sqrt(months / 12); };
+    var tickAt = {};
+    data.tenors.forEach(function (t) { if (TICKS.indexOf(t.code) >= 0) tickAt[pos(t.months).toFixed(4)] = t.code; });
+    var maxMonths = Math.max.apply(null, data.tenors.map(function (t) { return t.months; }));
     var opts = baseOptions("%");
     opts.interaction = { mode: "nearest", intersect: false };
-    opts.scales.x = { type: "linear", title: { display: true, text: "期限（年）", color: css("--muted") },
-                      ticks: { color: css("--muted") }, grid: { color: css("--line") } };
+    opts.scales.x = { type: "linear", min: 0, max: pos(maxMonths),
+                      title: { display: true, text: "期限（平方根刻度）", color: css("--muted") },
+                      afterBuildTicks: function (axis) {
+                        axis.ticks = Object.keys(tickAt).map(function (v) { return { value: +v }; });
+                      },
+                      ticks: { color: css("--muted"), autoSkip: false, maxRotation: 0,
+                               callback: function (v) { return tickAt[(+v).toFixed(4)] || ""; } },
+                      grid: { color: css("--line") } };
     opts.plugins.tooltip = { callbacks: { label: function (c) {
       return c.dataset.label + " " + c.raw.tenor + "：" + c.parsed.y.toFixed(2) + "%";
     } } };
@@ -147,7 +160,7 @@
     function points(date) {
       var row = byDate[date];
       return data.tenors.filter(function (t) { return row[t.code] != null; })
-        .map(function (t) { return { x: t.months / 12, y: row[t.code], tenor: t.code }; });
+        .map(function (t) { return { x: pos(t.months), y: row[t.code], tenor: t.code }; });
     }
     function render() {
       chart.data.datasets = [a.value, b.value].map(function (d, i) {
@@ -245,6 +258,7 @@
         box.hidden = false;
         if (!hasStatic) return;
         still.hidden = true;
+        panel.appendChild(still);  // 展开的静态图放在按钮下方，展开时读者不会丢失位置
         var toggleStatic = el("button", { type: "button", class: "toggle", "aria-expanded": "false" }, "显示静态图");
         toggleStatic.addEventListener("click", function () {
           still.hidden = !still.hidden;

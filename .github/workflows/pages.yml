@@ -37,6 +37,9 @@ jobs:
       - name: Install locked dependencies
         run: uv sync --locked
 
+      - name: Install CJK font for Chinese figure labels
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+
       - name: Test
         run: uv run pytest -q
 

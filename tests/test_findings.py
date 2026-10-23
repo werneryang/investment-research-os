@@ -2,7 +2,7 @@
 
 from investment_os.registry import Registry
 from investment_os.research.findings import FLAT_BP, changes, findings, state
-from investment_os.site.capability import domain_status, summary
+from investment_os.site.capability import direction_status, framework, summary
 from investment_os.site.coverage import coverage_strip
 
 from .conftest import PROJECT_ROOT
@@ -77,6 +77,34 @@ def test_coverage_strip_marks_missing_and_tenor_gaps():
     assert "2024-01-03" in svg
 
 
+def test_coverage_strip_monthly_summary_and_exception_list():
+    r = {"coverage": {"tenors": {"10Y": {}}, "missing_dates": ["2024-01-03"], "missing_days": 1,
+                      "pending_dates": ["2024-02-01"]},
+         "tables": {"daily": [{"date": "2024-01-02", "10Y": 3.95}, {"date": "2024-01-04", "10Y": None}]}}
+    html = coverage_strip(r)
+    monthly = html[html.index('class="cov-monthly"'):html.index("</svg>", html.index('class="cov-monthly"'))]
+    assert monthly.count('<rect class="m cov-miss"') == 2  # 1 月最差状态为缺失（观测日行与 10Y 行）
+    assert monthly.count('<rect class="m cov-pending"') == 2  # 2 月只有未取得日
+    r["coverage"]["pending_dates"].append("2024-01-05")
+    r["coverage"]["missing_dates"] = []
+    r["tables"]["daily"][1]["10Y"] = 4.0
+    html2 = coverage_strip(r)
+    monthly2 = html2[html2.index('class="cov-monthly"'):]
+    assert monthly2.count('<rect class="m cov-ok"') == 2  # 1 月有合格日，单个未取得日不把整月画成未取得
+    assert "观测日：2/3 天合格" in monthly and "10Y：1/3 天合格" in monthly  # 1 月 4 日有曲线但 10Y 缺失
+    exceptions = html[html.index('class="cov-exceptions"'):]
+    assert "非合格日期（3 条）" in exceptions
+    assert "2024-01-03 · 整日" in exceptions and "2024-01-04 · 10Y" in exceptions
+    assert "2024-02-01 · 整日：未取得" in exceptions
+
+
+def test_coverage_strip_states_when_all_observations_qualify():
+    r = {"coverage": {"tenors": {"10Y": {}}},
+         "tables": {"daily": [{"date": "2024-01-02", "10Y": 3.95}]}}
+    html = coverage_strip(r)
+    assert "cov-exceptions" not in html and "均有合格观测" in html
+
+
 def test_coverage_strip_discloses_partial_missing_list():
     r = {"coverage": {"tenors": {}, "missing_examples": ["2024-01-03"], "missing_days": 5},
          "tables": {"daily": [{"date": "2024-01-02"}]}}
@@ -92,35 +120,40 @@ def test_capability_categories_come_from_registry_and_runs():
     reg = Registry.load(PROJECT_ROOT)
     ds = {"ust_par_yield_curve": {"status": "access_verified", "version_id": "v1", "verified_uses": []},
           "fred_cpiaucsl": {"status": "access_verified", "version_id": "v2", "verified_uses": []}}
-    active = domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
+    active = direction_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
     # 真实登记中已有 ust_par_yield_curve 的描述性用途核验；只对该用途计入
     assert [(d, u.value) for d, u, _, _ in active["validated"]] == [("ust_par_yield_curve", "descriptive")]
     assert "2024-01-01 至 2026-10-22" in active["validated"][0][2].scope
     as_of = {"s1": {"manifest": {"status": "success"},
                     "result": {"branch": "rates_curve",
                                "scope": {"vintage_policy": "as_of", "start": "2024-01-01", "end": "2024-12-31"}}}}
-    assert domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, as_of)["validated"] == []
-    two = domain_status({"datasets": ["ust_par_yield_curve", "fred_cpiaucsl"], "studies": ["s1"]}, reg, ds, _latest())
+    assert direction_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, as_of)["validated"] == []
+    two = direction_status({"datasets": ["ust_par_yield_curve", "fred_cpiaucsl"], "studies": ["s1"]}, reg, ds, _latest())
     assert two["unvalidated"] == ["fred_cpiaucsl"]
-    assert domain_status({"datasets": ["fred_cpiaucsl"], "studies": []}, reg, ds, {})["category"] == "data_only"
-    assert domain_status({"planned": True}, reg, ds, {})["category"] == "planned"
+    assert direction_status({"datasets": ["fred_cpiaucsl"], "studies": []}, reg, ds, {})["category"] == "data_only"
+    assert direction_status({"planned": True}, reg, ds, {})["category"] == "planned"
     # 已登记但本次未取得的数据集不是「规划」
-    assert domain_status({"datasets": ["alfred_cpiaucsl"], "studies": []}, reg,
+    assert direction_status({"datasets": ["alfred_cpiaucsl"], "studies": []}, reg,
                          {"alfred_cpiaucsl": {"status": "docs_verified", "version_id": None,
                                               "verified_uses": []}}, {})["category"] == "registered"
-    content = {"domains": [{"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, {"planned": True}]}
-    assert summary(content, reg, ds, _latest()) == {"active": 1, "data_only": 0, "registered": 0, "planned": 1}
+    content = {"branches": [
+        {"id": "a", "directions": [{"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, {"planned": True}]},
+        {"id": "b", "directions": [{"datasets": ["fred_cpiaucsl"], "studies": []}]},
+        {"id": "c", "directions": [{"planned": True}]}]}
+    assert summary(content, reg, ds, _latest()) == {"active": 1, "data_only": 1, "registered": 0, "planned": 2}
+    # 分支状态取其方向中最好的一项
+    assert [b["category"] for b in framework(content, reg, ds, _latest())] == ["active", "data_only", "planned"]
 
 
 def test_capability_map_shows_partial_scope():
     from investment_os.site.capability import _validated_entry
     reg = Registry.load(PROJECT_ROOT)
     ds = {"ust_par_yield_curve": {"status": "access_verified", "version_id": "v1", "verified_uses": []}}
-    inside = domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
+    inside = direction_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
     assert inside["validated"][0][3][0][1]["status"] == "in_scope"
     assert "部分在范围内" not in _validated_entry(*inside["validated"][0])
 
-    past = domain_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds,
+    past = direction_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds,
                          _latest(start="2025-10-23", end="2026-10-25"))
     cov = past["validated"][0][3][0][1]
     assert cov["status"] == "partial" and cov["uncovered"] == [["2026-10-23", "2026-10-25"]]

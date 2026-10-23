@@ -1,7 +1,8 @@
-"""研究能力地图：每个研究领域的数据、分析与验证状态。
+"""研究能力地图：按研究分支列出每个研究方向的数据、分析与验证状态。
 
-状态由登记（数据集、来源核验）、研究定义与最新运行自动得出；只有「规划中」的领域
-写在 site/content.yaml。工程完成（代码可运行、测试通过）与研究验证完成（用途核验）分开显示。
+研究框架（分支 → 方向）写在 site/content.yaml，见 docs/research-map.md。方向的状态由登记
+（数据集、来源核验）、研究定义与最新运行自动得出；只有「规划中」的方向人工维护。
+工程完成（代码可运行、测试通过）与研究验证完成（用途核验）分开显示。
 """
 
 from __future__ import annotations
@@ -14,6 +15,7 @@ from ..registry import Registry
 from ..research import branch_result_types
 from .common import (
     RESULT_TYPE_LABEL,
+    RISK_LABEL,
     STATUS_LABEL,
     VERIFY_LABEL,
     chip,
@@ -24,28 +26,52 @@ from .common import (
 from .renderers import use_key
 
 USE_SHORT = {Use.DESCRIPTIVE: "历史描述", Use.POINT_IN_TIME: "时点研究", Use.SCENARIO: "情景模拟"}
+# 由好到差；分支状态取其方向中最好的一项
+CATEGORIES = ("active", "data_only", "registered", "planned")
+CATEGORY_LABEL = {"active": "已有研究", "data_only": "已有数据", "registered": "数据已登记", "planned": "规划中"}
 
 
-def domain_status(domain: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],
-                  latest: dict[str, dict[str, Any]]) -> dict[str, Any]:
-    """一个研究领域的三层状态。"""
-    if domain.get("planned"):
+def category_chip(category: str) -> str:
+    return chip("pass" if category == "active" else category, CATEGORY_LABEL[category])
+
+
+def risk_chips(direction: dict[str, Any]) -> str:
+    """风险来源标签；与方向同名的标签（如「通胀」）不重复显示。"""
+    labels = (RISK_LABEL.get(r, r) for r in direction.get("risk", []))
+    return " ".join(chip("tag", x) for x in labels if x != direction.get("name"))
+
+
+def framework(content: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],
+              latest: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
+    """研究框架的各分支：每个方向附带状态，分支状态取方向中最好的一项。"""
+    out = []
+    for branch in content.get("branches", []):
+        dirs = [(d, direction_status(d, registry, datasets, latest)) for d in branch.get("directions", [])]
+        best = min((CATEGORIES.index(st["category"]) for _, st in dirs), default=len(CATEGORIES) - 1)
+        out.append({**branch, "category": CATEGORIES[best], "directions": dirs})
+    return out
+
+
+def direction_status(direction: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],
+                     latest: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    """一个研究方向的三层状态。"""
+    if direction.get("planned"):
         return {"category": "planned"}
     ds_rows = []
-    for ds_id in domain.get("datasets", []):
+    for ds_id in direction.get("datasets", []):
         d = datasets.get(ds_id)
         if d is None:
             continue
         ds_rows.append({"id": ds_id, "status": d["status"], "has_data": d["version_id"] is not None,
                         "uses": d["verified_uses"]})
-    studies = [s for s in domain.get("studies", []) if s in latest]
+    studies = [s for s in direction.get("studies", []) if s in latest]
     runs = [{"study_id": s, "status": latest[s]["manifest"]["status"],
              "branch": latest[s]["result"]["branch"], "use": _use(latest[s]["result"])} for s in studies]
     validated: dict[tuple[str, Use], Any] = {}
     coverage: dict[tuple[str, Use], list[tuple[str, dict[str, Any]]]] = {}
     for run in runs:
         scope = latest[run["study_id"]]["result"]["scope"]
-        for ds in domain.get("datasets", []):
+        for ds in direction.get("datasets", []):
             spec = registry.datasets.get(ds)
             source = registry.sources[spec.source_id] if spec else None
             record = source.use_record(ds, run["use"]) if source else None
@@ -57,7 +83,7 @@ def domain_status(domain: dict[str, Any], registry: Registry, datasets: dict[str
                                       date.fromisoformat(str(scope["end"])))
             coverage.setdefault((ds, run["use"]), []).append((run["study_id"], cov.to_dict()))
     used = {r["use"] for r in runs}
-    unvalidated = [d for d in domain.get("datasets", [])
+    unvalidated = [d for d in direction.get("datasets", [])
                    if d in datasets and not any((d, u) in validated for u in used)]
     if runs:
         category = "active"
@@ -77,22 +103,26 @@ def _use(result: dict[str, Any]) -> Use:
 
 def summary(content: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],
             latest: dict[str, dict[str, Any]]) -> dict[str, int]:
-    out = {"active": 0, "data_only": 0, "registered": 0, "planned": 0}
-    for d in content.get("domains", []):
-        out[domain_status(d, registry, datasets, latest)["category"]] += 1
+    """各状态的研究方向数。"""
+    out = dict.fromkeys(CATEGORIES, 0)
+    for branch in framework(content, registry, datasets, latest):
+        for _, st in branch["directions"]:
+            out[st["category"]] += 1
     return out
 
 
-def _domain_row(domain: dict[str, Any], st: dict[str, Any]) -> str:
-    can = "".join(f"<li>{e(x)}</li>" for x in domain.get("can_answer", []))
-    cannot = "".join(f"<li>{e(x)}</li>" for x in domain.get("cannot_answer", []))
+def _direction_row(direction: dict[str, Any], st: dict[str, Any]) -> str:
+    can = "".join(f"<li>{e(x)}</li>" for x in direction.get("can_answer", []))
+    cannot = "".join(f"<li>{e(x)}</li>" for x in direction.get("cannot_answer", []))
     scope = (f'<details class="basis"><summary>能回答 / 还不能回答</summary>'
              f'{f"<p class=small>能回答：</p><ul>{can}</ul>" if can else ""}'
              f'{f"<p class=small>还不能可靠回答：</p><ul>{cannot}</ul>" if cannot else ""}</details>'
              if can or cannot else "")
-    name = f"<strong>{e(domain['name'])}</strong><div class='small muted'>{e(domain.get('summary', ''))}</div>{scope}"
+    tags = risk_chips(direction)
+    name = (f"<strong>{e(direction['name'])}</strong> {tags}"
+            f"<div class='small muted'>{e(direction.get('summary', ''))}</div>{scope}")
     if st["category"] == "planned":
-        needs = e(domain.get("needs", ""))
+        needs = e(direction.get("needs", ""))
         return (f"<tr class='planned'><td>{name}</td><td colspan='3'>{chip('planned', '规划，未开始')} "
                 f"<span class='small muted'>{needs}</span></td></tr>")
     data = "".join(
@@ -166,18 +196,25 @@ def _modules(content: dict[str, Any]) -> str:
         for m in content.get("modules", [])) + "</div>"
 
 
+def _branch_rows(branch: dict[str, Any]) -> str:
+    head = (f"<tr class='branch' id='{e(branch['id'])}'><th colspan='4'>{e(branch['name'])} "
+            f"{category_chip(branch['category'])}<div class='small muted'>{e(branch.get('question', ''))}</div></th></tr>")
+    return head + "".join(_direction_row(d, st) for d, st in branch["directions"])
+
+
 def capability_page(content: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],
                     latest: dict[str, dict[str, Any]], build: dict[str, Any]) -> str:
-    rows = "".join(_domain_row(d, domain_status(d, registry, datasets, latest)) for d in content.get("domains", []))
+    rows = "".join(_branch_rows(b) for b in framework(content, registry, datasets, latest))
     body = f"""
 <header class="top"><div class="wrap"><h1>研究能力地图</h1>
 <p class="tagline">系统现在能研究什么、证据成熟到什么程度、下一步研究什么。</p></div></header>
 <main class="wrap">
-<section><h2>研究领域</h2>
-<p class="muted small">状态由数据登记、来源核验与最新运行自动得出，只有「规划」由人工维护。
+<section><h2>研究分支与方向</h2>
+<p class="muted small">研究按架构 §4 的六个研究分支组织，分支下是研究方向；标签是方向涉及的风险来源。
+方向的状态由数据登记、来源核验与最新运行自动得出，只有「规划」由人工维护。
 <strong>工程完成</strong>（代码可运行、测试与每次运行的检查通过）与<strong>研究验证完成</strong>
 （在来源登记中记录了针对该用途的核验）是两回事，分列显示。不使用笼统的完成百分比：研究范围会持续扩大，分母并不固定。</p>
-<div class="scroll"><table class="capability"><thead><tr><th>研究领域</th><th>数据能力</th><th>分析能力（工程）</th>
+<div class="scroll"><table class="capability"><thead><tr><th>研究方向</th><th>数据能力</th><th>分析能力（工程）</th>
 <th>研究验证</th></tr></thead><tbody>{rows}</tbody></table></div></section>
 <section><h2>成果类型</h2>
 <p class="muted small">描述、解释、预测、模拟的证据要求不同（架构 V0.3 §6.3、§8），各自需要独立的验证方式与展示模板。</p>
