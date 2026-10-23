@@ -6,10 +6,15 @@
 
 另外从同一研究的历次运行中提取「状态」（如利差期末是否倒挂、曲线变陡或变平），
 状态改变即记为一次发现变化。
+
+解释在运行时固定：`interpret()` 的输出（发现、状态、规则版本、规则指纹与阈值）写入运行结果，
+纳入结果校验值与 verify。规则指纹由规则代码计算，规则改动后自动变化。
 """
 
 from __future__ import annotations
 
+import hashlib
+import inspect
 from typing import Any
 
 from ..analytics.rates import curvature_label, spread_label
@@ -176,6 +181,9 @@ def coverage_summary(cov: dict[str, Any]) -> str:
 
 _FINDERS = {"rates_curve": rates_curve_findings}
 
+# 规则版本：人工维护的名称；规则改动时递增。指纹会自动反映代码改动，两者一起展示
+RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v1"}
+
 
 def findings(result: dict[str, Any]) -> list[dict[str, Any]]:
     """按研究分支选择规则；没有规则的分支返回空列表（页面显示「暂无规则化发现」）。"""
@@ -204,9 +212,40 @@ def changes(history: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for result in history:
         current = state(result)
         if previous is not None:
-            for k, v in current.items():
-                if k in previous and previous[k] != v:
-                    out.append({"run_id": result.get("run_id"), "data_cutoff": result.get("data_cutoff"),
-                                "item": k, "from": previous[k], "to": v})
+            out += [{"run_id": result.get("run_id"), "data_cutoff": result.get("data_cutoff"), **c}
+                    for c in state_changes(previous, current)]
         previous = current
     return out
+
+
+def state_changes(previous: dict[str, str], current: dict[str, str]) -> list[dict[str, str]]:
+    return [{"item": k, "from": previous[k], "to": v}
+            for k, v in current.items() if k in previous and previous[k] != v]
+
+
+def rule_fingerprint(branch: str) -> str | None:
+    """规则代码（发现、状态、措辞与覆盖说明）的校验值；只要规则代码变化，指纹就变化。"""
+    finder = _FINDERS.get(branch)
+    if finder is None:
+        return None
+    parts = [inspect.getsource(f) for f in (finder, state, completeness, coverage_summary, _direction, _bp, _n)]
+    parts.append(repr(sorted(COVERAGE_LABEL.items())))
+    return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
+
+
+def rule_params(branch: str) -> dict[str, Any]:
+    return {"flat_bp": FLAT_BP} if branch in _FINDERS else {}
+
+
+def interpret(result: dict[str, Any]) -> dict[str, Any] | None:
+    """一次运行的解释：发现、定性状态与所用规则。没有规则的分支返回 None。"""
+    branch = result.get("branch", "")
+    if branch not in _FINDERS:
+        return None
+    return {
+        "rule_version": RULE_VERSIONS[branch],
+        "rule_fingerprint": rule_fingerprint(branch),
+        "params": rule_params(branch),
+        "items": findings(result),
+        "state": state(result),
+    }

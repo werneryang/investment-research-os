@@ -6,7 +6,7 @@ from typing import Any
 
 from ..research.findings import coverage_summary
 from .common import STATUS_LABEL, chip, e, shell
-from .study import findings_list, key_stats
+from .study import findings_list, interpretation_note, key_stats
 
 
 def _evidence_summary(item: dict[str, Any]) -> str:
@@ -47,7 +47,7 @@ def _featured(study_id: str, item: dict[str, Any], meta: dict[str, Any]) -> str:
     {chip(m['status'], '本次运行 · ' + STATUS_LABEL.get(m['status'], m['status']))}
   </header>
   <p class="meta">研究期间 {e(r['scope'].get('start'))} 至 {e(r['scope'].get('end'))} · 数据截止 {e(r['data_cutoff'])}</p>
-  <h3 class="sub">关键发现</h3>{findings_list(item['findings'], limit=4)}
+  <h3 class="sub">关键发现</h3>{findings_list(item['findings'], limit=4)}{interpretation_note(item.get('interpretation'))}
   {key_stats(r)}
   <div class="interactive" data-src="{run_href}/daily.json"></div>
   <p class="evidence-line small">证据：{_evidence_summary(item)}</p>

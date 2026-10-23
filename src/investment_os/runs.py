@@ -38,6 +38,7 @@ from .registry import (
     resolve_relative_dates,
 )
 from .research import ResearchResult, StudyInput, get_branch
+from .research.findings import interpret
 from .validation.reference import spot_check
 
 
@@ -62,8 +63,12 @@ SOURCE_DIRS = ("src", "config")
 _IGNORED_PARTS = {"__pycache__", ".DS_Store"}
 
 
+# 研究定义完整记录在每次运行的清单（study_config）中，单独比较，不算作代码或登记配置
+STUDY_DIR = Path("config") / "studies"
+
+
 def source_hash(root: Path) -> str:
-    """src/ 与 config/ 的内容校验值（相对路径 + 文件字节），不依赖 Git，含未提交改动。"""
+    """src/ 与 config/（不含研究定义）的内容校验值（相对路径 + 文件字节），不依赖 Git，含未提交改动。"""
     digest = hashlib.sha256()
     for top in SOURCE_DIRS:
         base = Path(root) / top
@@ -71,6 +76,8 @@ def source_hash(root: Path) -> str:
             continue
         for path in sorted(base.rglob("*")):
             if not path.is_file() or _IGNORED_PARTS & set(path.parts) or path.suffix == ".pyc":
+                continue
+            if path.relative_to(root).is_relative_to(STUDY_DIR):
                 continue
             digest.update(path.relative_to(root).as_posix().encode("utf-8") + b"\0")
             digest.update(hashlib.sha256(path.read_bytes()).digest())
@@ -205,9 +212,9 @@ _EXCLUSION_TEXT = {
 
 
 def execute(root: Path, study: StudySpec, pins: dict[str, str] | None = None,
-            frozen: dict[str, dict[str, Any]] | None = None
+            frozen: dict[str, dict[str, Any]] | None = None, interpret_findings: bool = True
             ) -> tuple[ResearchResult, LoadedInputs]:
-    """无副作用地执行研究：加载固定版本数据 → 研究分支 → 原始快照抽查。"""
+    """无副作用地执行研究：加载固定版本数据 → 研究分支 → 原始快照抽查 → 解释（发现与状态）。"""
     registry = Registry.load(root)
     store = DataStore(root)
     loaded = load_inputs(registry, store, study, pins, frozen)
@@ -215,6 +222,8 @@ def execute(root: Path, study: StudySpec, pins: dict[str, str] | None = None,
     primary_role = next(r for r, (_, req) in _data_roles(study).items() if req)
     primary = loaded.inputs[primary_role]
     result.validation["raw_spot_check"] = spot_check(store, primary.version, primary.frame)
+    if interpret_findings:
+        result.interpretation = interpret(result.to_dict())
     return result, loaded
 
 
@@ -322,7 +331,9 @@ def verify_run(root: Path, run_id: str) -> dict[str, Any]:
                                   "无法复现；可用 iros archive restore --with-data 恢复归档数据") from None
             missing.add(role)
             frozen[role] = {**fixed, "used": False, "reason": "固定版本不在本地（未归档）"}
-    result, _ = execute(root, study, frozen=frozen)
+    original = json.loads((run_dir / "result.json").read_text(encoding="utf-8"))
+    # 原运行没有记录解释（旧版本）时，复现也不补写，保持原结果结构
+    result, _ = execute(root, study, frozen=frozen, interpret_findings="interpretation" in original)
     new_hash = result_hash(result)
     current_code = code_version(root)
     record = {
@@ -335,7 +346,6 @@ def verify_run(root: Path, run_id: str) -> dict[str, Any]:
         "code_changed": code_changed(root, manifest["code"], current_code),
     }
     if missing:
-        original = json.loads((run_dir / "result.json").read_text(encoding="utf-8"))
         record.update(scope="partial", excluded_roles=sorted(missing),
                       reproduced=_partial_hash(original, missing) == _partial_hash(result.to_dict(), missing))
     else:

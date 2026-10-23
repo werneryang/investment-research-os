@@ -44,6 +44,8 @@ class ResearchResult:
     validation: dict[str, Any] = field(default_factory=dict)
     # 证据表格（以记录列表形式保存，便于报告与复查）
     tables: dict[str, list[dict[str, Any]]] = field(default_factory=dict)
+    # 运行时固定的解释（findings.interpret）；旧结果没有该字段
+    interpretation: dict[str, Any] | None = None
 
     @property
     def is_partial(self) -> bool:
@@ -57,6 +59,8 @@ class ResearchResult:
     def to_dict(self) -> dict[str, Any]:
         d = dict(self.__dict__)
         d["result_type"] = self.result_type.value
+        if d["interpretation"] is None:  # 只在有解释时写入，旧结果的结构与校验值不变
+            del d["interpretation"]
         return d
 
 

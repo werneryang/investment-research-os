@@ -12,11 +12,11 @@ from ..analytics.rates import curvature_label, spread_label
 from ..registry import Registry
 from ..research.findings import (
     COVERAGE_LABEL,
-    FLAT_BP,
-    changes,
     completeness,
     coverage_summary,
+    state_changes,
 )
+from .collect import run_differences
 from .common import (
     CHECK_LABEL,
     CHECK_NOTES,
@@ -90,7 +90,7 @@ def _method(result: dict[str, Any]) -> str:
         "不足时依赖它的结论不输出。达到要求不等于期间完整：期间完整另需所有预期日期都有数据、且日期在日历核验范围内；"
         "有缺口的指标，期间统计只描述已观测日期。尚未到发布时间的日期单独列出，不计入覆盖。</li>",
         "<li>倒挂定义为利差严格小于 0；恰为 0 的日期单独计数，不计入倒挂。</li>",
-        f"<li>关键发现由固定规则生成：变化幅度小于 {FLAT_BP:.0f} bp 记为「基本持平」；只描述，不作预测或交易判断。</li>",
+        "<li>关键发现由固定规则在运行时生成并记录（规则版本、指纹与阈值见「关键发现」下方）；只描述，不作预测或交易判断。</li>",
         f"<li>时间规则：{e(m.get('availability_rule') or '—')}；版本策略："
         f"{e(USE_LABEL.get('point_in_time' if result['scope'].get('vintage_policy') == 'as_of' else 'descriptive'))}。</li>",
     ]
@@ -170,15 +170,42 @@ def evidence_panel(item: dict[str, Any], registry: Registry, run_href: str) -> s
 <a href="{run_href}/result.json">结构化结果</a> · <a href="{run_href}/report.html">完整报告</a></p>"""
 
 
+def interpretation_note(interp: dict[str, Any] | None) -> str:
+    """发现的来源：运行时记录，还是事后用当前规则生成。"""
+    if not interp:
+        return ""
+    rule = f"{interp['rule_version']}（指纹 {(interp.get('rule_fingerprint') or '—')[:8]}，" \
+           f"基本持平阈值 {interp.get('params', {}).get('flat_bp', '—')} bp）"
+    if interp["origin"] == "retrospective":
+        return (f'<p class="small warn">以下发现由当前规则 {e(rule)} 在发布网站时事后生成；'
+                "该运行当时没有记录发现，措辞可能与当时的规则不同。</p>")
+    note = f'<p class="small muted">以下发现在运行时按规则 {e(rule)} 生成并记录，纳入复现校验。'
+    if interp.get("rules_changed"):
+        note += "当前规则已变化；这里显示的是运行当时的发现，不按新规则改写。"
+    return note + "</p>"
+
+
 def _history(study_id: str, runs: list[dict[str, Any]], archived: dict[str, Any] | None,
              repo: str | None, up: str) -> str:
-    timeline = changes([r["result"] for r in reversed(runs)])
+    timeline = []
+    chronological = list(reversed(runs))
+    for prev, cur in zip(chronological, chronological[1:]):  # noqa: B905 - 相邻两次运行
+        diffs = state_changes((prev.get("interpretation") or {}).get("state", {}),
+                              (cur.get("interpretation") or {}).get("state", {}))
+        if diffs:
+            timeline.append({"item": cur, "diffs": diffs, "between": run_differences(prev, cur)})
     if timeline:
         change_rows = "".join(
-            f"<tr><td>{e(c['data_cutoff'])}</td><td>{e(c['item'])}</td><td>{e(c['from'])} → {e(c['to'])}</td>"
-            f"<td><a href=\"{up}runs/{e(c['run_id'])}/report.html\">报告</a></td></tr>" for c in reversed(timeline))
-        change_html = ('<div class="scroll"><table><thead><tr><th>数据截止</th><th>项目</th><th>变化</th><th></th>'
-                       f'</tr></thead><tbody>{change_rows}</tbody></table></div>')
+            f"<tr><td>{e(t['item']['result']['data_cutoff'])}</td>"
+            f"<td>{'<br>'.join(e(d['item'] + '：' + d['from'] + ' → ' + d['to']) for d in t['diffs'])}</td>"
+            f"<td class='small'>{'<br>'.join(e(x) for x in t['between']) or '—'}</td>"
+            f"<td><a href=\"{up}runs/{e(t['item']['manifest']['run_id'])}/report.html\">报告</a></td></tr>"
+            for t in reversed(timeline))
+        change_html = ('<p class="small muted">「两次运行之间的差异」只列出可以客观比较的项目（研究窗口、数据版本、代码、解释规则），'
+                       '不推断变化的原因；滚动窗口移动、数据修订、方法或规则修改都可能带来结论变化。</p>'
+                       '<div class="scroll"><table><thead><tr><th>数据截止</th><th>结论变化</th>'
+                       '<th>两次运行之间的差异</th><th></th></tr></thead>'
+                       f'<tbody>{change_rows}</tbody></table></div>')
     else:
         change_html = f'<p class="muted">在已归档的 {len(runs)} 次运行中，定性状态（利差是否倒挂、变陡或变平、覆盖是否完整）没有变化。</p>'
     rows = []
@@ -231,7 +258,7 @@ def study_page(study_id: str, runs: list[dict[str, Any]], archived: dict[str, An
 </div></header>
 <main class="wrap">
 <section><h2>研究问题</h2><p class="lead">{e(r['question'])}</p></section>
-<section><h2>关键发现</h2>{findings_list(latest['findings'])}{key_stats(r)}</section>
+<section><h2>关键发现</h2>{findings_list(latest['findings'])}{interpretation_note(latest.get('interpretation'))}{key_stats(r)}</section>
 <section><h2>可视化证据</h2>
   <div class="interactive" data-src="{run_href}/daily.json"></div>
   <h3 class="sub">数据覆盖</h3>{coverage_strip(r)}

@@ -36,6 +36,15 @@ def test_source_hash_ignores_caches_and_other_dirs(tmp_path: Path):
     assert source_hash(tmp_path) == before
 
 
+def test_source_hash_ignores_study_definitions(tmp_path: Path):
+    """研究定义记录在运行清单里单独比较；改动研究定义不算代码或登记配置变化。"""
+    _tree(tmp_path)
+    before = source_hash(tmp_path)
+    (tmp_path / "config" / "studies").mkdir()
+    (tmp_path / "config" / "studies" / "x.yaml").write_text("study_id: x\n")
+    assert source_hash(tmp_path) == before
+
+
 def test_source_hash_detects_code_config_and_renames(tmp_path: Path):
     _tree(tmp_path)
     before = source_hash(tmp_path)
