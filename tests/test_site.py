@@ -45,12 +45,13 @@ def test_build_site_from_runs(loaded):
     index = build_site(loaded, loaded / "_site")
     site = loaded / "_site"
     page = index.read_text(encoding="utf-8")
-    # 首页按研究框架组织；研究焦点显示关键数字、前两条发现与证据摘要，链接到研究页
-    assert "<h2>研究框架</h2>" in page and "研究焦点" in page and "关键发现" in page
-    assert "规划中的分支：地区与行业 · 证券与基金 · 组合与情景 · 预测与策略实验" in page
+    # 首页先列六个分支的总览（规划中的分支链接到能力地图），再列已有研究；每项研究只有一句发现与用途
+    assert "<h2>研究框架</h2>" in page and page.count('class="branch-tile') == 6
+    assert '<li class="branch-tile planned"><a href="map.html#sectors_regions">地区与行业</a>' in page
+    assert "每项研究的形成：" in page and "研究焦点" in page
     assert "未归入研究方向的研究" in page  # 测试研究不在 content.yaml 的任何方向中
     assert "10 年期收益率由 3.95% 升至 4.05%" in page
-    assert "3.95% → 4.05%" in page and "10Y − 2Y 利差" in page and "2Y–10Y" not in page
+    assert "关键发现" not in page and "stat-value" not in page  # 指标卡片与发现列表只在研究页
     assert "用途：历史描述，不是预测或交易回测" in page
     assert 'href="studies/ust_curve_test/"' in page
     # 系统状态在页脚；过期提示由脚本在过期时显示
@@ -127,10 +128,23 @@ def test_home_places_studies_in_their_branch(loaded):
     card = page[page.index('id="markets_assets"'):]
     card = card[:card.index("</article>")]
     assert "研究焦点" in card and 'href="studies/ust_curve_test/"' in card and "美国国债期限结构" in card
-    assert "本分支规划中：股票 · 信用 · 波动率 · 跨市场比较" in card
+    # 分支写明具体覆盖，不用一个「已有研究」概括整个分支
+    assert "6 个方向：1 个已有研究，1 个只有数据；规划中：股票 · 信用 · 波动率 · 跨市场比较" in card
     assert "未归入研究方向的研究" not in page
     # 已有研究的分支排在只有数据的分支之前
     assert page.index('id="markets_assets"') < page.index('id="macro_policy"')
+
+
+def test_home_caveats_show_only_exceptions():
+    from investment_os.site.home import _caveats
+    ok = {"result": {"validation": {"raw_spot_check": {"checked": 12, "status": "pass"}}},
+          "verification": {"reproduced": True}, "manifest": {"inputs": []}}
+    assert _caveats(ok) == []
+    bad = {"result": {"validation": {}, "unsupported": ["x"]}, "verification": {"reproduced": False},
+           "manifest": {"inputs": [{"dataset_id": "ust", "use_scope": {"status": "partial",
+                                                                     "uncovered": [["2026-10-23", "2026-10-23"]]}}]}}
+    assert _caveats(bad) == ["固定输入重算不一致", "用途核验部分在范围内（ust 范围外：2026-10-23）",
+                             "1 项结论因数据不足不输出"]
 
 
 def test_shared_data_lists_only_directions_with_runs():

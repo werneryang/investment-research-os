@@ -154,7 +154,11 @@ def _history(study_id: str, runs: list[dict[str, Any]], archived: dict[str, Any]
                        '<th>两次运行之间的差异</th><th></th></tr></thead>'
                        f'<tbody>{change_rows}</tbody></table></div>')
     else:
-        change_html = (f'<p class="muted">在已归档的 {len(runs)} 次运行中，定性状态'
+        # 列出的运行可能含本次发布、未单独归档的最新运行，归档数分开计
+        listed = f"在列出的 {len(runs)} 次运行中"
+        if archived is not None:
+            listed += f"（其中已归档 {sum(r['manifest']['run_id'] in archived for r in runs)} 次）"
+        change_html = (f'<p class="muted">{listed}，定性状态'
                        f'（{e(renderer.state_description)}）没有变化。</p>')
     rows = []
     for item in runs:

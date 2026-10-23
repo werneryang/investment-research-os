@@ -151,9 +151,13 @@ table.compact{width:auto;min-width:50%}
 .direction h4{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 .2rem}
 .direction > p{margin:0 0 .6rem}
 .chip-tag{background:transparent;border:1px solid var(--line)}
-.study-row.focus{display:block;border-color:var(--accent)}
-.study-row.focus .card-head{margin-bottom:.2rem}
-h4.sub{margin:1rem 0 .5rem;font-size:.95rem;color:var(--muted)}
-.planned-line{color:var(--muted);margin:.8rem 0 0}
+.study-row.focus{border-color:var(--accent)}
+.branch-card header p{margin:0}.branch-card header .tile-status{margin-top:.3rem}
+.branch-grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.branch-tile{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+.branch-tile a{font-weight:600}.branch-tile p{margin:.25rem 0 0}
+.branch-tile.planned{background:transparent}.branch-tile.planned a{color:var(--muted)}
+.tile-status{color:var(--fg)}.branch-tile.planned .tile-status{color:var(--muted)}
+.process{margin:14px 0 0;color:var(--muted)}.process span{color:var(--fg)}
 tr.branch th{background:var(--bg);color:var(--fg);font-size:.98rem;white-space:normal;padding-top:14px}
 tr.branch th .small{font-weight:400}
