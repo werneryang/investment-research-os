@@ -4,6 +4,9 @@
 title: Investment Research OS
 tagline: 个人投资研究框架——免费数据、可追溯的版本、可复现的研究记录
 
+# 首页研究的显示顺序：日常查看的滚动研究在前
+study_order: [ust_curve_last_year, ust_curve_2024]
+
 phases:
   - id: P0
     name: 总体架构

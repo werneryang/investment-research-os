@@ -177,6 +177,7 @@ class DatasetSpec:
     availability: AvailabilityRule
     vintages: VintageSupport = VintageSupport.NONE
     calendar: str | None = None  # 预期观测日历；用于判断日期覆盖
+    archive_data: bool = False  # 是否允许把原始与标准化数据存入公开档案（再分发许可须先确认）
     description: str = ""
     params: dict[str, Any] = field(default_factory=dict)
     value_range: tuple[float, float] | None = None

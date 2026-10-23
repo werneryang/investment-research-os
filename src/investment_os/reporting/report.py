@@ -18,6 +18,7 @@ import pandas as pd
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
+from ..analytics.rates import curvature_label, spread_label  # noqa: E402
 from ..tenor import parse_tenor  # noqa: E402
 
 RESULT_TYPE_LABEL = {"descriptive": "描述与比较", "explanatory": "解释与归因",
@@ -79,12 +80,13 @@ def _figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
         ax.legend(frameon=False, ncol=len(levels))
         figs.append(("关键期限收益率", _save(fig, out_dir / "key_tenors.png")))
 
-    spread_cols = [*result["results"].get("spreads", {}),
-                   *(f"curvature {k}" for k in result["results"].get("curvature", {}))]
+    spread_cols = [*((k, spread_label(k)) for k in result["results"].get("spreads", {})),
+                   *((f"curvature {k}", f"curvature {curvature_label(k)}")
+                     for k in result["results"].get("curvature", {}))]
     if spread_cols:
         fig, ax = plt.subplots(figsize=(7, 3.6))
-        for c in spread_cols:
-            ax.plot(x, [r.get(c) for r in daily], lw=1.1, label=c)
+        for col, label in spread_cols:
+            ax.plot(x, [r.get(col) for r in daily], lw=1.1, label=label)
         ax.axhline(0, color="black", lw=0.8)
         ax.set_ylabel("bp")
         ax.set_title("Spreads (long - short) and butterfly curvature")
@@ -132,15 +134,15 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
                        _fmt(v["mean"])] for t, v in r["levels"].items()]))
     if r.get("spreads"):
         body.append("倒挂定义为利差严格小于 0；恰为 0 的日期单独列出，不计入倒挂。")
-        body.append(("table", ["利差", "期初 bp", "期末 bp", "变化 bp", "最低 bp", "最高 bp",
+        body.append(("table", ["利差（长端 − 短端）", "期初 bp", "期末 bp", "变化 bp", "最低 bp", "最高 bp",
                                "倒挂天数 / 占比", "零利差天数"],
-                     [[k, _fmt(v["start"], 0), _fmt(v["end"], 0), _fmt(v["change_bp"], 0),
+                     [[spread_label(k), _fmt(v["start"], 0), _fmt(v["end"], 0), _fmt(v["change_bp"], 0),
                        _fmt(v["min"], 0), _fmt(v["max"], 0), *_inversion_cells(v["inversion"])]
                       for k, v in r["spreads"].items()]))
     if r.get("curvature"):
         body.append(("table", ["曲率", "期初 bp", "期末 bp", "变化 bp", "均值 bp"],
-                     [[k, _fmt(v["start"], 0), _fmt(v["end"], 0), _fmt(v["change_bp"], 0), _fmt(v["mean"], 0)]
-                      for k, v in r["curvature"].items()]))
+                     [[curvature_label(k), _fmt(v["start"], 0), _fmt(v["end"], 0), _fmt(v["change_bp"], 0),
+                       _fmt(v["mean"], 0)] for k, v in r["curvature"].items()]))
     if result["tables"].get("curve_change"):
         body.append(("table", ["期限", "期初 %", "期末 %", "变化 bp"],
                      [[c["tenor"], _fmt(c["start"]), _fmt(c["end"]), _fmt(c["change_bp"], 0)]
@@ -276,6 +278,8 @@ th:first-child, td:first-child {{ text-align:left; }} th {{ color:var(--muted); 
 figure {{ margin:1rem 0; }} img {{ max-width:100%; height:auto; }}
 figcaption {{ color:var(--muted); font-size:.85rem; }}
 code {{ font-size:.85em; }}
+a {{ color:var(--accent); }}
+a:focus-visible {{ outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }}
 </style></head>
 <body><main><h1>{html.escape(result['title'])}</h1>
 {''.join(parts)}

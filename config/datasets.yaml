@@ -11,6 +11,8 @@
 #   none      只有当前修订版本；时点研究只能使用当时已取得（retrieved_at）的本地快照，
 #             可用时间规则本身不能证明修订值当时已知
 # calendar 引用 config/calendars.yaml 中经核验的预期观测日历，用于日期覆盖检查
+# archive_data: true 表示允许把该数据集的原始与标准化数据存入公开的运行档案（archive 分支）；
+#   默认不允许。开启前须确认来源许可允许公开再分发。
 
 datasets:
   ust_par_yield_curve:
@@ -25,6 +27,8 @@ datasets:
     availability: {type: next_day}
     vintages: none
     calendar: us_treasury_daily
+    # 联邦政府公开信息；2026-10-22 经用户确认存入公开档案
+    archive_data: true
     value_range: [-5, 30]
 
   fred_dgs10:

@@ -39,7 +39,27 @@ uv run iros verify <run_id>
 
 ## 项目网站
 
-`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 重新取得 Treasury 与 FRED 数据 → 运行 `ust_curve_2024` 与滚动的 `ust_curve_last_year` → `iros verify --all` → 生成静态网站 → 发布到 GitHub Pages。任何必需步骤失败都不发布，线上保留上一版。
+线上地址：<https://werneryang.github.io/investment-research-os/>
+
+`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 重新取得 Treasury 与 FRED 数据 → 运行 `ust_curve_2024` 与滚动的 `ust_curve_last_year` → `iros verify --all` → 归档到 `archive` 分支 → 生成静态网站 → 发布到 GitHub Pages。任何必需步骤失败都不发布，线上保留上一版，页面顶部的更新时间、工作流徽章与「已过期」提示会显示更新停滞。
+
+网站内容：每项研究的最新结果（交互图表：走势、区间、序列开关、任意两日曲线对比）、稳定的最新报告地址 `latest/<study_id>/report.html`、历史记录页 `history/<study_id>.html`、数据来源与核验状态、可靠性机制。
+
+**运行档案**（`archive` 分支，只追加）：运行清单、结果、报告，以及允许公开再分发的数据（`config/datasets.yaml` 中 `archive_data: true`，目前只有 Treasury 曲线）。只有结论实质变化时才归档新运行。日后复现旧运行：
+
+```bash
+git worktree add _archive origin/archive
+```
+
+```bash
+uv run iros archive restore _archive --with-data
+```
+
+```bash
+uv run iros verify <run_id>
+```
+
+FRED 交叉核验数据未归档，复现时该部分不重算，结果标为「部分复现」。
 
 本地生成与预览：
 
@@ -51,7 +71,7 @@ uv run iros site --out _site
 python3 -m http.server 8765 --directory _site
 ```
 
-页面说明性内容（建设进度、模块地图、可靠性机制）在 `site/content.yaml`；研究结果、数据与核验状态从运行记录和登记中生成。
+页面说明性内容在 `site/content.yaml`，样式与图表脚本在 `site/assets/`；研究结果、数据与核验状态从运行记录和登记中生成。
 
 其他命令：`iros sources`（来源与核验状态）、`iros datasets`（版本与质量概况）、`iros runs`、`iros import <dataset> <file> --declared-source "..."`（人工导入）。
 

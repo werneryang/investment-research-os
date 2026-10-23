@@ -1,7 +1,11 @@
-# 项目网站：重新取得免费数据 → 运行研究 → 复现校验 → 生成静态页面 → 发布到 GitHub Pages
+# 项目网站：重新取得免费数据 → 运行研究 → 复现校验 → 归档 → 生成静态页面 → 发布到 GitHub Pages
 #
-# 任何必需步骤失败（测试、Treasury 取得、研究运行、复现不一致）都不会发布，线上保留上一版页面。
+# 任何必需步骤失败（测试、Treasury 取得、研究运行、复现不一致、归档推送）都不会发布，线上保留上一版页面；
+# 页面上的「站点更新」时间与工作流徽章会显示更新已停滞。
 # FRED 只用于交叉核验，取得失败时研究照常运行，页面显示交叉核验「跳过」。
+#
+# 运行档案保存在 archive 分支（只追加）：运行清单、结果、报告，以及允许公开再分发的数据
+# （config/datasets.yaml 中 archive_data: true，目前只有 Treasury 曲线）。
 name: Research site
 
 on:
@@ -13,7 +17,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # 推送 archive 分支
   pages: write
   id-token: write
 
@@ -26,9 +30,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7.0.1
 
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v10.2.0
 
       - name: Install locked dependencies
         run: uv sync --locked
@@ -51,12 +55,39 @@ jobs:
       - name: Verify runs reproduce from pinned inputs
         run: uv run iros verify --all
 
-      - name: Build site
-        run: uv run iros site --out _site
+      - name: Open archive branch
+        run: |
+          if git fetch --depth=1 origin archive; then
+            git worktree add -B archive _archive FETCH_HEAD
+          else
+            git worktree add --orphan -b archive _archive
+          fi
 
-      - uses: actions/upload-pages-artifact@v4
+      - name: Archive new runs, then restore history for the site
+        run: |
+          uv run iros archive save _archive
+          uv run iros archive restore _archive
+
+      - name: Build site
+        run: uv run iros site --out _site --archive _archive
+
+      - uses: actions/upload-pages-artifact@v5.0.0
         with:
           path: _site
+          include-hidden-files: true
+
+      - name: Push archive branch
+        working-directory: _archive
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "档案没有变化"
+          else
+            git commit -q -m "archive: runs from ${GITHUB_SHA::7} ($(date -u +%Y-%m-%dT%H:%MZ))"
+            git push origin archive
+          fi
 
   deploy:
     needs: build
@@ -66,4 +97,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5.0.1

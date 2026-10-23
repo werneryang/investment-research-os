@@ -265,8 +265,24 @@ def run_study(root: Path, study_path: Path, pins: dict[str, str] | None = None,
     return manifest
 
 
+_VOLATILE_RESULT_KEYS = ("run_id", "generated_at", "result_hash")
+
+
+def _partial_hash(result: dict[str, Any], excluded_roles: set[str]) -> str:
+    """去掉缺失输入相关部分后的结果校验值：该输入的记录，以及以该角色命名的核验项。"""
+    doc = {k: v for k, v in result.items() if k not in _VOLATILE_RESULT_KEYS}
+    doc["inputs"] = [i for i in doc.get("inputs", []) if i.get("role") not in excluded_roles]
+    doc["validation"] = {k: v for k, v in (doc.get("validation") or {}).items() if k not in excluded_roles}
+    canon = json.dumps(doc, sort_keys=True, ensure_ascii=False, default=str)
+    return hashlib.sha256(canon.encode("utf-8")).hexdigest()
+
+
 def verify_run(root: Path, run_id: str) -> dict[str, Any]:
-    """用运行清单中固定的研究定义与数据版本重算，比较结果校验值。"""
+    """用运行清单中固定的研究定义与数据版本重算，比较结果校验值。
+
+    可选输入的固定版本已不存在时（例如该数据集未获准归档），不使用它重算，
+    比较去掉该输入及其核验项之后的结果，并标为部分复现；必需输入缺失则报错。
+    """
     root = Path(root)
     run_dir = root / "runs" / run_id
     manifest = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
@@ -274,20 +290,39 @@ def verify_run(root: Path, run_id: str) -> dict[str, Any]:
         raise ValueError(f"运行 {run_id} 本身失败，没有可复现的结果")
     study = parse_study(manifest["study_config"], run_id)
     # 旧清单只列出使用过的输入：未列出的角色视为未使用
-    frozen = {i["role"]: i for i in manifest["inputs"]}
+    frozen = {i["role"]: dict(i) for i in manifest["inputs"]}
+    store = DataStore(root)
+    required = {role: req for role, (_, req) in _data_roles(study).items()}
+    missing: set[str] = set()
+    for role, fixed in frozen.items():
+        if not fixed.get("used", True):
+            continue
+        try:
+            store.get_version(fixed["dataset_id"], fixed["version_id"])
+        except LookupError:
+            if required.get(role, True):
+                raise LookupError(f"必需输入 {role}（{fixed['dataset_id']} {fixed['version_id']}）不在本地，"
+                                  "无法复现；可用 iros archive restore --with-data 恢复归档数据") from None
+            missing.add(role)
+            frozen[role] = {**fixed, "used": False, "reason": "固定版本不在本地（未归档）"}
     result, _ = execute(root, study, frozen=frozen)
     new_hash = result_hash(result)
     current_code = code_version(root)
     record = {
         "verified_at": now_utc().isoformat(),
         "run_id": run_id,
-        "reproduced": new_hash == manifest["result_hash"],
         "original_hash": manifest["result_hash"],
         "new_hash": new_hash,
         "original_code": manifest["code"],
         "current_code": current_code,
         "code_changed": code_changed(root, manifest["code"], current_code),
     }
+    if missing:
+        original = json.loads((run_dir / "result.json").read_text(encoding="utf-8"))
+        record.update(scope="partial", excluded_roles=sorted(missing),
+                      reproduced=_partial_hash(original, missing) == _partial_hash(result.to_dict(), missing))
+    else:
+        record.update(scope="full", reproduced=new_hash == manifest["result_hash"])
     with (run_dir / "verifications.jsonl").open("a", encoding="utf-8") as f:
         f.write(json.dumps(record, ensure_ascii=False) + "\n")
     return record

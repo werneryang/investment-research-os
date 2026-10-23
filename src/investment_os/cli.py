@@ -7,7 +7,8 @@
     iros run config/studies/x.yaml       运行研究，生成报告与运行记录
     iros verify <run_id>                 用固定数据版本复现运行结果
     iros verify --all                    复现全部运行
-    iros site --out _site                生成项目静态网站
+    iros site --out _site [--archive D]  生成项目静态网站
+    iros archive save|restore <dir>      运行档案的保存与恢复
     iros runs                            运行记录列表
 """
 
@@ -113,7 +114,8 @@ def cmd_verify(args: argparse.Namespace) -> int:
         record = verify_run(root, run_id)
         ok = record["reproduced"]
         failed += not ok
-        print(f"[{'reproduced' if ok else 'mismatch'}] {run_id}")
+        scope = "（部分：未重算 " + "、".join(record["excluded_roles"]) + "）" if record.get("scope") == "partial" else ""
+        print(f"[{'reproduced' if ok else 'mismatch'}] {run_id}{scope}")
         print(f"    原结果 {record['original_hash'][:16]}，重算 {record['new_hash'][:16]}")
         if record["code_changed"]:
             print("    注意：代码或配置与原运行不同")
@@ -123,8 +125,24 @@ def cmd_verify(args: argparse.Namespace) -> int:
 def cmd_site(args: argparse.Namespace) -> int:
     from .site import build_site  # 延迟导入：只在生成网站时需要
 
-    index = build_site(_root(args.root), Path(args.out))
+    index = build_site(_root(args.root), Path(args.out), Path(args.archive) if args.archive else None)
     print(f"网站已生成：{index}")
+    return 0
+
+
+def cmd_archive(args: argparse.Namespace) -> int:
+    from . import archive
+
+    root = _root(args.root)
+    if args.action == "save":
+        added = archive.save(root, Path(args.dir))
+        for e in added:
+            print(f"[archived] {e['run_id']}（{e['reason']}）")
+        if not added:
+            print("没有需要归档的新运行（结论与上一归档相同或没有新运行）")
+    else:
+        restored = archive.restore(root, Path(args.dir), with_data=args.with_data)
+        print(f"已从档案恢复 {len(restored)} 次运行")
     return 0
 
 
@@ -165,7 +183,14 @@ def build_parser() -> argparse.ArgumentParser:
 
     w = sub.add_parser("site", help="生成项目静态网站")
     w.add_argument("--out", default="_site", help="输出目录（默认 _site）")
+    w.add_argument("--archive", help="档案目录；给出时历史页只列已归档运行并标注原因")
     w.set_defaults(func=cmd_site)
+
+    a = sub.add_parser("archive", help="保存运行到档案，或从档案恢复")
+    a.add_argument("action", choices=["save", "restore"])
+    a.add_argument("dir", help="档案目录（CI 中为 archive 分支的工作树）")
+    a.add_argument("--with-data", action="store_true", help="restore 时同时恢复归档的数据版本（用于复现）")
+    a.set_defaults(func=cmd_archive)
 
     sub.add_parser("runs", help="运行记录").set_defaults(func=cmd_runs)
     return p

@@ -19,6 +19,18 @@ def curve_frame(long: pd.DataFrame, tenor_of: dict[str, str]) -> pd.DataFrame:
     return wide
 
 
+def spread_label(key: str) -> str:
+    """利差键（"2Y-10Y"，结果文件中的稳定标识）→ 显示名（"10Y − 2Y"），明确减法方向。"""
+    short, long = key.split("-", 1)
+    return f"{long} − {short}"
+
+
+def curvature_label(key: str) -> str:
+    """曲率键（"2Y/5Y/10Y"）→ 显示名（"2×5Y − 2Y − 10Y"）。"""
+    short, mid, long = key.split("/")
+    return f"2×{mid} − {short} − {long}"
+
+
 def spread_bp(curve: pd.DataFrame, short: str, long: str) -> pd.Series:
     """长端减短端，单位 bp；为负即倒挂。"""
     return (curve[long] - curve[short]) * BP_PER_PERCENT
