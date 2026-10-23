@@ -80,6 +80,19 @@ def test_restore_then_site_lists_archived_history(loaded, tmp_path):
     assert [e["run_id"] for e in log] == [earlier["run_id"], today["run_id"]]
 
 
+def test_history_counts_archived_runs_separately(loaded, tmp_path):
+    """列出的运行含未单独归档的最新运行时，不把列出的次数说成归档次数。"""
+    arch = tmp_path / "archive"
+    shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
+    run_study(loaded, write_study(loaded))
+    archive.save(loaded, arch)
+    run_study(loaded, write_study(loaded))  # 结论相同的重跑：最新运行照常显示，但不归档
+    build_site(loaded, loaded / "_site", arch)
+    history = (loaded / "_site" / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")
+    assert "在列出的 2 次运行中（其中已归档 1 次）" in history and "未单独归档" in history
+    assert "在已归档的" not in history
+
+
 def test_archived_treasury_data_allows_later_partial_reproduction(loaded, tmp_path):
     """只归档允许再分发的 Treasury 数据；日后在新环境中恢复后可复现主研究，交叉核验如实标为未重算。"""
     arch = tmp_path / "archive"

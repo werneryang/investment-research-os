@@ -1,5 +1,7 @@
-"""首页（研究总览）：按研究框架组织。已有研究或数据的分支展开到研究方向与研究，规划中的分支合并为一行；
-研究焦点在其方向下显示关键数字与证据摘要，图表、完整发现与证据留在研究页。"""
+"""首页（研究总览）：先用六个研究分支的总览建立整体印象，再列出已有研究或数据的分支。
+
+每项研究只显示一句主要发现、数据日期、用途与需要注意的例外，并链接到研究页；
+指标卡片、图表、完整发现与证据留在研究页，工程模块留在能力地图。"""
 
 from __future__ import annotations
 
@@ -8,66 +10,80 @@ from typing import Any
 from .capability import CATEGORIES, category_chip, risk_chips
 from .common import RESULT_TYPE_LABEL, STATUS_LABEL, chip, e, shell
 from .renderers import get_renderer
-from .study import findings_list
+
+# 首页说明各项研究共同的形成过程；对应架构 §3 的模块，详情在能力地图
+PROCESS = ("研究问题", "数据与版本", "分析方法", "成果", "验证与历史")
 
 
-def _evidence_summary(item: dict[str, Any]) -> str:
-    r, ver = item["result"], item["verification"]
-    val = r["validation"]
-    renderer = get_renderer(r["branch"])
-    parts = list(renderer.evidence_summary(r))
-    spot = val.get("raw_spot_check")
-    if spot and spot.get("checked"):
-        parts.append(f"原始快照抽查 {spot['checked']} 点{'一致' if spot['status'] == 'pass' else '有不一致'}")
-    cross = val.get("cross_check")
-    if cross and cross.get("matched"):
-        parts.append(f"同源检查 {cross['matched']} 天{'一致' if cross['status'] == 'pass' else '有差异'}")
-    if ver:
-        parts.append(f"固定输入重算{'一致' if ver['reproduced'] else '不一致'}"
-                     f"{'（部分）' if ver.get('scope') == 'partial' else ''}")
+def _coverage(b: dict[str, Any]) -> str:
+    """分支的具体覆盖：多少方向已有研究或数据，哪些仍在规划。不用一个状态概括整个分支。"""
+    cats = [st["category"] for _, st in b["directions"]]
+    total, active = len(cats), cats.count("active")
+    data = cats.count("data_only") + cats.count("registered")
+    if not active and not data:
+        return "规划中"
+    parts = [f"{active} 个已有研究"] if active else []
+    if data:
+        parts.append(f"{data} 个只有数据")
+    return f"{total} 个方向：{'，'.join(parts)}"
+
+
+def _planned_names(b: dict[str, Any]) -> list[str]:
+    return [d["name"] for d, st in b["directions"] if st["category"] == "planned"]
+
+
+def _overview(branches: list[dict[str, Any]]) -> str:
+    tiles = []
+    for b in branches:
+        planned = b["category"] == "planned"
+        href = f"map.html#{e(b['id'])}" if planned else f"#{e(b['id'])}"
+        tiles.append(f'<li class="branch-tile{" planned" if planned else ""}"><a href="{href}">{e(b["name"])}</a>'
+                     f'<p class="small muted">{e(b.get("question", ""))}</p>'
+                     f'<p class="small tile-status">{e(_coverage(b))}</p></li>')
+    return f'<ol class="branch-grid">{"".join(tiles)}</ol>'
+
+
+def _caveats(item: dict[str, Any]) -> list[str]:
+    """需要注意的例外；全部正常时首页不展开证据细节。"""
+    r, ver, val = item["result"], item["verification"], item["result"]["validation"]
+    out = []
+    spot, cross = val.get("raw_spot_check") or {}, val.get("cross_check") or {}
+    if spot.get("checked") and spot.get("status") != "pass":
+        out.append("原始快照抽查有不一致")
+    if cross.get("matched") and cross.get("status") != "pass":
+        out.append("同源检查有差异")
+    if ver and not ver["reproduced"]:
+        out.append("固定输入重算不一致")
     for inp in item["manifest"].get("inputs", []):
-        scope = inp.get("use_scope") or {}
-        if scope.get("status") == "partial":
-            spans = "、".join(a if a == b else f"{a} 至 {b}" for a, b in scope.get("uncovered", []))
-            parts.append(f"用途核验部分在范围内（{inp['dataset_id']} 范围外：{spans}）")
-        elif scope.get("status") == "out_of_scope":
-            parts.append(f"研究期间在 {inp['dataset_id']} 的用途核验范围外")
-        elif scope.get("status") == "in_scope":
-            parts.append(f"{inp['dataset_id']} 用途已验证")
-    parts.append(f"用途：{renderer.use_note}")
-    return " · ".join(e(p) for p in parts)
+        status = (inp.get("use_scope") or {}).get("status")
+        if status == "partial":
+            spans = "、".join(a if a == b else f"{a} 至 {b}" for a, b in inp["use_scope"].get("uncovered", []))
+            out.append(f"用途核验部分在范围内（{inp['dataset_id']} 范围外：{spans}）")
+        elif status == "out_of_scope":
+            out.append(f"研究期间在 {inp['dataset_id']} 的用途核验范围外")
+    if r.get("unsupported"):
+        out.append(f"{len(r['unsupported'])} 项结论因数据不足不输出")
+    return out
 
 
-def _focus(study_id: str, item: dict[str, Any], meta: dict[str, Any]) -> str:
+def _study_row(study_id: str, item: dict[str, Any], meta: dict[str, Any], focus: bool) -> str:
     m, r = item["manifest"], item["result"]
-    renderer = get_renderer(r["branch"])
-    return f"""
-<li class="study-row focus">
-  <div class="card-head"><div><p class="eyebrow">研究焦点 · {e(meta.get('label', '研究'))}</p>
-    <a class="study-title" href="studies/{e(study_id)}/">{e(r['title'])}</a></div>
-    {chip(m['status'], '本次运行 · ' + STATUS_LABEL.get(m['status'], m['status']))}</div>
-  <p class="meta">研究期间 {e(r['scope'].get('start'))} 至 {e(r['scope'].get('end'))} · 数据截止 {e(r['data_cutoff'])}
-  · {e(RESULT_TYPE_LABEL.get(r['result_type'], r['result_type']))}</p>
-  {renderer.key_stats(r)}
-  <h4 class="sub">关键发现</h4>{findings_list(item['findings'], limit=2)}
-  <p class="evidence-line small">证据：{_evidence_summary(item)}</p>
-  <a href="studies/{e(study_id)}/">完整研究：图表、方法、证据与历史 →</a>
-</li>"""
-
-
-def _study_row(study_id: str, item: dict[str, Any], meta: dict[str, Any]) -> str:
-    r = item["result"]
     first = item["findings"][0]["text"] if item["findings"] else "暂无规则化发现"
     kind = RESULT_TYPE_LABEL.get(r["result_type"], r["result_type"])
-    return (f'<li class="study-row"><div><p class="eyebrow">{e(meta.get("label", "研究"))} · {e(kind)}</p>'
+    label = f'{"研究焦点 · " if focus else ""}{meta.get("label", "研究")} · {kind}'
+    caveats = _caveats(item)
+    note = (f'<p class="small warn">注意：{e("；".join(caveats))}</p>' if caveats
+            else '<p class="small muted">数据与计算检查通过</p>')
+    return (f'<li class="study-row{" focus" if focus else ""}"><div><p class="eyebrow">{e(label)}</p>'
             f'<a class="study-title" href="studies/{e(study_id)}/">{e(r["title"])}</a>'
-            f'<p class="muted small">{e(first)}</p></div>'
+            f'<p class="small">{e(first)}</p>'
+            f'<p class="small muted">用途：{e(get_renderer(r["branch"]).use_note)}</p>{note}</div>'
             f'<div class="small muted nowrap">数据截止 {e(r["data_cutoff"])}<br>'
-            f'{chip(item["manifest"]["status"], STATUS_LABEL.get(item["manifest"]["status"], ""))}</div></li>')
+            f'{chip(m["status"], STATUS_LABEL.get(m["status"], ""))}</div></li>')
 
 
 def _studies(ids: list[str], latest: dict[str, dict[str, Any]], metas: dict[str, Any], focus: str | None) -> str:
-    return "".join((_focus if s == focus else _study_row)(s, latest[s], metas.get(s, {})) for s in ids)
+    return "".join(_study_row(s, latest[s], metas.get(s, {}), s == focus) for s in ids)
 
 
 def _shared_data(dirs: list[tuple[dict[str, Any], dict[str, Any]]]) -> str:
@@ -99,14 +115,14 @@ def _direction(d: dict[str, Any], st: dict[str, Any], ordered: list[str], latest
 def _branch_card(b: dict[str, Any], ordered: list[str], latest: dict[str, dict[str, Any]],
                  metas: dict[str, Any], focus: str | None) -> str:
     shown = [(d, st) for d, st in b["directions"] if st["category"] != "planned"]
-    planned = [d["name"] for d, st in b["directions"] if st["category"] == "planned"]
-    rest = (f'<p class="small muted planned-line">本分支规划中：{e(" · ".join(planned))}</p>' if planned else "")
+    planned = _planned_names(b)
+    scope = _coverage(b) + (f"；规划中：{' · '.join(planned)}" if planned else "")
     return f"""
 <article class="card branch-card" id="{e(b['id'])}">
-  <header class="card-head"><div><p class="eyebrow">研究分支</p><h3>{e(b['name'])}</h3>
-    <p class="muted">{e(b.get('question', ''))}</p></div>{category_chip(b['category'])}</header>
+  <header><p class="eyebrow">研究分支</p><h3>{e(b['name'])}</h3>
+    <p class="muted">{e(b.get('question', ''))}</p><p class="small tile-status">{e(scope)}</p></header>
   {"".join(_direction(d, st, ordered, latest, metas, focus) for d, st in shown)}
-  {_shared_data(b['directions'])}{rest}
+  {_shared_data(b['directions'])}
 </article>"""
 
 
@@ -115,16 +131,13 @@ def home_page(studies: list[str], latest: dict[str, dict[str, Any]], content: di
     metas = content.get("studies", {})
     focus = studies[0] if studies else None
     # 有研究的分支在前；同类保持 content.yaml 的顺序
-    open_ = sorted((b for b in branches if b["category"] != "planned"),
-                   key=lambda b: CATEGORIES.index(b["category"]))
-    planned = [b for b in branches if b["category"] == "planned"]
+    open_ = sorted((b for b in branches if b["category"] != "planned"), key=lambda b: CATEGORIES.index(b["category"]))
     cards = "".join(_branch_card(b, studies, latest, metas, focus) for b in open_)
-    planned_line = (f'<p class="planned-line">规划中的分支：{e(" · ".join(b["name"] for b in planned))}'
-                    f' · <a href="map.html">各分支还缺什么 →</a></p>' if planned else "")
     placed = {s for b in branches for d, _ in b["directions"] for s in d.get("studies", [])}
     unplaced = [s for s in studies if s not in placed]
     unplaced_html = (f'<h3>未归入研究方向的研究</h3><p class="muted small">在 site/content.yaml 的研究框架中登记所属方向。</p>'
                      f'<ul class="study-list">{_studies(unplaced, latest, metas, focus)}</ul>' if unplaced else "")
+    process = " → ".join(f"<span>{e(x)}</span>" for x in PROCESS)
     body = f"""
 <header class="hero"><div class="wrap">
   <h1>{e(content.get('title'))}</h1>
@@ -133,10 +146,14 @@ def home_page(studies: list[str], latest: dict[str, dict[str, Any]], content: di
 </div></header>
 <main class="wrap">
   <section><h2>研究框架</h2>
-    <p class="muted">研究按 {len(branches)} 个研究分支组织，分支下是研究方向，标签是涉及的风险来源。
-    下面展开已有研究或数据的分支，规划中的分支列在最后。</p>
+    <p class="muted">研究按 {len(branches)} 个研究分支组织，每个分支下分为研究方向。规划中的分支说明还缺什么，见能力地图。</p>
+    {_overview(branches)}
+    <p class="process small"><strong>每项研究的形成：</strong>{process}
+    <a href="map.html">工程模块与建设进度 →</a></p>
+  </section>
+  <section><h2>已有研究与数据</h2>
     {'' if latest else '<p class="muted">暂无研究运行记录。</p>'}
-    {cards}{planned_line}{unplaced_html}
+    {cards}{unplaced_html}
   </section>
   <section class="about-strip">
     <div><h3>这些发现有多可靠？</h3><p class="muted small">每项研究都有证据面板：数据来源与版本、覆盖、核验、复现与限制，
