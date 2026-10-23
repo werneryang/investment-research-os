@@ -148,6 +148,119 @@ phrases:
   数据集未登记预期观测日历，无法证明期间完整: No expected calendar is registered for the dataset, so the period cannot be shown complete
   期间统计（均值、极值、倒挂天数）: Period statistics (means, extremes, inversion days)
   无: none
+  ACM 期限溢价: ACM term premium
+  AKShare（社区工具，非官方）: AKShare (community tool, unofficial)
+  ALFRED 历史版本，按序列不同: ALFRED vintages; varies by series
+  Aswath Damodaran（NYU Stern）: Aswath Damodaran (NYU Stern)
+  Damodaran 数据: Damodaran data
+  FRED 图表导出: FRED graph export
+  Federal Reserve Bank of Atlanta（GDPNow）: Federal Reserve Bank of Atlanta (GDPNow)
+  Federal Reserve Bank of New York（ACM 期限溢价）: Federal Reserve Bank of New York (ACM term premium)
+  Federal Reserve Bank of Philadelphia（Survey of Professional Forecasters）: Federal Reserve Bank of Philadelphia (Survey of Professional Forecasters)
+  Kenneth French 数据库: Kenneth French Data Library
+  Kenneth R. French Data Library（Dartmouth Tuck）: Kenneth R. French Data Library (Dartmouth Tuck)
+  Robert J. Shiller（美国股市长期数据）: Robert J. Shiller (long-run US stock market data)
+  SPF 专业预测者调查: SPF Survey of Professional Forecasters
+  Shiller 股市数据: Shiller stock market data
+  Treasury 利率数据: Treasury interest rate data
+  U.S. Securities and Exchange Commission（EDGAR）: U.S. Securities and Exchange Commission (EDGAR)
+  shillerdata.com 也提供数据，以哪一处为准待核验: shillerdata.com also provides the data; which copy is authoritative is still to be verified
+  yfinance 项目（社区工具，非 Yahoo 官方）: yfinance project (community tool, not an official Yahoo product)
+  上交所、深交所及巨潮资讯网等公开披露平台: Public disclosure platforms such as the Shanghai and Shenzhen stock exchanges and CNINFO
+  不研究日内微观结构与流动性冲击: Intraday microstructure and liquidity shocks are out of scope
+  世界银行: World Bank
+  中国人民银行: People's Bank of China
+  中国人民银行（调查统计）: People's Bank of China (surveys and statistics)
+  中国宏观与证券: China macro & securities
+  交易所与巨潮资讯: Exchanges and CNINFO
+  人工导入: Manual import
+  信用利差（如 ICE BofA 序列；第三方权利与可得历史待核验）: Credit spreads (e.g. ICE BofA series; third-party rights and available history to be verified)
+  信贷与债务统计: Credit and debt statistics
+  免费、可核验的信用利差历史: Free, verifiable credit spread history
+  免费注册取得 API key；key 不进入 Git: Free sign-up for an API key; the key is never committed to Git
+  全球宏观: Global macro
+  公司申报与财报: Company filings & financial statements
+  公司申报索引与 XBRL 财务数据: Filing indexes and XBRL financial data
+  公开存档已于 2026-10-22 经用户确认；官网不提供历史版本: Public archiving confirmed by the user on 2026-10-22; the website provides no historical vintages
+  历史指数成分: Historical index constituents
+  原始统计机构；CPI、就业等的上游。FRED 已转载的序列优先复用 FRED，需要原始口径或发布日期时再接: Original statistical agency; upstream of CPI, employment and more. Series already on FRED reuse FRED first; connect directly only when the original definitions or release dates are needed
+  原始统计机构；GDP、个人收入与支出等的上游: Original statistical agency; upstream of GDP, personal income and outlays and more
+  取得一家公司的申报与 XBRL 样本；定义财报期间与申报时间的时间契约: Fetch one company's filings and XBRL sample; define the timing contract for reporting periods and filing times
+  只用现存证券会产生幸存者偏差，相关结论须注明: Using only surviving securities introduces survivorship bias, which affected conclusions must state
+  只能做明确标记的理论分析或有限样本研究；隐含波动率指数不等于期权链: Only clearly labelled theoretical analysis or limited-sample studies are possible; an implied volatility index is not an option chain
+  各国政策利率: Policy rates by country
+  各国股权风险溢价: Equity risk premiums by country
+  各基金发行方（公开费用、净值、持仓与分配资料）: Fund issuers (published fees, NAVs, holdings and distributions)
+  各机构公开的资本市场假设: Capital market assumptions published by institutions
+  同 FRED 使用条款；部分序列含第三方权利: Same terms of use as FRED; some series carry third-party rights
+  名义票面收益率曲线 1990 年起，日度；期限列随年份变化: Nominal par yield curve, daily since 1990; the tenor columns change over the years
+  因子收益（市场、规模、价值等）: Factor returns (market, size, value, etc.)
+  国家外汇管理局: State Administration of Foreign Exchange
+  国家统计局: National Bureau of Statistics of China
+  国库券利率与长期平均利率: Treasury bill rates and long-term average rates
+  基金发行方资料: Fund issuer materials
+  基金持仓申报（如 N-PORT，待核验）: Fund holdings filings (e.g. N-PORT, to be verified)
+  基金资料: Fund information
+  复用 fred_graph_csv 接入器，新增序列只需在 datasets.yaml 登记: Reuses the fred_graph_csv connector; a new series only needs an entry in datasets.yaml
+  多为年度数据，按年更新: Mostly annual data, updated yearly
+  学术因子与估值: Academic factors & valuations
+  完整历史期权链: Full historical option chains
+  宏观与历史修订: Macro & historical revisions
+  实际票面收益率曲线（TIPS）: Real par yield curve (TIPS)
+  尚未找到；FRED 上的信用利差序列涉及第三方权利，可得历史长度待核验: Not found yet; credit spread series on FRED carry third-party rights, and the available history length is still to be verified
+  就业与增长（如 UNRATE、PAYEMS）: Employment and growth (e.g. UNRATE, PAYEMS)
+  按原始来源确认: Confirmed per original source
+  按年核验预期发布日历，延长用途核验范围: Verify the expected release calendar year by year and extend the use-verification range
+  按序列不同；只有当前修订版本: Varies by series; current revision only
+  按数据集核验可获得性、历史范围与访问规则: Verify availability, history and access rules per dataset
+  按数据集核验可获得性、口径变化、历史范围与接口稳定性: Verify availability, definition changes, history and interface stability per dataset
+  按数据集确认免费范围、接口与可比口径: Confirm the free scope, interfaces and comparable definitions per dataset
+  政策利率与货币市场利率（如 DFF）: Policy and money-market rates (e.g. DFF)
+  数据权利另受上游条款约束；作为可替换接入，不保证持续可用；不进入公开存档: Data rights are also subject to upstream terms; treated as a replaceable connection with no guarantee of continued availability; never put in the public archive
+  方法与历史修订需核验；数据会随方法更新整体重算: Methods and historical revisions need verifying; the whole dataset is recomputed when methods change
+  无需注册或 key: No sign-up or key needed
+  时点研究的官方路径；接入器（含分页）已实现，只用离线样本测试: The official route for point-in-time studies; the connector (with paging) is implemented but tested only on offline samples
+  有效汇率: Effective exchange rates
+  机构的长期假设，各自方法不同；不能当作直接观测或相互无条件替代: Institutions' long-term assumptions, each with its own method; not direct observations and not interchangeable
+  机构资本市场假设: Institutional capital market assumptions
+  标普综合指数价格、股息、盈利与 CAPE 的长期月度数据: Long-run monthly S&P Composite prices, dividends, earnings and CAPE
+  核验 API 说明、注册要求与额度: Verify the API documentation, sign-up requirements and quotas
+  核验 API 说明与许可: Verify the API documentation and license
+  核验下载、方法与许可: Verify downloads, methods and license
+  核验下载格式、方法与更新频率: Verify the download format, methods and update frequency
+  核验下载格式、方法说明与许可: Verify the download format, method notes and license
+  核验下载格式与历史估计的保留方式: Verify the download format and how historical estimates are kept
+  核验下载格式与调查方法说明: Verify the download format and survey method notes
+  核验披露与行情资料的入口和访问规则: Verify the entry points and access rules for disclosures and market data
+  核验数据入口与口径说明: Verify the data entry points and definition notes
+  核验数据入口与接口说明: Verify the data entry points and interface documentation
+  核验项目说明，确认各接口的上游来源: Verify the project documentation and confirm each interface's upstream source
+  模型估计，不是观测值；不能与其他期限溢价模型无条件替代: A model estimate, not an observation; not interchangeable with other term premium models
+  模型估计，不是观测值；历史估计是否完整保留待核验: A model estimate, not an observation; whether historical estimates are fully kept is still to be verified
+  没有可程序取得的免费路径时使用；每次导入单独声明原始发布者与取得方式: Used when there is no free programmatic route; each import declares its original publisher and how it was obtained
+  没有成分变化记录时，指数层面的回测有幸存者偏差: Without records of constituent changes, index-level backtests have survivorship bias
+  波动率指数（如 VIX）: Volatility indices (e.g. VIX)
+  用真实 key 取得 CPIAUCSL 样本，记录 access_verified: Fetch a CPIAUCSL sample with a real key and record access_verified
+  登记政策利率与通胀预期序列，并开始积累快照: Register policy-rate and inflation-expectation series and start accumulating snapshots
+  社区工具可作接入候选；数据权利受各上游约束，接口稳定性需持续核验: Community tools are access candidates; data rights follow each upstream, and interface stability needs ongoing checks
+  美国国债曲线: US Treasury curve
+  美国联邦政府发布信息；以官网条款为准，再分发前另行确认: US federal government information; the website's terms apply, and redistribution is confirmed separately first
+  美国股票、国债与公司债的年度历史回报: Annual historical returns on US stocks, Treasuries and corporate bonds
+  聚合接口有口径与覆盖限制；接入时遵守访问规则（须声明 User-Agent）: The aggregate interfaces have definition and coverage limits; access follows the access rules (a User-Agent must be declared)
+  股票、ETF 与指数的日度价格及分红拆股: Daily prices, dividends and splits for stocks, ETFs and indices
+  行业组合收益: Industry portfolio returns
+  视原始来源而定: Depends on the original source
+  证券行情: Securities market data
+  评估作为总收益数据的可靠性；寻找可交叉核验的官方或发行方来源: Assess reliability as total-return data; look for official or issuer sources to cross-check
+  调查与模型估计: Surveys & model estimates
+  调查预期，不是观测值；须与观测值分开登记: Survey expectations, not observations; must be registered separately from observations
+  退市证券: Delisted securities
+  选定首批基金（如国债 ETF），逐家核验资料入口: Pick a first set of funds (e.g. Treasury ETFs) and verify each one's data entry points
+  选定首批机构，逐家记录发布时间与方法: Pick a first set of institutions and record each one's release timing and method
+  逐家核验下载与历史覆盖；净值不替代成交价: Verify downloads and historical coverage one by one; NAV does not substitute for traded prices
+  逐笔成交与订单簿: Tick data and order books
+  通胀预期与实际利率（如 T10YIE、DFII10）: Inflation expectations and real rates (e.g. T10YIE, DFII10)
+  部分序列含第三方权利；按序列确认，公开取得不等于可自由再分发: Some series carry third-party rights; confirmed per series, and public access does not mean free redistribution
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'

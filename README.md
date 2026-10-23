@@ -49,6 +49,7 @@ uv run iros verify <run_id>
 - **研究发现了什么**：每项研究有固定地址的研究页 `studies/<study_id>/`，按「研究问题 → 关键发现 → 可视化证据 → 方法 → 证据与限制 → 历史与复现」组织。关键发现由固定规则从结果生成，每条可展开查看所依据的指标。
 - **这些发现有多可靠**：研究页的证据面板逐项列出来源与版本、日期与期限覆盖、核验与复现结果、限制，不汇总成笼统分数；数据覆盖条按日期显示缺失。`methods.html` 说明数据来源、时间规则、日历、可靠性机制与复现方法。
 - **系统能研究什么**：`map.html` 研究能力地图由登记与运行记录生成，区分工程完成与研究验证；研究框架与规划中的方向在 `site/content.yaml` 维护。系统状态放在页脚与 `methods.html#status`，只有更新停滞时才在页面顶部提示。
+- **可以用哪些免费资源**：`sources.html` 数据资源目录由 `config/sources.yaml` 生成，列出已接入与候选来源的取得方式、许可、核验状态、可服务的研究方向与下一步，并按研究方向索引能力缺口。
 
 页面顶端右侧可切换中英文：英文页面在 `en/` 下，研究发现按同一规则的英文措辞生成；完整报告只有中文。译文维护在 `site/en.yaml`。
 
@@ -96,13 +97,27 @@ python3 -m http.server 8765 --directory _site
 
 页面说明性内容在 `site/content.yaml`，样式与图表脚本在 `site/assets/`；研究结果、数据与核验状态从运行记录和登记中生成。
 
-其他命令：`iros sources`（来源与核验状态）、`iros datasets`（版本与质量概况）、`iros runs`、`iros import <dataset> <file> --declared-source "..."`（人工导入）。
+其他命令：`iros sources`（已接入与候选来源及核验状态）、`iros datasets`（版本与质量概况）、`iros runs`、`iros import <dataset> <file> --declared-source "..."`（人工导入）。
 
 ```bash
 uv run pytest
 ```
 
 测试全部离线运行。
+
+## 开发流程
+
+个人项目，默认不开 PR：在功能分支上完成并提交，在本地合并进 `main`（`git merge --no-ff`），跑一遍 `uv run pytest`，再推送 `main`。
+
+改动公共契约或研究计算时开 PR，作为合并前的审查点：`registry.py`、`contracts.py`、`analytics/`、`research/`。这些代码出错可能悄悄改变研究结论。
+
+这样做的依据：
+
+- `main` 没有分支保护。
+- 网站工作流只在推送到 `main`、定时与手动触发时运行，开 PR 不会触发测试。
+- 推送后任何必需步骤失败都不发布，线上保留上一版页面。
+
+想让 PR 在合并前就跑测试，可以给工作流加上只测试、不发布的 `pull_request` 触发。
 
 ## 设计要点
 

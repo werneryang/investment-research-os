@@ -37,8 +37,12 @@ def _root(arg: str | None) -> Path:
 def cmd_sources(args: argparse.Namespace) -> int:
     reg = Registry.load(_root(args.root))
     for src in reg.sources.values():
-        print(f"{src.id}  ·  {src.publisher}")
-        print(f"    渠道：{src.channel}；注册：{src.registration}")
+        category = reg.source_categories.get(src.category, src.category or "未分类")
+        print(f"{src.id}  ·  {src.publisher}  ·  {category}  ·  {src.best_status().value}")
+        if src.missing_access_fields():
+            print(f"    候选来源：{src.url or '无统一入口'}；下一步：{src.next_step or '—'}")
+        else:
+            print(f"    渠道：{src.channel}；注册：{src.registration}")
         datasets = [d for d in reg.datasets.values() if d.source_id == src.id]
         for d in datasets:
             print(f"    - {d.id}: {src.status_for(d.id).value}")
@@ -47,7 +51,7 @@ def cmd_sources(args: argparse.Namespace) -> int:
             if v.valid_from or v.valid_through:
                 extra += f"{'，' if extra else '（'}观测日期 {v.valid_from or '不限'} 至 {v.valid_through or '不限'}"
             extra += "）" if extra else ""
-            print(f"      [{v.date}] {v.dataset} {v.status.value}{extra}：{v.evidence[:60]}")
+            print(f"      [{v.date}] {v.dataset or '（来源说明）'} {v.status.value}{extra}：{v.evidence[:60]}")
     return 0
 
 

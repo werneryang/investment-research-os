@@ -167,3 +167,18 @@ tr.branch th .small{font-weight:400}
 text-decoration:none;white-space:nowrap}
 .lang-switch:hover{background:var(--accent);color:var(--bg)}
 @media (max-width:600px){.topnav .lang-switch{order:2}.topnav .navlinks{order:3;width:100%}}
+
+/* ---- 数据资源目录 ---- */
+.src-counts{list-style:none;padding:0;margin:0 0 12px;display:flex;flex-wrap:wrap;gap:8px 18px}
+.src-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin-bottom:8px}
+@media (max-width:600px){.src-grid{grid-template-columns:1fr}}
+.src-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;font-size:.88rem;min-width:0}
+.src-card header{margin-bottom:.4rem}.src-card h4{font-size:.98rem}
+.src-datasets{margin:.3rem 0 0;padding-left:1.2em}
+.src-card dl{margin:.6rem 0 0;display:grid;gap:6px}
+.src-card dl > div{display:grid;grid-template-columns:5.5em 1fr;gap:8px}
+.src-card dt{color:var(--muted)}.src-card dd{margin:0;min-width:0}
+.src-card dd ul{margin:0;padding-left:1.1em}
+.src-card .chip-tag{text-decoration:none;color:var(--fg);margin:0 2px 2px 0}
+.src-index td:first-child{white-space:nowrap}
+.src-index a.chip{text-decoration:none;margin:0 2px 4px 0}

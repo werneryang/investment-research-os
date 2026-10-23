@@ -6,6 +6,7 @@
 - 研究发现了什么：研究页（studies/<id>/）的关键发现与图表
 - 这些发现有多可靠：研究页的证据面板与数据覆盖、数据与方法页
 - 系统能研究什么：研究能力地图（map.html）；系统状态放在页脚与 methods.html#status
+- 可以用哪些免费资源：数据资源目录（sources.html），由 config/sources.yaml 生成
 
 输出：
 
@@ -15,7 +16,8 @@
     latest/<study_id>/report.html   最新完整报告的稳定地址
     history/<study_id>.html         旧地址，转到研究页的历史部分
     map.html、methods.html           研究能力地图；数据、方法与状态
-    en/…                            上述页面的英文版（index、map、methods、studies/<id>/）；与中文共用 assets/、runs/
+    sources.html                    数据资源目录（已接入与候选来源）
+    en/…                            上述页面的英文版（index、map、sources、methods、studies/<id>/）；与中文共用 assets/、runs/
     summary.json                    页面所示内容的机器可读摘要
 
 页面顶端可切换中英文（见 i18n.py）；完整报告 report.html 只有中文。
@@ -44,6 +46,7 @@ from .home import home_page
 from .i18n import LANGS, load_phrases, use
 from .methods import methods_page
 from .renderers import get_renderer
+from .sources import catalog, sources_page
 from .study import redirect, study_page
 
 __all__ = ["build_site"]
@@ -150,6 +153,7 @@ def build_site(root: Path, out: Path, archive: Path | None = None) -> Path:
             frame = framework(content, registry, ds_by_id, latest)
             (base / "index.html").write_text(home_page(studies, latest, content, build, frame), encoding="utf-8")
             (base / "map.html").write_text(capability_page(content, registry, ds_by_id, latest, build), encoding="utf-8")
+            (base / "sources.html").write_text(sources_page(content, registry, ds_by_id, build), encoding="utf-8")
             (base / "methods.html").write_text(
                 methods_page(content, registry, ds_rows, latest, build, calendar_checks), encoding="utf-8")
     (out / ".nojekyll").write_text("", encoding="utf-8")
@@ -161,6 +165,7 @@ def build_site(root: Path, out: Path, archive: Path | None = None) -> Path:
         "untranslated": sorted(untranslated),
         "calendar_checks": calendar_checks,
         "datasets": ds_rows,
+        "sources": catalog(registry, ds_by_id),
         "runs": [{
             "run_id": i["manifest"]["run_id"], "study_id": s,
             "status": i["manifest"]["status"], "result_hash": i["manifest"].get("result_hash"),

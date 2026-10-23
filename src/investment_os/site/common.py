@@ -45,7 +45,7 @@ CHECK_NOTES = Labels({
 CHART_JS = "assets/vendor/chart.umd.min.js"
 
 NAV = (("index.html", ("研究总览", "Overview")), ("map.html", ("研究能力地图", "Capability map")),
-       ("methods.html", ("数据、方法与状态", "Data, methods & status")))
+       ("sources.html", ("数据资源目录", "Data sources")), ("methods.html", ("数据、方法与状态", "Data, methods & status")))
 
 
 def e(v: Any) -> str:
