@@ -181,3 +181,28 @@ def test_download_time_alone_does_not_trigger_archiving(project, registry, store
         archive.save(project, arch)
     log = [json.loads(x) for x in (arch / "archive.jsonl").read_text().splitlines()]
     assert [e.get("skipped", False) for e in log] == [False, True]
+
+
+def test_same_unobtained_dates_with_different_download_times_are_skipped(project, registry, store, tmp_path):
+    """回归：两次下载都在 1 月 5 日保守可用时点之前，未取得的日期相同，只是下载时间不同——不应再次归档，
+    限制文字中也不能出现每次都变的下载时间。"""
+    from datetime import datetime, timezone
+
+    from investment_os.data import ingest
+
+    from .conftest import TREASURY_2024, treasury_connector
+    from .test_study_e2e import AtTime
+
+    without_jan5 = "\n".join(l for l in TREASURY_2024.splitlines() if not l.startswith("01/05/2024")) + "\n"
+    arch = tmp_path / "archive"
+    for hour in (19, 21):  # 1 月 5 日美东 14:00 与 16:00
+        at = datetime(2024, 1, 5, hour, 0, tzinfo=timezone.utc)
+        ingest(registry, store, "ust_par_yield_curve", {"start": 2024, "end": 2024},
+               AtTime(treasury_connector({2024: without_jan5}), at), clock=lambda at=at: at)
+        m = run_study(project, write_study(project), clock=lambda at=at: at)
+        result = json.loads((project / "runs" / m["run_id"] / "result.json").read_text())
+        assert result["coverage"]["pending_dates"] == ["2024-01-05"]
+        assert not any("UTC" in x for x in result["limitations"])
+        archive.save(project, arch)
+    log = [json.loads(x) for x in (arch / "archive.jsonl").read_text().splitlines()]
+    assert [e.get("skipped", False) for e in log] == [False, True]

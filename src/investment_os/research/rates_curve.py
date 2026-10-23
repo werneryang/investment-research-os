@@ -231,8 +231,9 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
     if coverage.get("pending_days"):
         limitations.append(
             f"研究窗口内有 {coverage['pending_days']} 个预期观测日未取得（{'、'.join(coverage['pending_dates'][:5])}）："
-            f"数据下载时（{str(coverage.get('data_retrieved_at', '—'))[:16].replace('T', ' ')} UTC）尚未到保守可用时点"
-            f"（{coverage['availability_rule']}），不计入覆盖；这不代表已确认尚未发布。结果截至 {coverage['last']}")
+            f"数据最近一次下载时尚未到保守可用时点（{coverage['availability_rule']}），不计入覆盖；"
+            f"这不代表已确认尚未发布。结果截至 {coverage['last']}")
+        # 下载时间不写进限制文字：它每次运行都不同，会让结论相同的运行被当作变化；时间见证据面板
     covered = f"{coverage['first']} 至 {coverage['last']}" if coverage["curve_days"] else "无"
     if not acceptable:
         limitations.append(
