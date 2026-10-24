@@ -157,7 +157,6 @@ phrases:
   Shiller 股市数据: Shiller stock market data
   Treasury 利率数据: Treasury interest rate data
   U.S. Securities and Exchange Commission（EDGAR）: U.S. Securities and Exchange Commission (EDGAR)
-  shillerdata.com 也提供数据，以哪一处为准待核验: shillerdata.com also provides the data; which copy is authoritative is still to be verified
   yfinance 项目（社区工具，非 Yahoo 官方）: yfinance project (community tool, not an official Yahoo product)
   上交所、深交所及巨潮资讯网等公开披露平台: Public disclosure platforms such as the Shanghai and Shenzhen stock exchanges and CNINFO
   不研究日内微观结构与流动性冲击: Intraday microstructure and liquidity shocks are out of scope
@@ -208,7 +207,6 @@ phrases:
   有效汇率: Effective exchange rates
   机构的长期假设，各自方法不同；不能当作直接观测或相互无条件替代: Institutions' long-term assumptions, each with its own method; not direct observations and not interchangeable
   机构资本市场假设: Institutional capital market assumptions
-  标普综合指数价格、股息、盈利与 CAPE 的长期月度数据: Long-run monthly S&P Composite prices, dividends, earnings and CAPE
   核验 API 说明、注册要求与额度: Verify the API documentation, sign-up requirements and quotas
   核验 API 说明与许可: Verify the API documentation and license
   核验下载格式、方法与更新频率: Verify the download format, methods and update frequency
@@ -257,12 +255,10 @@ phrases:
   "Fama/French 五因子月度收益（2x3 分组）：在三因子之外加盈利（RMW）与投资（CMA）": "Fama/French five-factor monthly returns (2x3 sorts): profitability (RMW) and investment (CMA) on top of the three factors"
   "动量因子月度收益（Mom，过去 12 至 2 个月收益高减低）": "Momentum factor monthly returns (Mom: high minus low prior 12-to-2-month returns)"
   "个股或具体指数基金的回报（只有组合层面的因子收益）": "Returns of individual stocks or specific index funds (only portfolio-level factor returns)"
-  "估值水平（市盈率、CAPE 等，尚未接入 Shiller、Damodaran）": "Valuation levels (P/E, CAPE, etc.; Shiller and Damodaran not yet connected)"
   "美国以外的股票市场": "Stock markets outside the US"
   "美国以外的地区与行业": "Regions and industries outside the US"
   "行业估值、集中度与成分变化（只接入了收益）": "Industry valuations, concentration and membership changes (only returns are connected)"
   "美国 12 个行业组合的价值加权月度收益": "Value-weighted monthly returns of 12 US industry portfolios"
-  "美国股票市场与 Fama/French 因子的月度收益（市场超额收益加无风险利率即市场总收益）": "Monthly returns of the US stock market and Fama/French factors (market excess return plus the risk-free rate gives the market's total return)"
   "市场因子 Mkt-RF 加 RF 即美国股票市场的月度总收益（价值加权，含分红）；RF 在 202406 之前取自 Ibbotson， 之后为 ICE BofA 1 个月国库券指数。数值为百分比，缺失写作 -99.99 或 -999": "The market factor Mkt-RF plus RF is the monthly total return of the US stock market (value-weighted, dividends included); RF comes from Ibbotson before 202406 and from the ICE BofA 1-month Treasury bill index afterwards. Values are percentages; missing values are written as -99.99 or -999"
   "按研究需要登记日度因子或更细的行业组合": "Register daily factors or finer industry portfolios as studies need them"
   "文件带「Copyright Eugene F. Fama and Kenneth R. French」声明，未见再分发许可；只在本地使用，不进公开存档": "Files carry a \"Copyright Eugene F. Fama and Kenneth R. French\" notice and no redistribution permission was found; used locally only, not in the public archive"
@@ -306,6 +302,20 @@ phrases:
   "逐个序列确认许可；按研究需要登记实际 GDP 等增长序列": "Confirm the license series by series; register growth series such as real GDP as studies need them"
   "隐含波动率相对已实现波动率的溢价（需要股票日度收益，尚未接入）": "The premium of implied over realized volatility (needs daily stock returns, not yet connected)"
   "核验下载、方法与许可": "Check downloads, methods and license"
+  "CPI 与 10 年期长期利率（已有 FRED 序列，未重复登记）": "CPI and the 10-year long-term rate (already available as FRED series, not registered twice)"
+  "周期调整市盈率 CAPE（价格 / 过去 10 年实际盈利平均）与总收益口径的 TR CAPE，1881 年起": "Cyclically adjusted P/E, CAPE (price / average real earnings over the past 10 years), and the total-return TR CAPE, from 1881"
+  "按 CPI 换算到最新月份价格水平的实际价格与实际总收益价格指数（股息再投资）": "Real price and real total-return price index (dividends reinvested), converted with CPI to the latest month's price level"
+  "按研究需要登记超额 CAPE 收益率等其他列": "Register other columns such as the excess CAPE yield as studies need them"
+  "文件内免责声明只说明数据来自公开来源、不保证准确，未见使用或再分发条款；只在本地使用，不进公开存档": "The file's disclaimer only says the data come from public sources and accuracy is not guaranteed; no terms of use or redistribution found; used locally only, not in the public archive"
+  "早期数据由 Cowles 等历史资料拼接，不是今天口径的标普 500。耶鲁旧页面已无下载链接，shillerdata.com 是当前入口": "Early data are spliced from historical sources such as Cowles and are not today's S&P 500. The old Yale page no longer links the file; shillerdata.com is the current entry point"
+  "标普综合指数价格、股息与盈利 1871-01 起，CAPE 1881-01 起，月度": "S&P Composite price, dividends and earnings from 1871-01, CAPE from 1881-01, monthly"
+  "标普综合指数月度价格（当月每日收盘价的平均）": "S&P Composite monthly price (average of daily closes in the month)"
+  "标普综合指数的股息与盈利（按指数单位计的过去 12 个月合计，约滞后四个月补上）": "S&P Composite dividends and earnings (trailing 12-month totals per index unit, filled in about four months late)"
+  "美国股票市场与 Fama/French 因子的月度收益，以及标普综合指数 1871 年起的价格、股息、盈利与 CAPE 估值": "Monthly returns of the US stock market and Fama/French factors, plus S&P Composite price, dividends, earnings and CAPE valuation from 1871"
+  "行业或个股层面的估值（只有标普综合指数整体的 CAPE 与市盈率）": "Valuations of industries or individual stocks (only CAPE and P/E for the S&P Composite as a whole)"
+  "观测期间结束后第 180 天结束时（来源时区）": "End of the 180th day after the observation period ends (source time zone)"
+  "观测期间结束后第 30 天结束时（来源时区）": "End of the 30th day after the observation period ends (source time zone)"
+  "超额 CAPE 收益率与 10 年滚动实际回报": "Excess CAPE yield and rolling 10-year real returns"
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'

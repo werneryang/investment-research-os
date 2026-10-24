@@ -175,6 +175,8 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 
 **Damodaran 接入器**（`connectors/damodaran.py`，`damodaran_xls`）：读取旧版 Excel（`.xls`，依赖 xlrd）。`params.sheet` 指明工作表，以首列为 `Year` 的行作为表头，`params.columns` 把序列代码对应到表头文字逐字核对；同名表头重复出现时取第一个（年度回报在左，「$100 价值」在右）。从表头下逐行读取，首列不再是年份即停止，汇总行不读入。表中自带的「更新日期」单元格已过时，不作依据。
 
+**Shiller 接入器**（`connectors/shiller.py`，`shiller_xls`）：下载地址带版本号、随更新变化，每次先读 shillerdata.com 页面找 `ie_data.xls` 链接，页面上必须恰好一个。工作表 `Data` 的短名称在首列为 `Date` 的那一行（第 8 行），同名列重复出现，所以 `params.columns` 按列位置登记并逐字核对短名称。日期是小数「年.月」（`2026.1` 为 10 月），按 `round((x − 年) × 100)` 取月份，再与 Date Fraction 列逐行核对并要求月份连续。`NA` 与空单元格为缺失。四个数据集按单位与发布滞后拆分：价格、股息与盈利（滞后约四个月，可用时间取 180 天）、CAPE、实际价格与实际总收益。
+
 **新增来源**：在 `connectors/` 实现 `fetch` 与 `parse`（输出暂存表的 5 列），在 `connectors/__init__.py` 注册，在 `sources.yaml` 补齐来源的 §5.1 字段与核验状态（候选来源缺这些字段时，登记数据集会报错）。数值转换、时间规则、质量与版本由公共流程处理，接入器不重复实现。
 
 **新增研究分支**：在 `research/` 中写一个接收 `(StudySpec, dict[str, StudyInput])`、返回 `ResearchResult` 的函数，用 `@register_branch("名称")` 注册，并在 `research/__init__.py` 导入。报告只读取结构化结果；目前的报告模板针对曲线类结果，其他成果类型需要增加相应的报告段落。

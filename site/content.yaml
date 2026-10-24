@@ -83,14 +83,14 @@ branches:
           - 冲击发生的概率或未来利率走势（需要预测模型与样本外验证）
       - id: equity_risk
         name: 股票
-        summary: 美国股票市场与 Fama/French 因子的月度收益（市场超额收益加无风险利率即市场总收益）
+        summary: 美国股票市场与 Fama/French 因子的月度收益，以及标普综合指数 1871 年起的价格、股息、盈利与 CAPE 估值
         risk: [equity]
-        datasets: [french_ff3, french_ff5, french_mom, damodaran_histret]
+        datasets: [french_ff3, french_ff5, french_mom, damodaran_histret, shiller_price, shiller_fundamentals, shiller_cape, shiller_real]
         studies: []
         can_answer: []
         cannot_answer:
           - 个股或具体指数基金的回报（只有组合层面的因子收益）
-          - 估值水平（市盈率、CAPE 等，尚未接入 Shiller、Damodaran）
+          - 行业或个股层面的估值（只有标普综合指数整体的 CAPE 与市盈率）
           - 美国以外的股票市场
       - id: credit_premium
         name: 信用
