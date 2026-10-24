@@ -10,6 +10,7 @@ from typing import Any
 
 from ..contracts import VerificationStatus
 from ..registry import Registry
+from .collect import not_fetched_label
 from .common import VERIFY_LABEL, chip, e, shell
 from .i18n import L, Labels, te, tx
 
@@ -40,7 +41,8 @@ def catalog(registry: Registry, datasets: dict[str, dict[str, Any]]) -> list[dic
     for src in registry.sources.values():
         ds = [{"id": d.id, "status": src.status_for(d.id).value,
                "uses": [u.value for u in src.verified_uses(d.id)],
-               "has_data": (datasets.get(d.id) or {}).get("version_id") is not None}
+               "has_data": (datasets.get(d.id) or {}).get("version_id") is not None,
+               "skip_reason": (datasets.get(d.id) or {}).get("skip_reason")}
               for d in registry.datasets.values() if d.source_id == src.id]
         rows.append({
             "id": src.id, "name": src.display_name, "publisher": src.publisher, "url": src.url, "category": src.category,
@@ -60,7 +62,7 @@ def _status_line(row: dict[str, Any]) -> str:
     ds = "".join(
         f"<li><code>{e(d['id'])}</code> {e(VERIFY_LABEL[d['status']])}"
         f"{L('；用途已验证：', '; use verified: ') + e(L('、', ', ').join(USE_SHORT[u] for u in d['uses'])) if d['uses'] else ''}"
-        f"{'' if d['has_data'] else '<span class=muted>' + L('（本次构建未取得）', ' (not fetched in this build)') + '</span>'}</li>"
+        f"{'' if d['has_data'] else '<span class=muted>' + L('（', ' (') + not_fetched_label(d['skip_reason'], short=True) + L('）', ')') + '</span>'}</li>"
         for d in row["datasets"])
     return head + (f'<ul class="src-datasets small">{ds}</ul>' if ds else "")
 

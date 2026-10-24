@@ -386,3 +386,21 @@ def test_english_findings_cover_every_rule():
                               "duration_convexity_pct": -1.87, "duration_convexity_error_pp": -0.001}]}}}
     en = english_findings(bond, par_bond_findings(bond))
     assert all(f["translated"] for f in en) and en[0]["text"].startswith("A hypothetical 2Y par bond")
+
+
+def test_not_fetched_reason_comes_from_the_registry():
+    """有意不在 CI 中取得的数据集写明原因；应取得却没取得的才显示「本次构建未取得」。"""
+    from investment_os.registry import Registry
+    from investment_os.site.collect import not_fetched_label, skip_reason
+    from investment_os.site.i18n import use
+
+    reg = Registry.load(PROJECT_ROOT)
+    reason = {d.id: skip_reason(d.connector, reg.sources[d.source_id].signup, d.scheduled_fetch is not None)
+              for d in reg.datasets.values()}
+    assert reason["alfred_gdp"] == "key" and reason["manual_example"] == "manual"
+    assert reason["fred_dff"] is None and reason["ust_par_yield_curve"] is None
+    assert skip_reason("fred_graph_csv", "none", False) == "unscheduled"
+    assert not_fetched_label("key") == "需要 API key，只在本机取得"
+    assert not_fetched_label(None) == "本次构建未取得" and not_fetched_label(None, short=True) == "未取得"
+    with use("en", {"phrases": {}, "patterns": []}, set()):
+        assert not_fetched_label("manual") == "manual import, not fetched automatically"

@@ -13,6 +13,7 @@ from typing import Any
 from ..contracts import ResultType, Use
 from ..registry import Registry
 from ..research import branch_result_types
+from .collect import not_fetched_label
 from .common import (
     RESULT_TYPE_LABEL,
     RISK_LABEL,
@@ -66,6 +67,7 @@ def direction_status(direction: dict[str, Any], registry: Registry, datasets: di
         if d is None:
             continue
         ds_rows.append({"id": ds_id, "status": d["status"], "has_data": d["version_id"] is not None,
+                        "skip_reason": d.get("skip_reason"),
                         "uses": d["verified_uses"]})
     studies = [s for s in direction.get("studies", []) if s in latest]
     runs = [{"study_id": s, "status": latest[s]["manifest"]["status"],
@@ -131,7 +133,7 @@ def _direction_row(direction: dict[str, Any], st: dict[str, Any]) -> str:
     data = "".join(
         f"<div>{chip('pass' if d['has_data'] else 'skipped', VERIFY_LABEL.get(d['status'], d['status']))} "
         f"<code class='small'>{e(d['id'])}</code>"
-        f"{'' if d['has_data'] else ' <span class=small>' + L('（未取得）', '(not fetched)') + '</span>'}</div>"
+        f"{'' if d['has_data'] else ' <span class=small>' + L('（', '(') + not_fetched_label(d.get('skip_reason'), short=True) + L('）', ')') + '</span>'}</div>"
         for d in st["datasets"]) or f'<span class="muted">{L("待接入", "Not connected yet")}</span>'
     if st["runs"]:
         types = branch_result_types()

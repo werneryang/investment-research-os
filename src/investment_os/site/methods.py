@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from ..registry import Registry
+from .collect import not_fetched_label
 from .common import FETCH_LABEL, STATUS_LABEL, VERIFY_LABEL, chip, e, shell
 from .i18n import L, Labels, is_en, te
 
@@ -113,7 +114,7 @@ def _status(datasets: list[dict[str, Any]], latest: dict[str, dict[str, Any]], b
         + (chip("pass" if d["last_fetch"]["status"] in ("created", "unchanged") else "fail",
                 FETCH_LABEL.get(d["last_fetch"]["status"], d["last_fetch"]["status"]))
            + f" <span class='small muted'>{e((d['last_fetch']['at'] or '')[:16].replace('T', ' '))}</span>"
-           if d["last_fetch"] else f'<span class="muted">{L("本次构建未取得", "Not fetched in this build")}</span>')
+           if d["last_fetch"] else f'<span class="muted">{not_fetched_label(d.get("skip_reason"))}</span>')
         + "</td></tr>" for d in datasets)
     run_rows = "".join(
         f"<tr><td><code>{e(s)}</code></td><td>{chip(i['manifest']['status'], STATUS_LABEL.get(i['manifest']['status'], ''))}</td>"
