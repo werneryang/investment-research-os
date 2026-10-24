@@ -97,6 +97,31 @@ def ordered_studies(by_study: dict[str, Any], content: dict[str, Any]) -> list[s
     return preferred + sorted(s for s in by_study if s not in preferred)
 
 
+def skip_reason(connector: str, signup: str, scheduled: bool) -> str | None:
+    """数据集为什么不在 CI 中取得（由登记推出）；None 表示应当取得，没取得才是异常。
+
+    分工：接入核验与快照在本机完成；CI 只取无需凭证、登记了定时取得的数据集。
+    """
+    if connector == "manual_csv":
+        return "manual"
+    if signup == "free_key":
+        return "key"
+    if not scheduled:
+        return "unscheduled"
+    return None
+
+
+def not_fetched_label(reason: str | None, short: bool = False) -> str:
+    """未取得时显示的说明：有意不取时写明原因，否则如实写「未取得」。"""
+    if reason == "manual":
+        return L("人工导入，不自动取得", "manual import, not fetched automatically")
+    if reason == "key":
+        return L("需要 API key，只在本机取得", "needs an API key; fetched locally only")
+    if reason == "unscheduled":
+        return L("未登记定时取得，只在本机取得", "not scheduled; fetched locally only")
+    return L("未取得", "not fetched") if short else L("本次构建未取得", "Not fetched in this build")
+
+
 def datasets(registry: Registry, store: DataStore) -> list[dict[str, Any]]:
     log = store.fetch_log()
     rows = []
@@ -116,6 +141,7 @@ def datasets(registry: Registry, store: DataStore) -> list[dict[str, Any]]:
             "calendar": d.calendar,
             "archive_data": d.archive_data,
             "scheduled": d.scheduled_fetch is not None,
+            "skip_reason": skip_reason(d.connector, src.signup, d.scheduled_fetch is not None),
             "status": src.status_for(d.id).value,
             "verified_uses": [u.value for u in src.verified_uses(d.id)],
             "version_id": v.version_id if v else None,
