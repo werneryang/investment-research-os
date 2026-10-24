@@ -39,7 +39,8 @@ MISSING = {"-99.99", "-999"}
 # 各频率对应的日期格式：月度 YYYYMM，年度 YYYY，日度 YYYYMMDD
 DATE_DIGITS = {"monthly": 6, "annual": 4, "daily": 8}
 _ROW = re.compile(r"^\s*(\d{4,8})\s*,")
-_CRSP = re.compile(r"created (?:by .+ )?using the (\d{6}) CRSP database")
+# 文件头写明所用数据库与月份：美国数据为 CRSP，国际数据为 Bloomberg
+_DATABASE = re.compile(r"created (?:by .+ )?using the (\d{6}) (\w+) database")
 
 
 def _param(dataset: DatasetSpec, key: str) -> Any:
@@ -125,7 +126,8 @@ class FrenchLibraryConnector:
         title, header, data = section
         if header != columns:
             raise FetchError(f"表头 {header} 与登记的列 {columns} 不一致")
-        crsp = next((m.group(1) for m in map(_CRSP.search, lines[:3]) if m), None)
+        db = next((m for m in map(_DATABASE.search, lines[:3]) if m), None)
+        month, database = (db.group(1), db.group(2)) if db else (None, None)
         rows = []
         for r in data:
             if len(r[0]) != digits:
@@ -137,5 +139,7 @@ class FrenchLibraryConnector:
                 rows.append((f"{prefix}{col}", obs, "" if value in MISSING else value, None, None))
         staging = pd.DataFrame(rows, columns=STAGING_COLUMNS) if rows else empty_staging()
         # 第一段没有标题，表头前一行是文件说明，不记作标题
-        meta = {"french_file": dataset.params["file"], "section": wanted or "（第一段）", "crsp_database": crsp}
+        meta = {"french_file": dataset.params["file"], "section": wanted or "（第一段）",
+                "database": f"{database} {month}" if db else None,
+                "crsp_database": month if database == "CRSP" else None}
         return ParsedPayload(staging, {f"{prefix}{c}": {**meta, "column": c} for c in columns})

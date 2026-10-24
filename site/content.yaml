@@ -114,9 +114,15 @@ branches:
           - 期权定价与波动率曲面（完整历史期权链列为能力缺口）
       - id: global_assets
         name: 跨市场比较
-        risk: [fx]
-        planned: true
-        needs: 需要多市场数据、交易日历与汇率换算（架构 §4、§7.1）
+        summary: 发达、欧洲、日本、亚太、北美与新兴市场的股票因子月度收益（美元计价，1990 年起），以及主要汇率与美元广义指数
+        risk: [fx, equity]
+        datasets: [french_developed3, french_developed_ex_us3, french_europe3, french_japan3, french_asia_pacific_ex_japan3, french_north_america3, french_emerging5, fred_dexuseu, fred_dexjpus, fred_dexchus, fred_dexusuk, fred_dtwexbgs]
+        studies: []
+        can_answer: []
+        cannot_answer:
+          - 以当地货币计的回报（French 国际因子只有美元计价）
+          - 各国国债与宏观数据（世界银行、IMF、BIS、OECD 尚未接入）
+          - 中国 A 股（交易所与社区工具尚未接入）
 
   - id: sectors_regions
     name: 地区与行业
