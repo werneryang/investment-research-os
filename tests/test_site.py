@@ -225,7 +225,7 @@ def test_home_places_studies_in_their_branch(loaded):
     card = card[:card.index("</article>")]
     assert "研究焦点" in card and 'href="studies/ust_curve_test/"' in card and "美国国债期限结构" in card
     # 分支写明具体覆盖，不用一个「已有研究」概括整个分支
-    assert "6 个方向：1 个已有研究，4 个只有数据；规划中：跨市场比较" in card
+    assert "6 个方向：1 个已有研究，5 个只有数据" in card and "规划中" not in card
     assert "未归入研究方向的研究" not in page
     # 已有研究的分支排在只有数据的分支之前
     assert page.index('id="markets_assets"') < page.index('id="macro_policy"')

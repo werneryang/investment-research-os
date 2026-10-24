@@ -492,6 +492,192 @@ datasets:
     value_range: [0, 1000000000]
     scheduled_fetch: {}
 
+  # ---- 跨市场比较（2026-10-24）：French 国际因子（Bloomberg 数据，美元计价，1990-07 起；新兴市场 1989-07 起） ----
+  # 与美国因子文件版式相同；新兴市场五因子的部分早期月份以 -99.99 表示缺失
+
+  french_developed3:
+    source_id: ken_french
+    upstream_id: "Kenneth R. French Data Library: Developed_3_Factors（月度，Bloomberg 数据）"
+    connector: french_csv
+    description: 发达市场股票因子月度收益（美元）：市场超额收益、规模、价值与无风险利率
+    params: {file: Developed_3_Factors, columns: [Mkt-RF, SMB, HML, RF], prefix: DEV3_}
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [-100, 1000]
+    scheduled_fetch: {}
+
+  french_developed_ex_us3:
+    source_id: ken_french
+    upstream_id: "Kenneth R. French Data Library: Developed_ex_US_3_Factors（月度，Bloomberg 数据）"
+    connector: french_csv
+    description: 美国以外的发达市场股票因子月度收益（美元）：市场超额收益、规模、价值与无风险利率
+    params: {file: Developed_ex_US_3_Factors, columns: [Mkt-RF, SMB, HML, RF], prefix: DEVXUS3_}
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [-100, 1000]
+    scheduled_fetch: {}
+
+  french_europe3:
+    source_id: ken_french
+    upstream_id: "Kenneth R. French Data Library: Europe_3_Factors（月度，Bloomberg 数据）"
+    connector: french_csv
+    description: 欧洲股票因子月度收益（美元）：市场超额收益、规模、价值与无风险利率
+    params: {file: Europe_3_Factors, columns: [Mkt-RF, SMB, HML, RF], prefix: EUR3_}
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [-100, 1000]
+    scheduled_fetch: {}
+
+  french_japan3:
+    source_id: ken_french
+    upstream_id: "Kenneth R. French Data Library: Japan_3_Factors（月度，Bloomberg 数据）"
+    connector: french_csv
+    description: 日本股票因子月度收益（美元）：市场超额收益、规模、价值与无风险利率
+    params: {file: Japan_3_Factors, columns: [Mkt-RF, SMB, HML, RF], prefix: JPN3_}
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [-100, 1000]
+    scheduled_fetch: {}
+
+  french_asia_pacific_ex_japan3:
+    source_id: ken_french
+    upstream_id: "Kenneth R. French Data Library: Asia_Pacific_ex_Japan_3_Factors（月度，Bloomberg 数据）"
+    connector: french_csv
+    description: 日本以外的亚太股票因子月度收益（美元）：市场超额收益、规模、价值与无风险利率
+    params: {file: Asia_Pacific_ex_Japan_3_Factors, columns: [Mkt-RF, SMB, HML, RF], prefix: APXJ3_}
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [-100, 1000]
+    scheduled_fetch: {}
+
+  french_north_america3:
+    source_id: ken_french
+    upstream_id: "Kenneth R. French Data Library: North_America_3_Factors（月度，Bloomberg 数据）"
+    connector: french_csv
+    description: 北美股票因子月度收益（美元）：市场超额收益、规模、价值与无风险利率
+    params: {file: North_America_3_Factors, columns: [Mkt-RF, SMB, HML, RF], prefix: NA3_}
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [-100, 1000]
+    scheduled_fetch: {}
+
+  french_emerging5:
+    source_id: ken_french
+    upstream_id: "Kenneth R. French Data Library: Emerging_5_Factors（月度，Bloomberg 数据）"
+    connector: french_csv
+    description: 新兴市场股票因子月度收益（美元）：市场超额收益、规模、价值、盈利、投资与无风险利率
+    params: {file: Emerging_5_Factors, columns: [Mkt-RF, SMB, HML, RMW, CMA, RF], prefix: EM5_}
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 90}
+    vintages: none
+    value_range: [-100, 1000]
+    scheduled_fetch: {}
+
+  # ---- 汇率（2026-10-24）：联储 H.10，每周一发布上一周的日度数据（2026-10-24 时最新为 10-16）；
+  # 可用时间取观测日后第 10 天结束，覆盖一整周的发布间隔加周一假日 ----
+
+  fred_dexuseu:
+    source_id: fred_graph
+    upstream_id: "Board of Governors of the Federal Reserve System (H.10) via FRED: DEXUSEU"
+    connector: fred_graph_csv
+    description: 美元兑欧元汇率（每欧元的美元数，中午纽约买入价）
+    params: {series: DEXUSEU}
+    frequency: daily
+    unit: usd_per_eur
+    currency: null
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 10}
+    vintages: none
+    value_range: [0, 10]
+    scheduled_fetch: {}
+
+  fred_dexjpus:
+    source_id: fred_graph
+    upstream_id: "Board of Governors of the Federal Reserve System (H.10) via FRED: DEXJPUS"
+    connector: fred_graph_csv
+    description: 日元兑美元汇率（每美元的日元数）
+    params: {series: DEXJPUS}
+    frequency: daily
+    unit: jpy_per_usd
+    currency: null
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 10}
+    vintages: none
+    value_range: [0, 1000]
+    scheduled_fetch: {}
+
+  fred_dexchus:
+    source_id: fred_graph
+    upstream_id: "Board of Governors of the Federal Reserve System (H.10) via FRED: DEXCHUS"
+    connector: fred_graph_csv
+    description: 人民币兑美元汇率（每美元的人民币数）
+    params: {series: DEXCHUS}
+    frequency: daily
+    unit: cny_per_usd
+    currency: null
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 10}
+    vintages: none
+    value_range: [0, 100]
+    scheduled_fetch: {}
+
+  fred_dexusuk:
+    source_id: fred_graph
+    upstream_id: "Board of Governors of the Federal Reserve System (H.10) via FRED: DEXUSUK"
+    connector: fred_graph_csv
+    description: 美元兑英镑汇率（每英镑的美元数）
+    params: {series: DEXUSUK}
+    frequency: daily
+    unit: usd_per_gbp
+    currency: null
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 10}
+    vintages: none
+    value_range: [0, 10]
+    scheduled_fetch: {}
+
+  fred_dtwexbgs:
+    source_id: fred_graph
+    upstream_id: "Board of Governors of the Federal Reserve System (H.10) via FRED: DTWEXBGS"
+    connector: fred_graph_csv
+    description: 美元名义广义指数（相对主要贸易伙伴货币，2006-01 = 100）
+    params: {series: DTWEXBGS}
+    frequency: daily
+    unit: index_2006_01_100
+    currency: null
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 10}
+    vintages: none
+    value_range: [0, 1000]
+    scheduled_fetch: {}
+
   manual_example:
     source_id: manual
     upstream_id: 人工导入示例（导入时须声明原始来源）
