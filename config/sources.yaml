@@ -407,14 +407,54 @@ sources:
   - id: shiller
     name: Shiller 股市数据
     publisher: Robert J. Shiller（美国股市长期数据）
-    url: http://www.econ.yale.edu/~shiller/data.htm
+    channel: 读取 shillerdata.com 页面找到 ie_data.xls 的下载链接（托管地址带版本号，随更新变化），再下载 .xls
+    url: https://shillerdata.com/
+    license: 文件内免责声明只说明数据来自公开来源、不保证准确，未见使用或再分发条款；只在本地使用，不进公开存档
+    registration: 无需注册或 key
+    rate_limit: 未公布；本项目串行请求，失败有界重试
+    revisions: 只有当前版本；当月价格月末后定型，股息与盈利约滞后四个月补上，实际值每次更新都换算到最新价格水平
+    maintenance: 下载地址每次从页面读取；按第 8 行短名称与列位置逐字核对，日期与 Date Fraction 列逐行核对，版式变化即报错
+    alternatives: []
     category: factors
-    directions: [equity_risk]
+    directions: [equity_risk, portfolio]
     access: file
+    signup: none
+    redistribution: restricted
+    coverage: 标普综合指数价格、股息与盈利 1871-01 起，CAPE 1881-01 起，月度
     offers:
-      - 标普综合指数价格、股息、盈利与 CAPE 的长期月度数据
-    notes: shillerdata.com 也提供数据，以哪一处为准待核验
-    next_step: 核验下载、方法与许可
+      - CPI 与 10 年期长期利率（已有 FRED 序列，未重复登记）
+      - 超额 CAPE 收益率与 10 年滚动实际回报
+    notes: >-
+      早期数据由 Cowles 等历史资料拼接，不是今天口径的标普 500。耶鲁旧页面已无下载链接，shillerdata.com 是当前入口
+    next_step: 按研究需要登记超额 CAPE 收益率等其他列
+    verification:
+      - dataset: shiller_price
+        status: access_verified
+        date: "2026-10-24"
+        evidence: >-
+          从 shillerdata.com 页面找到 ie_data.xls 链接并下载：1871-01 至 2026-10 共 1870 个月全部合格，日期与 Date Fraction 列逐行一致、
+          月份连续（版本 v20261024T194250Z-54acf78d）。2026-10 为截至取得时的月内平均
+        scope: Data 工作表第 1 列（P）
+      - dataset: shiller_fundamentals
+        status: access_verified
+        date: "2026-10-24"
+        evidence: >-
+          D、E 各 1870 个月，合格 3732 个；只有 2026-07 至 2026-10 缺值（股息与盈利尚未补上）（版本 v20261024T194252Z-a42c7d3f）
+        scope: Data 工作表第 2、3 列（D、E）
+      - dataset: shiller_cape
+        status: access_verified
+        date: "2026-10-24"
+        evidence: >-
+          CAPE 与 TR CAPE 自 1881-01 起，前 120 个月按定义为空（版本 v20261024T194253Z-0180dcfd）。用表中实际价格除以此前 120 个月
+          实际盈利的平均重算 CAPE，1747 个可比月份完全一致；最近几个月的盈利尚未补上，这些月份的 CAPE 依赖 Shiller 自己的处理，无法重算
+        scope: Data 工作表第 12、14 列（CAPE、TR CAPE）
+      - dataset: shiller_real
+        status: access_verified
+        date: "2026-10-24"
+        evidence: >-
+          实际价格与实际总收益价格指数各 1870 个月全部合格（版本 v20261024T194254Z-9368882b）。用表中 CPI 换回名义值后，
+          逐年（12 月平均到 12 月平均）总收益与 Damodaran 标普 500 年度回报 98 年相关系数 0.989，差值中位数 0.15 个百分点
+        scope: Data 工作表第 7、9 列（实际价格、实际总收益价格）
 
   - id: damodaran
     name: Damodaran 数据

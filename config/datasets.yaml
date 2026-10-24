@@ -413,6 +413,85 @@ datasets:
     value_range: [-1, 10]
     scheduled_fetch: {}
 
+  # ---- Shiller 美国股市月度数据（2026-10-24）：1871 年起，只有当前版本 ----
+  # 文件约每月更新：当月价格是截至取得时的月内平均，月末后才定型；股息与盈利约滞后四个月补上；
+  # 实际值每次更新都换算到最新月份的价格水平，整段历史随之改变。可用时间都是保守规则
+
+  shiller_price:
+    source_id: shiller
+    upstream_id: "Robert J. Shiller: ie_data.xls，Data 工作表"
+    connector: shiller_xls
+    description: 标普综合指数月度价格（当月每日收盘价的平均）
+    params:
+      columns:
+        P: {col: 1, label: P}
+      prefix: SHILLER_
+    frequency: monthly
+    unit: index_points
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 30}
+    vintages: none
+    value_range: [0, 1000000]
+    scheduled_fetch: {}
+
+  shiller_fundamentals:
+    source_id: shiller
+    upstream_id: "Robert J. Shiller: ie_data.xls，Data 工作表"
+    connector: shiller_xls
+    description: 标普综合指数的股息与盈利（按指数单位计的过去 12 个月合计，约滞后四个月补上）
+    params:
+      columns:
+        D: {col: 2, label: D}
+        E: {col: 3, label: E}
+      prefix: SHILLER_
+    frequency: monthly
+    unit: usd_per_index_unit
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 180}
+    vintages: none
+    value_range: [-10000, 100000]
+    scheduled_fetch: {}
+
+  shiller_cape:
+    source_id: shiller
+    upstream_id: "Robert J. Shiller: ie_data.xls，Data 工作表"
+    connector: shiller_xls
+    description: 周期调整市盈率 CAPE（价格 / 过去 10 年实际盈利平均）与总收益口径的 TR CAPE，1881 年起
+    params:
+      columns:
+        CAPE: {col: 12, label: CAPE}
+        TR_CAPE: {col: 14, label: TR CAPE}
+      prefix: SHILLER_
+    frequency: monthly
+    unit: ratio
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 30}
+    vintages: none
+    value_range: [0, 200]
+    scheduled_fetch: {}
+
+  shiller_real:
+    source_id: shiller
+    upstream_id: "Robert J. Shiller: ie_data.xls，Data 工作表"
+    connector: shiller_xls
+    description: 按 CPI 换算到最新月份价格水平的实际价格与实际总收益价格指数（股息再投资）
+    params:
+      columns:
+        REAL_PRICE: {col: 7, label: Price}
+        REAL_TR_PRICE: {col: 9, label: Price}
+      prefix: SHILLER_
+    frequency: monthly
+    unit: real_index_latest_month_usd
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 30}
+    vintages: none
+    value_range: [0, 1000000000]
+    scheduled_fetch: {}
+
   manual_example:
     source_id: manual
     upstream_id: 人工导入示例（导入时须声明原始来源）

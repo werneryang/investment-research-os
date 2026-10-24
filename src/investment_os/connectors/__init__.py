@@ -9,12 +9,14 @@ from .damodaran import DamodaranXlsConnector
 from .fred import FredApiVintagesConnector, FredGraphCsvConnector
 from .french import FrenchLibraryConnector
 from .manual import ManualCsvConnector
+from .shiller import ShillerXlsConnector
 from .treasury import TreasuryParCurveConnector
 
 _CONNECTORS = {
     c.name: c
     for c in (TreasuryParCurveConnector, FredGraphCsvConnector, FredApiVintagesConnector,
-              FrenchLibraryConnector, DamodaranXlsConnector, ManualCsvConnector)
+              FrenchLibraryConnector, DamodaranXlsConnector, ShillerXlsConnector,
+              ManualCsvConnector)
 }
 
 

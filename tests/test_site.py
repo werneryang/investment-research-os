@@ -108,7 +108,7 @@ def test_build_site_from_runs(loaded):
     assert run["run_id"] == latest["run_id"] and run["reproduced"] is True and run["history"] == 2
     assert run["findings"][0]["id"] == "level_10y"
     by_id = {x["id"]: x for x in summary["sources"]}
-    assert by_id["ust_treasury"]["status"] == "use_verified" and by_id["shiller"]["status"] == "candidate"
+    assert by_id["ust_treasury"]["status"] == "use_verified" and by_id["imf"]["status"] == "candidate"
     assert by_id["sec_edgar"]["status"] == "docs_verified" and by_id["sec_edgar"]["datasets"] == []
 
 
