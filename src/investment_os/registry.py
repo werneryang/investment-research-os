@@ -22,7 +22,10 @@ from .contracts import (
     SOURCE_REDISTRIBUTION,
     SOURCE_SIGNUP,
     AvailabilityRule,
+    CompanySpec,
     DatasetSpec,
+    FundamentalsSpec,
+    MetricSpec,
     ResultType,
     SourceSpec,
     Use,
@@ -197,6 +200,31 @@ def load_datasets(path: Path, sources: dict[str, SourceSpec],
     return datasets
 
 
+def load_fundamentals(path: Path) -> FundamentalsSpec:
+    """财报指标与公司登记（config/fundamentals.yaml）。"""
+    raw = _load_yaml(path)
+    metrics: dict[str, MetricSpec] = {}
+    for mid, m in (raw.get("metrics") or {}).items():
+        _require(m, ["period", "unit", "tags"], f"指标 {mid}")
+        if m["period"] not in ("duration", "instant"):
+            raise RegistryError(f"指标 {mid} 的 period 只能是 duration 或 instant")
+        tags = []
+        for t in m["tags"]:
+            taxonomy, _, tag = str(t).partition(":")
+            if not tag:
+                raise RegistryError(f"指标 {mid} 的科目 {t} 应写成 taxonomy:tag")
+            tags.append((taxonomy, tag))
+        metrics[mid] = MetricSpec(id=mid, period=m["period"], unit=m["unit"], tags=tuple(tags),
+                                  description=m.get("description", ""))
+    companies = []
+    for c in raw.get("companies") or []:
+        _require(c, ["cik", "label"], "财报公司")
+        companies.append(CompanySpec(cik=int(c["cik"]), label=str(c["label"])))
+    if len({c.cik for c in companies}) != len(companies):
+        raise RegistryError("财报公司的 CIK 重复")
+    return FundamentalsSpec(companies=tuple(companies), metrics=metrics)
+
+
 @dataclass
 class StudySpec:
     """研究定义（architecture §6.3 的公共字段来源）。"""
@@ -305,6 +333,7 @@ class Registry:
     calendars: dict[str, CalendarSpec] = field(default_factory=dict)
     source_categories: dict[str, str] = field(default_factory=dict)
     gaps: list[dict[str, Any]] = field(default_factory=list)
+    fundamentals: FundamentalsSpec | None = None
 
     @classmethod
     def load(cls, root: Path) -> "Registry":
@@ -314,8 +343,10 @@ class Registry:
         cal_path = root / "config" / "calendars.yaml"
         calendars = load_calendars(_load_yaml(cal_path)) if cal_path.exists() else {}
         datasets = load_datasets(root / "config" / "datasets.yaml", sources, calendars)
+        fund_path = root / "config" / "fundamentals.yaml"
+        fundamentals = load_fundamentals(fund_path) if fund_path.exists() else None
         return cls(root=root, sources=sources, datasets=datasets, calendars=calendars,
-                   source_categories=categories, gaps=gaps)
+                   source_categories=categories, gaps=gaps, fundamentals=fundamentals)
 
     def dataset(self, dataset_id: str) -> DatasetSpec:
         try:

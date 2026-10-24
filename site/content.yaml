@@ -141,7 +141,9 @@ branches:
         name: 公司财报
         risk: [equity]
         planned: true
-        needs: 需要接入 SEC EDGAR（说明已核验）、财报期间与申报时间的时间契约及证券标识
+        needs: >-
+          SEC EDGAR 的 E1 已在数据层实现：15 家验证公司 2009 年起的 8 个年度核心指标，带申报版本与时点视图
+          （iros edgar）；尚未接入网站的数据页，全部申报主体（E2）与季度数据（E3）未开始
       - id: fund_costs
         name: 基金费用与持仓
         risk: [instrument]

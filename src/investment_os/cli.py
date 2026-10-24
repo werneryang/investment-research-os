@@ -13,6 +13,9 @@
     iros calendar check [--out F]        核对发布日历，提出核验延长建议（只报告）
     iros calendar apply F [--confirm]    预览或确认写入延长建议
     iros runs                            运行记录列表
+    iros edgar sync [--fsds|--api]       同步 SEC 财报：FSDS 季度文件与 Company Facts（docs/edgar-design.md）
+    iros edgar annual <公司> <指标>      年度指标；--as-of 给出当时已公布的值
+    iros edgar check                     财报覆盖与两个来源的一致性
 """
 
 from __future__ import annotations
@@ -242,6 +245,80 @@ def cmd_runs(args: argparse.Namespace) -> int:
     return 0
 
 
+def _fundamentals(root: Path):
+    spec = Registry.load(root).fundamentals
+    if spec is None:
+        raise SystemExit("缺少 config/fundamentals.yaml")
+    return spec
+
+
+def _company(spec, text: str) -> int:
+    """按 CIK、完整名称或唯一的部分名称（如 exxon）找到登记公司。"""
+    t = text.lower()
+    exact = [c for c in spec.companies if t in (str(c.cik), c.label.lower())]
+    partial = [c for c in spec.companies if t in c.label.lower()]
+    found = exact or partial
+    if len(found) == 1:
+        return found[0].cik
+    names = ", ".join(c.label for c in (found or spec.companies))
+    raise SystemExit(f"{'有多个公司符合' if found else '未登记的公司'}：{text}；可用：{names}")
+
+
+def cmd_edgar(args: argparse.Namespace) -> int:
+    from .connectors.sec import SecClient
+    from .data.fundamentals import annual_metric, source_agreement, sync_companyfacts, sync_fsds
+
+    root = _root(args.root)
+    spec = _fundamentals(root)
+    if args.action == "sync":
+        client = SecClient()
+        failed = 0
+        if not args.api:
+            res = sync_fsds(root, spec, client, quarters=args.quarter or None, progress=print, refresh=args.refresh)
+            counts: dict[str, int] = {}
+            for r in res:
+                counts[r["action"]] = counts.get(r["action"], 0) + 1
+            print(f"FSDS：{len(res)} 个季度，" + "，".join(f"{k} {v}" for k, v in sorted(counts.items())))
+            failed += counts.get("failed", 0)
+        if not args.fsds:
+            res = sync_companyfacts(root, spec, client, progress=print)
+            failed += sum(r["status"] == "failed" for r in res)
+        return 1 if failed else 0
+    if args.action == "annual":
+        if not args.company or not args.metric:
+            raise SystemExit("用法：iros edgar annual <公司> <指标> [--as-of 日期]")
+        if args.metric not in spec.metrics:
+            raise SystemExit(f"未登记的指标：{args.metric}；可用：{', '.join(spec.metrics)}")
+        as_of = datetime.fromisoformat(args.as_of).replace(tzinfo=timezone.utc) if args.as_of else None
+        df = annual_metric(root, spec, args.metric, [_company(spec, args.company)], as_of=as_of)
+        if df.empty:
+            print("没有数据")
+            return 0
+        for r in df.itertuples():
+            revised = "" if r.filings == 1 or r.first_value == r.value else f"（首次公布 {r.first_value:,.2f}）"
+            if r.tags_used > 1:
+                revised += f"（各申报用了 {r.tags_used} 个不同科目）"
+            print(f"{r.fiscal_year_end.date()}  {r.value:>22,.2f} {r.unit:10s} {r.form:7s} {r.accession}  "
+                  f"{r.tag}  可用 {r.available_at.date()}  申报 {r.filings} 次{revised}")
+        return 0
+    # check：每家公司每个指标的财年覆盖，以及两个来源的一致性
+    print("年度指标覆盖（财年数，最早—最晚财年末）：")
+    for metric in spec.metrics:
+        df = annual_metric(root, spec, metric)
+        cells = []
+        for c in spec.companies:
+            sub = df[df["cik"] == c.cik]
+            cells.append(f"{c.label} {len(sub)}" + (f"（{sub.fiscal_year_end.min().year}–{sub.fiscal_year_end.max().year}）"
+                                                    if len(sub) else "（无）"))
+        print(f"  {metric}: " + "；".join(cells))
+    agree = source_agreement(root, spec)
+    bad = agree[agree["diff"] > 0.5]
+    print(f"FSDS 与 Company Facts：{len(agree)} 个共同事实，{len(bad)} 个数值不一致")
+    for r in bad.head(10).itertuples():
+        print(f"  {r.cik} {r.tag} {r.period_end.date()} {r.duration_quarters}Q：{r.value_fsds:,.0f} vs {r.value_api:,.0f}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="iros", description="个人投资研究框架")
     p.add_argument("--root", help="项目根目录（默认当前目录或 IROS_HOME）")
@@ -294,6 +371,17 @@ def build_parser() -> argparse.ArgumentParser:
     c.set_defaults(func=cmd_calendar)
 
     sub.add_parser("runs", help="运行记录").set_defaults(func=cmd_runs)
+
+    e = sub.add_parser("edgar", help="SEC 财报：同步、年度指标、核对")
+    e.add_argument("action", choices=["sync", "annual", "check"])
+    e.add_argument("company", nargs="?", help="annual：公司名称或 CIK")
+    e.add_argument("metric", nargs="?", help="annual：指标（config/fundamentals.yaml）")
+    e.add_argument("--fsds", action="store_true", help="sync：只同步 FSDS 季度文件")
+    e.add_argument("--api", action="store_true", help="sync：只同步 Company Facts")
+    e.add_argument("--quarter", action="append", help="sync：只处理指定季度（如 2024q1，可重复）")
+    e.add_argument("--refresh", action="store_true", help="sync：不论文件头如何都重新下载 FSDS（全面复核用）")
+    e.add_argument("--as-of", help="annual：只用该日期（UTC）之前已公布的申报")
+    e.set_defaults(func=cmd_edgar)
     return p
 
 

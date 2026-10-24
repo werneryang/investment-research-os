@@ -1,0 +1,81 @@
+# 财报指标与公司登记（docs/edgar-design.md §3.3、§7）
+#
+# metrics：研究用指标 → XBRL 科目别名，按顺序取同一份申报中第一个出现的科目，记录实际使用了哪个。
+#   period: duration（期间发生额，年度为 4 个季度）或 instant（时点余额，取财年末）。
+#   找不到任何别名时记为缺失，不猜测。别名按核验结果补充，补充时写明依据。
+# companies：E1 的验证公司（CIK 于 2026-10-24 用 Submissions API 核实）。E2 起改为全部申报主体。
+
+metrics:
+  revenue:
+    description: 营收
+    period: duration
+    unit: USD
+    # Revenues 是 US-GAAP 中的总营收科目，放在第一位：沃尔玛同一份申报中两者都有，
+    # RevenueFromContract… 只是净销售额（不含会员费收入），2026-10-24 核对
+    tags:
+      - us-gaap:Revenues
+      - us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax
+      - us-gaap:SalesRevenueNet
+      # 强生、可口可乐 2007–2017 年用它报告营收（两者都以商品销售为主，即总营收），2026-10-24 核对
+      - us-gaap:SalesRevenueGoodsNet
+  net_income:
+    description: 归属于母公司的净利润
+    period: duration
+    unit: USD
+    tags: [us-gaap:NetIncomeLoss]
+  eps_diluted:
+    description: 稀释每股收益
+    period: duration
+    unit: USD/shares
+    tags:
+      - us-gaap:EarningsPerShareDiluted
+      # 基本与稀释每股收益相同时（如特斯拉亏损年份）只报这一项，数值含义相同
+      - us-gaap:EarningsPerShareBasicAndDiluted
+  operating_cash_flow:
+    description: 经营活动现金流量净额
+    period: duration
+    unit: USD
+    tags:
+      - us-gaap:NetCashProvidedByUsedInOperatingActivities
+      - us-gaap:NetCashProvidedByUsedInOperatingActivitiesContinuingOperations
+  capex:
+    description: 资本开支（购建固定资产支付的现金）
+    period: duration
+    unit: USD
+    tags:
+      - us-gaap:PaymentsToAcquirePropertyPlantAndEquipment
+      - us-gaap:PaymentsToAcquireProductiveAssets
+  total_assets:
+    description: 总资产
+    period: instant
+    unit: USD
+    tags: [us-gaap:Assets]
+  equity:
+    description: 归属于母公司的股东权益
+    period: instant
+    unit: USD
+    tags: [us-gaap:StockholdersEquity]
+  diluted_shares:
+    # 原计划的「流通股数」改为此项（2026-10-24）：封面上的流通股数（dei:EntityCommonStockSharesOutstanding）
+    # 是申报日前后的时点数，不是财年末，FSDS 也不含封面数据；资产负债表的 CommonStockSharesOutstanding 只有少数公司报告
+    description: 稀释加权平均股数（全年，稀释每股收益的分母）
+    period: duration
+    unit: shares
+    tags: [us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding]
+
+companies:
+  - {cik: 320193, label: Apple}
+  - {cik: 789019, label: Microsoft}
+  - {cik: 1045810, label: NVIDIA}
+  - {cik: 1018724, label: Amazon}
+  - {cik: 1652044, label: Alphabet}
+  - {cik: 1318605, label: Tesla}
+  - {cik: 19617, label: JPMorgan Chase}
+  - {cik: 1067983, label: Berkshire Hathaway}
+  - {cik: 34088, label: Exxon Mobil}
+  - {cik: 200406, label: Johnson & Johnson}
+  - {cik: 80424, label: Procter & Gamble}
+  - {cik: 21344, label: Coca-Cola}
+  - {cik: 104169, label: Walmart}
+  - {cik: 909832, label: Costco}
+  - {cik: 320187, label: Nike}

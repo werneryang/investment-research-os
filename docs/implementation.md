@@ -179,6 +179,8 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 
 **本机与 CI 的分工**（2026-10-24 确认）：接入核验（取样本、查质量、交叉核对、记 `access_verified`）与定时快照都在本机完成。CI 只取得无需凭证、登记了 `scheduled_fetch` 的数据集，用于生成网站与运行研究，同时每天在另一环境复查这些来源仍可取得。需要凭证（如 FRED API key）或人工导入的数据集默认只在本机；只有当 CI 中的研究必须用到时，才给 CI 配置凭证。网站对 CI 中有意不取得的数据集写明原因（需要 API key、人工导入、未登记定时取得，由登记推出，见 `site/collect.py` 的 `skip_reason`）；只有应当取得却没取得时才显示「本次构建未取得」。
 
+**SEC EDGAR 财报**（E1，设计见 [EDGAR 设计说明](edgar-design.md)）：财报不进入 `series.v1`，另有 `fundamentals.v1` 的申报表与事实表（`contracts.FILING_COLUMNS`、`FACT_COLUMNS`），按季度（FSDS）或公司（Company Facts）分区存放在 `data/edgar/`，DuckDB 读取当前分区；分区变化时旧版本移到 `superseded/`。`iros edgar sync` 同步（FSDS 先 HEAD 再按需下载），`iros edgar annual <公司> <指标> [--as-of 日期]` 给出年度指标及当时已公布的值，`iros edgar check` 报告覆盖与两个来源的一致性。指标与公司登记在 `config/fundamentals.yaml`。
+
 **新增来源**：在 `connectors/` 实现 `fetch` 与 `parse`（输出暂存表的 5 列），在 `connectors/__init__.py` 注册，在 `sources.yaml` 补齐来源的 §5.1 字段与核验状态（候选来源缺这些字段时，登记数据集会报错）。数值转换、时间规则、质量与版本由公共流程处理，接入器不重复实现。
 
 **新增研究分支**：在 `research/` 中写一个接收 `(StudySpec, dict[str, StudyInput])`、返回 `ResearchResult` 的函数，用 `@register_branch("名称")` 注册，并在 `research/__init__.py` 导入。报告只读取结构化结果；目前的报告模板针对曲线类结果，其他成果类型需要增加相应的报告段落。

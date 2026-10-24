@@ -109,7 +109,7 @@ def test_build_site_from_runs(loaded):
     assert run["findings"][0]["id"] == "level_10y"
     by_id = {x["id"]: x for x in summary["sources"]}
     assert by_id["ust_treasury"]["status"] == "use_verified" and by_id["imf"]["status"] == "candidate"
-    assert by_id["sec_edgar"]["status"] == "docs_verified" and by_id["sec_edgar"]["datasets"] == []
+    assert by_id["yfinance"]["status"] == "docs_verified" and by_id["yfinance"]["datasets"] == []
 
 
 def test_daily_json_keeps_gaps(loaded):
