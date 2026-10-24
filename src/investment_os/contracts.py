@@ -310,3 +310,49 @@ class DatasetVersion:
     @classmethod
     def from_dict(cls, d: dict[str, Any]) -> "DatasetVersion":
         return cls(**d)
+
+
+# ---- 财报事实（docs/edgar-design.md §3）--------------------------------------
+# 财报不放进 series.v1：同一期间会在多份申报中以不同数值出现，期间长度不一，财年也不对齐日历年。
+
+FUNDAMENTALS_SCHEMA_VERSION = "fundamentals.v1"
+
+# 申报：每份申报一行。accepted_at 为 EDGAR 接受时间（美东，精确到秒），作为发布时间；
+# Company Facts API 不给接受时间，只有申报日期，此时 accepted_at 留空
+FILING_COLUMNS: list[str] = [
+    "accession", "cik", "name", "form", "fiscal_year", "fiscal_period", "period_end", "fye",
+    "filed", "accepted_at", "prevrpt", "sic", "source", "retrieved_at",
+]
+
+# 财报事实：每个「申报 × 科目 × 期间 × 单位」一行，只含合并口径（无分部、无共同申报人）。
+# duration_quarters：0 为时点余额，1 为单季，2–3 为年初至今，4 为全年；
+# period_start 只有 Company Facts API 提供（FSDS 只给期末与季度数）。
+# available_at：接受时间（缺失时为申报日期）的次日 0 点（美东），保守规则
+FACT_COLUMNS: list[str] = [
+    "accession", "cik", "taxonomy", "tag", "period_start", "period_end", "duration_quarters",
+    "unit", "value", "available_at", "source", "retrieved_at",
+]
+
+
+@dataclass(frozen=True)
+class MetricSpec:
+    """研究用指标：按顺序取第一个出现的 XBRL 科目（别名），并记录实际使用了哪个。"""
+
+    id: str
+    period: str  # duration（期间发生额）或 instant（时点余额）
+    unit: str
+    tags: tuple[tuple[str, str], ...]  # (taxonomy, tag)
+    description: str = ""
+
+
+@dataclass(frozen=True)
+class CompanySpec:
+    cik: int
+    label: str
+
+
+@dataclass(frozen=True)
+class FundamentalsSpec:
+    companies: tuple[CompanySpec, ...]
+    metrics: dict[str, MetricSpec]
+    forms_annual: tuple[str, ...] = ("10-K", "10-K/A")

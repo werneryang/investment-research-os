@@ -1,6 +1,8 @@
 #!/bin/zsh
-# 本机定时快照（macOS launchd）：每个工作日 19:45（本机时间）运行 `iros fetch --all`，
-# 取得 config/datasets.yaml 中登记了 scheduled_fetch 的数据集，存入本地 data/。
+# 本机定时快照（macOS launchd）：每个工作日 19:45（本机时间）先运行 `iros fetch --all`，
+# 取得 config/datasets.yaml 中登记了 scheduled_fetch 的数据集；再运行 `iros edgar sync`，
+# 检查 SEC 财报（FSDS 季度文件只发 HEAD，变化时才下载；Company Facts 逐家取得）。都存入本地 data/。
+# 两步互不影响；任一步失败时任务的退出码不为 0。
 #
 # Treasury 与 FRED 只提供当前修订版本，时点研究只能依靠当时已取得的快照；漏掉的日期补不回来。
 # 电脑睡眠时错过的运行会在唤醒后补跑；关机时错过的运行不会补。
@@ -35,8 +37,8 @@ install_agent() {
   <key>Label</key><string>$LABEL</string>
   <key>ProgramArguments</key>
   <array>
-    <string>$uv</string><string>run</string><string>--project</string><string>$ROOT</string>
-    <string>iros</string><string>--root</string><string>$ROOT</string><string>fetch</string><string>--all</string>
+    <string>/bin/zsh</string><string>-c</string>
+    <string>s=0; "$uv" run --project "$ROOT" iros --root "$ROOT" fetch --all || s=1; "$uv" run --project "$ROOT" iros --root "$ROOT" edgar sync || s=1; exit \$s</string>
   </array>
   <key>WorkingDirectory</key><string>$ROOT</string>
   <key>StartCalendarInterval</key>

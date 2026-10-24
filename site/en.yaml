@@ -47,7 +47,6 @@ phrases:
   需要多市场数据、交易日历与汇率换算（架构 §4、§7.1）: Needs multi-market data, trading calendars and currency conversion (architecture §4, §7.1)
   行业与地区结构: Sector & regional structure
   公司财报: Company filings
-  需要接入 SEC EDGAR（说明已核验）、财报期间与申报时间的时间契约及证券标识: Needs SEC EDGAR access (docs verified), a timing contract for reporting periods and filing times, and security identifiers
   基金费用与持仓: Fund fees & holdings
   需要逐家核验基金发行方的费用、净值与持仓资料；净值不替代成交价: Needs each fund issuer's fee, NAV and holdings data verified one by one; NAV does not substitute for traded prices
   真实债券与债券基金: Real bonds & bond funds
@@ -170,12 +169,10 @@ phrases:
   免费注册取得 API key；key 不进入 Git: Free sign-up for an API key; the key is never committed to Git
   全球宏观: Global macro
   公司申报与财报: Company filings & financial statements
-  公司申报索引与 XBRL 财务数据: Filing indexes and XBRL financial data
   公开存档已于 2026-10-22 经用户确认；官网不提供历史版本: Public archiving confirmed by the user on 2026-10-22; the website provides no historical vintages
   历史指数成分: Historical index constituents
   原始统计机构；CPI、就业等的上游。FRED 已转载的序列优先复用 FRED，需要原始口径或发布日期时再接: Original statistical agency; upstream of CPI, employment and more. Series already on FRED reuse FRED first; connect directly only when the original definitions or release dates are needed
   原始统计机构；GDP、个人收入与支出等的上游: Original statistical agency; upstream of GDP, personal income and outlays and more
-  取得一家公司的申报与 XBRL 样本；定义财报期间与申报时间的时间契约: Fetch one company's filings and XBRL sample; define the timing contract for reporting periods and filing times
   只用现存证券会产生幸存者偏差，相关结论须注明: Using only surviving securities introduces survivorship bias, which affected conclusions must state
   只能做明确标记的理论分析或有限样本研究；隐含波动率指数不等于期权链: Only clearly labelled theoretical analysis or limited-sample studies are possible; an implied volatility index is not an option chain
   各国政策利率: Policy rates by country
@@ -225,7 +222,6 @@ phrases:
   美国国债曲线: US Treasury curve
   美国联邦政府发布信息；以官网条款为准，再分发前另行确认: US federal government information; the website's terms apply, and redistribution is confirmed separately first
   美国股票、国债与公司债的年度历史回报: Annual historical returns on US stocks, Treasuries and corporate bonds
-  聚合接口有口径与覆盖限制；接入时遵守访问规则（须声明 User-Agent）: The aggregate interfaces have definition and coverage limits; access follows the access rules (a User-Agent must be declared)
   股票、ETF 与指数的日度价格及分红拆股: Daily prices, dividends and splits for stocks, ETFs and indices
   视原始来源而定: Depends on the original source
   证券行情: Securities market data
@@ -316,6 +312,18 @@ phrases:
   "观测期间结束后第 180 天结束时（来源时区）": "End of the 180th day after the observation period ends (source time zone)"
   "观测期间结束后第 30 天结束时（来源时区）": "End of the 30th day after the observation period ends (source time zone)"
   "超额 CAPE 收益率与 10 年滚动实际回报": "Excess CAPE yield and rolling 10-year real returns"
+  "E2：导入全部申报主体并按 SIC 汇总": "E2: import all filers and aggregate by SIC industry"
+  "FSDS 只含报表主体数字，不含封面数据（如流通股数）；Company Facts API 补上封面数据与 FSDS 尚未收录的新申报": "FSDS contains only the primary statements, not cover-page data (such as shares outstanding); the Company Facts API adds cover-page data and new filings not yet in FSDS"
+  "SEC EDGAR 的 E1 已在数据层实现：15 家验证公司 2009 年起的 8 个年度核心指标，带申报版本与时点视图 （iros edgar）；尚未接入网站的数据页，全部申报主体（E2）与季度数据（E3）未开始": "SEC EDGAR phase E1 is implemented at the data layer: 8 annual core metrics from 2009 for 15 validation companies, with filing versions and a point-in-time view (iros edgar); not yet on the site's data pages; all filers (E2) and quarterly data (E3) have not started"
+  "XBRL 财报数字 2009 年起；E1 只导入 config/fundamentals.yaml 登记的 15 家公司": "XBRL financial figures from 2009; E1 imports only the 15 companies registered in config/fundamentals.yaml"
+  "全部申报主体的财报（E2，含 SIC 行业分类）": "Financial statements for all filers (E2, with SIC industry codes)"
+  "季度数据与推算的第四季度（E3）": "Quarterly data and a derived fourth quarter (E3)"
+  "无需注册或 key；www.sec.gov 要求 User-Agent 写明联系邮箱（.env 中的 SEC_USER_AGENT，不入库）， data.sec.gov 没有它时也可访问": "No registration or key; www.sec.gov requires a contact email in the User-Agent (SEC_USER_AGENT in .env, not committed), while data.sec.gov also works without it"
+  "美国联邦政府发布的申报数据；再分发条款尚未核实，只在本地使用，不进公开存档": "Filing data published by the US federal government; redistribution terms not yet checked, so used locally only, not in the public archive"
+  "Financial Statement Data Sets 季度 ZIP（www.sec.gov）与 Company Facts API（data.sec.gov）； 由 iros edgar sync 同步，设计见 docs/edgar-design.md": "Financial Statement Data Sets quarterly ZIPs (www.sec.gov) and the Company Facts API (data.sec.gov); synced by iros edgar sync, design in docs/edgar-design.md"
+  "SEC 公平访问规则：每秒不超过 10 次请求；本项目串行请求，间隔不少于 0.2 秒": "SEC fair-access rule: at most 10 requests per second; this project sends requests one at a time, at least 0.2 seconds apart"
+  "每份申报有编号与 EDGAR 接受时间，可作为供应方历史版本；修正申报（/A）形成新版本。FSDS 季度文件 偶有整体重新处理（2024-12-27），所以仍保存原始文件": "Each filing has an accession number and EDGAR acceptance time, usable as supplier vintages; amendments (/A) form new versions. FSDS quarterly files are occasionally reprocessed wholesale (2024-12-27), so raw files are still kept"
+  "每月 HEAD 检查 FSDS 文件的大小与修改时间，只下载变化的季度；指标别名表随核验补充； HEAD 发现不了大小与日期都不变的替换，偶尔用 --refresh 全面复核": "Monthly HEAD checks of FSDS file size and modification time, downloading only changed quarters; the metric alias table grows with verification; HEAD cannot detect a replacement with the same size and date, so --refresh is used occasionally for a full recheck"
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'

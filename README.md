@@ -107,6 +107,16 @@ python3 -m http.server 8765 --directory _site
 
 页面说明性内容在 `site/content.yaml`，样式与图表脚本在 `site/assets/`；研究结果、数据与核验状态从运行记录和登记中生成。
 
+SEC 财报（设计与实现见 [EDGAR 设计说明](docs/edgar-design.md)；`.env` 中需要 `SEC_USER_AGENT=项目名 联系邮箱`）：
+
+```bash
+uv run iros edgar sync
+```
+
+```bash
+uv run iros edgar annual apple revenue --as-of 2024-01-01
+```
+
 其他命令：`iros fetch --all`（全部定时数据集）、`iros sources`（已接入与候选来源及核验状态）、`iros datasets`（版本与质量概况）、`iros runs`、`iros import <dataset> <file> --declared-source "..."`（人工导入）。
 
 ```bash
