@@ -104,6 +104,8 @@ def skip_reason(connector: str, signup: str, scheduled: bool) -> str | None:
     """
     if connector == "manual_csv":
         return "manual"
+    if connector == "sec_edgar":
+        return "contact"
     if signup == "free_key":
         return "key"
     if not scheduled:
@@ -117,6 +119,8 @@ def not_fetched_label(reason: str | None, short: bool = False) -> str:
         return L("人工导入，不自动取得", "manual import, not fetched automatically")
     if reason == "key":
         return L("需要 API key，只在本机取得", "needs an API key; fetched locally only")
+    if reason == "contact":
+        return L("需要联系邮箱（SEC_USER_AGENT），只在本机取得", "needs a contact address (SEC_USER_AGENT); fetched locally only")
     if reason == "unscheduled":
         return L("未登记定时取得，只在本机取得", "not scheduled; fetched locally only")
     return L("未取得", "not fetched") if short else L("本次构建未取得", "Not fetched in this build")
@@ -149,5 +153,69 @@ def datasets(registry: Registry, store: DataStore) -> list[dict[str, Any]]:
             "status_counts": v.quality.get("status_counts", {}) if v else {},
             "last_fetch": {"status": last.get("status"), "at": last.get("finished_at") or last.get("started_at")}
             if last else None,
+        })
+    return rows
+
+
+# SEC 财报不在 datasets.yaml 中（docs/edgar-design.md）：网站按来源显示两行，id 与来源登记中的核验记录一致。
+# 说明文字与其他数据集一样存中文，英文页面渲染时按 site/en.yaml 翻译
+EDGAR_ROWS = {
+    "fsds": ("edgar_fsds", "quarterly", "SEC 财报数据集（FSDS）：登记公司 2009 年起的申报与合并口径财报事实",
+             "EDGAR 接受时间次日 0 点（美东）"),
+    "companyfacts": ("edgar_companyfacts", "daily",
+                     "SEC Company Facts：同一批公司的财报事实，补上封面数据与 FSDS 尚未收录的新申报",
+                     "申报日期次日 0 点（美东）"),
+}
+
+
+def fundamentals_datasets(registry: Registry, root: Path) -> list[dict[str, Any]]:
+    """SEC 财报两个来源的行，字段与 datasets() 相同；本次构建没有财报数据时（如 CI）如实显示未取得及原因。"""
+    from ..data.fundamentals import EdgarStore
+
+    if registry.fundamentals is None or "sec_edgar" not in registry.sources:
+        return []
+    src = registry.sources["sec_edgar"]
+    store = EdgarStore(root)
+    parts = store.partitions()
+    rows = []
+    for source, (ds_id, frequency, description, availability) in EDGAR_ROWS.items():
+        current: dict[tuple[str, str], dict[str, Any]] = {}
+        for entry in parts:
+            if entry["source"] == source:
+                current[(entry["table"], entry["key"])] = entry
+        facts = [v for (table, _), v in current.items() if table == "facts"]
+        filings = [v for (table, _), v in current.items() if table == "filings"]
+        if source == "fsds":
+            checks = [c for c in store.remote_checks() if c.get("action") != "not_published"]
+            last = checks[-1] if checks else None
+            last_fetch = {"status": {"failed": "failed", "unchanged": "unchanged"}.get(
+                last.get("action"), "created" if last.get("facts") == "created" else "unchanged"),
+                "at": last["checked_at"]} if last else None
+        else:
+            fetches = store.api_fetches()
+            last = fetches[-1] if fetches else None
+            last_fetch = {"status": "failed" if last.get("status") == "failed" else
+                          ("created" if last.get("facts") == "created" else "unchanged"),
+                          "at": last["at"]} if last else None
+        latest = max(facts, key=lambda v: v["created_at"]) if facts else None
+        rows.append({
+            "dataset_id": ds_id,
+            "description": description,
+            "source": src.publisher,
+            "source_id": src.id,
+            "frequency": frequency,
+            "vintages": "supplier",  # 申报编号即供应方版本，接受时间即发布时间
+            "availability": availability,
+            "calendar": None,
+            "archive_data": False,
+            "scheduled": True,  # 本机定时任务运行 iros edgar sync
+            "skip_reason": skip_reason("sec_edgar", src.signup, True),
+            "status": src.status_for(ds_id).value,
+            "verified_uses": [],
+            "version_id": latest["version_id"] if latest else None,
+            "rows": sum(v["rows"] for v in facts) if facts else None,
+            "status_counts": {"filings": sum(v["rows"] for v in filings),
+                              "companies": len(registry.fundamentals.companies)} if facts else {},
+            "last_fetch": last_fetch,
         })
     return rows

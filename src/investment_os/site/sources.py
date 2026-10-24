@@ -44,6 +44,10 @@ def catalog(registry: Registry, datasets: dict[str, dict[str, Any]]) -> list[dic
                "has_data": (datasets.get(d.id) or {}).get("version_id") is not None,
                "skip_reason": (datasets.get(d.id) or {}).get("skip_reason")}
               for d in registry.datasets.values() if d.source_id == src.id]
+        # 不在 datasets.yaml 中、但网站另有一行的数据集（如 SEC 财报）
+        ds += [{"id": d["dataset_id"], "status": d["status"], "uses": d["verified_uses"],
+                "has_data": d.get("version_id") is not None, "skip_reason": d.get("skip_reason")}
+               for d in datasets.values() if d.get("source_id") == src.id and d["dataset_id"] not in registry.datasets]
         rows.append({
             "id": src.id, "name": src.display_name, "publisher": src.publisher, "url": src.url, "category": src.category,
             "status": src.best_status().value, "datasets": ds, "directions": list(src.directions),
@@ -57,7 +61,7 @@ def catalog(registry: Registry, datasets: dict[str, dict[str, Any]]) -> list[dic
 
 def _status_line(row: dict[str, Any]) -> str:
     head = chip(STATUS_CHIP[row["status"]], VERIFY_LABEL[row["status"]])
-    if row["status"] != "candidate" and not row["datasets"]:
+    if row["status"] == "docs_verified" and not row["datasets"]:  # 只核验了来源说明，还没有数据集
         head += f' <span class="small muted">{L("来源说明，未登记数据集", "source documentation only; no dataset registered")}</span>'
     ds = "".join(
         f"<li><code>{e(d['id'])}</code> {e(VERIFY_LABEL[d['status']])}"
