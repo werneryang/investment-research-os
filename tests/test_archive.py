@@ -219,3 +219,38 @@ def test_same_unobtained_dates_with_different_download_times_are_skipped(project
         archive.save(project, arch)
     log = [json.loads(x) for x in (arch / "archive.jsonl").read_text().splitlines()]
     assert [e.get("skipped", False) for e in log] == [False, True]
+
+
+def test_same_content_from_separate_environments_is_stored_once(loaded, tmp_path):
+    """每次 CI 都在新环境中取得数据，内容相同也会得到新的版本编号；档案里同内容只存一份文件。"""
+    from investment_os.data import DataStore, ingest
+    from investment_os.registry import Registry
+
+    from .conftest import TREASURY_2024, dgs10_connector, treasury_connector
+    arch = tmp_path / "archive"
+    first = run_study(loaded, write_study(loaded))
+    archive.save(loaded, arch)
+
+    later = tmp_path / "later"
+    shutil.copytree(PROJECT_ROOT / "config", later / "config")
+    clock = lambda: datetime(2030, 1, 1, tzinfo=timezone.utc)  # noqa: E731
+    ingest(Registry.load(later), DataStore(later), "ust_par_yield_curve", {"start": 2024, "end": 2024},
+           treasury_connector({2024: TREASURY_2024}), clock=clock)
+    ingest(Registry.load(later), DataStore(later), "fred_dgs10", {"start": "2024-01-01", "end": "2024-01-05"},
+           dgs10_connector("2024-01-01", "2024-01-05"), clock=clock)
+    second = run_study(later, write_study(later, scope={**write_scope(), "end": "2024-01-04"}))
+    assert [e["run_id"] for e in archive.save(later, arch)] == [second["run_id"]]
+
+    data = arch / "data"
+    assert len(list((data / "normalized" / "ust_par_yield_curve").glob("*.parquet"))) == 1
+    assert len([p for p in (data / "raw" / "ust_par_yield_curve").iterdir()
+                if not p.name.endswith(".meta.json")]) == 1
+    versions = DataStore(arch).versions("ust_par_yield_curve")
+    assert len({v.version_id for v in versions}) == 2 and len({v.path for v in versions}) == 1
+
+    # 两次运行都能在新环境中从档案复现
+    fresh = tmp_path / "fresh"
+    shutil.copytree(PROJECT_ROOT / "config", fresh / "config")
+    archive.restore(fresh, arch, with_data=True)
+    for m in (first, second):
+        assert verify_run(fresh, m["run_id"])["reproduced"] is True

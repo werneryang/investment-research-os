@@ -82,7 +82,7 @@ class DataStore:
             "request": payload.request,
             "retrieved_at": payload.retrieved_at.isoformat(),
         }
-        existing = self._find_raw(folder, digest, payload.extension)
+        existing = self.find_raw(folder, digest, payload.extension)
         if existing is not None:
             return {"path": str(existing.relative_to(self.base)), **ref, "reused": True}
         stem = f"{compact(payload.retrieved_at)}_{digest[:8]}"
@@ -94,7 +94,7 @@ class DataStore:
             json.dumps(ref, ensure_ascii=False, indent=2), encoding="utf-8")
         return ref
 
-    def _find_raw(self, folder: Path, digest: str, extension: str) -> Path | None:
+    def find_raw(self, folder: Path, digest: str, extension: str) -> Path | None:
         """同一文件夹中内容校验值为 digest 的最早文件；按完整校验值确认，不只看文件名中的前缀。"""
         for path in sorted(folder.glob(f"*_{digest[:8]}.{extension}")):
             if sha256_bytes(path.read_bytes()) == digest:

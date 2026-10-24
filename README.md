@@ -61,7 +61,7 @@ scripts/snapshot-agent.sh install
 
 页面顶端右侧可切换中英文：英文页面在 `en/` 下，研究发现按同一规则的英文措辞生成；完整报告只有中文。译文维护在 `site/en.yaml`。
 
-**运行档案**（`archive` 分支，只追加）：运行清单、结果、报告，以及允许公开再分发的数据（`config/datasets.yaml` 中 `archive_data: true`，目前只有 Treasury 曲线）。只有结论实质变化时才归档新运行。日后复现旧运行：
+**运行档案**（`archive` 分支，只追加）：运行清单、结果、报告，以及允许公开再分发的数据（`config/datasets.yaml` 中 `archive_data: true`，目前只有 Treasury 曲线）。只有结论实质变化时才归档新运行；内容相同的数据文件只存一份，多个版本共用。日后复现旧运行：
 
 ```bash
 git worktree add _archive origin/archive

@@ -11,7 +11,7 @@
 （结果、覆盖、限制、核验结论，以及运行时记录的解释）变化时才归档，避免档案无意义地增长。
 只有解释变化、数字不变时也归档，原因记为「解释变化（结果不变）」。
 原始数据只归档登记为 archive_data: true 的数据集（公开再分发须先确认许可），
-且只归档已归档运行实际使用的数据版本：
+且只归档已归档运行实际使用的数据版本；内容相同的文件只存一份，多个版本的目录记录引用同一文件：
 
     data/normalized/<dataset>/<version>.parquet
     data/raw/<dataset>/<快照文件>（及 .meta.json）
@@ -101,26 +101,44 @@ def _copy_run(src_root: Path, dst_root: Path, manifest: dict[str, Any]) -> None:
         shutil.copytree(src_rep, dst_root / "reports" / study_id / run_id)
 
 
+def _copy_data(store: DataStore, arch_store: DataStore, rel: str) -> str:
+    for f in (Path(rel), Path(rel).with_suffix(".meta.json")):
+        src, dst = store.base / f, arch_store.base / f
+        if src.exists() and not dst.exists():
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+    return rel
+
+
 def _archive_inputs(root: Path, archive: Path, manifest: dict[str, Any], allowed: set[str]) -> list[str]:
-    """把运行实际使用、且允许归档的数据版本复制到档案（已存在的跳过）。返回归档的数据集。"""
-    store, done = DataStore(root), []
+    """把运行实际使用、且允许归档的数据版本复制到档案（已存在的跳过）。返回归档的数据集。
+
+    档案中已有内容相同的文件时不再复制（标准化版本按内容校验值、原始快照按 sha256 判断），
+    写入档案目录的记录改为引用已有文件；读取时仍按校验值核对。
+    """
+    store, arch_store, done = DataStore(root), DataStore(archive), []
     for inp in manifest.get("inputs", []):
         if not inp.get("used", True) or inp["dataset_id"] not in allowed:
             continue
         version = store.get_version(inp["dataset_id"], inp["version_id"])
-        catalog = archive / "data" / "catalog" / f"{version.dataset_id}.jsonl"
-        known = {json.loads(x)["version_id"] for x in catalog.read_text(encoding="utf-8").splitlines() if x} \
-            if catalog.exists() else set()
-        for rel in [version.path] + [r["path"] for r in version.raw_snapshots]:
-            for f in (Path(rel), Path(rel).with_suffix(".meta.json")):
-                src, dst = store.base / f, archive / "data" / f
-                if src.exists() and not dst.exists():
-                    dst.parent.mkdir(parents=True, exist_ok=True)
-                    shutil.copy2(src, dst)
-        if version.version_id not in known:
+        archived = arch_store.versions(version.dataset_id)
+        if version.version_id not in {v.version_id for v in archived}:
+            record = version.to_dict()
+            same = next((v.path for v in archived if v.content_hash == version.content_hash
+                         and (arch_store.base / v.path).exists()), None)
+            record["path"] = same or _copy_data(store, arch_store, version.path)
+            raws = []
+            for ref in version.raw_snapshots:
+                rel = Path(ref["path"])
+                existing = arch_store.find_raw(arch_store.base / rel.parent, ref["sha256"], rel.suffix[1:])
+                path = str(existing.relative_to(arch_store.base)) if existing \
+                    else _copy_data(store, arch_store, ref["path"])
+                raws.append({**ref, "path": path})
+            record["raw_snapshots"] = raws
+            catalog = arch_store.base / "catalog" / f"{version.dataset_id}.jsonl"
             catalog.parent.mkdir(parents=True, exist_ok=True)
             with catalog.open("a", encoding="utf-8") as f:
-                f.write(json.dumps(version.to_dict(), ensure_ascii=False, default=str) + "\n")
+                f.write(json.dumps(record, ensure_ascii=False, default=str) + "\n")
         done.append(version.dataset_id)
     return done
 
