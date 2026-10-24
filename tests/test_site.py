@@ -49,7 +49,8 @@ def test_build_site_from_runs(loaded):
     page = index.read_text(encoding="utf-8")
     # 首页先列六个分支的总览（规划中的分支链接到能力地图），再列已有研究；每项研究只有一句发现与用途
     assert "<h2>研究框架</h2>" in page and page.count('class="branch-tile') == 6
-    assert '<li class="branch-tile planned"><a href="map.html#securities_funds">证券与基金</a>' in page
+    assert '<li class="branch-tile planned"><a href="map.html#forecast_strategy">预测与策略实验</a>' in page
+    assert 'map.html#securities_funds' not in page  # 公司财报已登记 SEC 数据集，不再是规划中的分支
     assert '<li class="branch-tile"><a href="#sectors_regions">地区与行业</a>' in page  # 已接入行业收益
     assert "每项研究的形成：" in page and "研究焦点" in page
     assert "未归入研究方向的研究" in page  # 测试研究不在 content.yaml 的任何方向中
@@ -404,3 +405,52 @@ def test_not_fetched_reason_comes_from_the_registry():
     assert not_fetched_label(None) == "本次构建未取得" and not_fetched_label(None, short=True) == "未取得"
     with use("en", {"phrases": {}, "patterns": []}, set()):
         assert not_fetched_label("manual") == "manual import, not fetched automatically"
+
+
+def test_edgar_rows_say_why_ci_has_no_data_and_cards_list_them(loaded):
+    """CI 中没有 SEC 财报数据：数据页写明原因（需要联系邮箱，只在本机取得）；资源卡片列出两个数据集，
+    不再显示「来源说明，未登记数据集」；只核验了说明的来源（yfinance）仍显示这一标签。"""
+    shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
+    build_site(loaded, loaded / "_site")
+    methods = (loaded / "_site" / "methods.html").read_text(encoding="utf-8")
+    assert "<strong>edgar_fsds</strong>" in methods and "<strong>edgar_companyfacts</strong>" in methods
+    assert "需要联系邮箱（SEC_USER_AGENT），只在本机取得" in methods
+    src = (loaded / "_site" / "sources.html").read_text(encoding="utf-8")
+    card = src[src.index('id="src-sec_edgar"'):]
+    card = card[:card.index("</article>")]
+    assert "edgar_fsds" in card and "edgar_companyfacts" in card and "未登记数据集" not in card
+    yf = src[src.index('id="src-yfinance"'):]
+    assert "来源说明，未登记数据集" in yf[:yf.index("</article>")]
+    cap = (loaded / "_site" / "map.html").read_text(encoding="utf-8")
+    row = cap[cap.index("公司财报</strong>"):]
+    row = row[:row.index("</tr>")]
+    assert "edgar_fsds" in row and "规划，未开始" not in row
+
+
+def test_edgar_rows_with_local_data(project):
+    """本机有财报数据时，行数、申报数与最近一次同步来自 data/edgar 的目录。"""
+    import pandas as pd
+
+    from investment_os.contracts import FACT_COLUMNS, FILING_COLUMNS
+    from investment_os.data.fundamentals import EdgarStore
+    from investment_os.registry import Registry
+    from investment_os.site.capability import direction_status
+    from investment_os.site.collect import fundamentals_datasets
+
+    store = EdgarStore(project)
+    at = datetime(2026, 10, 24, 21, tzinfo=timezone.utc)
+    facts = pd.DataFrame([["A-1", 320193, "us-gaap", "Revenues", pd.NaT, pd.Timestamp("2024-09-30"), 4, "USD", 1.0,
+                           pd.Timestamp("2024-11-02", tz="UTC"), "fsds", pd.Timestamp(at)]], columns=FACT_COLUMNS)
+    filings = pd.DataFrame([["A-1", 320193, "Apple", "10-K", 2024, "FY", pd.Timestamp("2024-09-30"), "0926",
+                             pd.Timestamp("2024-11-01"), pd.Timestamp("2024-11-01 20:00", tz="UTC"), False, "3571",
+                             "fsds", pd.Timestamp(at)]], columns=FILING_COLUMNS)
+    store.write_partition("facts", "fsds", "2024q4", facts, {"companies": "x"}, at)
+    store.write_partition("filings", "fsds", "2024q4", filings, {"companies": "x"}, at)
+    store._log("fsds_remote.jsonl", {"quarter": "2024q4", "checked_at": at.isoformat(), "action": "unchanged"})
+    rows = {r["dataset_id"]: r for r in fundamentals_datasets(Registry.load(project), project)}
+    fsds = rows["edgar_fsds"]
+    assert fsds["rows"] == 1 and fsds["status_counts"]["filings"] == 1 and fsds["status_counts"]["companies"] == 15
+    assert fsds["last_fetch"] == {"status": "unchanged", "at": at.isoformat()} and fsds["status"] == "access_verified"
+    assert rows["edgar_companyfacts"]["version_id"] is None  # 没有同步过 Company Facts
+    st = direction_status({"datasets": ["edgar_fsds", "edgar_companyfacts"]}, Registry.load(project), rows, {})
+    assert st["category"] == "data_only"

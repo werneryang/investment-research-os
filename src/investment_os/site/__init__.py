@@ -41,7 +41,7 @@ from ..data.store import DataStore
 from ..maintenance import check_calendar
 from ..registry import Registry
 from .capability import capability_page, framework, summary
-from .collect import collect_runs, datasets, ordered_studies
+from .collect import collect_runs, datasets, fundamentals_datasets, ordered_studies
 from .common import repo_url
 from .home import home_page
 from .i18n import LANGS, load_phrases, use
@@ -178,7 +178,7 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
             item["figures"] = _copy_run(root, item, out / "runs" / item["manifest"]["run_id"])
         latest[study_id], shown[study_id] = runs[0], runs
 
-    ds_rows = datasets(registry, store)
+    ds_rows = datasets(registry, store) + fundamentals_datasets(registry, root)
     ds_by_id = {d["dataset_id"]: d for d in ds_rows}
     commit = next(iter(latest.values()))["manifest"]["code"].get("git_commit") if latest else None
     build = {

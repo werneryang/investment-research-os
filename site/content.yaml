@@ -139,11 +139,15 @@ branches:
     directions:
       - id: company_filings
         name: 公司财报
+        summary: 15 家验证公司 2009 年起的 8 个年度核心指标（营收、净利润、每股收益、现金流、资本开支、资产、权益、股数），带申报版本与时点视图
         risk: [equity]
-        planned: true
-        needs: >-
-          SEC EDGAR 的 E1 已在数据层实现：15 家验证公司 2009 年起的 8 个年度核心指标，带申报版本与时点视图
-          （iros edgar）；尚未接入网站的数据页，全部申报主体（E2）与季度数据（E3）未开始
+        datasets: [edgar_fsds, edgar_companyfacts]
+        studies: []
+        can_answer: []
+        cannot_answer:
+          - 全部上市公司的财报与行业汇总（E2 尚未开始）
+          - 季度数据（E3 尚未开始）
+          - 部分公司的个别指标（如银行的资本开支），见 EDGAR 设计说明的缺口列表
       - id: fund_costs
         name: 基金费用与持仓
         risk: [instrument]

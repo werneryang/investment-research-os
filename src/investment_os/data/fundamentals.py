@@ -7,6 +7,7 @@
     superseded/<表>/source=<来源>/key=<…>/<版本>.parquet  被替换的旧分区，保留不删
     catalog/partitions.jsonl                   每个分区的每个版本：校验值、行数、原始文件、登记公司
     catalog/fsds_remote.jsonl                  每次对 FSDS 文件的 HEAD 检查：大小、修改时间、处理结果
+    catalog/companyfacts_fetch.jsonl           每次取得 Company Facts 的结果（含内容未变的取得）
 
 一个分区变化只重写该分区；查询用 DuckDB 直接读取当前分区。
 """
@@ -92,6 +93,9 @@ class EdgarStore:
 
     def remote_checks(self) -> list[dict[str, Any]]:
         return self._read("fsds_remote.jsonl")
+
+    def api_fetches(self) -> list[dict[str, Any]]:
+        return self._read("companyfacts_fetch.jsonl")
 
     # ---- 分区 -----------------------------------------------------------
     def _dir(self, table: str, source: str, key: str) -> Path:
@@ -210,14 +214,16 @@ def sync_companyfacts(root: Path, spec: FundamentalsSpec, client: SecClient,
             ref = store.save_raw(f"companyfacts/{company.cik}", compact(retrieved), content, "json", url, retrieved)
             filings, facts = parse_companyfacts(content, company.cik, retrieved)
         except (FetchError, ValueError) as e:
-            entry.update(status="failed", error=str(e))
+            entry.update(status="failed", error=str(e), at=retrieved.isoformat())
+            store._log("companyfacts_fetch.jsonl", entry)
             results.append(entry)
             progress(f"[failed] companyfacts {company.label}：{e}")
             continue
         meta = {"raw": ref, "companies": None}
         entry["filings"] = store.write_partition("filings", "companyfacts", str(company.cik), filings, meta, retrieved)
         entry["facts"] = store.write_partition("facts", "companyfacts", str(company.cik), facts, meta, retrieved)
-        entry["status"] = "ok"
+        entry.update(status="ok", at=retrieved.isoformat())
+        store._log("companyfacts_fetch.jsonl", entry)
         results.append(entry)
         progress(f"[{entry['facts']}] companyfacts {company.label}：事实 {len(facts)}")
     return results
