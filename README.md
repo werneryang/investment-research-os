@@ -146,6 +146,7 @@ uv run pytest
 
 - [当前架构与实施路线](docs/architecture.md)：设计基线（V0.3）
 - [实现说明](docs/implementation.md)：代码结构、契约落地方式、如何扩展、已知限制
+- [SEC EDGAR 财报数据设计](docs/edgar-design.md)：全部申报主体的财报事实、财年与申报版本、分区存储（草案，待审阅）
 - [历史方案索引](docs/archive/README.md)：保留 A、B、C 原始文档及 V0.2，追溯设计来源与定位变化。
 
 历史方案与当前框架有差异时，以当前框架为准。当前文档的修订说明记录本次取舍，Git 用于保存后续版本历史。
