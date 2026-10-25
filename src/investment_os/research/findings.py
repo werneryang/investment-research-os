@@ -356,14 +356,111 @@ def curve_attribution_state(result: dict[str, Any]) -> dict[str, str]:
     }
 
 
+ASSET_NAMES = {"SP500": "标普 500", "SMALLCAP": "小盘股", "TBOND10Y": "10 年期国债", "BAA": "Baa 公司债",
+               "TBILL3M": "3 个月国库券", "REALESTATE": "房地产", "GOLD": "黄金"}
+
+
+def _p1(v: float) -> str:
+    return f"{v * 100:.1f}%".replace("-", "−")
+
+
+def asset_history_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
+    """长期回报与风险。只陈述历史统计量，措辞避免「预期」「将会」等推断。"""
+    res = result.get("results", {})
+    nom, real = res.get("nominal", {}), res.get("real", {})
+    if "SP500" not in nom:
+        return []
+    out: list[dict[str, Any]] = []
+    span = f"{res['first_year']}–{res['last_year']} 年"
+    sp = nom["SP500"]
+    text = f"{span}，标普 500 年化回报 {_p1(sp['geometric'])}（算术平均 {_p1(sp['arithmetic'])}，波动率 {_p1(sp['volatility'])}）"
+    ev = {"results.nominal.SP500.geometric": sp["geometric"], "results.nominal.SP500.volatility": sp["volatility"]}
+    if real.get("SP500"):
+        r = real["SP500"]
+        text += f"；扣除通胀（{r['first_year']}–{r['last_year']} 年）为 {_p1(r['geometric'])}"
+        ev["results.real.SP500.geometric"] = r["geometric"]
+    out.append(_finding("equity_long_run", text + "。", ev))
+
+    if real:
+        first = next(iter(real.values()))
+        ranked = sorted(real, key=lambda a: real[a]["geometric"], reverse=True)
+        out.append(_finding("real_ranking",
+                            f"扣除通胀后的年化回报（{first['first_year']}–{first['last_year']} 年）："
+                            + "，".join(f"{ASSET_NAMES.get(a, a)} {_p1(real[a]['geometric'])}" for a in ranked) + "。",
+                            {f"results.real.{a}.geometric": real[a]["geometric"] for a in ranked}))
+
+    me = res.get("monthly_equity") or {}
+    text = (f"标普 500 按年度数据的最大回撤为 {_p1(sp['max_drawdown'])}（{sp['drawdown_peak_year']} 年末至 "
+            f"{sp['drawdown_trough_year']} 年末）")
+    ev = {"results.nominal.SP500.max_drawdown": sp["max_drawdown"]}
+    if me:
+        text += (f"；按月度数据（CRSP 全市场）为 {_p1(me['max_drawdown'])}（{me['peak']} 至 {me['trough']}），"
+                 "年度数据低估了年内跌幅")
+        ev["results.monthly_equity.max_drawdown"] = me["max_drawdown"]
+    out.append(_finding("drawdown", text + "。", ev))
+
+    erp = res.get("equity_risk_premium", {})
+    if erp:
+        # 名称以数字开头（如「3 个月国库券」）时前面加空格，与其他中英文混排一致
+        parts = [f"相对{' ' if ASSET_NAMES[k][0].isdigit() else ''}{ASSET_NAMES[k]} {v * 100:.1f} 个百分点".replace("-", "−")
+                 for k, v in erp.items()]
+        out.append(_finding("equity_premium", "股票相对无风险资产的历史超额回报（几何平均之差）：" + "，".join(parts) + "。",
+                            {f"results.equity_risk_premium.{k}": v for k, v in erp.items()}))
+
+    corr = res.get("correlations", {})
+    periods = corr.get("periods", [])
+    if periods and all("TBOND10Y" in p["matrix"].get("SP500", {}) for p in periods):
+        sens = {tuple(x["period"]): x for x in res.get("period_sensitivity", {}).get("stock_bond_correlation", [])}
+        stable = all(x["sign_stable"] for x in sens.values()) if sens else None
+        text = "股票与 10 年期国债年度回报的相关系数：" + "，".join(
+            f"{p['first_year']}–{p['last_year']} 年 {p['matrix']['SP500']['TBOND10Y']:+.2f}".replace("-", "−")
+            for p in periods)
+        if stable is True:
+            text += f"；各时期边界前后移动 {res['period_sensitivity']['shift_years']} 年时符号不变"
+        elif stable is False:
+            text += "；部分时期的符号随边界移动而改变"
+        out.append(_finding("stock_bond_correlation", text + "。",
+                            {f"results.correlations.periods[{i}].matrix.SP500.TBOND10Y": p["matrix"]["SP500"]["TBOND10Y"]
+                             for i, p in enumerate(periods)}))
+    elif "TBOND10Y" in corr.get("full", {}).get("matrix", {}).get("SP500", {}):
+        c = corr["full"]["matrix"]["SP500"]["TBOND10Y"]
+        out.append(_finding("stock_bond_correlation",
+                            f"{span}股票与 10 年期国债年度回报的相关系数为 {c:+.2f}。".replace("-", "−"),
+                            {"results.correlations.full.matrix.SP500.TBOND10Y": c}))
+
+    roll = res.get("rolling") or {}
+    if roll:
+        out.append(_finding("rolling",
+                            f"标普 500 的 {roll['window_years']} 年滚动年化回报在 {_p1(roll['min'])}（截至 {roll['min_end_year']} 年）"
+                            f"到 {_p1(roll['max'])}（截至 {roll['max_end_year']} 年）之间。",
+                            {"results.rolling.min": roll["min"], "results.rolling.max": roll["max"]}))
+    return out
+
+
+def asset_history_state(result: dict[str, Any]) -> dict[str, str]:
+    res = result.get("results", {})
+    real, corr = res.get("real", {}), res.get("correlations", {})
+    out: dict[str, str] = {}
+    if real:
+        top = max(real, key=lambda a: real[a]["geometric"])
+        out["实际回报最高的资产"] = ASSET_NAMES.get(top, top)
+    periods = corr.get("periods") or []
+    matrix = (periods[-1] if periods else corr.get("full", {})).get("matrix", {})
+    c = matrix.get("SP500", {}).get("TBOND10Y")
+    if c is not None:
+        out["股债相关（最近时期）"] = "正" if c > 0 else "负"
+    return out
+
+
 _FINDERS = {"rates_curve": rates_curve_findings, "par_bond_scenarios": par_bond_findings,
-            "curve_attribution": curve_attribution_findings}
-_STATES = {"par_bond_scenarios": par_bond_state, "curve_attribution": curve_attribution_state}
+            "curve_attribution": curve_attribution_findings, "asset_history": asset_history_findings}
+_STATES = {"par_bond_scenarios": par_bond_state, "curve_attribution": curve_attribution_state,
+           "asset_history": asset_history_state}
 
 # 规则版本：人工维护的名称；规则改动时递增。指纹会自动反映代码改动，两者一起展示
 # rates_curve v2（2026-10-23）：「尚未发布」改为「未取得（下载时尚未到保守可用时点）」
 RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v2", "par_bond_scenarios": "par_bond-findings.v1",
-                 "curve_attribution": "curve_attribution-findings.v1"}
+                 "curve_attribution": "curve_attribution-findings.v1", "asset_history": "asset_history-findings.v1"}
 
 
 def findings(result: dict[str, Any]) -> list[dict[str, Any]]:
@@ -412,6 +509,9 @@ def rule_fingerprint(branch: str) -> str | None:
     if branch == "par_bond_scenarios":
         parts = [inspect.getsource(f) for f in (finder, par_bond_state, _pct, _pp)] + [repr(ERROR_BANDS_PP)]
         return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
+    if branch == "asset_history":
+        parts = [inspect.getsource(f) for f in (finder, asset_history_state, _p1)] + [repr(sorted(ASSET_NAMES.items()))]
+        return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
     if branch == "curve_attribution":
         parts = [inspect.getsource(f) for f in (finder, curve_attribution_state, _share_text, _direction, _bp, _n)]
         parts.append(repr(sorted(ATTRIBUTION_NAMES.items())))
@@ -424,6 +524,8 @@ def rule_fingerprint(branch: str) -> str | None:
 def rule_params(branch: str) -> dict[str, Any]:
     if branch == "par_bond_scenarios":
         return {"error_bands_pp": list(ERROR_BANDS_PP)}
+    if branch == "asset_history":
+        return {}
     return {"flat_bp": FLAT_BP} if branch in _FINDERS else {}
 
 

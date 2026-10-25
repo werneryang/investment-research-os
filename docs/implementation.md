@@ -176,6 +176,16 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - 发现规则 `curve_attribution-findings.v1`；研究页展示组件 `ATTRIBUTION`（分解明细、恒等式核对、端点敏感性、两张静态图），暂无交互图表。
 - CI 中这两项研究单独一步运行，FRED 取得失败时不阻断发布。FRED 序列不进公开存档，日后完整复现档案中的运行需要重新取得相同版本。
 
+### 第四类研究：美国主要资产的长期回报与风险
+
+`config/studies/us_asset_history.yaml`（1928–2025 全期）、`us_asset_history_last_25y.yaml`（最近 25 个完整年度，`last_n_years: 25`）（分支 `asset_history`，成果类型 `descriptive`；设计见[研究设计](study-long-run-assets.md)）：由 Damodaran 年度回报计算七类资产的算术与几何平均、波动率、最差与最好年份、亏损年数、年度最大回撤；用 FRED CPI 12 月对 12 月的通胀计算 1948 年起的实际回报；股票风险溢价为几何平均差。
+
+- 只用所有资产都有数值的完整年度。相关矩阵给全期与事先固定的三个时期（1928–1969、1970–1999、2000–2025，少于 10 年的时期不计算）；时期边界前后移动 5 年时报告股债相关系数的范围与符号是否不变（`results.period_sensitivity`）。
+- 20 年滚动几何平均回报（标普 500）只在样本不短于窗口时给出。
+- 核对（`validation`）：标普 500 与 French 市场总收益（Mkt-RF + RF）年度复利的相关 ≥ 0.98；French 月度回撤应深于年度回撤；国库券与 FRED DTB3 年均值差 ≤ 0.5 个百分点；实际回报与 Shiller 实际总收益指数 12 月对 12 月变化同向的年份 ≥ 80%。可选输入缺失时不做该项核对，不冒充通过。
+- 发现规则 `asset_history-findings.v1`：只描述历史数字，不用「预期」「将会」等措辞；研究页展示组件 `ASSETS`（统计表、相关矩阵、敏感性、四张静态图）。
+- CI 中两项研究单独一步运行，Damodaran、French、Shiller 或 FRED 取得失败时不阻断发布。
+
 ## 7. 扩展方法
 
 **新增候选来源**：在 `config/sources.yaml` 登记 `id`、`publisher`、`url`、`category`，以及能写的索引字段（`directions`、`access`、`signup`、`redistribution`、`offers`、`notes`、`next_step` 等，见文件开头的说明）。读过官方说明后追加不指明数据集的 `docs_verified` 记录。资源目录与 `iros sources` 自动更新。

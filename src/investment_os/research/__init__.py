@@ -1,6 +1,6 @@
 """研究分支。新增分支用 register_branch 注册，并在此导入。"""
 
-from . import curve_attribution, par_bond, rates_curve  # noqa: F401  注册分支
+from . import asset_history, curve_attribution, par_bond, rates_curve  # noqa: F401  注册分支
 from .base import (
     ResearchResult,
     StudyInput,

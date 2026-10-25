@@ -31,6 +31,17 @@ CHECK_NOTES = Labels({
     "closed_form_checks": ("平价债券价格 = 面值；解析修正久期 = 封闭解；解析久期与凸性 ≈ 有限差分完整重新定价。",
                            "Par bond price = face value; analytic modified duration = closed form; analytic duration "
                            "and convexity ≈ finite-difference full repricing."),
+    "cross_check_equity": ("Damodaran 标普 500 与 French CRSP 全市场的年度回报相关系数；指数不同，只核对高度一致。",
+                           "Correlation of Damodaran S&P 500 and French CRSP total-market annual returns; different "
+                           "indexes, so this only checks they are highly consistent."),
+    "cross_check_tbill": ("Damodaran 国库券回报与 FRED DTB3 年均利率逐年比较。",
+                          "Damodaran T-bill returns compared year by year with FRED DTB3 annual average rates."),
+    "cross_check_real": ("Damodaran 标普 500 实际回报与 Shiller 实际总收益的方向是否一致；口径不同，只核对方向。",
+                         "Whether Damodaran S&P 500 real returns move in the same direction as Shiller's real total "
+                         "return; definitions differ, so only direction is checked."),
+    "monthly_drawdown": ("月度数据的最大回撤应不浅于年度数据；年度数据会低估年内跌幅。",
+                         "The monthly maximum drawdown should be at least as deep as the annual one; annual data "
+                         "understate intra-year declines."),
     "identity_check": ("每个共同日期核对 10Y 名义 − 实际收益率 − 盈亏平衡通胀，残差只应是取整误差。",
                        "On every common date, 10Y nominal − real yield − breakeven inflation is checked; the residual "
                        "should only be rounding."),
@@ -133,6 +144,10 @@ def check_chips(result: dict[str, Any], ver: dict[str, Any] | None) -> str:
     out = []
     for key, label in (("closed_form_checks", L("封闭解与重新定价核对", "Closed-form and repricing checks")),
                        ("identity_check", L("恒等式核对", "Identity check")),
+                       ("cross_check_equity", L("股票跨来源核对", "Equity cross-source check")),
+                       ("cross_check_tbill", L("国库券跨来源核对", "T-bill cross-source check")),
+                       ("cross_check_real", L("实际回报方向核对", "Real-return direction check")),
+                       ("monthly_drawdown", L("月度回撤核对", "Monthly drawdown check")),
                        ("cross_check", L("同源一致性检查", "Same-source consistency check")),
                        ("raw_spot_check", L("原始快照抽查", "Raw snapshot spot check"))):
         v = result.get("validation", {}).get(key)
