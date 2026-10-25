@@ -119,7 +119,7 @@ def _latest(status="success", start="2024-01-01", end="2024-12-31"):
 def test_capability_categories_come_from_registry_and_runs():
     reg = Registry.load(PROJECT_ROOT)
     ds = {"ust_par_yield_curve": {"status": "access_verified", "version_id": "v1", "verified_uses": []},
-          "fred_cpiaucsl": {"status": "access_verified", "version_id": "v2", "verified_uses": []}}
+          "fred_sofr": {"status": "access_verified", "version_id": "v2", "verified_uses": []}}
     active = direction_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, _latest())
     # 真实登记中已有 ust_par_yield_curve 的描述性用途核验；只对该用途计入
     assert [(d, u.value) for d, u, _, _ in active["validated"]] == [("ust_par_yield_curve", "descriptive")]
@@ -128,17 +128,17 @@ def test_capability_categories_come_from_registry_and_runs():
                     "result": {"branch": "rates_curve",
                                "scope": {"vintage_policy": "as_of", "start": "2024-01-01", "end": "2024-12-31"}}}}
     assert direction_status({"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, reg, ds, as_of)["validated"] == []
-    two = direction_status({"datasets": ["ust_par_yield_curve", "fred_cpiaucsl"], "studies": ["s1"]}, reg, ds, _latest())
-    assert two["unvalidated"] == ["fred_cpiaucsl"]
-    assert direction_status({"datasets": ["fred_cpiaucsl"], "studies": []}, reg, ds, {})["category"] == "data_only"
+    two = direction_status({"datasets": ["ust_par_yield_curve", "fred_sofr"], "studies": ["s1"]}, reg, ds, _latest())
+    assert two["unvalidated"] == ["fred_sofr"]
+    assert direction_status({"datasets": ["fred_sofr"], "studies": []}, reg, ds, {})["category"] == "data_only"
     assert direction_status({"planned": True}, reg, ds, {})["category"] == "planned"
     # 已登记但本次未取得的数据集不是「规划」
-    assert direction_status({"datasets": ["alfred_cpiaucsl"], "studies": []}, reg,
-                         {"alfred_cpiaucsl": {"status": "docs_verified", "version_id": None,
+    assert direction_status({"datasets": ["alfred_sofr"], "studies": []}, reg,
+                         {"alfred_sofr": {"status": "docs_verified", "version_id": None,
                                               "verified_uses": []}}, {})["category"] == "registered"
     content = {"branches": [
         {"id": "a", "directions": [{"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, {"planned": True}]},
-        {"id": "b", "directions": [{"datasets": ["fred_cpiaucsl"], "studies": []}]},
+        {"id": "b", "directions": [{"datasets": ["fred_sofr"], "studies": []}]},
         {"id": "c", "directions": [{"planned": True}]}]}
     assert summary(content, reg, ds, _latest()) == {"active": 1, "data_only": 1, "registered": 0, "planned": 2}
     # 分支状态取其方向中最好的一项
