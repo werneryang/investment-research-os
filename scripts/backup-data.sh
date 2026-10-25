@@ -27,9 +27,12 @@ dest="$IROS_BACKUP_DIR/data"
 mkdir -p "$dest" || { echo "[$(stamp)] 备份失败：无法创建 $dest"; exit 1; }
 
 # -rt：递归并保留修改时间（云盘文件夹不支持权限与扩展属性，所以不用 -a）；不加 --delete
-if rsync -rt --exclude 'edgar/raw/fsds/' "$ROOT/data/" "$dest/"; then
+rsync -rt --exclude 'edgar/raw/fsds/' "$ROOT/data/" "$dest/"
+code=$?
+if (( code == 0 )); then
   echo "[$(stamp)] 备份完成：$(du -sh "$dest" | cut -f1) → $dest"
 else
-  echo "[$(stamp)] 备份失败：rsync 退出码 $?"
+  # launchd 后台任务通常无权写入 ~/Library/CloudStorage（macOS 隐私保护），交互运行却正常
+  echo "[$(stamp)] 备份失败：rsync 退出码 $code（目标为 $dest）"
   exit 1
 fi
