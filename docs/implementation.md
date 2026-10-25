@@ -165,6 +165,17 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - 不做票面曲线到零息曲线的换算；结果是假设现金流的数学性质，不是任何真实国债或基金（如 TLT）的风险，冲击幅度不代表概率。
 - 关键发现规则 `par_bond-findings.v1`：只陈述计算结果与可验证的关系（如「期限越长，误差越大」只在数据确实单调时写出）。
 
+### 第三类研究：国债曲线变化的会计分解
+
+`config/studies/ust_curve_attribution_last_year.yaml`、`ust_curve_attribution_2024.yaml`（分支 `curve_attribution`，成果类型 `explanatory`，用途 `descriptive`；设计见[研究设计](study-curve-attribution.md)）：用恒等式把 Δ10Y 拆为 Δ实际收益率（`fred_dfii10`）与 Δ盈亏平衡通胀（`fred_t10yie`），把 Δ2Y 拆为 Δ联邦基金有效利率（`fred_dff`）与 Δ(2Y − 联邦基金利率)，斜率变化由这四项组成。
+
+- 只用所有输入都有观测值的共同日期（联邦基金利率含周末，只取共同日期），不插值、不前值填充。
+- 独立核对（`validation.identity_check`）：每个共同日期 |10Y − 实际 − 盈亏平衡| ≤ 0.5 bp；不通过时撤回长端分解并列为不支持的结论。
+- 占比只在名义变化不小于 10 bp 时给出；期初、期末各前后移动 5 个共同日期，占比范围超过 15 个百分点时只描述方向（`results.sensitivity`）。
+- CPI 同比与美联储总资产只作背景（`results.background`），不参与分解。
+- 发现规则 `curve_attribution-findings.v1`；研究页展示组件 `ATTRIBUTION`（分解明细、恒等式核对、端点敏感性、两张静态图），暂无交互图表。
+- CI 中这两项研究单独一步运行，FRED 取得失败时不阻断发布。FRED 序列不进公开存档，日后完整复现档案中的运行需要重新取得相同版本。
+
 ## 7. 扩展方法
 
 **新增候选来源**：在 `config/sources.yaml` 登记 `id`、`publisher`、`url`、`category`，以及能写的索引字段（`directions`、`access`、`signup`、`redistribution`、`offers`、`notes`、`next_step` 等，见文件开头的说明）。读过官方说明后追加不指明数据集的 `docs_verified` 记录。资源目录与 `iros sources` 自动更新。

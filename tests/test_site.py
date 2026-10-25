@@ -216,8 +216,8 @@ def test_home_places_studies_in_their_branch(loaded):
     shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
     content = loaded / "site" / "content.yaml"
     text = content.read_text(encoding="utf-8")
-    assert "studies: [ust_curve_last_year, ust_curve_2024]" in text
-    content.write_text(text.replace("studies: [ust_curve_last_year, ust_curve_2024]", "studies: [ust_curve_test]"),
+    assert "studies: [ust_curve_last_year, ust_curve_2024, ust_curve_attribution_last_year, ust_curve_attribution_2024]" in text
+    content.write_text(text.replace("studies: [ust_curve_last_year, ust_curve_2024, ust_curve_attribution_last_year, ust_curve_attribution_2024]", "studies: [ust_curve_test]"),
                        encoding="utf-8")
     run_study(loaded, write_study(loaded))
     page = build_site(loaded, loaded / "_site").read_text(encoding="utf-8")

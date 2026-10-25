@@ -262,11 +262,108 @@ def par_bond_state(result: dict[str, Any]) -> dict[str, str]:
             "只用久期的误差方向": "全部低估价格" if all(r["duration_error_pp"] < 0 for r in rows) else "方向不一致"}
 
 
-_FINDERS = {"rates_curve": rates_curve_findings, "par_bond_scenarios": par_bond_findings}
+ATTRIBUTION_NAMES = {"real": "实际收益率", "breakeven": "盈亏平衡通胀", "policy": "联邦基金有效利率",
+                     "spread": "2 年期与联邦基金利率之差"}
+
+
+def _share_text(part: str, res: dict[str, Any], leg: str) -> str:
+    """占比说明：名义变化小于阈值、或随端点变化超过阈值时，只描述方向（docs/study-curve-attribution.md §6）。"""
+    share = res[leg]["shares_pct"].get(part)
+    sens, th = res["sensitivity"].get(part, {}), res["thresholds"]
+    if share is None:
+        return f"名义变化小于 {th['share_min_bp']:g} bp，不给占比"
+    if not sens.get("stable"):
+        return f"占比随端点变化超过 {th['sensitivity_max_range_pp']:g} 个百分点，只描述方向"
+    return (f"{ATTRIBUTION_NAMES[part]}约占 {share:.0f}%（期初、期末各前后移动 {res['sensitivity']['shift_days']} "
+            f"个共同日期时为 {sens['min']:.0f}%–{sens['max']:.0f}%）")
+
+
+def curve_attribution_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
+    """曲线变化的会计分解。只陈述恒等式拆出的各部分，不作因果或预测判断。"""
+    res = result.get("results", {})
+    if not res.get("long_end"):
+        return []
+    out: list[dict[str, Any]] = []
+    span = f"{res['start_date']} 至 {res['end_date']}"
+    lg, sh, sl = res["long_end"], res["short_end"], res["slope"]
+    d10, real, be = lg["nominal"]["change_bp"], lg["real"]["change_bp"], lg["breakeven"]["change_bp"]
+    identity_ok = result.get("validation", {}).get("identity_check", {}).get("status") != "fail"
+    if identity_ok:
+        move = _direction(d10) + ("" if abs(d10) < FLAT_BP else f" {_n(abs(d10))} bp")
+        lead = "real" if abs(real) >= abs(be) else "breakeven"
+        out.append(_finding("long_end",
+                            f"{span}，{lg['tenor']} 名义收益率{move}：实际收益率 {_bp(real)}，"
+                            f"盈亏平衡通胀（通胀补偿）{_bp(be)}；{_share_text(lead, res, 'long_end')}。",
+                            {"results.long_end.nominal.change_bp": d10, "results.long_end.real.change_bp": real,
+                             "results.long_end.breakeven.change_bp": be,
+                             f"results.long_end.shares_pct.{lead}": lg["shares_pct"].get(lead)}))
+    else:
+        out.append(_finding("identity_failed",
+                            "长端恒等式残差超过容差，名义收益率与 TIPS、盈亏平衡通胀的口径不一致，不给长端分解。",
+                            {"validation.identity_check.max_abs_level_residual_bp":
+                             result["validation"]["identity_check"]["max_abs_level_residual_bp"]}))
+
+    d2, pol, spr = sh["nominal"]["change_bp"], sh["policy"]["change_bp"], sh["spread"]["change_bp"]
+    text = (f"{sh['tenor']} 名义收益率{_direction(d2)}" + ("" if abs(d2) < FLAT_BP else f" {_n(abs(d2))} bp")
+            + f"：联邦基金有效利率 {_bp(pol)}，{sh['tenor']} 与联邦基金利率之差 {_bp(spr)}")
+    if abs(pol) >= FLAT_BP and abs(d2) < abs(pol) - FLAT_BP:
+        text += (f"；政策利率变化 {_bp(pol)}，{sh['tenor']} 只变化 {_bp(d2)}，差额来自市场对未来政策路径与期限溢价的定价"
+                 "（本研究不能区分两者）")
+    elif abs(pol) >= FLAT_BP and abs(d2) >= FLAT_BP and (pol > 0) != (d2 > 0):
+        text += f"；{sh['tenor']} 与政策利率反向变化"
+    out.append(_finding("short_end", text + "。",
+                        {"results.short_end.nominal.change_bp": d2, "results.short_end.policy.change_bp": pol,
+                         "results.short_end.spread.change_bp": spr}))
+
+    contrib = {k: v for k, v in sl["contributions_bp"].items() if k != "residual"}
+    top = max(contrib, key=lambda k: abs(contrib[k]))
+    out.append(_finding("slope",
+                        f"{sl['label']} {_direction(sl['change_bp'], '变陡', '变平')}"
+                        + ("" if abs(sl["change_bp"]) < FLAT_BP else f" {_n(abs(sl['change_bp']))} bp")
+                        + f"；对斜率贡献最大的是{ATTRIBUTION_NAMES[top]}（{_bp(contrib[top])}，"
+                        + ("短端项以负号计入" if top in ("policy", "spread") else "长端项") + "）。",
+                        {"results.slope.change_bp": sl["change_bp"], f"results.slope.contributions_bp.{top}": contrib[top]}))
+
+    bg = res.get("background", {})
+    parts, evidence = [], {}
+    if "cpi_yoy" in bg:
+        c = bg["cpi_yoy"]
+        parts.append(f"CPI 同比由 {c['start']['value_pct']:.1f}%（{c['start']['month']}）变为 "
+                     f"{c['end']['value_pct']:.1f}%（{c['end']['month']}）")
+        evidence["results.background.cpi_yoy.end.value_pct"] = c["end"]["value_pct"]
+    if "fed_assets" in bg:
+        f = bg["fed_assets"]
+        parts.append(f"美联储总资产{'增加' if f['change_pct'] > 0 else '减少'} {abs(f['change_pct']):.1f}%")
+        evidence["results.background.fed_assets.change_pct"] = f["change_pct"]
+    if parts:
+        out.append(_finding("background", "背景（只作描述，不参与分解）：" + "；".join(parts) + "。", evidence))
+    return out
+
+
+def curve_attribution_state(result: dict[str, Any]) -> dict[str, str]:
+    res = result.get("results", {})
+    if not res.get("long_end"):
+        return {}
+    lg, sh, sl = res["long_end"], res["short_end"], res["slope"]
+    d10 = lg["nominal"]["change_bp"]
+    real, be = lg["real"]["change_bp"], lg["breakeven"]["change_bp"]
+    d2, pol = sh["nominal"]["change_bp"], sh["policy"]["change_bp"]
+    return {
+        f"{lg['tenor']} 主要来源": "基本持平" if abs(d10) < FLAT_BP else ("实际收益率" if abs(real) >= abs(be) else "盈亏平衡通胀"),
+        f"{sh['tenor']} 相对政策利率": ("政策利率基本未变" if abs(pol) < FLAT_BP else
+                                  "反向" if abs(d2) >= FLAT_BP and (pol > 0) != (d2 > 0) else "同向或基本持平"),
+        f"{sl['label']} 期间": _direction(sl["change_bp"], "变陡", "变平"),
+    }
+
+
+_FINDERS = {"rates_curve": rates_curve_findings, "par_bond_scenarios": par_bond_findings,
+            "curve_attribution": curve_attribution_findings}
+_STATES = {"par_bond_scenarios": par_bond_state, "curve_attribution": curve_attribution_state}
 
 # 规则版本：人工维护的名称；规则改动时递增。指纹会自动反映代码改动，两者一起展示
 # rates_curve v2（2026-10-23）：「尚未发布」改为「未取得（下载时尚未到保守可用时点）」
-RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v2", "par_bond_scenarios": "par_bond-findings.v1"}
+RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v2", "par_bond_scenarios": "par_bond-findings.v1",
+                 "curve_attribution": "curve_attribution-findings.v1"}
 
 
 def findings(result: dict[str, Any]) -> list[dict[str, Any]]:
@@ -315,6 +412,10 @@ def rule_fingerprint(branch: str) -> str | None:
     if branch == "par_bond_scenarios":
         parts = [inspect.getsource(f) for f in (finder, par_bond_state, _pct, _pp)] + [repr(ERROR_BANDS_PP)]
         return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
+    if branch == "curve_attribution":
+        parts = [inspect.getsource(f) for f in (finder, curve_attribution_state, _share_text, _direction, _bp, _n)]
+        parts.append(repr(sorted(ATTRIBUTION_NAMES.items())))
+        return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
     parts = [inspect.getsource(f) for f in (finder, state, completeness, coverage_summary, _direction, _bp, _n)]
     parts.append(repr(sorted(COVERAGE_LABEL.items())))
     return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
@@ -336,5 +437,5 @@ def interpret(result: dict[str, Any]) -> dict[str, Any] | None:
         "rule_fingerprint": rule_fingerprint(branch),
         "params": rule_params(branch),
         "items": findings(result),
-        "state": par_bond_state(result) if branch == "par_bond_scenarios" else state(result),
+        "state": _STATES.get(branch, state)(result),
     }

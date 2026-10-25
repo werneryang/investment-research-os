@@ -1,0 +1,22 @@
+# 解释与归因：国债曲线变化的会计分解（docs/study-curve-attribution.md）
+study_id: ust_curve_attribution_2024
+title: 美国国债曲线变化的分解（2024 年）
+question: 期间内 10 年期与 2 年期国债收益率及其利差的变化，各有多少来自实际利率、通胀补偿、已实施的政策利率与市场对未来政策路径的定价？
+result_type: explanatory
+branch: curve_attribution
+scope: {market: US, currency: USD, start: 2024-01-01, end: 2024-12-31, frequency: daily, vintage_policy: latest}
+data:
+  curve: ust_par_yield_curve
+  real: fred_dfii10
+  breakeven: fred_t10yie
+  policy: fred_dff
+  cross_check: {dataset: fred_dgs10, required: false}
+  cpi: {dataset: fred_cpiaucsl, required: false}
+  fed_assets: {dataset: fred_walcl, required: false}
+method: {long_tenor: 10Y, short_tenor: 2Y, share_min_bp: 10, sensitivity_days: 5, sensitivity_max_range_pp: 15, identity_tolerance_bp: 0.5}
+benchmark: 期初（窗口内第一个共同观测日）
+evaluation: [长端恒等式逐日残差不超过 0.5 bp, Treasury 10Y 与 DGS10 一致（同源）, 端点敏感性, 固定数据版本可重现（iros verify）]
+limitations:
+  - 会计恒等式分解，不是因果推断
+  - 盈亏平衡通胀含通胀风险溢价与流动性溢价，不等于通胀预期；2Y 与联邦基金利率之差不能拆分为政策预期与期限溢价
+  - 使用最新修订数据；CPI 与美联储总资产只作背景，不参与分解

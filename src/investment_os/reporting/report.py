@@ -170,7 +170,58 @@ def _bond_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path
     return figs
 
 
-_FIGURE_BUILDERS = {"rates_curve": _curve_figures, "par_bond_scenarios": _bond_figures}
+def _attribution_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
+    r = result["results"]
+    path = result.get("tables", {}).get("path_bp", [])
+    if not r.get("long_end") or not path:
+        return []
+    out_dir.mkdir(parents=True, exist_ok=True)
+    _style()
+    figs: list[tuple[str, Path]] = []
+    lg, sh, sl = r["long_end"], r["short_end"], r["slope"]
+    names = {"real": _t("实际收益率", "Real yield"), "breakeven": _t("盈亏平衡通胀", "Breakeven inflation"),
+             "policy": _t("联邦基金利率", "Fed funds"), "spread": _t(f"{sh['tenor']} − 联邦基金", f"{sh['tenor']} − fed funds"),
+             "residual": _t("残差", "Residual")}
+    groups = [(f"{lg['tenor']}", {"real": lg["real"]["change_bp"], "breakeven": lg["breakeven"]["change_bp"]},
+               lg["nominal"]["change_bp"]),
+              (f"{sh['tenor']}", {"policy": sh["policy"]["change_bp"], "spread": sh["spread"]["change_bp"]},
+               sh["nominal"]["change_bp"]),
+              (sl["label"], {k: v for k, v in sl["contributions_bp"].items() if k != "residual"}, sl["change_bp"])]
+    fig, ax = plt.subplots(figsize=(7, 3.6))
+    colors = {"real": "#2b5a87", "breakeven": "#8fb6dd", "policy": "#a12d2d", "spread": "#f09a9a"}
+    for x, (_, parts, total) in enumerate(groups):
+        pos = neg = 0.0
+        for k, v in parts.items():
+            base = pos if v >= 0 else neg
+            ax.bar(x, v, bottom=base, color=colors[k], width=0.55,
+                   label=names[k] if x == (0 if k in ("real", "breakeven") else 1) else None)
+            pos, neg = (pos + v, neg) if v >= 0 else (pos, neg + v)
+        ax.plot([x - 0.35, x + 0.35], [total, total], color="black", lw=1.5)
+        ax.annotate(f"{total:+.0f}", (x + 0.38, total), va="center", fontsize=8)
+    ax.axhline(0, color="black", lw=0.8)
+    ax.set_xticks(range(len(groups)), [g[0] for g in groups])
+    ax.set_ylabel(_t("变化（bp）", "Change (bp)"))
+    ax.set_title(_t(f"{r['start_date']} 至 {r['end_date']}：各部分贡献（黑线为名义变化）",
+                    f"{r['start_date']} to {r['end_date']}: contributions (black line = nominal change)"))
+    ax.legend(frameon=False, fontsize=8, ncol=2)
+    figs.append(("各部分对 10Y、2Y 与斜率变化的贡献", _save(fig, out_dir / "attribution_bars.png")))
+
+    dates = pd.to_datetime([row["date"] for row in path])
+    fig, ax = plt.subplots(figsize=(7, 3.6))
+    for key, label, style in (("long", f"{lg['tenor']} {_t('名义', 'nominal')}", "-"), ("real", names["real"], "--"),
+                              ("breakeven", names["breakeven"], ":"), ("short", f"{sh['tenor']} {_t('名义', 'nominal')}", "-"),
+                              ("policy", names["policy"], "--")):
+        ax.plot(dates, [row[key] for row in path], ls=style, lw=1.2, label=label)
+    ax.axhline(0, color="black", lw=0.8)
+    ax.set_ylabel(_t("相对期初的累计变化（bp）", "Cumulative change from start (bp)"))
+    ax.set_title(_t("逐日累计路径", "Daily cumulative path"))
+    ax.legend(frameon=False, fontsize=8, ncol=3)
+    figs.append(("各部分相对期初的逐日累计变化", _save(fig, out_dir / "attribution_path.png")))
+    return figs
+
+
+_FIGURE_BUILDERS = {"rates_curve": _curve_figures, "par_bond_scenarios": _bond_figures,
+                    "curve_attribution": _attribution_figures}
 
 
 def _figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
@@ -273,7 +324,58 @@ def _bond_sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
     return body, "假设与输入", assumptions
 
 
-_BRANCH_SECTIONS = {"rates_curve": _curve_sections, "par_bond_scenarios": _bond_sections}
+def _attribution_sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
+    """曲线变化的会计分解：三行恒等式、占比与端点敏感性；「分解明细」列出共同日期与背景。"""
+    r = result["results"]
+    lg, sh, sl, sens = r["long_end"], r["short_end"], r["slope"], r["sensitivity"]
+    pct = lambda v: "—" if v is None else _fmt(v, 0) + "%"  # noqa: E731
+    rng = lambda k: ("—" if sens[k].get("min") is None else  # noqa: E731
+                     f"{_fmt(sens[k]['min'], 0)}%–{_fmt(sens[k]['max'], 0)}%{'' if sens[k]['stable'] else '（不稳定）'}")
+    body: list[Any] = [
+        f"{r['start_date']} 至 {r['end_date']}（共同观测日 {result['coverage']['common_days']} 天）。"
+        "会计恒等式分解，不估计参数，不作因果推断；占比只在名义变化不小于 "
+        f"{r['thresholds']['share_min_bp']:g} bp 时给出，端点前后移动 {sens['shift_days']} 个共同日期时范围超过 "
+        f"{r['thresholds']['sensitivity_max_range_pp']:g} 个百分点即视为不稳定。",
+        ("table", ["项目", "期初 %", "期末 %", "变化 bp", "占名义变化", "端点敏感性范围"], [
+            [f"{lg['tenor']} 名义", _fmt(lg["nominal"]["start"]), _fmt(lg["nominal"]["end"]),
+             _fmt(lg["nominal"]["change_bp"], 0), "", ""],
+            ["　实际收益率", _fmt(lg["real"]["start"]), _fmt(lg["real"]["end"]), _fmt(lg["real"]["change_bp"], 0),
+             pct(lg["shares_pct"]["real"]), rng("real")],
+            ["　盈亏平衡通胀", _fmt(lg["breakeven"]["start"]), _fmt(lg["breakeven"]["end"]),
+             _fmt(lg["breakeven"]["change_bp"], 0), pct(lg["shares_pct"]["breakeven"]), rng("breakeven")],
+            ["　取整残差", "", "", _fmt(lg["residual_bp"], 2), "", ""],
+            [f"{sh['tenor']} 名义", _fmt(sh["nominal"]["start"]), _fmt(sh["nominal"]["end"]),
+             _fmt(sh["nominal"]["change_bp"], 0), "", ""],
+            ["　联邦基金有效利率", _fmt(sh["policy"]["start"]), _fmt(sh["policy"]["end"]),
+             _fmt(sh["policy"]["change_bp"], 0), pct(sh["shares_pct"]["policy"]), rng("policy")],
+            [f"　{sh['tenor']} − 联邦基金利率", _fmt(sh["spread"]["start"]), _fmt(sh["spread"]["end"]),
+             _fmt(sh["spread"]["change_bp"], 0), pct(sh["shares_pct"]["spread"]), rng("spread")],
+            [f"{sl['label']}", _fmt(sl["start"]), _fmt(sl["end"]), _fmt(sl["change_bp"], 0), "", ""],
+        ]),
+        ("table", ["斜率变化的组成", "bp"],
+         [[{"real": "实际收益率", "breakeven": "盈亏平衡通胀", "residual": "取整残差", "policy": "− 联邦基金有效利率",
+            "spread": f"− ({sh['tenor']} − 联邦基金利率)"}[k], _fmt(v, 1)] for k, v in sl["contributions_bp"].items()]),
+    ]
+    cov, bg = result["coverage"], r.get("background", {})
+    detail = [
+        f"请求期间 {cov['requested_start']} 至 {cov['requested_end']}；共同观测日 {cov['common_days']} 天，"
+        f"期初 {cov['start_date']}，期末 {cov['end_date']}。各部分观测天数："
+        + "，".join(f"{k} {v}" for k, v in cov["observations_by_part"].items())
+        + "（联邦基金利率含周末与假日，只用与其他输入的共同日期）。",
+    ]
+    if "cpi_yoy" in bg:
+        c = bg["cpi_yoy"]
+        detail.append(f"背景（不参与分解）：CPI 同比 {c['start']['month']} 为 {_fmt(c['start']['value_pct'], 1)}%，"
+                      f"{c['end']['month']} 为 {_fmt(c['end']['value_pct'], 1)}%。")
+    if "fed_assets" in bg:
+        f = bg["fed_assets"]
+        detail.append(f"背景（不参与分解）：美联储总资产 {f['start']['date']} 为 {_fmt(f['start']['value_musd'] / 1e6, 3)} 万亿美元，"
+                      f"{f['end']['date']} 为 {_fmt(f['end']['value_musd'] / 1e6, 3)} 万亿美元（{_fmt(f['change_pct'], 1)}%）。")
+    return body, "分解明细与背景", detail
+
+
+_BRANCH_SECTIONS = {"rates_curve": _curve_sections, "par_bond_scenarios": _bond_sections,
+                    "curve_attribution": _attribution_sections}
 
 
 def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
@@ -312,7 +414,7 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
     val = []
     for name, v in result["validation"].items():
         label = {"cross_check": "交叉核验", "raw_spot_check": "原始快照抽查",
-                 "closed_form_checks": "封闭解与重新定价核对"}.get(name, name)
+                 "closed_form_checks": "封闭解与重新定价核对", "identity_check": "恒等式核对"}.get(name, name)
         line = f"**{label}：** {STATUS_LABEL.get(v.get('status'), v.get('status'))}"
         if name == "cross_check" and v.get("matched"):
             line += (f"；对照 {v['against']}，共同日期 {v['matched']} 天，最大差 {_fmt(v['max_abs_diff'], 4)}"
@@ -320,6 +422,9 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
         elif name == "closed_form_checks":
             line += (f"；{v['checked']} 项核对，未通过 {len(v['failures'])} 项（平价价格 = 面值；"
                      "解析修正久期 = 平价债券封闭解；解析久期、凸性 ≈ 有限差分完整重新定价）")
+        elif name == "identity_check":
+            line += (f"；{v['checked']} 个共同日期，名义 − 实际 − 盈亏平衡的最大残差 {_fmt(v['max_abs_level_residual_bp'], 2)} bp"
+                     f"（容差 {v['tolerance_bp']} bp）")
         elif name == "raw_spot_check" and v.get("checked"):
             line += f"；抽查 {v['checked']} 个观测，不一致 {len(v['failures'])} 个"
         elif v.get("reason"):
