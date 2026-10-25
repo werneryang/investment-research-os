@@ -156,6 +156,7 @@ uv run pytest
 
 - [当前架构与实施路线](docs/architecture.md)：设计基线（V0.3）
 - [实现说明](docs/implementation.md)：代码结构、契约落地方式、如何扩展、已知限制
+- [研究设计：美国主要资产的长期回报与风险](docs/study-long-run-assets.md)：1928 年以来七类资产的名义与实际回报、风险与相关性（草案，待审阅）
 - [研究设计：国债曲线变化的分解](docs/study-curve-attribution.md)：第一项解释与归因研究，用会计恒等式拆分实际利率、通胀补偿与政策利率（已实现）
 - [SEC EDGAR 财报数据设计](docs/edgar-design.md)：全部申报主体的财报事实、财年与申报版本、分区存储（草案，待审阅）
 - [历史方案索引](docs/archive/README.md)：保留 A、B、C 原始文档及 V0.2，追溯设计来源与定位变化。
