@@ -220,8 +220,77 @@ def _attribution_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[st
     return figs
 
 
+_ASSET_LABELS = {"SP500": ("标普 500", "S&P 500"), "SMALLCAP": ("小盘股", "Small caps"),
+                 "TBOND10Y": ("10 年期国债", "10Y Treasury"), "BAA": ("Baa 公司债", "Baa corporate"),
+                 "TBILL3M": ("国库券", "T-bills"), "REALESTATE": ("房地产", "Real estate"), "GOLD": ("黄金", "Gold")}
+
+
+def _asset_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
+    r = result["results"]
+    nom, assets = r.get("nominal", {}), r.get("assets", [])
+    if not nom:
+        return []
+    out_dir.mkdir(parents=True, exist_ok=True)
+    _style()
+    label = lambda a: _t(*_ASSET_LABELS.get(a, (a, a)))  # noqa: E731
+    span = f"{r['first_year']}–{r['last_year']}"
+    figs: list[tuple[str, Path]] = []
+
+    fig, ax = plt.subplots(figsize=(7, 3.8))
+    for a in assets:
+        ax.scatter(nom[a]["volatility"] * 100, nom[a]["geometric"] * 100, s=28)
+        ax.annotate(label(a), (nom[a]["volatility"] * 100, nom[a]["geometric"] * 100), xytext=(4, 3),
+                    textcoords="offset points", fontsize=8)
+    ax.set_xlabel(_t("波动率（年度回报标准差，%）", "Volatility (std. of annual returns, %)"))
+    ax.set_ylabel(_t("年化回报（几何平均，%）", "Annualized return (geometric, %)"))
+    ax.set_title(_t(f"{span}：回报与风险（名义）", f"{span}: return and risk (nominal)"))
+    figs.append(("各资产的年化回报与波动率", _save(fig, out_dir / "risk_return.png")))
+
+    wealth = result.get("tables", {}).get("wealth_index", [])
+    if wealth:
+        fig, ax = plt.subplots(figsize=(7, 3.8))
+        years = [w["year"] for w in wealth]
+        for a in assets:
+            ax.plot(years, [w[a] for w in wealth], lw=1.2, label=label(a))
+        ax.set_yscale("log")
+        ax.set_ylabel(_t("1 美元的累计财富（对数刻度）", "Wealth of $1 (log scale)"))
+        ax.set_title(_t(f"{span}：累计财富（名义，年末）", f"{span}: cumulative wealth (nominal, year-end)"))
+        ax.legend(frameon=False, fontsize=7, ncol=4)
+        figs.append(("各资产 1 美元的累计财富", _save(fig, out_dir / "wealth.png")))
+
+    corr = r.get("correlations", {})
+    blocks = corr.get("periods") or [corr.get("full")]
+    blocks = [b for b in blocks if b]
+    if blocks:
+        fig, axes = plt.subplots(1, len(blocks), figsize=(3.2 * len(blocks) + 0.6, 3.4), squeeze=False)
+        for ax, b in zip(axes[0], blocks):
+            m = [[b["matrix"][x][y] for y in assets] for x in assets]
+            im = ax.imshow(m, vmin=-1, vmax=1, cmap="RdBu_r")
+            ax.set_xticks(range(len(assets)), [label(a) for a in assets], rotation=60, fontsize=6)
+            ax.set_yticks(range(len(assets)), [label(a) for a in assets], fontsize=6)
+            ax.set_title(f"{b['first_year']}–{b['last_year']}", fontsize=8)
+            ax.grid(False)
+        fig.colorbar(im, ax=axes[0].tolist(), shrink=0.8)
+        fig.suptitle(_t("年度回报的相关系数", "Correlation of annual returns"), fontsize=9)
+        path = out_dir / "correlations.png"
+        fig.savefig(path, bbox_inches="tight")
+        plt.close(fig)
+        figs.append(("各时期年度回报的相关系数", path))
+
+    rolling = result.get("tables", {}).get("rolling", [])
+    if rolling:
+        fig, ax = plt.subplots(figsize=(7, 3.2))
+        ax.plot([x["end_year"] for x in rolling], [x["SP500"] * 100 for x in rolling], lw=1.4)
+        ax.axhline(0, color="black", lw=0.8)
+        w = r["rolling"]["window_years"]
+        ax.set_ylabel(_t("年化回报（%）", "Annualized return (%)"))
+        ax.set_title(_t(f"标普 500 的 {w} 年滚动年化回报（按截止年份）", f"S&P 500 rolling {w}-year annualized return (by end year)"))
+        figs.append(("标普 500 的滚动年化回报", _save(fig, out_dir / "rolling.png")))
+    return figs
+
+
 _FIGURE_BUILDERS = {"rates_curve": _curve_figures, "par_bond_scenarios": _bond_figures,
-                    "curve_attribution": _attribution_figures}
+                    "curve_attribution": _attribution_figures, "asset_history": _asset_figures}
 
 
 def _figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
@@ -374,8 +443,57 @@ def _attribution_sections(result: dict[str, Any]) -> tuple[list[Any], str, list[
     return body, "分解明细与背景", detail
 
 
+def _asset_sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
+    """长期回报与风险：名义与实际统计量、风险溢价、相关系数；「口径与核对」说明期间与交叉核对。"""
+    r = result["results"]
+    nom, real, assets = r["nominal"], r.get("real", {}), r["assets"]
+    name = {"SP500": "标普 500", "SMALLCAP": "小盘股", "TBOND10Y": "10 年期国债", "BAA": "Baa 公司债",
+            "TBILL3M": "3 个月国库券", "REALESTATE": "房地产", "GOLD": "黄金"}
+    pct = lambda v: _fmt(v * 100, 1)  # noqa: E731
+    body: list[Any] = [
+        f"{r['first_year']}–{r['last_year']} 年（{len(result['tables']['annual_returns'])} 个完整年度）。"
+        "百分比为年度回报；几何平均即期末财富的年化；最大回撤按年末财富计算。只描述历史，不是预测或配置建议。",
+        ("table", ["资产", "几何平均 %", "算术平均 %", "波动率 %", "最差年份", "亏损年数", "最大回撤 %"],
+         [[name.get(a, a), pct(nom[a]["geometric"]), pct(nom[a]["arithmetic"]), pct(nom[a]["volatility"]),
+           f"{pct(nom[a]['worst'])}（{nom[a]['worst_year']}）", str(nom[a]["negative_years"]), pct(nom[a]["max_drawdown"])]
+          for a in assets]),
+    ]
+    if real:
+        first = next(iter(real.values()))
+        infl = r.get("inflation", {})
+        body.append(f"扣除通胀（{first['first_year']}–{first['last_year']} 年，CPI 12 月对 12 月，年均 "
+                    f"{pct(infl.get('mean', 0))}%，最高 {pct(infl.get('max', 0))}%（{infl.get('max_year')}））：")
+        body.append(("table", ["资产", "实际几何平均 %", "实际算术平均 %", "实际波动率 %"],
+                     [[name.get(a, a), pct(real[a]["geometric"]), pct(real[a]["arithmetic"]), pct(real[a]["volatility"])]
+                      for a in assets]))
+    if r.get("equity_risk_premium"):
+        body.append("股票相对无风险资产的历史超额回报（几何平均之差）：" + "，".join(
+            f"相对{name[k]} {_fmt(v * 100, 1)} 个百分点" for k, v in r["equity_risk_premium"].items()) + "。")
+    corr = r.get("correlations", {})
+    rows = [[f"{b['first_year']}–{b['last_year']}", *(_fmt(b["matrix"]["SP500"][x], 2) for x in ("TBOND10Y", "BAA", "GOLD"))]
+            for b in [corr.get("full"), *corr.get("periods", [])] if b and "SP500" in b["matrix"]]
+    if rows:
+        body.append(("table", ["期间", "股票与 10 年期国债", "股票与 Baa 公司债", "股票与黄金"], rows))
+    sens = r.get("period_sensitivity", {}).get("stock_bond_correlation", [])
+    detail = []
+    if sens:
+        detail.append(f"时期边界前后移动 {r['period_sensitivity']['shift_years']} 年时，股票与 10 年期国债的相关系数范围："
+                      + "；".join(f"{x['period'][0]}–{x['period'][1]} {_fmt(x['min'], 2)} 至 {_fmt(x['max'], 2)}"
+                                  f"（{'符号不变' if x['sign_stable'] else '符号改变'}）" for x in sens) + "。")
+    me = r.get("monthly_equity") or {}
+    if me:
+        detail.append(f"月度股票（French CRSP 全市场总收益，{me['months']} 个月）：最大回撤 {pct(me['max_drawdown'])}%"
+                      f"（{me['peak']} 至 {me['trough']}），最差单月 {pct(me['worst_month'])}%（{me['worst_month_at']}），"
+                      f"年化波动率 {pct(me['annualized_volatility'])}%。")
+    if r.get("rolling"):
+        ro = r["rolling"]
+        detail.append(f"标普 500 的 {ro['window_years']} 年滚动年化回报（{ro['windows']} 个窗口）：最低 {pct(ro['min'])}%"
+                      f"（截至 {ro['min_end_year']}），最高 {pct(ro['max'])}%（截至 {ro['max_end_year']}）。")
+    return body, "口径与补充统计", detail
+
+
 _BRANCH_SECTIONS = {"rates_curve": _curve_sections, "par_bond_scenarios": _bond_sections,
-                    "curve_attribution": _attribution_sections}
+                    "curve_attribution": _attribution_sections, "asset_history": _asset_sections}
 
 
 def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
@@ -414,7 +532,9 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
     val = []
     for name, v in result["validation"].items():
         label = {"cross_check": "交叉核验", "raw_spot_check": "原始快照抽查",
-                 "closed_form_checks": "封闭解与重新定价核对", "identity_check": "恒等式核对"}.get(name, name)
+                 "closed_form_checks": "封闭解与重新定价核对", "identity_check": "恒等式核对",
+                 "cross_check_equity": "股票跨来源核对", "cross_check_tbill": "国库券跨来源核对",
+                 "cross_check_real": "实际回报方向核对", "monthly_drawdown": "月度回撤核对"}.get(name, name)
         line = f"**{label}：** {STATUS_LABEL.get(v.get('status'), v.get('status'))}"
         if name == "cross_check" and v.get("matched"):
             line += (f"；对照 {v['against']}，共同日期 {v['matched']} 天，最大差 {_fmt(v['max_abs_diff'], 4)}"
@@ -425,6 +545,15 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
         elif name == "identity_check":
             line += (f"；{v['checked']} 个共同日期，名义 − 实际 − 盈亏平衡的最大残差 {_fmt(v['max_abs_level_residual_bp'], 2)} bp"
                      f"（容差 {v['tolerance_bp']} bp）")
+        elif name == "cross_check_equity":
+            line += f"；对照 {v['against']}，{v['years']} 年相关系数 {_fmt(v['correlation'], 3)}（阈值 {v['threshold']}）。{v['note']}"
+        elif name == "cross_check_tbill":
+            line += f"；对照 {v['against']} 年均值，{v['years']} 年最大差 {_fmt(v['max_abs_diff_pp'], 2)} 个百分点（容差 {v['tolerance_pp']}）"
+        elif name == "cross_check_real":
+            line += (f"；对照 {v['against']}，{v['years']} 年中方向一致的比例 {_fmt(v['same_direction_share'] * 100, 0)}%"
+                     f"（阈值 {_fmt(v['threshold'] * 100, 0)}%）。{v['note']}")
+        elif name == "monthly_drawdown":
+            line += f"；月度 {_fmt(v['monthly'] * 100, 1)}%，年度 {_fmt(v['annual'] * 100, 1)}%。{v['note']}"
         elif name == "raw_spot_check" and v.get("checked"):
             line += f"；抽查 {v['checked']} 个观测，不一致 {len(v['failures'])} 个"
         elif v.get("reason"):

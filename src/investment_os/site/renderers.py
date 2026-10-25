@@ -545,6 +545,161 @@ ATTRIBUTION = Renderer(
 )
 
 
+# ---- 美国主要资产的长期回报与风险（描述与比较） ----------------------------------
+
+_ASSET_NAMES = {"SP500": ("标普 500", "S&P 500"), "SMALLCAP": ("小盘股", "Small caps"),
+                "TBOND10Y": ("10 年期国债", "10-year Treasury"), "BAA": ("Baa 公司债", "Baa corporate bonds"),
+                "TBILL3M": ("3 个月国库券", "3-month T-bills"), "REALESTATE": ("房地产", "Real estate"),
+                "GOLD": ("黄金", "Gold")}
+
+
+def _an(a: str) -> str:
+    return L(*_ASSET_NAMES.get(a, (a, a)))
+
+
+def _pc(v: Any, digits: int = 1, signed: bool = False) -> str:
+    return "—" if v is None else f"{num(v * 100, digits, signed)}%"
+
+
+def _asset_stats(result: dict[str, Any]) -> Html:
+    r = result["results"]
+    nom, real = r.get("nominal", {}), r.get("real", {})
+    if "SP500" not in nom:
+        return f'<p class="muted">{L("没有可计算的资产。", "No asset could be computed.")}</p>'
+    sp = nom["SP500"]
+    items = [stat(L("标普 500 年化回报", "S&P 500 annualized return"), _pc(sp["geometric"]),
+                  L(f"{r['first_year']}–{r['last_year']}，波动率 {_pc(sp['volatility'])}",
+                    f"{r['first_year']}–{r['last_year']}, volatility {_pc(sp['volatility'])}"))]
+    if real.get("SP500"):
+        rs = real["SP500"]
+        items.append(stat(L("扣除通胀后", "After inflation"), _pc(rs["geometric"]),
+                          L(f"{rs['first_year']}–{rs['last_year']}；10 年期国债 {_pc(real.get('TBOND10Y', {}).get('geometric'))}",
+                            f"{rs['first_year']}–{rs['last_year']}; 10Y Treasury {_pc(real.get('TBOND10Y', {}).get('geometric'))}")))
+    me = r.get("monthly_equity") or {}
+    items.append(stat(L("股票最大回撤", "Equity max drawdown"), _pc(me.get("max_drawdown", sp["max_drawdown"])),
+                      L(f"月度，{me['peak']} 至 {me['trough']}" if me else "年度数据",
+                        f"monthly, {me['peak']} to {me['trough']}" if me else "annual data")))
+    corr = r.get("correlations", {})
+    block = (corr.get("periods") or [corr.get("full")])[-1]
+    c = (block or {}).get("matrix", {}).get("SP500", {}).get("TBOND10Y")
+    if c is not None:
+        items.append(stat(L("股票与国债相关", "Stock–Treasury correlation"), num(c, 2, True),
+                          L(f"{block['first_year']}–{block['last_year']}，年度回报", f"{block['first_year']}–{block['last_year']}, annual returns")))
+    return _stats(items)
+
+
+def _asset_method(result: dict[str, Any]) -> list[Html]:
+    p = result["methods"].get("parameters", {})
+    periods = L("、", ", ").join(f"{a}–{b}" for a, b in p.get("periods", []))
+    return [
+        f"<li>{te(result['methods']['description'])}</li>",
+        L(f"<li>实际回报从 {p.get('real_start_year')} 年起，按 CPI 12 月对 12 月的年通胀换算。</li>",
+          f"<li>Real returns from {p.get('real_start_year')}, deflated by December-to-December CPI inflation.</li>"),
+        (L(f"<li>相关系数的时期事先固定为 {periods}，不按结果挑选；边界前后移动 {p.get('period_shift_years')} 年作为敏感性。</li>",
+           f"<li>Correlation periods are fixed in advance at {periods}, not chosen from results; boundaries shifted by "
+           f"{p.get('period_shift_years')} years as a sensitivity check.</li>") if periods else
+         L(f"<li>最近 {p.get('last_n_years')} 个完整年度；数据为年度，不截断年份。</li>",
+           f"<li>The last {p.get('last_n_years')} complete years; data are annual, so no year is split.</li>")),
+        L("<li>口径：债券回报由收益率推算；房地产为房价变化，不含租金；黄金在 1971 年以前价格基本固定；国库券为年内平均利率。</li>",
+          "<li>Definitions: bond returns are derived from yields; real estate is house-price change without rent; gold "
+          "prices were essentially fixed before 1971; T-bills are the average rate over the year.</li>"),
+        f"<li>{L('版本策略：', 'Version policy: ')}{e(USE_LABEL[use_key(result)])}"
+        + L("；只描述历史，不是预测或配置建议。</li>", "; describes history only, not a forecast or allocation advice.</li>"),
+    ]
+
+
+def _asset_detail(result: dict[str, Any]) -> Html:
+    r = result["results"]
+    nom, real, assets = r.get("nominal", {}), r.get("real", {}), r.get("assets", [])
+    if not nom:
+        return ""
+    head = L("<th>资产</th><th>几何平均</th><th>算术平均</th><th>波动率</th><th>最差年份</th><th>最大回撤</th><th>实际几何平均</th>",
+             "<th>Asset</th><th>Geometric</th><th>Arithmetic</th><th>Volatility</th><th>Worst year</th><th>Max drawdown</th>"
+             "<th>Real geometric</th>")
+    body = "".join(
+        f"<tr><td>{e(_an(a))}</td><td>{_pc(nom[a]['geometric'])}</td><td>{_pc(nom[a]['arithmetic'])}</td>"
+        f"<td>{_pc(nom[a]['volatility'])}</td><td>{_pc(nom[a]['worst'])} ({nom[a]['worst_year']})</td>"
+        f"<td>{_pc(nom[a]['max_drawdown'])}</td><td>{_pc((real.get(a) or {}).get('geometric'))}</td></tr>" for a in assets)
+    first = next(iter(real.values()), None)
+    out = (L(f"<p>{r['first_year']}–{r['last_year']}（{result['coverage']['years']} 个完整年度）；实际回报 "
+             f"{first['first_year'] if first else '—'}–{first['last_year'] if first else '—'}。</p>",
+             f"<p>{r['first_year']}–{r['last_year']} ({result['coverage']['years']} complete years); real returns "
+             f"{first['first_year'] if first else '—'}–{first['last_year'] if first else '—'}.</p>")
+           + f'<div class="scroll"><table class="compact"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>')
+    corr = r.get("correlations", {})
+    blocks = [b for b in [corr.get("full"), *corr.get("periods", [])] if b and "SP500" in b["matrix"]]
+    if blocks:
+        ch = L("<th>期间</th><th>股票与 10 年期国债</th><th>股票与 Baa 公司债</th><th>股票与黄金</th>",
+               "<th>Period</th><th>Stocks vs 10Y Treasury</th><th>Stocks vs Baa</th><th>Stocks vs gold</th>")
+        rows = "".join(f"<tr><td>{b['first_year']}–{b['last_year']}</td>"
+                       + "".join(f"<td>{num(b['matrix']['SP500'].get(x), 2, True)}</td>" for x in ("TBOND10Y", "BAA", "GOLD"))
+                       + "</tr>" for b in blocks)
+        out += (f'<p class="small">{L("年度回报的相关系数：", "Correlation of annual returns:")}</p>'
+                f'<div class="scroll"><table class="compact"><thead><tr>{ch}</tr></thead><tbody>{rows}</tbody></table></div>')
+    erp = r.get("equity_risk_premium", {})
+    if erp:
+        out += ('<p class="small muted">' + L("股票的历史超额回报（几何平均之差）：", "Historical equity excess return (difference of geometric means): ")
+                + e(L("；", "; ").join(f"{L('相对' + (' ' if _an(k)[0].isdigit() else ''), 'vs ')}{_an(k)} {num(v * 100, 1)} pp"
+                                      for k, v in erp.items())) + "</p>")
+    return out
+
+
+def _asset_evidence(result: dict[str, Any]) -> list[tuple[str, Html]]:
+    v = result["validation"]
+    rows = []
+    for key, label, fmt in (
+        ("cross_check_equity", ("股票跨来源核对", "Equity cross-source check"),
+         lambda x: L(f"与 {e(x['against'])} 的 {x['years']} 年年度回报相关系数 {num(x['correlation'], 3)}（阈值 {x['threshold']}）；指数不同，只核对高度一致",
+                     f"{x['years']} annual returns vs {e(x['against'])}: correlation {num(x['correlation'], 3)} (threshold {x['threshold']}); different indexes, consistency only")),
+        ("cross_check_tbill", ("国库券跨来源核对", "T-bill cross-source check"),
+         lambda x: L(f"与 {e(x['against'])} 年均值逐年比较 {x['years']} 年，最大差 {num(x['max_abs_diff_pp'], 2)} 个百分点（容差 {x['tolerance_pp']}）",
+                     f"{x['years']} years vs {e(x['against'])} annual means, max diff {num(x['max_abs_diff_pp'], 2)} pp (tolerance {x['tolerance_pp']})")),
+        ("cross_check_real", ("实际回报方向核对", "Real-return direction check"),
+         lambda x: L(f"与 {e(x['against'])} 的实际总收益在 {x['years']} 年中方向一致 {num(x['same_direction_share'] * 100, 0)}%（阈值 {num(x['threshold'] * 100, 0)}%）",
+                     f"Same direction as {e(x['against'])} real total return in {num(x['same_direction_share'] * 100, 0)}% of {x['years']} years (threshold {num(x['threshold'] * 100, 0)}%)")),
+        ("monthly_drawdown", ("月度回撤核对", "Monthly drawdown check"),
+         lambda x: L(f"月度 {_pc(x['monthly'])}，年度 {_pc(x['annual'])}；月度应不浅于年度",
+                     f"monthly {_pc(x['monthly'])}, annual {_pc(x['annual'])}; monthly should be at least as deep")),
+    ):
+        x = v.get(key)
+        if x:
+            rows.append((L(*label), f"{chip(x['status'], CHECK_LABEL.get(x['status'], ''))} {fmt(x)}"))
+    rows.append((L("与原表汇总", "Against the source's summary rows"),
+                 L("由数据重算的算术平均与 Damodaran 表中汇总一致（接入核验，2026-10-23）；原始文件为 .xls，原始快照抽查不适用",
+                   "Arithmetic means recomputed from the data match Damodaran's summary rows (access verification, "
+                   "2026-10-23); the raw file is .xls, so the raw snapshot spot check does not apply")))
+    return rows
+
+
+def _asset_summary(result: dict[str, Any]) -> list[str]:
+    v = result["validation"]
+    checks = [k for k in ("cross_check_equity", "cross_check_tbill", "cross_check_real", "monthly_drawdown") if k in v]
+    ok = sum(v[k]["status"] == "pass" for k in checks)
+    return [L(f"{result['coverage']['years']} 个完整年度", f"{result['coverage']['years']} complete years"),
+            L(f"跨来源与回撤核对 {ok}/{len(checks)} 通过", f"cross-source and drawdown checks {ok}/{len(checks)} passed")]
+
+
+ASSETS = Renderer(
+    key_stats=_asset_stats,
+    method_items=_asset_method,
+    coverage_title_t=("各资产统计与相关系数", "Asset statistics and correlations"),
+    coverage_section=_asset_detail,
+    evidence_rows=_asset_evidence,
+    evidence_summary=_asset_summary,
+    history_columns_t=((("期间", "Period"), lambda r: f"{r['results'].get('first_year')}–{r['results'].get('last_year')}"),
+                       (("标普 500 年化", "S&P 500 annualized"),
+                        lambda r: _pc(((r["results"].get("nominal") or {}).get("SP500") or {}).get("geometric")))),
+    chart_data=lambda r: None,
+    figures_t=(("risk_return.png", ("各资产的年化回报与波动率", "Annualized return and volatility by asset")),
+               ("wealth.png", ("各资产 1 美元的累计财富", "Cumulative wealth of $1 by asset")),
+               ("correlations.png", ("年度回报的相关系数", "Correlation of annual returns")),
+               ("rolling.png", ("标普 500 的滚动年化回报", "S&P 500 rolling annualized return"))),
+    use_note_t=("只描述历史，不是预测，也不是配置建议", "Describes history only; not a forecast or allocation advice"),
+    state_description_t=("实际回报最高的资产、最近时期股债相关的正负",
+                         "the asset with the highest real return and the sign of the recent stock–bond correlation"),
+)
+
+
 # ---- 未注册分支 ---------------------------------------------------------------
 
 def _unsupported_html(_: dict[str, Any]) -> Html:
@@ -569,7 +724,7 @@ UNSUPPORTED = Renderer(
 )
 
 RENDERERS: dict[str, Renderer] = {"rates_curve": CURVE, "par_bond_scenarios": BOND,
-                                  "curve_attribution": ATTRIBUTION}
+                                  "curve_attribution": ATTRIBUTION, "asset_history": ASSETS}
 
 
 def get_renderer(branch: str) -> Renderer:

@@ -5,8 +5,8 @@ title: Investment Research OS
 tagline: 基于公开免费数据、可追溯、可复现的市场研究
 
 # 研究的显示顺序：第一项为研究焦点（日常查看的滚动研究），首页在其研究方向下显示关键数字
-study_order: [ust_curve_last_year, ust_curve_attribution_last_year, ust_par_bond_rate_risk, ust_curve_2024,
-              ust_curve_attribution_2024]
+study_order: [ust_curve_last_year, ust_curve_attribution_last_year, us_asset_history_last_25y, ust_par_bond_rate_risk,
+              ust_curve_2024, ust_curve_attribution_2024, us_asset_history]
 
 studies:
   ust_curve_last_year: {label: 滚动研究}
@@ -14,6 +14,8 @@ studies:
   ust_curve_2024: {label: 历史案例}
   ust_curve_attribution_last_year: {label: 分解研究}
   ust_curve_attribution_2024: {label: 分解案例}
+  us_asset_history: {label: 长期统计}
+  us_asset_history_last_25y: {label: 滚动统计}
 
 # 研究框架（docs/research-map.md）：研究分支为主轴（架构 §4），分支下是研究方向。
 # 方向的数据、分析与验证状态由登记和运行记录自动得出，分支状态取其方向中最好的一项；
@@ -90,7 +92,7 @@ branches:
         summary: 美国股票市场与 Fama/French 因子的月度收益，以及标普综合指数 1871 年起的价格、股息、盈利与 CAPE 估值
         risk: [equity]
         datasets: [french_ff3, french_ff5, french_mom, damodaran_histret, shiller_price, shiller_fundamentals, shiller_cape, shiller_real]
-        studies: []
+        studies: [us_asset_history, us_asset_history_last_25y]
         can_answer: []
         cannot_answer:
           - 个股或具体指数基金的回报（只有组合层面的因子收益）
@@ -101,7 +103,7 @@ branches:
         summary: 穆迪 Baa、Aaa 公司债收益率相对 10 年期国债的利差（日度），以及由收益率推算的 Baa 公司债年度回报
         risk: [credit]
         datasets: [fred_baa10y, fred_aaa10y, damodaran_histret]
-        studies: []
+        studies: [us_asset_history, us_asset_history_last_25y]
         can_answer: []
         cannot_answer:
           - 期权调整利差与高收益债利差（只有穆迪收益率利差）
@@ -177,7 +179,7 @@ branches:
         name: 模拟组合风险
         summary: 股票、国库券、国债、公司债、房地产与黄金的年度回报（1928 年起），以及股票市场与无风险利率的月度收益；只做模拟组合，不需要真实账户
         datasets: [damodaran_histret, french_ff3]
-        studies: []
+        studies: [us_asset_history, us_asset_history_last_25y]
         can_answer: []
         cannot_answer:
           - 月度或日度的多资产组合风险（债券等只有年度回报）

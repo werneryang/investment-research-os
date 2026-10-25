@@ -68,6 +68,16 @@ jobs:
           uv run iros run config/studies/ust_curve_attribution_2024.yaml || s=1
           exit $s
 
+      # 美国主要资产的长期回报与风险（描述与比较）：需要 Damodaran 年度回报，另用 FRED CPI、French 与 Shiller 核对。
+      # 这些来源取得失败时研究可能失败，不阻断发布；两项互不影响
+      - name: Run asset history studies (optional sources; failures do not block)
+        continue-on-error: true
+        run: |
+          s=0
+          uv run iros run config/studies/us_asset_history.yaml || s=1
+          uv run iros run config/studies/us_asset_history_last_25y.yaml || s=1
+          exit $s
+
       - name: Verify runs reproduce from pinned inputs
         run: uv run iros verify --all
 
