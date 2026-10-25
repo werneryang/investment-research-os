@@ -43,7 +43,7 @@ uv run iros verify <run_id>
 scripts/snapshot-agent.sh install
 ```
 
-`scripts/snapshot-agent.sh status` 查看最近日志；手动取得全部定时数据集用 `uv run iros fetch --all`。
+定时任务最后把补不回来的数据备份到 `.env` 中 `IROS_BACKUP_DIR` 指定的文件夹（如 Google Drive），见 `scripts/backup-data.sh`。`scripts/snapshot-agent.sh status` 查看最近日志；手动取得全部定时数据集用 `uv run iros fetch --all`。
 
 ## 项目网站
 
