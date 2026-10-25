@@ -1,6 +1,6 @@
 # 研究设计：美国国债曲线变化的分解（草案）
 
-状态：待审阅，尚未实现。这是本项目第一项「解释与归因」成果（[架构](architecture.md) §6.3）；研究页、能力地图中的「解释与归因」目前标为尚未实现。实现会新增研究分支（`research/`），按 [README 的开发流程](../README.md#开发流程)走 PR。
+状态：已实现（2026-10-25，分支 `curve_attribution`，研究 `ust_curve_attribution_last_year`、`ust_curve_attribution_2024`；阈值与背景按 §11 的草案确认）。这是本项目第一项「解释与归因」成果（[架构](architecture.md) §6.3）；研究页、能力地图中的「解释与归因」目前标为尚未实现。实现会新增研究分支（`research/`），按 [README 的开发流程](../README.md#开发流程)走 PR。
 
 ## 1. 研究问题
 

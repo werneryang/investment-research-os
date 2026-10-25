@@ -31,6 +31,9 @@ CHECK_NOTES = Labels({
     "closed_form_checks": ("平价债券价格 = 面值；解析修正久期 = 封闭解；解析久期与凸性 ≈ 有限差分完整重新定价。",
                            "Par bond price = face value; analytic modified duration = closed form; analytic duration "
                            "and convexity ≈ finite-difference full repricing."),
+    "identity_check": ("每个共同日期核对 10Y 名义 − 实际收益率 − 盈亏平衡通胀，残差只应是取整误差。",
+                       "On every common date, 10Y nominal − real yield − breakeven inflation is checked; the residual "
+                       "should only be rounding."),
     "cross_check": ("Treasury 曲线 10Y 与 FRED DGS10 比对。两者同源（H.15），一致只说明接入与解析正确，不是独立验证。",
                     "Treasury curve 10Y compared with FRED DGS10. Both come from the same upstream (H.15), so "
                     "agreement only shows the download and parsing are correct; it is not independent validation."),
@@ -129,6 +132,7 @@ def verification_chip(ver: dict[str, Any] | None) -> str:
 def check_chips(result: dict[str, Any], ver: dict[str, Any] | None) -> str:
     out = []
     for key, label in (("closed_form_checks", L("封闭解与重新定价核对", "Closed-form and repricing checks")),
+                       ("identity_check", L("恒等式核对", "Identity check")),
                        ("cross_check", L("同源一致性检查", "Same-source consistency check")),
                        ("raw_spot_check", L("原始快照抽查", "Raw snapshot spot check"))):
         v = result.get("validation", {}).get(key)

@@ -27,11 +27,9 @@ phrases:
   政策利率与流动性: Policy rates & liquidity
   增长与就业: Growth & employment
   美国国债期限结构: US Treasury term structure
-  名义票面收益率曲线的水平、斜率、曲率与倒挂: Level, slope, curvature and inversion of the nominal par yield curve
   指定期间内各期限收益率、利差与曲率如何变化: How yields, spreads and curvature by tenor changed over a given period
   期间内倒挂持续了多少天、何时由倒挂转为正斜率: How many days the curve was inverted, and when it turned from inverted to positive
   持有国债或债券基金的回报（票面收益率不是持有期回报）: Returns from holding Treasuries or bond funds (par yield is not holding-period return)
-  曲线变化的原因（需要解释性研究与宏观数据）: Why the curve moved (needs explanatory research and macro data)
   未来曲线走势（需要预测模型与样本外验证）: Where the curve goes next (needs forecasting models and out-of-sample validation)
   债券利率敏感性: Bond rate sensitivity
   假设平价债券的久期、凸性、DV01 与收益率冲击情景: Duration, convexity, DV01 and yield-shock scenarios for hypothetical par bonds
@@ -347,6 +345,18 @@ phrases:
   "美国以外的发达市场股票因子月度收益（美元）：市场超额收益、规模、价值与无风险利率": "Developed ex-US stock factor monthly returns (USD): market excess return, size, value and the risk-free rate"
   "美国股票因子 1926-07 起（五因子 1963-07 起，CRSP）；国际因子 1990-07 起（新兴市场 1989-07 起，Bloomberg，美元计价）；月度，另有日度、周度与年度文件": "US equity factors from 1926-07 (five factors from 1963-07, CRSP); international factors from 1990-07 (emerging markets from 1989-07, Bloomberg, in USD); monthly, with daily, weekly and annual files also available"
   "观测期间结束后第 10 天结束时（来源时区）": "End of the 10th day after the observation period ends (source time zone)"
+  "10 年期与 2 年期的变化各有多少来自实际利率、通胀补偿、已实施的政策利率与对未来政策路径的定价": "How much of the 10-year and 2-year changes came from real rates, inflation compensation, the policy rate already set, and pricing of the future policy path"
+  "会计恒等式分解，不是因果推断": "Accounting-identity decomposition, not causal inference"
+  "会计恒等式分解：Δ10Y = Δ实际收益率 + Δ盈亏平衡通胀；Δ2Y = Δ联邦基金有效利率 + Δ(2Y − 联邦基金利率)；斜率变化由以上四项组成。只用所有输入都有观测值的共同日期，不插值、不前值填充；不估计参数，不作因果推断。": "Accounting-identity decomposition: Δ10Y = Δreal yield + Δbreakeven inflation; Δ2Y = Δeffective fed funds rate + Δ(2Y − fed funds); the slope change is made of these four parts. Only dates on which every input has an observation are used, with no interpolation or carry-forward; no parameters are estimated and no causal inference is made."
+  "使用最新修订数据；CPI 与美联储总资产只作背景，不参与分解": "Uses the latest revision; CPI and Fed total assets are background only and not part of the decomposition"
+  "分解案例": "Decomposition case"
+  "分解研究": "Decomposition study"
+  "名义票面收益率曲线的水平、斜率、曲率与倒挂，以及变化在实际利率、通胀补偿与政策利率之间的会计分解": "Level, slope, curvature and inversion of the nominal par yield curve, plus an accounting decomposition of its changes into real rates, inflation compensation and the policy rate"
+  "曲线变化的因果原因（会计分解只拆出实际利率、通胀补偿与政策利率各自的变化，不能区分期限溢价与政策预期）": "The causal reasons for curve moves (the accounting decomposition only separates real rates, inflation compensation and the policy rate, and cannot tell term premium from policy expectations)"
+  "期间内 10 年期与 2 年期国债收益率及其利差的变化，各有多少来自实际利率、通胀补偿、已实施的政策利率与市场对未来政策路径的定价？": "Over the period, how much of the changes in the 10-year and 2-year Treasury yields and their spread came from real rates, inflation compensation, the policy rate already set, and the market's pricing of the future policy path?"
+  "盈亏平衡通胀含通胀风险溢价与流动性溢价，不等于通胀预期；2Y 与联邦基金利率之差不能拆分为政策预期与期限溢价": "Breakeven inflation includes inflation-risk and liquidity premia and is not expected inflation; the 2Y-minus-fed-funds spread cannot be split into policy expectations and term premium"
+  "美国国债曲线变化的分解（2024 年）": "Decomposition of US Treasury curve changes (2024)"
+  "美国国债曲线变化的分解（近一年）": "Decomposition of US Treasury curve changes (last 12 months)"
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'

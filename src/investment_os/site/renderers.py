@@ -375,6 +375,176 @@ BOND = Renderer(
 )
 
 
+# ---- 曲线变化的会计分解（解释与归因） --------------------------------------------
+
+_ATTR_NAMES = {"real": ("实际收益率", "Real yield"), "breakeven": ("盈亏平衡通胀", "Breakeven inflation"),
+               "policy": ("联邦基金有效利率", "Effective fed funds rate"),
+               "spread": ("2 年期与联邦基金利率之差", "2-year minus fed funds"), "residual": ("取整残差", "Rounding residual")}
+
+
+def _attr_stats(result: dict[str, Any]) -> Html:
+    r = result["results"]
+    if not r.get("long_end"):
+        return f'<p class="muted">{L("没有可分解的期间。", "No period could be decomposed.")}</p>'
+    lg, sh, sl = r["long_end"], r["short_end"], r["slope"]
+    ident = result["validation"].get("identity_check", {})
+    return _stats([
+        stat(L(f"{lg['tenor']} 变化", f"{lg['tenor']} change"), f"{num(lg['nominal']['change_bp'], 0, True)} bp",
+             L(f"实际 {num(lg['real']['change_bp'], 0, True)} · 通胀补偿 {num(lg['breakeven']['change_bp'], 0, True)}",
+               f"real {num(lg['real']['change_bp'], 0, True)} · breakeven {num(lg['breakeven']['change_bp'], 0, True)}")),
+        stat(L(f"{sh['tenor']} 变化", f"{sh['tenor']} change"), f"{num(sh['nominal']['change_bp'], 0, True)} bp",
+             L(f"政策利率 {num(sh['policy']['change_bp'], 0, True)} · 利差 {num(sh['spread']['change_bp'], 0, True)}",
+               f"policy rate {num(sh['policy']['change_bp'], 0, True)} · spread {num(sh['spread']['change_bp'], 0, True)}")),
+        stat(L(f"{sl['label']} 变化", f"{sl['label']} change"), f"{num(sl['change_bp'], 0, True)} bp",
+             L(f"{num(sl['start'])} → {num(sl['end'])} 个百分点", f"{num(sl['start'])} → {num(sl['end'])} pp")),
+        stat(L("恒等式最大残差", "Max identity residual"),
+             f"{num(ident.get('max_abs_level_residual_bp'), 2)} bp",
+             L(f"{ident.get('checked', 0)} 个共同日期，容差 {ident.get('tolerance_bp')} bp",
+               f"{ident.get('checked', 0)} common dates, tolerance {ident.get('tolerance_bp')} bp")),
+    ])
+
+
+def _attr_method(result: dict[str, Any]) -> list[Html]:
+    th = result["results"].get("thresholds", {})
+    return [
+        f"<li>{te(result['methods']['description'])}</li>",
+        L(f"<li>占比只在名义变化不小于 {th.get('share_min_bp')} bp 时给出；期初、期末各前后移动 "
+          f"{th.get('sensitivity_days')} 个共同日期，占比范围超过 {th.get('sensitivity_max_range_pp')} 个百分点时只描述方向。</li>",
+          f"<li>Shares are given only when the nominal change is at least {th.get('share_min_bp')} bp; when shifting the "
+          f"start and end by up to {th.get('sensitivity_days')} common dates moves a share by more than "
+          f"{th.get('sensitivity_max_range_pp')} percentage points, only the direction is described.</li>"),
+        L("<li>解读的假设：盈亏平衡通胀含通胀风险溢价与流动性溢价，不等于通胀预期；实际收益率含实际期限溢价；"
+          "2 年期与联邦基金利率之差混合了政策路径预期与期限溢价，本研究不能区分。</li>",
+          "<li>Interpretive assumptions: breakeven inflation includes inflation-risk and liquidity premia and is not "
+          "expected inflation; the real yield includes a real term premium; the 2-year-minus-fed-funds spread mixes "
+          "expected policy and term premium, which this study cannot separate.</li>"),
+        L("<li>CPI 同比与美联储总资产只作背景，不参与分解；不作因果主张，也不是预测。</li>",
+          "<li>CPI inflation and Fed total assets are background only and not part of the decomposition; no causal "
+          "claim and no forecast.</li>"),
+        f"<li>{L('版本策略：', 'Version policy: ')}{e(USE_LABEL[use_key(result)])}</li>",
+    ]
+
+
+def _attr_detail(result: dict[str, Any]) -> Html:
+    r, cov = result["results"], result["coverage"]
+    if not r.get("long_end"):
+        return ""
+    lg, sh, sl, sens = r["long_end"], r["short_end"], r["slope"], r["sensitivity"]
+
+    def share(v: Any) -> str:
+        return "—" if v is None else f"{num(v, 0)}%"
+
+    def rng(k: str) -> str:
+        x = sens.get(k, {})
+        if x.get("min") is None:
+            return "—"
+        return f"{num(x['min'], 0)}%–{num(x['max'], 0)}%" + ("" if x["stable"] else L("（不稳定）", " (unstable)"))
+
+    rows = [
+        (f"{lg['tenor']}", lg["nominal"], "", ""),
+        (L(*_ATTR_NAMES["real"]), lg["real"], share(lg["shares_pct"]["real"]), rng("real")),
+        (L(*_ATTR_NAMES["breakeven"]), lg["breakeven"], share(lg["shares_pct"]["breakeven"]), rng("breakeven")),
+        (f"{sh['tenor']}", sh["nominal"], "", ""),
+        (L(*_ATTR_NAMES["policy"]), sh["policy"], share(sh["shares_pct"]["policy"]), rng("policy")),
+        (L(*_ATTR_NAMES["spread"]), sh["spread"], share(sh["shares_pct"]["spread"]), rng("spread")),
+        (sl["label"], {"start": sl["start"], "end": sl["end"], "change_bp": sl["change_bp"]}, "", ""),
+    ]
+    body = "".join(f"<tr><td>{e(n)}</td><td>{num(x['start'])}</td><td>{num(x['end'])}</td>"
+                   f"<td>{num(x['change_bp'], 0, True)}</td><td>{a}</td><td>{b}</td></tr>" for n, x, a, b in rows)
+    head = L("<th>项目</th><th>期初 %</th><th>期末 %</th><th>变化 bp</th><th>占名义变化</th><th>端点敏感性</th>",
+             "<th>Item</th><th>Start %</th><th>End %</th><th>Change bp</th><th>Share of nominal</th>"
+             "<th>Endpoint sensitivity</th>")
+    # 不足 0.5 bp 的取整残差显示为 0，避免出现「−0」
+    contrib = " · ".join(f"{L(*_ATTR_NAMES[k])} {num(0.0 if abs(v) < 0.5 else v, 0, True)}"
+                         for k, v in sl["contributions_bp"].items())
+    out = (L(f"<p>{e(cov['start_date'])} 至 {e(cov['end_date'])}，共同观测日 {cov['common_days']} 天"
+             f"（请求 {e(cov['requested_start'])} 至 {e(cov['requested_end'])}）。</p>",
+             f"<p>{e(cov['start_date'])} to {e(cov['end_date'])}, {cov['common_days']} common observation dates "
+             f"(requested {e(cov['requested_start'])} to {e(cov['requested_end'])}).</p>")
+           + f'<div class="scroll"><table class="compact"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>'
+           + f'<p class="small">{L("斜率变化的组成（短端项以负号计入）：", "Slope change components (short-end terms enter with a minus sign): ")}{contrib} bp</p>')
+    bg = r.get("background", {})
+    notes = []
+    if "cpi_yoy" in bg:
+        c = bg["cpi_yoy"]
+        notes.append(L(f"CPI 同比 {c['start']['month']} {num(c['start']['value_pct'], 1)}% → {c['end']['month']} "
+                       f"{num(c['end']['value_pct'], 1)}%",
+                       f"CPI inflation {c['start']['month']} {num(c['start']['value_pct'], 1)}% → {c['end']['month']} "
+                       f"{num(c['end']['value_pct'], 1)}%"))
+    if "fed_assets" in bg:
+        f = bg["fed_assets"]
+        notes.append(L(f"美联储总资产 {num(f['change_pct'], 1, True)}%（{f['start']['date']} → {f['end']['date']}）",
+                       f"Fed total assets {num(f['change_pct'], 1, True)}% ({f['start']['date']} → {f['end']['date']})"))
+    if notes:
+        out += (f'<p class="small muted">{L("背景（只作描述，不参与分解）：", "Background (descriptive only, not part of the decomposition): ")}'
+                + e(L("；", "; ").join(notes)) + "</p>")
+    return out
+
+
+def _attr_evidence(result: dict[str, Any]) -> list[tuple[str, Html]]:
+    v, cov = result["validation"], result["coverage"]
+    rows = []
+    ident = v.get("identity_check")
+    if ident:
+        rows.append((L("恒等式核对", "Identity check"),
+                     f"{chip(ident['status'], CHECK_LABEL.get(ident['status'], ''))} " + L(
+                         f"{ident['checked']} 个共同日期，名义 − 实际 − 盈亏平衡的最大残差 "
+                         f"{num(ident['max_abs_level_residual_bp'], 2)} bp（容差 {ident['tolerance_bp']} bp）",
+                         f"{ident['checked']} common dates; max residual of nominal − real − breakeven "
+                         f"{num(ident['max_abs_level_residual_bp'], 2)} bp (tolerance {ident['tolerance_bp']} bp)")))
+    cc = v.get("cross_check")
+    if cc and cc.get("matched"):
+        rows.append((L("同源一致性检查", "Same-source consistency check"),
+                     f"{chip(cc['status'], CHECK_LABEL.get(cc['status'], ''))} " + L(
+                         f"Treasury {cc['tenor']} 与 {e(cc['against'])}：{cc['matched']} 个共同日期，最大差 "
+                         f"{num(cc.get('max_abs_diff'), 4)}；两者同源，不是独立验证",
+                         f"Treasury {cc['tenor']} vs {e(cc['against'])}: {cc['matched']} common dates, max diff "
+                         f"{num(cc.get('max_abs_diff'), 4)}; same upstream, not independent validation")))
+    rows.append((L("共同观测日期", "Common observation dates"),
+                 L(f"{cov['common_days']} 天；不插值、不前值填充", f"{cov['common_days']} dates; no interpolation or carry-forward")))
+    sens = result["results"].get("sensitivity", {})
+    stable = [L(*_ATTR_NAMES[k]) for k in ("real", "breakeven", "policy", "spread") if sens.get(k, {}).get("stable")]
+    rows.append((L("端点敏感性", "Endpoint sensitivity"),
+                 L(f"期初、期末各前后移动 {sens.get('shift_days')} 个共同日期；占比稳定：",
+                   f"start and end shifted by up to {sens.get('shift_days')} common dates; stable shares: ")
+                 + (e(L("、", ", ").join(stable)) if stable else L("无", "none"))))
+    return rows
+
+
+def _attr_summary(result: dict[str, Any]) -> list[str]:
+    ident = result["validation"].get("identity_check", {})
+    out = [L("共同观测日 ", "Common dates ") + str(result["coverage"].get("common_days"))]
+    if ident:
+        out.append(L(f"恒等式核对{'通过' if ident['status'] == 'pass' else '未通过'}",
+                     f"identity check {'passed' if ident['status'] == 'pass' else 'failed'}"))
+    return out
+
+
+ATTRIBUTION = Renderer(
+    key_stats=_attr_stats,
+    method_items=_attr_method,
+    coverage_title_t=("分解明细与背景", "Decomposition detail and background"),
+    coverage_section=_attr_detail,
+    evidence_rows=_attr_evidence,
+    evidence_summary=_attr_summary,
+    history_columns_t=((("期末", "End"), lambda r: r["results"].get("end_date") or "—"),
+                       (("10Y 变化 bp", "10Y change bp"),
+                        lambda r: num(((r["results"].get("long_end") or {}).get("nominal") or {}).get("change_bp"), 0, True)),
+                       (("斜率变化 bp", "Slope change bp"),
+                        lambda r: num((r["results"].get("slope") or {}).get("change_bp"), 0, True))),
+    chart_data=lambda r: None,
+    figures_t=(("attribution_bars.png", ("各部分对 10Y、2Y 与斜率变化的贡献",
+                                         "Contributions to the 10Y, 2Y and slope changes")),
+               ("attribution_path.png", ("各部分相对期初的逐日累计变化", "Daily cumulative change of each part"))),
+    use_note_t=("使用最新修订数据的会计分解，不是因果解释或预测",
+                "Accounting decomposition on the latest revision; not a causal explanation or forecast"),
+    state_description_t=("10Y 的主要来源、2Y 相对政策利率的方向、斜率变陡或变平",
+                         "the main source of the 10Y move, the 2Y move relative to the policy rate, and whether the "
+                         "curve steepened or flattened"),
+    rule_params_label=lambda p: L(f"基本持平阈值 {p.get('flat_bp')} bp", f"flat threshold {p.get('flat_bp')} bp"),
+)
+
+
 # ---- 未注册分支 ---------------------------------------------------------------
 
 def _unsupported_html(_: dict[str, Any]) -> Html:
@@ -398,7 +568,8 @@ UNSUPPORTED = Renderer(
     supported=False,
 )
 
-RENDERERS: dict[str, Renderer] = {"rates_curve": CURVE, "par_bond_scenarios": BOND}
+RENDERERS: dict[str, Renderer] = {"rates_curve": CURVE, "par_bond_scenarios": BOND,
+                                  "curve_attribution": ATTRIBUTION}
 
 
 def get_renderer(branch: str) -> Renderer:

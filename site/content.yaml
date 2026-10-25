@@ -5,12 +5,15 @@ title: Investment Research OS
 tagline: 基于公开免费数据、可追溯、可复现的市场研究
 
 # 研究的显示顺序：第一项为研究焦点（日常查看的滚动研究），首页在其研究方向下显示关键数字
-study_order: [ust_curve_last_year, ust_par_bond_rate_risk, ust_curve_2024]
+study_order: [ust_curve_last_year, ust_curve_attribution_last_year, ust_par_bond_rate_risk, ust_curve_2024,
+              ust_curve_attribution_2024]
 
 studies:
   ust_curve_last_year: {label: 滚动研究}
   ust_par_bond_rate_risk: {label: 情景研究}
   ust_curve_2024: {label: 历史案例}
+  ust_curve_attribution_last_year: {label: 分解研究}
+  ust_curve_attribution_2024: {label: 分解案例}
 
 # 研究框架（docs/research-map.md）：研究分支为主轴（架构 §4），分支下是研究方向。
 # 方向的数据、分析与验证状态由登记和运行记录自动得出，分支状态取其方向中最好的一项；
@@ -57,16 +60,17 @@ branches:
     directions:
       - id: us_treasury_curve
         name: 美国国债期限结构
-        summary: 名义票面收益率曲线的水平、斜率、曲率与倒挂
+        summary: 名义票面收益率曲线的水平、斜率、曲率与倒挂，以及变化在实际利率、通胀补偿与政策利率之间的会计分解
         risk: [rates]
-        datasets: [ust_par_yield_curve, fred_dgs10]
-        studies: [ust_curve_last_year, ust_curve_2024]
+        datasets: [ust_par_yield_curve, fred_dgs10, fred_dfii10, fred_t10yie, fred_dff]
+        studies: [ust_curve_last_year, ust_curve_2024, ust_curve_attribution_last_year, ust_curve_attribution_2024]
         can_answer:
           - 指定期间内各期限收益率、利差与曲率如何变化
           - 期间内倒挂持续了多少天、何时由倒挂转为正斜率
+          - 10 年期与 2 年期的变化各有多少来自实际利率、通胀补偿、已实施的政策利率与对未来政策路径的定价
         cannot_answer:
           - 持有国债或债券基金的回报（票面收益率不是持有期回报）
-          - 曲线变化的原因（需要解释性研究与宏观数据）
+          - 曲线变化的因果原因（会计分解只拆出实际利率、通胀补偿与政策利率各自的变化，不能区分期限溢价与政策预期）
           - 未来曲线走势（需要预测模型与样本外验证）
       - id: rates_duration_risk
         name: 债券利率敏感性
