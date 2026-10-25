@@ -106,12 +106,15 @@ def test_last_n_years_takes_the_most_recent_complete_years():
 
 def test_cross_checks_and_monthly_drawdown():
     months = pd.date_range("1930-01-01", "1969-12-01", freq="MS")
-    # 月度市场收益：按年复利后等于年度回报（每月相同），并在 1931 年中段加入月内深跌再回升
+    # 月度市场收益：按年复利后等于年度回报（每月相同）；在年度回撤谷底那一年的 5 月深跌一半、6 月回升，
+    # 年度回报不变，但月度回撤更深
+    wealth = (1 + pd.Series(SP)).cumprod()
+    trough = int((wealth / wealth.cummax() - 1).idxmin())
     rows = []
     for m in months:
         monthly = (1 + SP[m.year]) ** (1 / 12) - 1
-        if m.year == 1931 and m.month in (5, 6):
-            monthly = -0.30 if m.month == 5 else (1 + (1 + SP[1931]) ** (1 / 12) - 1) ** 2 / 0.70 - 1
+        if m.year == trough and m.month in (5, 6):
+            monthly = (1 + monthly) * 0.5 - 1 if m.month == 5 else (1 + monthly) / 0.5 - 1
         rows += [("FF3_Mkt-RF", m.strftime("%Y-%m-%d"), monthly * 100 - 0.1), ("FF3_RF", m.strftime("%Y-%m-%d"), 0.1)]
     ff = _input("monthly_market", "french_ff3", rows)
     tb_ok = _input("tbill_check", "fred_dtb3", [("DTB3", f"{y}-06-01", BILL[y] * 100 + 0.2) for y in YEARS])
