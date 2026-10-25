@@ -1,0 +1,189 @@
+{
+  "run_id": "us_asset_history-20261025T232537Z-37c9a137",
+  "study_id": "us_asset_history",
+  "study_path": "config/studies/us_asset_history.yaml",
+  "study_config": {
+    "study_id": "us_asset_history",
+    "title": "美国主要资产的长期回报与风险（1928 年起）",
+    "question": "1928 年以来，美国股票、小盘股、长期国债、公司债、国库券、房地产与黄金的回报与风险各是多少？扣除通胀后呢？资产之间的相关性在不同年代是否稳定？",
+    "result_type": "descriptive",
+    "branch": "asset_history",
+    "scope": {
+      "market": "US",
+      "currency": "USD",
+      "start": "1928-01-01",
+      "end": "2025-12-31",
+      "frequency": "annual",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-10-25T23:25:37+00:00",
+      "data_checked_at": {
+        "damodaran_histret": "2026-10-25T23:25:24+00:00",
+        "fred_cpiaucsl": "2026-10-25T23:25:19+00:00",
+        "french_ff3": "2026-10-25T23:25:22+00:00",
+        "shiller_real": "2026-10-25T23:25:27+00:00",
+        "fred_dtb3": "2026-10-25T23:25:21+00:00"
+      }
+    },
+    "data": {
+      "annual": "damodaran_histret",
+      "cpi": {
+        "dataset": "fred_cpiaucsl",
+        "required": false
+      },
+      "monthly_market": {
+        "dataset": "french_ff3",
+        "required": false
+      },
+      "long_real": {
+        "dataset": "shiller_real",
+        "required": false
+      },
+      "tbill_check": {
+        "dataset": "fred_dtb3",
+        "required": false
+      }
+    },
+    "method": {
+      "assets": [
+        "SP500",
+        "SMALLCAP",
+        "TBOND10Y",
+        "BAA",
+        "TBILL3M",
+        "REALESTATE",
+        "GOLD"
+      ],
+      "real_start_year": 1948,
+      "periods": [
+        [
+          1928,
+          1969
+        ],
+        [
+          1970,
+          1999
+        ],
+        [
+          2000,
+          2025
+        ]
+      ],
+      "period_shift_years": 5,
+      "rolling_years": 20
+    },
+    "benchmark": "3 个月国库券（风险溢价的基准）",
+    "evaluation": [
+      "由数据重算的平均与原表汇总一致（接入核验）",
+      "标普 500 与 CRSP 市场年度回报相关 ≥ 0.98",
+      "国库券与 FRED DTB3 年均值差异 ≤ 0.5 个百分点",
+      "月度最大回撤不浅于年度",
+      "固定数据版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "只描述美国历史；美国是事后表现最好的市场之一，存在幸存者偏差，不代表其他市场或未来",
+      "债券回报由收益率推算，不是指数实际持有回报；房地产为房价变化，不含租金；黄金在 1971 年以前价格基本固定；国库券回报为年内平均利率",
+      "不含交易成本、税负与管理费；年度数据低估年内回撤",
+      "实际回报从 1948 年起（CPI 12 月对 12 月）；相关系数只描述线性同向程度，样本只有几十个年度观测",
+      "历史统计不是预测，也不是配置建议"
+    ]
+  },
+  "study_config_hash": "281ab84a01b2e86401c1f5dbd69dcf1d87ecf54c5c2bfa761d8e1dc7b936cdfa",
+  "started_at": "2026-10-25T23:25:37+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "92ef3aa22228171034f60542c7569fb1855a89147057d92cb6e84307b6ec29d0",
+    "git_commit": "bbc17d1edbbbfb1a97c2e5bb3fa8f7dc5755e0f7",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.3",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "success",
+  "inputs": [
+    {
+      "role": "annual",
+      "used": true,
+      "dataset_id": "damodaran_histret",
+      "version_id": "v20261025T232524Z-864ffa5e",
+      "content_hash": "864ffa5e6134ff8ec097a83c6c6c40804b27d852a4af4408d36493e65724668e",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "cpi",
+      "used": true,
+      "dataset_id": "fred_cpiaucsl",
+      "version_id": "v20261025T232519Z-3ff089d9",
+      "content_hash": "3ff089d9e12ae49a04b96f2c176ec853a182ed0893b58b64c5613878912b8fe0",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "monthly_market",
+      "used": true,
+      "dataset_id": "french_ff3",
+      "version_id": "v20261025T232522Z-97921212",
+      "content_hash": "979212127ddb5e37f3b2ff0cf5deb226fbe971688b7182c24435b16b11f8eb72",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "long_real",
+      "used": true,
+      "dataset_id": "shiller_real",
+      "version_id": "v20261025T232527Z-9368882b",
+      "content_hash": "9368882b66d98f3f24f9286b3e7afcad20404fc6048d8d32096ed4cd4f9c75b9",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "tbill_check",
+      "used": true,
+      "dataset_id": "fred_dtb3",
+      "version_id": "v20261025T232521Z-345f4b12",
+      "content_hash": "345f4b12de4e354593a3a3c9112da224d2a20f8d9b8350ebb5f081e9560462e3",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    }
+  ],
+  "result_hash": "3a1e3fae5b404853438102ff486b741e7a81db6140a59020b80e83775af95161",
+  "warnings": [],
+  "unsupported": [],
+  "outputs": [
+    {
+      "path": "runs/us_asset_history-20261025T232537Z-37c9a137/result.json",
+      "sha256": "a66298198c08b22deaf7de1c2f97d2f8d79fa39e6f8386468c40677abfa96be1"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261025T232537Z-37c9a137/report.md",
+      "sha256": "817290e1f1fcdb83c962b0a61b67a93f47743ef87e87f2772930fa1cd3c0fb05"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261025T232537Z-37c9a137/report.html",
+      "sha256": "3c331c5cb72de921eea01bde5225b8ec020fe37af463402c1bac7aebb8b80695"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261025T232537Z-37c9a137/figures/risk_return.png",
+      "sha256": "abf6d147c93c0f028ac84802212dc626b6e9d10a4d2f47e13313daeeec666bb8"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261025T232537Z-37c9a137/figures/wealth.png",
+      "sha256": "f55101aebbabbf927b3213978cdfb96afb88ec181b68932ed8ffdcae3e86c0d0"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261025T232537Z-37c9a137/figures/correlations.png",
+      "sha256": "e68837847f7d509fa84fd17417115dbd2df63eb5e01805a02928b171e3ac61f7"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261025T232537Z-37c9a137/figures/rolling.png",
+      "sha256": "c98977d828a92223ddc8a144081ce0edbfebd55cbc4ee7b9538df751b2c15688"
+    }
+  ],
+  "finished_at": "2026-10-25T23:25:38+00:00"
+}
