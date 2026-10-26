@@ -452,15 +452,48 @@ def asset_history_state(result: dict[str, Any]) -> dict[str, str]:
     return out
 
 
+def industry_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
+    r = result["results"]
+    out = []
+    for window in ("2001–2025", "2016–2025"):
+        values = [(i,x) for i,x in enumerate(r["summary"]) if x["window"]==window and x["status"]=="ok" and x["sector"]!="Market"]
+        if not values:
+            continue
+        i, best = max(values, key=lambda pair: pair[1]["cagr"])
+        _, worst = min(values, key=lambda pair: pair[1]["cagr"])
+        out.append(_finding("ranking_"+window,
+            f"{window}，{best['sector']} 年化总收益最高（{best['cagr']:.2%}），{worst['sector']} 最低（{worst['cagr']:.2%}）；领先行业的月度最大回撤为 {best['max_drawdown']:.2%}。排名依赖研究窗口。",
+            {f"results.summary.{i}.cagr":best["cagr"],f"results.summary.{i}.max_drawdown":best["max_drawdown"]}))
+    for i, row in enumerate(result["tables"].get("fundamentals", [])):
+        if row["year"] != 2025:
+            continue
+        metric = row["metrics"]["revenue"]
+        margin = row["ratios"].get("net_margin", {})
+        label = {"energy":"能源","trade":"批零","technology":"半导体、软件与计算机服务"}.get(row["topic"],row["topic"])
+        if metric["matched_growth"] is not None and margin.get("value") is not None:
+            out.append(_finding("earnings_"+row["topic"],
+                f"2025 财年末所在年，{label}样本含 {row['companies']} 家；{metric['matched_count']} 家可比公司营收同比 {metric['matched_growth']:.2%}，有配对利润数据的合计净利率为 {margin['value']:.2%}。这支持分析样本经营变化，不能作为 French 整体盈利。",
+                {f"tables.fundamentals.{i}.metrics.revenue.matched_growth":metric["matched_growth"],f"tables.fundamentals.{i}.ratios.net_margin.value":margin["value"]}))
+    if r.get("guidance_events"):
+        out.append(_finding("guidance_scope",f"指引案例覆盖 {r['guidance_companies']} 家公司、{r['guidance_events']} 条事前预测；每条与同口径首次结果匹配。选样并非随机，不能把案例胜率推广到全行业。",{"results.guidance_events":r["guidance_events"]}))
+    return out
+
+
+def industry_state(result: dict[str, Any]) -> dict[str, Any]:
+    return {"行业数": result["results"]["industry_count"], "指引案例数": result["results"]["guidance_events"]}
+
+
 _FINDERS = {"rates_curve": rates_curve_findings, "par_bond_scenarios": par_bond_findings,
-            "curve_attribution": curve_attribution_findings, "asset_history": asset_history_findings}
+            "curve_attribution": curve_attribution_findings, "asset_history": asset_history_findings,
+            "industry": industry_findings}
 _STATES = {"par_bond_scenarios": par_bond_state, "curve_attribution": curve_attribution_state,
-           "asset_history": asset_history_state}
+           "asset_history": asset_history_state, "industry": industry_state}
 
 # 规则版本：人工维护的名称；规则改动时递增。指纹会自动反映代码改动，两者一起展示
 # rates_curve v2（2026-10-23）：「尚未发布」改为「未取得（下载时尚未到保守可用时点）」
 RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v2", "par_bond_scenarios": "par_bond-findings.v1",
-                 "curve_attribution": "curve_attribution-findings.v1", "asset_history": "asset_history-findings.v1"}
+                 "curve_attribution": "curve_attribution-findings.v1", "asset_history": "asset_history-findings.v1",
+                 "industry": "industry-findings.v1"}
 
 
 def findings(result: dict[str, Any]) -> list[dict[str, Any]]:
@@ -506,6 +539,8 @@ def rule_fingerprint(branch: str) -> str | None:
     finder = _FINDERS.get(branch)
     if finder is None:
         return None
+    if branch == "industry":
+        return hashlib.sha256((inspect.getsource(finder)+inspect.getsource(industry_state)).encode()).hexdigest()[:16]
     if branch == "par_bond_scenarios":
         parts = [inspect.getsource(f) for f in (finder, par_bond_state, _pct, _pp)] + [repr(ERROR_BANDS_PP)]
         return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
@@ -524,7 +559,7 @@ def rule_fingerprint(branch: str) -> str | None:
 def rule_params(branch: str) -> dict[str, Any]:
     if branch == "par_bond_scenarios":
         return {"error_bands_pp": list(ERROR_BANDS_PP)}
-    if branch == "asset_history":
+    if branch in ("asset_history", "industry"):
         return {}
     return {"flat_bp": FLAT_BP} if branch in _FINDERS else {}
 

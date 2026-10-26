@@ -1,0 +1,119 @@
+# Six deliberately selected cases, one target from each calendar year 2020–2025,
+# plus two vintages of Intel FY2022 guidance. Selection is not a random sample.
+# Values are USD billions here; preparation converts to USD. Original releases
+# and exact source hashes are stored locally. No analyst consensus is included.
+cases:
+  - id: amd_2020q4
+    company: AMD
+    target: 2020Q4
+    forecast_date: '2020-10-27'
+    actual_date: '2021-01-26'
+    low: 2.9
+    high: 3.1
+    actual: 3.244
+    forecast_url: https://ir.amd.com/financial-information/sec-filings/content/0000002488-20-000161/q32020991.htm
+    actual_url: https://ir.amd.com/financial-information/sec-filings/content/0000002488-21-000009/q420991.htm
+    forecast_locator: Current Outlook, fourth quarter of 2020
+    actual_locator: GAAP Quarterly Financial Results, Revenue ($M), Q4 2020
+    forecast_anchor: $3.0 billion, plus or minus $100 million
+    actual_anchor: '3,244'
+  - id: amazon_2021q3
+    company: Amazon
+    target: 2021Q3
+    forecast_date: '2021-07-29'
+    actual_date: '2021-10-28'
+    low: 106
+    high: 112
+    actual: 110.812
+    forecast_url: https://press.aboutamazon.com/2021/7/amazon-com-announces-second-quarter-results
+    actual_url: https://press.aboutamazon.com/2021/10/amazon-com-announces-third-quarter-results
+    forecast_locator: Third Quarter 2021 Guidance, net sales
+    actual_locator: Consolidated Statements of Operations, net sales
+    forecast_anchor: $106.0 billion and $112.0 billion
+    actual_anchor: '110,812'
+  - id: intel_2022q2
+    company: Intel
+    target: 2022Q2
+    forecast_date: '2022-04-28'
+    actual_date: '2022-07-28'
+    low: 18
+    high: 18
+    actual: 15.321
+    forecast_url: https://www.intc.com/news-events/press-releases/detail/1541/intel-reports-first-quarter-2022-financial-results
+    actual_url: https://www.intc.com/filings-reports/all-sec-filings/content/0000050863-22-000029/q222_earningsrelease.htm
+    forecast_locator: Business Outlook, Q2 2022, GAAP Revenue, approximately
+    actual_locator: Consolidated Condensed Statements of Income, Jul 2 2022, Net revenue
+    forecast_anchor: $18.0 billion
+    actual_anchor: '15,321'
+  - id: adobe_2023q2
+    company: Adobe
+    target: FY2023Q2
+    forecast_date: '2023-03-15'
+    actual_date: '2023-06-15'
+    low: 4.75
+    high: 4.78
+    actual: 4.816
+    forecast_url: https://www.sec.gov/Archives/edgar/data/796343/000079634323000044/adbeex991q123.htm
+    actual_url: https://www.sec.gov/Archives/edgar/data/796343/000079634323000133/adbeex991q223.htm
+    forecast_locator: Second quarter fiscal 2023 targets, total revenue
+    actual_locator: Condensed Consolidated Statements of Income, Total revenue, three months
+    forecast_anchor: $4.75 billion to $4.78 billion
+    actual_anchor: '4,816'
+  - id: nvidia_2024q3
+    company: NVIDIA
+    target: FY2025Q3
+    forecast_date: '2024-08-28'
+    actual_date: '2024-11-20'
+    low: 31.85
+    high: 33.15
+    actual: 35.082
+    forecast_url: https://investor.nvidia.com/news/press-release-details/2024/NVIDIA-Announces-Financial-Results-for-Second-Quarter-Fiscal-2025/default.aspx
+    actual_url: https://investor.nvidia.com/news/press-release-details/2024/NVIDIA-Announces-Financial-Results-for-Third-Quarter-Fiscal-2025/default.aspx
+    forecast_locator: Outlook for third quarter FY2025, revenue 32.5 billion plus or minus 2%
+    actual_locator: Q3 Fiscal 2025 Summary, GAAP revenue
+    forecast_anchor: $32.5 billion, plus or minus 2%
+    actual_anchor: '35,082'
+  - id: salesforce_2025q1
+    company: Salesforce
+    target: FY2026Q1
+    forecast_date: '2025-02-26'
+    actual_date: '2025-05-28'
+    low: 9.71
+    high: 9.76
+    actual: 9.8
+    precision_note: Actual is the release's rounded 9.8 billion headline; deviation is approximate.
+    forecast_url: https://investor.salesforce.com/news/news-details/2025/Salesforce-Announces-Fourth-Quarter-and-Fiscal-Year-2025-Results/
+    actual_url: https://www.salesforce.com/news/press-releases/2025/05/28/fy26-q1-earnings/
+    forecast_locator: Guidance Q1 FY26, total revenue, reported currency
+    actual_locator: First quarter financial highlights, reported revenue (rounded)
+    forecast_anchor: $9.71 - $9.76 billion
+    actual_anchor: $9.8 billion
+  - id: intel_2022fy_april
+    company: Intel
+    target: FY2022
+    forecast_date: '2022-04-28'
+    actual_date: '2023-01-26'
+    low: 76
+    high: 76
+    actual: 63.054
+    forecast_url: https://www.intc.com/news-events/press-releases/detail/1541/intel-reports-first-quarter-2022-financial-results
+    actual_url: https://www.intc.com/news-events/press-releases/detail/1600/intel-reports-fourth-quarter-and-full-year-2022-financial
+    forecast_locator: Business Outlook, Full-Year 2022, GAAP revenue
+    actual_locator: Twelve Months Ended Dec 31 2022, net revenue
+    forecast_anchor: $76.0 billion
+    actual_anchor: '63,054'
+  - id: intel_2022fy_july
+    company: Intel
+    target: FY2022
+    forecast_date: '2022-07-28'
+    actual_date: '2023-01-26'
+    low: 65
+    high: 68
+    actual: 63.054
+    revises: intel_2022fy_april
+    forecast_url: https://www.intc.com/filings-reports/all-sec-filings/content/0000050863-22-000029/q222_earningsrelease.htm
+    actual_url: https://www.intc.com/news-events/press-releases/detail/1600/intel-reports-fourth-quarter-and-full-year-2022-financial
+    forecast_locator: Full-Year 2022 outlook, GAAP revenue
+    actual_locator: Twelve Months Ended Dec 31 2022, net revenue
+    forecast_anchor: $65 billion to $68 billion
+    actual_anchor: '63,054'

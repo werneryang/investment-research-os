@@ -6,6 +6,25 @@
 # patterns：运行时带日期、数字生成的句子。zh 是整句匹配的正则，命名分组在 en 中以 {name} 引用；
 #   分组内容本身再查 phrases（列表中的「、」换成英文逗号）。
 phrases:
+  四层行业专题: Four-layer industry dossier
+  12 行业总览: 12-industry overview
+  49 行业细分: 49-industry detail
+  美国 12 行业的长期回报、风险与经济背景: US 12 industries — long-run returns, risk and economic context
+  美国 49 行业的长期回报、风险与经济背景: US 49 industries — long-run returns, risk and economic context
+  美国行业：经济、盈利、估值与指引专题: US industries — economy, earnings, valuation and guidance
+  哪些行业回报有经营支持，哪些差异体现风险、样本和估值？: How do business results, risk, sample composition and valuation relate to industry returns?
+  美国 12 与 49 行业的收益风险、因子暴露，以及经济、历史公司财报、估值和指引专题: US 12 and 49 industry returns, risk and factor exposures, with economic, historical issuer, valuation and guidance evidence
+  哪些行业的历史回报伴随更高风险或风格暴露: Which historical industry returns accompanied greater risk or style exposures
+  选定行业的实体经济、历史申报样本盈利和管理层指引如何变化: How real activity, earnings of historical filer samples and management guidance changed in selected industries
+  精确的行业盈利—估值回报分解、历史成分权重和全市场一致预期: Exact earnings–valuation return decomposition, historical constituent weights and market-wide analyst consensus
+  15 家验证公司的核心指标与时点视图，以及能源、批零、半导体软件的历史 SIC 年度专题样本: Core metrics and point-in-time views for 15 validation companies, plus historical SIC annual samples for energy, trade and semiconductor/software topics
+  选定历史申报样本的营收、利润率、现金流与资本配置: Revenue, margins, cash flows and capital allocation in selected historical filer samples
+  全部上市普通股的同口径盈利（专题 SEC 申报样本不等于股票成分）: Comparable earnings for all listed common stocks (the SEC topic sample is not an equity-index constituent universe)
+  公司投资者关系公告: Company investor-relations announcements
+  各公司投资者关系网站: Individual company investor-relations websites
+  精确的行业盈利—估值回报分解: Exact industry earnings–valuation return decomposition
+  历史一致预期与公告日超额回报: Historical consensus estimates and announcement-day excess returns
+  因果关系: Causal relationships
   Federal Reserve Bank of St. Louis（上游为各统计机构）: Federal Reserve Bank of St. Louis (upstream from the original statistical agencies)
   Federal Reserve Bank of St. Louis（ALFRED 历史版本）: Federal Reserve Bank of St. Louis (ALFRED vintages)
   人工导入（每次导入另行声明原始发布者与取得方式）: Manual import (each import declares its original publisher and how it was obtained)

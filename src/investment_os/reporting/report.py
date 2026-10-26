@@ -23,6 +23,7 @@ from matplotlib import font_manager  # noqa: E402
 from ..analytics.rates import curvature_label, spread_label  # noqa: E402
 from ..research.findings import COVERAGE_LABEL, completeness, coverage_summary  # noqa: E402
 from ..tenor import parse_tenor  # noqa: E402
+from .industry import figures as industry_figures, sections as industry_sections  # noqa: E402
 
 RESULT_TYPE_LABEL = {"descriptive": "描述与比较", "explanatory": "解释与归因",
                      "forecast": "预测", "simulation": "情景与策略模拟"}
@@ -290,7 +291,8 @@ def _asset_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Pat
 
 
 _FIGURE_BUILDERS = {"rates_curve": _curve_figures, "par_bond_scenarios": _bond_figures,
-                    "curve_attribution": _attribution_figures, "asset_history": _asset_figures}
+                    "curve_attribution": _attribution_figures, "asset_history": _asset_figures,
+                    "industry": industry_figures}
 
 
 def _figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
@@ -493,7 +495,8 @@ def _asset_sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
 
 
 _BRANCH_SECTIONS = {"rates_curve": _curve_sections, "par_bond_scenarios": _bond_sections,
-                    "curve_attribution": _attribution_sections, "asset_history": _asset_sections}
+                    "curve_attribution": _attribution_sections, "asset_history": _asset_sections,
+                    "industry": industry_sections}
 
 
 def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:

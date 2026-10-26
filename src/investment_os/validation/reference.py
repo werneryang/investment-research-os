@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import io
+import zipfile
 from datetime import date, datetime
 from typing import Any
 
@@ -33,6 +34,30 @@ def _raw_index(store: DataStore, version: DatasetVersion) -> dict[tuple[date, st
     """(日期, 原始列名) → 原始字符串；按快照顺序，后取得的覆盖先取得的。"""
     index: dict[tuple[date, str], str] = {}
     for ref in version.raw_snapshots:
+        if ref["path"].endswith(".zip") and any(m.get("french_file") for m in version.series.values()):
+            sections = {m["section"] for m in version.series.values() if m.get("french_file")}
+            with zipfile.ZipFile(io.BytesIO(store.read_raw(ref))) as z:
+                lines = z.read(next(n for n in z.namelist() if n.lower().endswith(".csv"))).decode("utf-8-sig").splitlines()
+            active, header = False, []
+            for line in lines:
+                line = line.strip()
+                if line in sections:
+                    active = True; header = []
+                    continue
+                if not line:
+                    if header: active = False
+                    continue
+                if not active: continue
+                row = next(csv.reader([line]))
+                if line.startswith(","):
+                    header = [s.strip() for s in row[1:]]; continue
+                stamp = row[0].strip()
+                if not stamp.isdigit() or len(stamp) not in (4,6,8):
+                    active = False; continue
+                fmt = {4:"%Y",6:"%Y%m",8:"%Y%m%d"}[len(stamp)]
+                d = datetime.strptime(stamp,fmt).date()
+                for col, raw in zip(header,row[1:]): index[(d,col)] = raw.strip()
+            continue
         if not ref["path"].endswith(".csv"):
             continue
         reader = csv.reader(io.StringIO(store.read_raw(ref).decode("utf-8-sig")))
@@ -51,7 +76,7 @@ def _raw_index(store: DataStore, version: DatasetVersion) -> dict[tuple[date, st
 def spot_check(store: DataStore, version: DatasetVersion, frame: pd.DataFrame,
                samples: int = 12, tolerance: float = 1e-9) -> dict[str, Any]:
     """等距抽取合格观测，与原始快照中的同一单元格比较。"""
-    labels = {sid: meta.get("source_label") or meta.get("fred_series")
+    labels = {sid: meta.get("source_label") or meta.get("fred_series") or (meta.get("column") if meta.get("french_file") and meta.get("section") != "（第一段）" else None)
               for sid, meta in version.series.items()}
     rows = ok_rows(frame).sort_values(["observation_at", "series_id"]).reset_index(drop=True)
     rows = rows[rows["series_id"].map(labels).notna()]

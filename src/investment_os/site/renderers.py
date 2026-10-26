@@ -723,8 +723,11 @@ UNSUPPORTED = Renderer(
     supported=False,
 )
 
+from .industry import make_renderer  # noqa: E402
+
 RENDERERS: dict[str, Renderer] = {"rates_curve": CURVE, "par_bond_scenarios": BOND,
-                                  "curve_attribution": ATTRIBUTION, "asset_history": ASSETS}
+                                  "curve_attribution": ATTRIBUTION, "asset_history": ASSETS,
+                                  "industry": make_renderer(Renderer)}
 
 
 def get_renderer(branch: str) -> Renderer:

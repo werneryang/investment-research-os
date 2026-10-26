@@ -18,6 +18,469 @@
 #   默认不允许。开启前须确认来源许可允许公开再分发。
 
 datasets:
+  fred_dcoilwtico:
+    source_id: fred_graph
+    upstream_id: "EIA via FRED: DCOILWTICO"
+    connector: fred_graph_csv
+    description: EIA WTI 现货油价（美元/桶）；用于能源周期背景，含负价格，不是期货总收益
+    params: {series: DCOILWTICO}
+    frequency: daily
+    unit: usd_per_barrel
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  # Industry research: current-vintage descriptive inputs; no raw redistribution.
+
+  french_ind12_ew:
+    source_id: ken_french
+    upstream_id: "French 12 industry portfolios: Average Equal Weighted Returns -- Monthly"
+    connector: french_csv
+    description: "French 12 行业：Average Equal Weighted Returns -- Monthly（当前修订版本）"
+    params:
+      file: 12_Industry_Portfolios
+      section: Average Equal Weighted Returns -- Monthly
+      columns: [NoDur, Durbl, Manuf, Enrgy, Chems, BusEq, Telcm, Utils, Shops, Hlth, Money, Other]
+      prefix: IND12EW_
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  french_ind12_firms:
+    source_id: ken_french
+    upstream_id: "French 12 industry portfolios: Number of Firms in Portfolios"
+    connector: french_csv
+    description: "French 12 行业：Number of Firms in Portfolios（当前修订版本）"
+    params:
+      file: 12_Industry_Portfolios
+      section: Number of Firms in Portfolios
+      columns: [NoDur, Durbl, Manuf, Enrgy, Chems, BusEq, Telcm, Utils, Shops, Hlth, Money, Other]
+      prefix: IND12FIRMS_
+    frequency: monthly
+    unit: firms
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  french_ind12_size:
+    source_id: ken_french
+    upstream_id: "French 12 industry portfolios: Average Firm Size"
+    connector: french_csv
+    description: "French 12 行业：Average Firm Size（当前修订版本）"
+    params:
+      file: 12_Industry_Portfolios
+      section: Average Firm Size
+      columns: [NoDur, Durbl, Manuf, Enrgy, Chems, BusEq, Telcm, Utils, Shops, Hlth, Money, Other]
+      prefix: IND12SIZE_
+    frequency: monthly
+    unit: millions_usd
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  french_ind12_bm:
+    source_id: ken_french
+    upstream_id: "French 12 industry portfolios: Sum of BE / Sum of ME"
+    connector: french_csv
+    description: "French 12 行业：Sum of BE / Sum of ME（当前修订版本）"
+    params:
+      file: 12_Industry_Portfolios
+      section: Sum of BE / Sum of ME
+      columns: [NoDur, Durbl, Manuf, Enrgy, Chems, BusEq, Telcm, Utils, Shops, Hlth, Money, Other]
+      prefix: IND12BM_
+    frequency: annual
+    unit: ratio
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  french_ind12_annual:
+    source_id: ken_french
+    upstream_id: "French 12 industry portfolios: Average Value Weighted Returns -- Annual"
+    connector: french_csv
+    description: "French 12 行业：Average Value Weighted Returns -- Annual（当前修订版本）"
+    params:
+      file: 12_Industry_Portfolios
+      section: Average Value Weighted Returns -- Annual
+      columns: [NoDur, Durbl, Manuf, Enrgy, Chems, BusEq, Telcm, Utils, Shops, Hlth, Money, Other]
+      prefix: IND12ANNUAL_
+    frequency: annual
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  french_ind49_vw:
+    source_id: ken_french
+    upstream_id: "French 49 industry portfolios: Average Value Weighted Returns -- Monthly"
+    connector: french_csv
+    description: "French 49 行业：Average Value Weighted Returns -- Monthly（当前修订版本）"
+    params:
+      file: 49_Industry_Portfolios
+      section: Average Value Weighted Returns -- Monthly
+      columns: [Agric, Food, Soda, Beer, Smoke, Toys, Fun, Books, Hshld, Clths, Hlth, MedEq, Drugs, Chems, Rubbr, Txtls, BldMt, Cnstr, Steel, FabPr, Mach, ElcEq, Autos, Aero, Ships, Guns, Gold, Mines, Coal, Oil, Util, Telcm, PerSv, BusSv, Hardw, Softw, Chips, LabEq, Paper, Boxes, Trans, Whlsl, Rtail, Meals, Banks, Insur, RlEst, Fin, Other]
+      prefix: IND49VW_
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  french_ind49_ew:
+    source_id: ken_french
+    upstream_id: "French 49 industry portfolios: Average Equal Weighted Returns -- Monthly"
+    connector: french_csv
+    description: "French 49 行业：Average Equal Weighted Returns -- Monthly（当前修订版本）"
+    params:
+      file: 49_Industry_Portfolios
+      section: Average Equal Weighted Returns -- Monthly
+      columns: [Agric, Food, Soda, Beer, Smoke, Toys, Fun, Books, Hshld, Clths, Hlth, MedEq, Drugs, Chems, Rubbr, Txtls, BldMt, Cnstr, Steel, FabPr, Mach, ElcEq, Autos, Aero, Ships, Guns, Gold, Mines, Coal, Oil, Util, Telcm, PerSv, BusSv, Hardw, Softw, Chips, LabEq, Paper, Boxes, Trans, Whlsl, Rtail, Meals, Banks, Insur, RlEst, Fin, Other]
+      prefix: IND49EW_
+    frequency: monthly
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  french_ind49_firms:
+    source_id: ken_french
+    upstream_id: "French 49 industry portfolios: Number of Firms in Portfolios"
+    connector: french_csv
+    description: "French 49 行业：Number of Firms in Portfolios（当前修订版本）"
+    params:
+      file: 49_Industry_Portfolios
+      section: Number of Firms in Portfolios
+      columns: [Agric, Food, Soda, Beer, Smoke, Toys, Fun, Books, Hshld, Clths, Hlth, MedEq, Drugs, Chems, Rubbr, Txtls, BldMt, Cnstr, Steel, FabPr, Mach, ElcEq, Autos, Aero, Ships, Guns, Gold, Mines, Coal, Oil, Util, Telcm, PerSv, BusSv, Hardw, Softw, Chips, LabEq, Paper, Boxes, Trans, Whlsl, Rtail, Meals, Banks, Insur, RlEst, Fin, Other]
+      prefix: IND49FIRMS_
+    frequency: monthly
+    unit: firms
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  french_ind49_size:
+    source_id: ken_french
+    upstream_id: "French 49 industry portfolios: Average Firm Size"
+    connector: french_csv
+    description: "French 49 行业：Average Firm Size（当前修订版本）"
+    params:
+      file: 49_Industry_Portfolios
+      section: Average Firm Size
+      columns: [Agric, Food, Soda, Beer, Smoke, Toys, Fun, Books, Hshld, Clths, Hlth, MedEq, Drugs, Chems, Rubbr, Txtls, BldMt, Cnstr, Steel, FabPr, Mach, ElcEq, Autos, Aero, Ships, Guns, Gold, Mines, Coal, Oil, Util, Telcm, PerSv, BusSv, Hardw, Softw, Chips, LabEq, Paper, Boxes, Trans, Whlsl, Rtail, Meals, Banks, Insur, RlEst, Fin, Other]
+      prefix: IND49SIZE_
+    frequency: monthly
+    unit: millions_usd
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  french_ind49_bm:
+    source_id: ken_french
+    upstream_id: "French 49 industry portfolios: Sum of BE / Sum of ME"
+    connector: french_csv
+    description: "French 49 行业：Sum of BE / Sum of ME（当前修订版本）"
+    params:
+      file: 49_Industry_Portfolios
+      section: Sum of BE / Sum of ME
+      columns: [Agric, Food, Soda, Beer, Smoke, Toys, Fun, Books, Hshld, Clths, Hlth, MedEq, Drugs, Chems, Rubbr, Txtls, BldMt, Cnstr, Steel, FabPr, Mach, ElcEq, Autos, Aero, Ships, Guns, Gold, Mines, Coal, Oil, Util, Telcm, PerSv, BusSv, Hardw, Softw, Chips, LabEq, Paper, Boxes, Trans, Whlsl, Rtail, Meals, Banks, Insur, RlEst, Fin, Other]
+      prefix: IND49BM_
+    frequency: annual
+    unit: ratio
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  french_ind49_annual:
+    source_id: ken_french
+    upstream_id: "French 49 industry portfolios: Average Value Weighted Returns -- Annual"
+    connector: french_csv
+    description: "French 49 行业：Average Value Weighted Returns -- Annual（当前修订版本）"
+    params:
+      file: 49_Industry_Portfolios
+      section: Average Value Weighted Returns -- Annual
+      columns: [Agric, Food, Soda, Beer, Smoke, Toys, Fun, Books, Hshld, Clths, Hlth, MedEq, Drugs, Chems, Rubbr, Txtls, BldMt, Cnstr, Steel, FabPr, Mach, ElcEq, Autos, Aero, Ships, Guns, Gold, Mines, Coal, Oil, Util, Telcm, PerSv, BusSv, Hardw, Softw, Chips, LabEq, Paper, Boxes, Trans, Whlsl, Rtail, Meals, Banks, Insur, RlEst, Fin, Other]
+      prefix: IND49ANNUAL_
+    frequency: annual
+    unit: percent
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_rvam:
+    source_id: fred_graph
+    upstream_id: "BEA 采矿业实际增加值（季调年率） via FRED RVAM"
+    connector: fred_graph_csv
+    description: "BEA 采矿业实际增加值（季调年率）；当前版本，仅用于事后描述"
+    params: {series: RVAM}
+    frequency: quarterly
+    unit: billions_chained_2017_usd
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_rvama:
+    source_id: fred_graph
+    upstream_id: "BEA 制造业实际增加值（季调年率） via FRED RVAMA"
+    connector: fred_graph_csv
+    description: "BEA 制造业实际增加值（季调年率）；当前版本，仅用于事后描述"
+    params: {series: RVAMA}
+    frequency: quarterly
+    unit: billions_chained_2017_usd
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_rvar:
+    source_id: fred_graph
+    upstream_id: "BEA 零售业实际增加值（季调年率） via FRED RVAR"
+    connector: fred_graph_csv
+    description: "BEA 零售业实际增加值（季调年率）；当前版本，仅用于事后描述"
+    params: {series: RVAR}
+    frequency: quarterly
+    unit: billions_chained_2017_usd
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_rvaw:
+    source_id: fred_graph
+    upstream_id: "BEA 批发业实际增加值（季调年率） via FRED RVAW"
+    connector: fred_graph_csv
+    description: "BEA 批发业实际增加值（季调年率）；当前版本，仅用于事后描述"
+    params: {series: RVAW}
+    frequency: quarterly
+    unit: billions_chained_2017_usd
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_rvai:
+    source_id: fred_graph
+    upstream_id: "BEA 信息业实际增加值（季调年率） via FRED RVAI"
+    connector: fred_graph_csv
+    description: "BEA 信息业实际增加值（季调年率）；当前版本，仅用于事后描述"
+    params: {series: RVAI}
+    frequency: quarterly
+    unit: billions_chained_2017_usd
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_manemp:
+    source_id: fred_graph
+    upstream_id: "BLS 制造业就业 via FRED MANEMP"
+    connector: fred_graph_csv
+    description: "BLS 制造业就业；当前版本，仅用于事后描述"
+    params: {series: MANEMP}
+    frequency: monthly
+    unit: thousands_of_persons
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_usmine:
+    source_id: fred_graph
+    upstream_id: "BLS 采矿和伐木就业 via FRED USMINE"
+    connector: fred_graph_csv
+    description: "BLS 采矿和伐木就业；当前版本，仅用于事后描述"
+    params: {series: USMINE}
+    frequency: monthly
+    unit: thousands_of_persons
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_ustrade:
+    source_id: fred_graph
+    upstream_id: "BLS 零售就业 via FRED USTRADE"
+    connector: fred_graph_csv
+    description: "BLS 零售就业；当前版本，仅用于事后描述"
+    params: {series: USTRADE}
+    frequency: monthly
+    unit: thousands_of_persons
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_usinfo:
+    source_id: fred_graph
+    upstream_id: "BLS 信息业就业 via FRED USINFO"
+    connector: fred_graph_csv
+    description: "BLS 信息业就业；当前版本，仅用于事后描述"
+    params: {series: USINFO}
+    frequency: monthly
+    unit: thousands_of_persons
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_awhaeman:
+    source_id: fred_graph
+    upstream_id: "BLS 制造业全体雇员每周工时 via FRED AWHAEMAN"
+    connector: fred_graph_csv
+    description: "BLS 制造业全体雇员每周工时；当前版本，仅用于事后描述"
+    params: {series: AWHAEMAN}
+    frequency: monthly
+    unit: hours
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_ces3000000003:
+    source_id: fred_graph
+    upstream_id: "BLS 制造业全体雇员时薪 via FRED CES3000000003"
+    connector: fred_graph_csv
+    description: "BLS 制造业全体雇员时薪；当前版本，仅用于事后描述"
+    params: {series: CES3000000003}
+    frequency: monthly
+    unit: usd_per_hour
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_ipman:
+    source_id: fred_graph
+    upstream_id: "美联储制造业工业产出 via FRED IPMAN"
+    connector: fred_graph_csv
+    description: "美联储制造业工业产出；当前版本，仅用于事后描述"
+    params: {series: IPMAN}
+    frequency: monthly
+    unit: index_2017=100
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_mcumfn:
+    source_id: fred_graph
+    upstream_id: "美联储制造业产能利用率 via FRED MCUMFN"
+    connector: fred_graph_csv
+    description: "美联储制造业产能利用率；当前版本，仅用于事后描述"
+    params: {series: MCUMFN}
+    frequency: monthly
+    unit: percent
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_cpiaucns:
+    source_id: fred_graph
+    upstream_id: "BLS 未季调 CPI-U（缺月不插值） via FRED CPIAUCNS"
+    connector: fred_graph_csv
+    description: "BLS 未季调 CPI-U（缺月不插值）；当前版本，仅用于事后描述"
+    params: {series: CPIAUCNS}
+    frequency: monthly
+    unit: index_1982_1984=100
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  fred_usrec:
+    source_id: fred_graph
+    upstream_id: "NBER 美国衰退月份（事后认定） via FRED USREC"
+    connector: fred_graph_csv
+    description: "NBER 美国衰退月份（事后认定）；当前版本，仅用于事后描述"
+    params: {series: USREC}
+    frequency: monthly
+    unit: indicator
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+    scheduled_fetch: {}
+
+  industry_sec_facts:
+    source_id: sec_edgar
+    upstream_id: "历史 SEC 专题公司样本：年度合并财报事实"
+    connector: evidence_bundle
+    params: {replace_snapshot: true}
+    description: "历史 SEC 专题公司样本：年度合并财报事实；本地证据包，由 scripts/prepare_industry.py 导入"
+    frequency: annual
+    unit: USD
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+
+  industry_valuation:
+    source_id: damodaran
+    upstream_id: "Damodaran 行业估值及利润率快照，分类独立"
+    connector: evidence_bundle
+    params: {replace_snapshot: true}
+    description: "Damodaran 行业估值及利润率快照，分类独立；本地证据包，由 scripts/prepare_industry.py 导入"
+    frequency: annual
+    unit: ratio
+    currency: null
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+
+  industry_guidance:
+    source_id: company_ir
+    upstream_id: "管理层营收指引与首次实际值案例"
+    connector: evidence_bundle
+    params: {replace_snapshot: true}
+    description: "管理层营收指引与首次实际值案例；本地证据包，由 scripts/prepare_industry.py 导入"
+    frequency: quarterly
+    unit: USD
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+
   ust_par_yield_curve:
     source_id: ust_treasury
     upstream_id: U.S. Treasury Daily Treasury Par Yield Curve Rates

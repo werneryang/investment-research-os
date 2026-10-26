@@ -188,6 +188,8 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 
 ## 7. 扩展方法
 
+**美国行业研究**：`research/industry.py` 实现 12/49 行业收益风险、HAC 因子暴露、实际增加值与宏观分组，以及历史 SIC 财报、独立估值快照和指引案例。`evidence_bundle` 接入器保存本地证据包及逐条定位，使用完整快照替换当前数据，同时保留旧版本。财报逐公司事实不进入公开结果。实现范围、准备命令和口径见 [行业研究](study-industries.md)。
+
 **新增候选来源**：在 `config/sources.yaml` 登记 `id`、`publisher`、`url`、`category`，以及能写的索引字段（`directions`、`access`、`signup`、`redistribution`、`offers`、`notes`、`next_step` 等，见文件开头的说明）。读过官方说明后追加不指明数据集的 `docs_verified` 记录。资源目录与 `iros sources` 自动更新。
 
 **新增同类数据集**：在 `config/datasets.yaml` 登记，复用已有接入器（如另一个 FRED 序列只需改 `params.series`），写明保守的 `availability`；需要积累快照时加上 `scheduled_fetch`。用 `iros fetch` 取得样本后在 `config/sources.yaml` 追加 `access_verified` 记录，并在 `site/content.yaml` 把数据集挂到研究方向（方向原为 `planned: true` 时去掉）。
@@ -204,7 +206,7 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 
 **新增来源**：在 `connectors/` 实现 `fetch` 与 `parse`（输出暂存表的 5 列），在 `connectors/__init__.py` 注册，在 `sources.yaml` 补齐来源的 §5.1 字段与核验状态（候选来源缺这些字段时，登记数据集会报错）。数值转换、时间规则、质量与版本由公共流程处理，接入器不重复实现。
 
-**新增研究分支**：在 `research/` 中写一个接收 `(StudySpec, dict[str, StudyInput])`、返回 `ResearchResult` 的函数，用 `@register_branch("名称")` 注册，并在 `research/__init__.py` 导入。报告只读取结构化结果；目前的报告模板针对曲线类结果，其他成果类型需要增加相应的报告段落。
+**新增研究分支**：在 `research/` 中写一个接收 `(StudySpec, dict[str, StudyInput])`、返回 `ResearchResult` 的函数，用 `@register_branch("名称")` 注册，并在 `research/__init__.py` 导入。报告只读取结构化结果；新增分支需同时注册报告段落、网站展示与发现规则。
 
 **结构变化**：修改 `SERIES_COLUMNS` 时递增 `SERIES_SCHEMA_VERSION`，并为旧版本提供迁移；旧版本文件不改写。
 
@@ -217,7 +219,7 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - 预期日历核验到 2026-10-22；之后的额外休市或发布日（如耶稣受难日、临时国丧日）需要逐年核验并追加。
 - 2026-10-22 首次运行 `ust_curve_2024-20261022T221917Z` 的清单记录了未提交代码（`dirty=true`）和旧的输入格式，保留原样作为历史记录；以上方基线运行为准。
 - 存储为单写入者流程，没有并发锁；没有实现备份。数据规模小，DuckDB 暂未引入，需要跨数据集查询时再加。
-- 报告模板目前只覆盖曲线类描述性结果；预测和策略模拟的预登记、样本外评估等（§8）尚未实现。
+- 报告已覆盖曲线、利率情景、归因、长期资产和行业描述研究；预测和策略模拟的预登记、样本外评估尚未实现。
 - 交易日历、公司行动、证券标识等市场制度对象尚未实现，这些是证券与组合研究的前置条件。
 
 ## 9. 审查修复记录（2026-10-22）
