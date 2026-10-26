@@ -1,0 +1,271 @@
+{
+  "run_id": "ust_curve_attribution_last_year-20261026T012733Z-3006bf2e",
+  "study_id": "ust_curve_attribution_last_year",
+  "study_path": "config/studies/ust_curve_attribution_last_year.yaml",
+  "study_config": {
+    "study_id": "ust_curve_attribution_last_year",
+    "title": "美国国债曲线变化的分解（近一年）",
+    "question": "期间内 10 年期与 2 年期国债收益率及其利差的变化，各有多少来自实际利率、通胀补偿、已实施的政策利率与市场对未来政策路径的定价？",
+    "result_type": "explanatory",
+    "branch": "curve_attribution",
+    "scope": {
+      "market": "US",
+      "currency": "USD",
+      "start": "2025-10-26",
+      "end": "2026-10-26",
+      "frequency": "daily",
+      "vintage_policy": "latest",
+      "relative_dates": {
+        "start": "today-1y",
+        "end": "today"
+      },
+      "evaluated_at": "2026-10-26T01:27:33+00:00",
+      "data_checked_at": {
+        "ust_par_yield_curve": "2026-10-26T01:27:19+00:00",
+        "fred_dfii10": "2026-10-26T01:27:20+00:00",
+        "fred_t10yie": "2026-10-26T01:27:20+00:00",
+        "fred_dff": "2026-10-26T01:27:20+00:00",
+        "fred_dgs10": "2026-10-26T01:27:20+00:00",
+        "fred_cpiaucsl": "2026-10-26T01:27:20+00:00",
+        "fred_walcl": "2026-10-26T01:27:20+00:00"
+      }
+    },
+    "data": {
+      "curve": "ust_par_yield_curve",
+      "real": "fred_dfii10",
+      "breakeven": "fred_t10yie",
+      "policy": "fred_dff",
+      "cross_check": {
+        "dataset": "fred_dgs10",
+        "required": false
+      },
+      "cpi": {
+        "dataset": "fred_cpiaucsl",
+        "required": false
+      },
+      "fed_assets": {
+        "dataset": "fred_walcl",
+        "required": false
+      }
+    },
+    "method": {
+      "long_tenor": "10Y",
+      "short_tenor": "2Y",
+      "share_min_bp": 10,
+      "sensitivity_days": 5,
+      "sensitivity_max_range_pp": 15,
+      "identity_tolerance_bp": 0.5
+    },
+    "benchmark": "期初（窗口内第一个共同观测日）",
+    "evaluation": [
+      "长端恒等式逐日残差不超过 0.5 bp",
+      "Treasury 10Y 与 DGS10 一致（同源）",
+      "端点敏感性",
+      "固定数据版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "会计恒等式分解，不是因果推断",
+      "盈亏平衡通胀含通胀风险溢价与流动性溢价，不等于通胀预期；2Y 与联邦基金利率之差不能拆分为政策预期与期限溢价",
+      "使用最新修订数据；CPI 与美联储总资产只作背景，不参与分解"
+    ]
+  },
+  "study_config_hash": "6007926f27a9790aea65d21032cf8d3cbdf63b2e6334a253161877bce91c1073",
+  "started_at": "2026-10-26T01:27:33+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "b8075c64853cfda5cbb6b03a6b1ca0396f719113a1956a08fcc1e212ee3dd75e",
+    "git_commit": "3b21fb6f129260c3954e75305767b5e0a3dc2a39",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.3",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "success",
+  "inputs": [
+    {
+      "role": "curve",
+      "used": true,
+      "dataset_id": "ust_par_yield_curve",
+      "version_id": "v20261026T012705Z-99cae924",
+      "content_hash": "99cae9248cf520b27a47ec6f7e9d4e81d0d6348695308e7f12122fe7e14521da",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "partial",
+        "uncovered": [
+          [
+            "2026-10-23",
+            "2026-10-26"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2024-01-01",
+            "2026-10-22"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-23"
+        ]
+      }
+    },
+    {
+      "role": "real",
+      "used": true,
+      "dataset_id": "fred_dfii10",
+      "version_id": "v20261026T012720Z-bd6357c0",
+      "content_hash": "bd6357c04ffe743e6479371ec60ef6dd4c2e8c91baf3857d2cc10d1c56c14fb5",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "partial",
+        "uncovered": [
+          [
+            "2026-10-23",
+            "2026-10-26"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2024-01-01",
+            "2026-10-22"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-25"
+        ]
+      }
+    },
+    {
+      "role": "breakeven",
+      "used": true,
+      "dataset_id": "fred_t10yie",
+      "version_id": "v20261026T012720Z-c7c18f6c",
+      "content_hash": "c7c18f6cff2d33042459c19bbada6eac8f9021b17b51ce93ea1a38a96b0df4c7",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "partial",
+        "uncovered": [
+          [
+            "2026-10-23",
+            "2026-10-26"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2024-01-01",
+            "2026-10-22"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-25"
+        ]
+      }
+    },
+    {
+      "role": "policy",
+      "used": true,
+      "dataset_id": "fred_dff",
+      "version_id": "v20261026T012720Z-6c4cf08a",
+      "content_hash": "6c4cf08a948237f4f46da8e80fcf1c5fd0fc2ead6cafd4bdf018721da309deea",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "partial",
+        "uncovered": [
+          [
+            "2026-10-23",
+            "2026-10-26"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2024-01-01",
+            "2026-10-22"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-25"
+        ]
+      }
+    },
+    {
+      "role": "cross_check",
+      "used": true,
+      "dataset_id": "fred_dgs10",
+      "version_id": "v20261026T012719Z-aaa499ac",
+      "content_hash": "aaa499ac9294ae94c4a6883a8912009cabe0a3eb3854282202021c8debdc2eb1",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "cpi",
+      "used": true,
+      "dataset_id": "fred_cpiaucsl",
+      "version_id": "v20261026T012720Z-3ff089d9",
+      "content_hash": "3ff089d9e12ae49a04b96f2c176ec853a182ed0893b58b64c5613878912b8fe0",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "partial",
+        "uncovered": [
+          [
+            "2026-01-01",
+            "2026-10-26"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "1947-12-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-25"
+        ]
+      }
+    },
+    {
+      "role": "fed_assets",
+      "used": true,
+      "dataset_id": "fred_walcl",
+      "version_id": "v20261026T012720Z-1690b202",
+      "content_hash": "1690b202695384ce64012cdbaa49bd0dcebbe90734a3856f8200174e7d530d6c",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    }
+  ],
+  "result_hash": "2764dbead1bb960f01c55598738b4af7d8528623b23baf913310fd80a64ea9e9",
+  "warnings": [],
+  "unsupported": [],
+  "outputs": [
+    {
+      "path": "runs/ust_curve_attribution_last_year-20261026T012733Z-3006bf2e/result.json",
+      "sha256": "cf05d564e984374e7498b68c0fffb4c9d4cf8f0a5a24df78c98c5faaaf4dc994"
+    },
+    {
+      "path": "reports/ust_curve_attribution_last_year/ust_curve_attribution_last_year-20261026T012733Z-3006bf2e/report.md",
+      "sha256": "2ce967d767ba4e23108bce6d5cea6470feeb2277eb898b4a52f29df212a947da"
+    },
+    {
+      "path": "reports/ust_curve_attribution_last_year/ust_curve_attribution_last_year-20261026T012733Z-3006bf2e/report.html",
+      "sha256": "df3c970daea5d07d3acc866b633ddf3c42afcdddf3451b355bc5743a6299f5a5"
+    },
+    {
+      "path": "reports/ust_curve_attribution_last_year/ust_curve_attribution_last_year-20261026T012733Z-3006bf2e/figures/attribution_bars.png",
+      "sha256": "941be19da3fbdddd40f9c7bfad22d8803dd532eac4e083f41735c0f70db83e36"
+    },
+    {
+      "path": "reports/ust_curve_attribution_last_year/ust_curve_attribution_last_year-20261026T012733Z-3006bf2e/figures/attribution_path.png",
+      "sha256": "b895c3a918da15bb215c96b05d14819c02f47020608f5a8107b82e3bcc8126ca"
+    }
+  ],
+  "finished_at": "2026-10-26T01:27:35+00:00"
+}
