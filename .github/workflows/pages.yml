@@ -78,6 +78,17 @@ jobs:
           uv run iros run config/studies/us_asset_history_last_25y.yaml || s=1
           exit $s
 
+      # The full dossier uses locally archived SEC source files and manually checked
+      # guidance evidence. Publish its verified archived result; do not redownload
+      # 5.4 GB of filings or silently substitute current leaders on each CI run.
+      - name: Run industry market and economy studies
+        continue-on-error: true
+        run: |
+          s=0
+          uv run iros run config/studies/us_industry_12.yaml || s=1
+          uv run iros run config/studies/us_industry_49.yaml || s=1
+          exit $s
+
       - name: Verify runs reproduce from pinned inputs
         run: uv run iros verify --all
 

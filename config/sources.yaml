@@ -57,6 +57,28 @@ gaps:
     detail: 已接入穆迪收益率利差（日度）与由收益率推算的 Baa 年度回报；期权调整利差、高收益债与公司债指数的实际持有回报仍无免费可核验来源
 
 sources:
+  - id: company_ir
+    name: 公司投资者关系公告
+    publisher: 各公司投资者关系网站
+    channel: 原始业绩公告 HTML 与 SEC 8-K 附件，逐事件人工摘录
+    url: https://www.sec.gov/search-filings
+    license: 公司公告版权各异；不公开存档原文，只引用短摘录及分析结果
+    registration: 无需注册或 key
+    rate_limit: 各站点不同；缓存原文并串行取得
+    revisions: 保存原始公告与 SHA256；发布日期不等于目标财季
+    maintenance: 案例数据人工核验后更新；不声称全行业或连续季度覆盖
+    category: filings
+    directions: [company_filings, sector_structure]
+    access: file
+    signup: none
+    redistribution: restricted
+    verification:
+      - dataset: industry_guidance
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "保存 6 家公司、8 条管理层事前指引与首次实际公告；核对原文数字锚点、日期、目标期和 GAAP 营收口径，含 Intel FY2022 同目标修订。选择性案例，非一致预期。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+
   - id: ust_treasury
     name: Treasury 利率数据
     publisher: U.S. Department of the Treasury
@@ -132,6 +154,86 @@ sources:
     notes: 复用 fred_graph_csv 接入器，新增序列只需在 datasets.yaml 登记
     next_step: 逐个序列确认许可；按研究需要登记实际 GDP 等增长序列
     verification:
+      - dataset: fred_dcoilwtico
+        status: access_verified
+        date: "2026-10-25"
+        evidence: 经 FRED 免费取得 EIA WTI 日度现货价，保留缺失和负值，用作能源价格背景而非期货收益。
+        scope: 当前版本的历史价格描述
+      - dataset: fred_rvam
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_rvama
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_rvar
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_rvaw
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_rvai
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_manemp
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_usmine
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_ustrade
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_usinfo
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_awhaeman
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_ces3000000003
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_ipman
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_mcumfn
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_cpiaucns
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: fred_usrec
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "通过 FRED graph CSV 免费取得并保存原始与标准化版本；CPIAUCNS 的 2025-10 缺失不插值。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
       - dataset: fred_dgs10
         status: access_verified
         date: "2026-10-22"
@@ -403,15 +505,20 @@ sources:
     access: api
     signup: none
     redistribution: unknown
-    coverage: XBRL 财报数字 2009 年起；E1 只导入 config/fundamentals.yaml 登记的 15 家公司
+    coverage: XBRL 财报数字 2009 年起；E1 保留 15 家验证公司，另有三类历史 SIC 专题年度样本（不等于全部上市普通股）
     offers:
       - 全部申报主体的财报（E2，含 SIC 行业分类）
       - 季度数据与推算的第四季度（E3）
       - 基金持仓申报（如 N-PORT，待核验）
     notes: >-
       FSDS 只含报表主体数字，不含封面数据（如流通股数）；Company Facts API 补上封面数据与 FSDS 尚未收录的新申报
-    next_step: E2：导入全部申报主体并按 SIC 汇总
+    next_step: 在已完成的历史 SIC 专题上，按需扩展主体资格、控制关系去重和季度验证
     verification:
+      - dataset: industry_sec_facts
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "从本地 71 份原始 FSDS 筛选 2009–2025 年历史 SIC 专题样本；154770 条年度事实、2816 家有事实公司，纳入缺失分母后 2817 家；1102 条与独立 Company Facts 同申报同科目同期间数值一致。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
       - status: docs_verified
         date: "2026-10-22"
         evidence: 官方 API 说明：申报与 XBRL API 无需 key；聚合接口有口径与覆盖限制
@@ -486,8 +593,63 @@ sources:
     notes: >-
       市场因子 Mkt-RF 加 RF 即美国股票市场的月度总收益（价值加权，含分红）；RF 在 202406 之前取自 Ibbotson，
       之后为 ICE BofA 1 个月国库券指数。数值为百分比，缺失写作 -99.99 或 -999
-    next_step: 按研究需要登记日度因子或更细的行业组合
+    next_step: 已接入 12/49 行业收益及特征；按研究需要核验日度因子和历史成分关联
     verification:
+      - dataset: french_ind12_ew
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "正式取得 ZIP、严格表头解析和缺失值标记；研究另按年度表核对月度复利，原始数据不公开存档。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: french_ind12_firms
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "正式取得 ZIP、严格表头解析和缺失值标记；研究另按年度表核对月度复利，原始数据不公开存档。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: french_ind12_size
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "正式取得 ZIP、严格表头解析和缺失值标记；研究另按年度表核对月度复利，原始数据不公开存档。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: french_ind12_bm
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "正式取得 ZIP、严格表头解析和缺失值标记；研究另按年度表核对月度复利，原始数据不公开存档。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: french_ind12_annual
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "正式取得 ZIP、严格表头解析和缺失值标记；研究另按年度表核对月度复利，原始数据不公开存档。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: french_ind49_vw
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "正式取得 ZIP、严格表头解析和缺失值标记；研究另按年度表核对月度复利，原始数据不公开存档。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: french_ind49_ew
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "正式取得 ZIP、严格表头解析和缺失值标记；研究另按年度表核对月度复利，原始数据不公开存档。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: french_ind49_firms
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "正式取得 ZIP、严格表头解析和缺失值标记；研究另按年度表核对月度复利，原始数据不公开存档。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: french_ind49_size
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "正式取得 ZIP、严格表头解析和缺失值标记；研究另按年度表核对月度复利，原始数据不公开存档。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: french_ind49_bm
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "正式取得 ZIP、严格表头解析和缺失值标记；研究另按年度表核对月度复利，原始数据不公开存档。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
+      - dataset: french_ind49_annual
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "正式取得 ZIP、严格表头解析和缺失值标记；研究另按年度表核对月度复利，原始数据不公开存档。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
       - dataset: french_ff3
         status: access_verified
         date: "2026-10-23"
@@ -663,6 +825,11 @@ sources:
       房地产为房价变化，不含租金
     next_step: 按研究需要登记各国股权风险溢价等表格
     verification:
+      - dataset: industry_valuation
+        status: access_verified
+        date: "2026-10-25"
+        evidence: "取得并核对 2010–2026 年 1 月 PE/利润率快照共 34 份 XLS，8309 个有效比率单元格；归档页标签决定年份，保留原行业标签与缺失单元格。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性
       - dataset: damodaran_histret
         status: access_verified
         date: "2026-10-23"

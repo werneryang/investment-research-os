@@ -121,7 +121,11 @@ def ingest(
 
         stage = "merge"
         prev_df = None
-        if previous is not None:
+        # Evidence bundles are authoritative full snapshots. Older versions and
+        # their raw files stay in the catalog, but removed observations must not
+        # be carried into the next snapshot or accumulate indefinitely.
+        replace_snapshot = bool(spec.params.get("replace_snapshot", False))
+        if previous is not None and not replace_snapshot:
             prev_df, _ = store.load(dataset_id, previous.version_id)
             series_meta = {**previous.series, **series_meta}
         merged = _merge(prev_df, new)
@@ -138,7 +142,7 @@ def ingest(
         stage = "save"
         version = store.save_version(
             dataset_id, merged,
-            raw_snapshots=([*previous.raw_snapshots] if previous else []) + raw_refs,
+            raw_snapshots=([*previous.raw_snapshots] if previous and not replace_snapshot else []) + raw_refs,
             transform=TRANSFORM_ID,
             quality=report,
             series=series_meta,

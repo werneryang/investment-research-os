@@ -1,0 +1,40 @@
+# Research correspondences, not an exact SIC-to-NAICS concordance or a replication
+# of the CRSP constituent universe. Frozen in each study's method configuration.
+version: 2026-10-25.v1
+sources:
+  french12: https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library/det_12_ind_port.html
+  french49: https://mba.tuck.dartmouth.edu/pages/faculty/ken.french/data_library/det_49_ind_port.html
+  sic: https://www.sec.gov/search-filings/standard-industrial-classification-sic-code-list
+  naics: https://www.census.gov/naics/concordances/concordances.html
+topics:
+  energy:
+    label: 能源
+    sic_ranges: [[1200, 1399], [2900, 2999]]
+    market12: Enrgy
+    market49: [Coal, Oil]
+    economy: {rva: RVAM, employment: USMINE}
+    correspondence: partial
+    reason: 采矿增加值含金属与非金属矿，不含炼油；股票能源含炼油，BLS USMINE 还含伐木。不得把矿业产出当作能源股票收入。
+  trade:
+    label: 批发零售
+    sic_ranges: [[5000, 5999]]
+    market12: Shops
+    market49: [Whlsl, Rtail]
+    economy: {rva: RVAR, wholesale: RVAW, employment: USTRADE}
+    correspondence: partial
+    reason: SEC 样本含餐饮；French Shops 还含部分服务，BEA 零售与批发分别列示，不直接相加链式美元。
+  technology:
+    label: 半导体、软件与计算机服务
+    sic_ranges: [[3674, 3674], [7370, 7379]]
+    market12: BusEq
+    market49: [Chips, Softw]
+    economy: {rva: RVAI, employment: USINFO}
+    correspondence: contextual
+    reason: SEC SIC 7370–7379 包含软件和计算机服务，3674 为半导体；BEA 信息业含出版、电信、数据服务等，半导体属于制造业。信息业只作背景，不作为半导体产出代理。
+  manufacturing:
+    label: 制造业背景
+    market12: Manuf
+    market49: [Mach]
+    economy: {rva: RVAMA, employment: MANEMP, hours: AWHAEMAN, wage: CES3000000003, output: IPMAN, utilization: MCUMFN}
+    correspondence: contextual
+    reason: BEA 制造业包含 French 的多个行业；French Manuf 不是制造业总量。

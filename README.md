@@ -7,9 +7,9 @@
 - **P0 总体架构**：完成，见 [V0.3](docs/architecture.md)。
 - **P1 公共契约与资源核验**：首个案例所需部分已实现——来源与数据集登记、核验状态、时间契约、质量规则、成果与运行契约。
 - **P2 小规模贯通验证**：已用真实免费数据跑通「2024 年美国国债收益率曲线变化」：取得 → 原始快照 → 标准化与版本 → 公共分析 → 报告与运行记录 → 复现校验。
-- **P3/P4**：未开始。宏观、行业、证券、组合等研究分支只有公共计算组件（收益、风险、利率曲线），尚无对应研究模块。
+- **P3 研究分支扩展**：已实现利率情景与归因、主要资产长期回报，以及美国 12/49 行业和经济、历史财报、估值、指引专题；覆盖范围见各项研究设计。**P4 预测与策略评估**尚未实现。
 
-接入已验证的来源：美国财政部日度票面收益率曲线、FRED 图表 CSV（DGS10、CPI、政策利率、通胀预期、就业等 8 个序列），FRED API 的 ALFRED 历史版本（CPI、失业率、非农就业），Kenneth French 数据库的美国股票因子与 12 个行业组合月度收益，Damodaran 的美国主要资产年度回报（1928 年起），Shiller 的标普综合指数价格、股息、盈利与 CAPE（1871 年起，月度），以及 French 的国际股票因子与 FRED 的主要汇率（跨市场比较）。FRED 序列包括政策利率、通胀、就业、GDP、VIX 与穆迪信用利差等。FRED API key 放在项目根目录的 `.env`（`FRED_API_KEY=...`，不入库），`iros` 启动时读取。详见 [实现说明](docs/implementation.md)。
+接入已验证的来源：美国财政部日度票面收益率曲线；FRED 宏观、BEA 行业增加值、BLS 行业就业/工时/工资、工业生产和 EIA WTI 现货价；ALFRED 的 CPI、失业率、非农历史版本；French 美国及国际股票因子、12/49 行业收益和样本特征；Damodaran 长期资产回报与行业估值/利润率快照；Shiller 价格、股息、盈利与 CAPE；SEC 财报和选定公司的管理层指引原文。历史财报专题使用各期 SIC 样本，不等于完整股票行业。FRED API key 放在项目根目录的 `.env`（`FRED_API_KEY=...`，不入库），`iros` 启动时读取；行业研究新增来源无需新 key。详见 [实现说明](docs/implementation.md)。
 
 ## 快速开始
 
@@ -49,7 +49,7 @@ scripts/snapshot-agent.sh install
 
 线上地址：<https://werneryang.github.io/investment-research-os/>
 
-`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 重新取得 Treasury 与 FRED 数据 → 运行 `ust_curve_2024`、滚动的 `ust_curve_last_year` 与情景研究 `ust_par_bond_rate_risk` → 曲线变化的分解 `ust_curve_attribution_last_year`、`ust_curve_attribution_2024`（需要 FRED 数据，失败不阻断发布）→ 美国主要资产的长期回报与风险 `us_asset_history`、`us_asset_history_last_25y`（需要 Damodaran 等可选来源，失败不阻断发布）→ `iros verify --all` → 归档到 `archive` 分支 → 生成静态网站 → 发布到 GitHub Pages。任何必需步骤失败都不发布，线上保留上一版，页面顶部的更新时间、工作流徽章与「已过期」提示会显示更新停滞。
+`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 取得登记的公开数据 → 运行国债曲线、利率情景、曲线归因、长期资产和 `us_industry_12` / `us_industry_49` → `iros verify --all` → 归档到 `archive` 分支并恢复历史 → 生成静态网站 → 发布到 GitHub Pages。依赖可选来源的研究取得失败不阻断其他研究发布；任何必需步骤失败都不发布。四层专题 `us_industry_dossier` 使用本地准备的财报与指引证据，网站恢复其已验证档案，不在每次 CI 下载全部原始财报。线上更新时间、工作流徽章与「已过期」提示会显示更新停滞。
 
 网站定位为研究门户，分工回答四个问题：
 
@@ -157,6 +157,7 @@ uv run pytest
 - [当前架构与实施路线](docs/architecture.md)：设计基线（V0.3）
 - [实现说明](docs/implementation.md)：代码结构、契约落地方式、如何扩展、已知限制
 - [研究设计：美国主要资产的长期回报与风险](docs/study-long-run-assets.md)：1928 年以来七类资产的名义与实际回报、风险与相关性（已实现）
+- [美国行业的经济、盈利与股票回报](docs/study-industries.md)：12/49 行业、历史 SIC 财报专题、估值与指引案例（已实现范围及明确的数据边界）
 - [研究设计：国债曲线变化的分解](docs/study-curve-attribution.md)：第一项解释与归因研究，用会计恒等式拆分实际利率、通胀补偿与政策利率（已实现）
 - [SEC EDGAR 财报数据设计](docs/edgar-design.md)：全部申报主体的财报事实、财年与申报版本、分区存储（草案，待审阅）
 - [历史方案索引](docs/archive/README.md)：保留 A、B、C 原始文档及 V0.2，追溯设计来源与定位变化。

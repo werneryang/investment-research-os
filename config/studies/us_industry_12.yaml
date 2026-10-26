@@ -1,0 +1,129 @@
+study_id: us_industry_12
+title: 美国 12 行业的长期回报、风险与经济背景
+question: 哪些行业回报有经营支持，哪些差异体现风险、样本和估值？
+result_type: descriptive
+branch: industry
+scope:
+  market: US
+  currency: USD
+  start: '1926-07-01'
+  end: '2025-12-31'
+  frequency: monthly
+  vintage_policy: latest
+data:
+  returns: french_ind12_vw
+  equal_weight: french_ind12_ew
+  firms: french_ind12_firms
+  size: french_ind12_size
+  bm: french_ind12_bm
+  annual_check: french_ind12_annual
+  ff3: french_ff3
+  ff5: french_ff5
+  momentum: french_mom
+  cpi: fred_cpiaucns
+  econ_rvam: fred_rvam
+  econ_usmine: fred_usmine
+  econ_rvar: fred_rvar
+  econ_rvaw: fred_rvaw
+  econ_ustrade: fred_ustrade
+  econ_rvai: fred_rvai
+  econ_usinfo: fred_usinfo
+  econ_rvama: fred_rvama
+  econ_manemp: fred_manemp
+  econ_awhaeman: fred_awhaeman
+  econ_ces3000000003: fred_ces3000000003
+  econ_ipman: fred_ipman
+  econ_mcumfn: fred_mcumfn
+  recession: fred_usrec
+  policy_rate: fred_dff
+  oil_price: fred_dcoilwtico
+method:
+  windows:
+  - - 1926–2025
+    - 1926-07
+    - 2025-12
+  - - 2001–2025
+    - 2001-01
+    - 2025-12
+  - - 2016–2025
+    - 2016-01
+    - 2025-12
+  - - 2010–2025
+    - 2010-01
+    - 2025-12
+  mapping_version: 2026-10-25.v1
+  topics:
+    energy:
+      label: 能源
+      sic_ranges:
+      - - 1200
+        - 1399
+      - - 2900
+        - 2999
+      market12: Enrgy
+      market49:
+      - Coal
+      - Oil
+      economy:
+        rva: RVAM
+        employment: USMINE
+      correspondence: partial
+      reason: 采矿增加值含金属与非金属矿，不含炼油；股票能源含炼油，BLS USMINE 还含伐木。不得把矿业产出当作能源股票收入。
+    trade:
+      label: 批发零售
+      sic_ranges:
+      - - 5000
+        - 5999
+      market12: Shops
+      market49:
+      - Whlsl
+      - Rtail
+      economy:
+        rva: RVAR
+        wholesale: RVAW
+        employment: USTRADE
+      correspondence: partial
+      reason: SEC 样本含餐饮；French Shops 还含部分服务，BEA 零售与批发分别列示，不直接相加链式美元。
+    technology:
+      label: 半导体、软件与计算机服务
+      sic_ranges:
+      - - 3674
+        - 3674
+      - - 7370
+        - 7379
+      market12: BusEq
+      market49:
+      - Chips
+      - Softw
+      economy:
+        rva: RVAI
+        employment: USINFO
+      correspondence: contextual
+      reason: SEC SIC 7370–7379 包含软件和计算机服务，3674 为半导体；BEA 信息业含出版、电信、数据服务等，半导体属于制造业。信息业只作背景，不作为半导体产出代理。
+    manufacturing:
+      label: 制造业背景
+      market12: Manuf
+      market49:
+      - Mach
+      economy:
+        rva: RVAMA
+        employment: MANEMP
+        hours: AWHAEMAN
+        wage: CES3000000003
+        output: IPMAN
+        utilization: MCUMFN
+      correspondence: contextual
+      reason: BEA 制造业包含 French 的多个行业；French Manuf 不是制造业总量。
+  description: 四层行业研究：连续月度总收益、CPI 端点实际回报、HAC 因子暴露、实体行业相关、历史 SIC 财报样本与指引事件。各层对象分别定义，不作因果推断。
+benchmark: French FF3 Mkt-RF + RF
+evaluation:
+- 连续月份完整性
+- 独立年度表复利核对
+- 固定输入版本重现
+- HAC 协方差与多重比较
+limitations:
+- 当前修订版本的事后研究，不支持历史可交易性或因果推断
+- BE/ME 按 French 源年份列示，不能充当行业市盈率或年末估值
+- 等权与市值加权差异不是成分集中度；行业定义和样本随时间变化
+- 1926–2025 窗口有行业尚未形成，缺失窗口不输出完整期间收益
+- 市场统计止于 2025；2026 仅另列不完整年度累计收益

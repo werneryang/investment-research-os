@@ -1,0 +1,53 @@
+study_id: us_industry_49
+title: 美国 49 行业的长期回报、风险与经济背景
+question: 哪些行业回报有经营支持，哪些差异体现风险、样本和估值？
+result_type: descriptive
+branch: industry
+scope:
+  market: US
+  currency: USD
+  start: '1926-07-01'
+  end: '2025-12-31'
+  frequency: monthly
+  vintage_policy: latest
+data:
+  returns: french_ind49_vw
+  equal_weight: french_ind49_ew
+  firms: french_ind49_firms
+  size: french_ind49_size
+  bm: french_ind49_bm
+  annual_check: french_ind49_annual
+  ff3: french_ff3
+  ff5: french_ff5
+  momentum: french_mom
+  cpi: fred_cpiaucns
+  recession: fred_usrec
+  policy_rate: fred_dff
+method:
+  windows:
+  - - 1926–2025
+    - 1926-07
+    - 2025-12
+  - - 2001–2025
+    - 2001-01
+    - 2025-12
+  - - 2016–2025
+    - 2016-01
+    - 2025-12
+  - - 2010–2025
+    - 2010-01
+    - 2025-12
+  mapping_version: 2026-10-25.v1
+  description: 四层行业研究：连续月度总收益、CPI 端点实际回报、HAC 因子暴露、实体行业相关、历史 SIC 财报样本与指引事件。各层对象分别定义，不作因果推断。
+benchmark: French FF3 Mkt-RF + RF
+evaluation:
+- 连续月份完整性
+- 独立年度表复利核对
+- 固定输入版本重现
+- HAC 协方差与多重比较
+limitations:
+- 当前修订版本的事后研究，不支持历史可交易性或因果推断
+- BE/ME 按 French 源年份列示，不能充当行业市盈率或年末估值
+- 等权与市值加权差异不是成分集中度；行业定义和样本随时间变化
+- 1926–2025 窗口有行业尚未形成，缺失窗口不输出完整期间收益
+- 市场统计止于 2025；2026 仅另列不完整年度累计收益
