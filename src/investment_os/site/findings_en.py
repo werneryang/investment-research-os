@@ -12,6 +12,20 @@ from typing import Any
 from ..analytics.rates import curvature_label, spread_label
 from ..research.findings import FLAT_BP, completeness
 
+def _company(result):
+    r = result['results']
+    if r['company_count'] > 1:
+        return {'company_scope': f"Annual research covers {r['company_count']} companies. Different fiscal calendars and business models preclude a sample-wide ranking.",
+                'company_gaps': f"{r['missing']} missing metrics and {r['revision_candidates']} same-tag revision candidates; filing evidence is on each company page."}
+    p = r['companies'][0]; latest = p['latest']; out = {}
+    for m, label in (('revenue','Revenue'),('operating_cash_flow','Operating cash flow'),('capex','Cash capital spending')):
+        v = latest[m]; growth = latest['growth'].get(m)
+        text = f"{label} for the fiscal period ending near {p['last']}: USD {v/1e9:,.2f} billion." if v is not None else f"{label} for {p['last']} is missing, not zero."
+        if growth: text += f" Same-filing year-over-year change: {growth['value']:+.1%}."
+        out['company_'+m] = text
+    return out
+
+
 COVERAGE_LABEL_EN = {
     "complete": "complete",
     "complete_to_date": "complete to date",
@@ -219,7 +233,7 @@ def _bond(result: dict[str, Any]) -> dict[str, str]:
     return out
 
 
-_EN = {"rates_curve": _curve, "par_bond_scenarios": _bond}
+_EN = {"rates_curve": _curve, "par_bond_scenarios": _bond, "company": _company}
 
 
 def english_findings(result: dict[str, Any], recorded: list[dict[str, Any]]) -> list[dict[str, Any]]:

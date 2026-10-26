@@ -274,7 +274,7 @@ def study_page(study_id: str, runs: list[dict[str, Any]], archived: dict[str, An
 <section><h2>{L("研究问题", "Research question")}</h2><p class="lead">{te(r['question'])}</p></section>
 <section><h2>{L("关键发现", "Key findings")}</h2>{findings_list(localized_findings(latest))}{interpretation_note(latest.get('interpretation'), r['branch'])}{renderer.key_stats(r)}</section>
 <section><h2>{L("可视化证据", "Visual evidence")}</h2>
-  {chart_panel(run_href, latest.get("figures", []), renderer.figures, renderer.chart_data(r) is not None)}
+  {"" if renderer.inline_visuals else chart_panel(run_href, latest.get("figures", []), renderer.figures, renderer.chart_data(r) is not None)}
   <h3 class="sub">{e(renderer.coverage_title)}</h3>{renderer.coverage_section(r)}
 </section>
 <section><h2>{L("方法", "Method")}</h2>{_method(r, renderer)}</section>

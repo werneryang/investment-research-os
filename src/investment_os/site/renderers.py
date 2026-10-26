@@ -37,6 +37,7 @@ class Renderer:
     state_description_t: Text
     rule_params_label: Callable[[dict[str, Any]], str] = field(default=lambda p: "")
     supported: bool = True
+    inline_visuals: bool = False
 
     @property
     def coverage_title(self) -> str:
@@ -724,10 +725,11 @@ UNSUPPORTED = Renderer(
 )
 
 from .industry import make_renderer  # noqa: E402
+from .company import make_renderer as company_renderer
 
 RENDERERS: dict[str, Renderer] = {"rates_curve": CURVE, "par_bond_scenarios": BOND,
                                   "curve_attribution": ATTRIBUTION, "asset_history": ASSETS,
-                                  "industry": make_renderer(Renderer)}
+                                  "industry": make_renderer(Renderer), "company": company_renderer(Renderer)}
 
 
 def get_renderer(branch: str) -> Renderer:

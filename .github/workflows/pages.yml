@@ -79,7 +79,8 @@ jobs:
           exit $s
 
       # The full dossier uses locally archived SEC source files and manually checked
-      # guidance evidence. Publish its verified archived result; do not redownload
+      # guidance evidence. The 16 company_* studies also use verified archived results.
+      # Publish these results; do not redownload
       # 5.4 GB of filings or silently substitute current leaders on each CI run.
       - name: Run industry market and economy studies
         continue-on-error: true

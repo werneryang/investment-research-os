@@ -483,17 +483,36 @@ def industry_state(result: dict[str, Any]) -> dict[str, Any]:
     return {"行业数": result["results"]["industry_count"], "指引案例数": result["results"]["guidance_events"]}
 
 
+def company_findings(result):
+    r = result["results"]
+    if r["company_count"] > 1:
+        return [_finding("company_scope", f"现有 {r['company_count']} 家公司已形成年度研究；财年和业务结构不同，不作全样本排名。", {"companies": r['company_count']}),
+                _finding("company_gaps", f"共有 {r['missing']} 个缺失指标、{r['revision_candidates']} 个同科目修订候选；完整证据见各公司页。", {"missing":r['missing'],"revision_candidates":r['revision_candidates']})]
+    p=r["companies"][0]; latest=p["latest"]; out=[]
+    for metric,label in (("revenue","营收"),("operating_cash_flow","经营现金流"),("capex","现金资本开支")):
+        v=latest[metric]; growth=latest['growth'].get(metric)
+        text=f"{p['last']} 期末对应年度的{label}为 {v/1e9:,.2f} 十亿美元。" if v is not None else f"{p['last']} 的{label}缺失，未填零。"
+        if growth: text+=f"同一申报的相邻年度比较为 {growth['value']:+.1%}。"
+        out.append(_finding('company_'+metric,text,{'period':p['last'],'value':v,'paired_growth':growth}))
+    return out
+
+
+def company_state(result):
+    r = result["results"]
+    return {"公司数": str(r["company_count"]), "缺失项": str(r["missing"]), "修订候选": str(r["revision_candidates"])}
+
+
 _FINDERS = {"rates_curve": rates_curve_findings, "par_bond_scenarios": par_bond_findings,
             "curve_attribution": curve_attribution_findings, "asset_history": asset_history_findings,
-            "industry": industry_findings}
+            "industry": industry_findings, "company": company_findings}
 _STATES = {"par_bond_scenarios": par_bond_state, "curve_attribution": curve_attribution_state,
-           "asset_history": asset_history_state, "industry": industry_state}
+           "asset_history": asset_history_state, "industry": industry_state, "company": company_state}
 
 # 规则版本：人工维护的名称；规则改动时递增。指纹会自动反映代码改动，两者一起展示
 # rates_curve v2（2026-10-23）：「尚未发布」改为「未取得（下载时尚未到保守可用时点）」
 RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v2", "par_bond_scenarios": "par_bond-findings.v1",
                  "curve_attribution": "curve_attribution-findings.v1", "asset_history": "asset_history-findings.v1",
-                 "industry": "industry-findings.v1"}
+                 "industry": "industry-findings.v1", "company": "company-findings.v1"}
 
 
 def findings(result: dict[str, Any]) -> list[dict[str, Any]]:
@@ -539,6 +558,8 @@ def rule_fingerprint(branch: str) -> str | None:
     finder = _FINDERS.get(branch)
     if finder is None:
         return None
+    if branch == "company":
+        return hashlib.sha256((inspect.getsource(finder)+inspect.getsource(company_state)).encode()).hexdigest()[:16]
     if branch == "industry":
         return hashlib.sha256((inspect.getsource(finder)+inspect.getsource(industry_state)).encode()).hexdigest()[:16]
     if branch == "par_bond_scenarios":

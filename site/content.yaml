@@ -158,8 +158,8 @@ branches:
         name: 公司财报
         summary: 15 家验证公司的核心指标与时点视图，以及能源、批零、半导体软件的历史 SIC 年度专题样本
         risk: [equity]
-        datasets: [edgar_fsds, edgar_companyfacts, industry_sec_facts, industry_guidance]
-        studies: [us_industry_dossier]
+        datasets: [edgar_fsds, edgar_companyfacts, company_sec_facts, industry_sec_facts, industry_guidance]
+        studies: [company_sample, company_apple, company_microsoft, company_nvidia, company_amazon, company_alphabet, company_tesla, company_jpmorgan, company_berkshire, company_exxon, company_johnson-johnson, company_procter-gamble, company_coca-cola, company_walmart, company_costco, company_nike, us_industry_dossier]
         can_answer:
           - 选定历史申报样本的营收、利润率、现金流与资本配置
         cannot_answer:

@@ -6,6 +6,27 @@
 # patterns：运行时带日期、数字生成的句子。zh 是整句匹配的正则，命名分组在 en 中以 {name} 引用；
 #   分组内容本身再查 phrases（列表中的「、」换成英文逗号）。
 phrases:
+  15 家公司的财报研究: Annual financial research for 15 companies
+  营收、利润率、经营现金流与资本开支如何变化？哪些公司可以比较？: How have revenue, margins, operating cash flow and capital spending changed, and which companies
+    are comparable?
+  全市场排名、因果归因及历史回测: Market-wide ranking, causal attribution and backtests
+  目的性选择的 15 家样本；使用快照内最新年度申报，不是历史时点投资信号: A purposive 15-company sample using the latest annual filings in the snapshot; not a
+    historical investment signal
+  Apple：年度财报研究: 'Apple: annual financial research'
+  Microsoft：年度财报研究: 'Microsoft: annual financial research'
+  NVIDIA：年度财报研究: 'NVIDIA: annual financial research'
+  Amazon：年度财报研究: 'Amazon: annual financial research'
+  Alphabet：年度财报研究: 'Alphabet: annual financial research'
+  Tesla：年度财报研究: 'Tesla: annual financial research'
+  JPMorgan Chase：年度财报研究: 'JPMorgan Chase: annual financial research'
+  Berkshire Hathaway：年度财报研究: 'Berkshire Hathaway: annual financial research'
+  Exxon Mobil：年度财报研究: 'Exxon Mobil: annual financial research'
+  Johnson & Johnson：年度财报研究: 'Johnson & Johnson: annual financial research'
+  Procter & Gamble：年度财报研究: 'Procter & Gamble: annual financial research'
+  Coca-Cola：年度财报研究: 'Coca-Cola: annual financial research'
+  Walmart：年度财报研究: 'Walmart: annual financial research'
+  Costco：年度财报研究: 'Costco: annual financial research'
+  Nike：年度财报研究: 'Nike: annual financial research'
   四层行业专题: Four-layer industry dossier
   12 行业总览: 12-industry overview
   49 行业细分: 49-industry detail
