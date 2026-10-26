@@ -514,6 +514,11 @@ sources:
       FSDS 只含报表主体数字，不含封面数据（如流通股数）；Company Facts API 补上封面数据与 FSDS 尚未收录的新申报
     next_step: 在已完成的历史 SIC 专题上，按需扩展主体资格、控制关系去重和季度验证
     verification:
+      - dataset: company_sec_facts
+        status: access_verified
+        date: "2026-10-26"
+        evidence: "从已有 15 家 E1 公司分区生成年度研究证据包；五个指标逐项保留申报历史、别名、缺失与修订候选。原始分区快照为 2026-10-24；未重新联网取得。"
+        scope: "当前快照的描述研究；不是逐条人工年报核验或历史时点投资信号"
       - dataset: industry_sec_facts
         status: access_verified
         date: "2026-10-25"

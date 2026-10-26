@@ -49,7 +49,7 @@ scripts/snapshot-agent.sh install
 
 线上地址：<https://werneryang.github.io/investment-research-os/>
 
-`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 取得登记的公开数据 → 运行国债曲线、利率情景、曲线归因、长期资产和 `us_industry_12` / `us_industry_49` → `iros verify --all` → 归档到 `archive` 分支并恢复历史 → 生成静态网站 → 发布到 GitHub Pages。依赖可选来源的研究取得失败不阻断其他研究发布；任何必需步骤失败都不发布。四层专题 `us_industry_dossier` 使用本地准备的财报与指引证据，网站恢复其已验证档案，不在每次 CI 下载全部原始财报。线上更新时间、工作流徽章与「已过期」提示会显示更新停滞。
+`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 取得登记的公开数据 → 运行国债曲线、利率情景、曲线归因、长期资产和 `us_industry_12` / `us_industry_49` → `iros verify --all` → 归档到 `archive` 分支并恢复历史 → 生成静态网站 → 发布到 GitHub Pages。依赖可选来源的研究取得失败不阻断其他研究发布；任何必需步骤失败都不发布。四层专题 `us_industry_dossier` 和 `company_*` 公司研究使用本地准备的财报与指引证据，网站恢复其已验证档案，不在每次 CI 下载全部原始财报。线上更新时间、工作流徽章与「已过期」提示会显示更新停滞。
 
 网站定位为研究门户，分工回答四个问题：
 
@@ -159,6 +159,7 @@ uv run pytest
 - [研究设计：美国主要资产的长期回报与风险](docs/study-long-run-assets.md)：1928 年以来七类资产的名义与实际回报、风险与相关性（已实现）
 - [美国行业的经济、盈利与股票回报](docs/study-industries.md)：12/49 行业、历史 SIC 财报专题、估值与指引案例（已实现范围及明确的数据边界）
 - [研究设计：国债曲线变化的分解](docs/study-curve-attribution.md)：第一项解释与归因研究，用会计恒等式拆分实际利率、通胀补偿与政策利率（已实现）
+- [15 家公司年度财报研究](docs/study-companies.md)：现有样本的营收、利润率、现金流、资本开支、可比性及申报版本（已实现）
 - [SEC EDGAR 财报数据设计](docs/edgar-design.md)：全部申报主体的财报事实、财年与申报版本、分区存储（草案，待审阅）
 - [历史方案索引](docs/archive/README.md)：保留 A、B、C 原始文档及 V0.2，追溯设计来源与定位变化。
 

@@ -442,6 +442,19 @@ datasets:
     vintages: none
     scheduled_fetch: {}
 
+  company_sec_facts:
+    source_id: sec_edgar
+    upstream_id: "现有 15 家公司年度合并财报与申报版本"
+    connector: evidence_bundle
+    params: {replace_snapshot: true}
+    description: "15 家公司研究证据包；逐值附 SEC 科目、申报、时间与修订候选"
+    frequency: annual
+    unit: USD
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
+
   industry_sec_facts:
     source_id: sec_edgar
     upstream_id: "历史 SEC 专题公司样本：年度合并财报事实"

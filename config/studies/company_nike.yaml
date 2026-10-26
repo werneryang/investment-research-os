@@ -1,0 +1,23 @@
+study_id: company_nike
+title: Nike：年度财报研究
+question: 营收、利润率、经营现金流与资本开支如何变化？哪些公司可以比较？
+result_type: descriptive
+branch: company
+scope:
+  market: US
+  currency: USD
+  start: '2009-01-01'
+  end: '2026-12-31'
+  frequency: annual
+  vintage_policy: latest
+data:
+  facts: company_sec_facts
+method:
+  description: 年度合并 USD；快照内最新申报，保留全部选中版本；同一申报的比率和同比；缺失不填零。
+  cik: 320187
+limitations:
+- 目的性选择的 15 家样本，不代表全市场或行业；可比性分组为研究判断。
+- 按财年期末列示，月末为跨来源匹配键，实际期末见申报证据；不等同日历年。
+- 现金资本开支不含融资租赁或其他非现金取得；OCF 减现金资本开支是派生现金余额，非可分配现金。
+- 同科目改值为修订候选，可由重述、终止经营重列或更正引起；不能自动认定错误或会计重述。
+- 部分指标可能来自不同最新申报；派生比率仅在同一申报内计算。
