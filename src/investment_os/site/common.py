@@ -180,10 +180,10 @@ def shell(title: str, body: str, build: dict[str, Any], *, page: str, active: st
     if is_en():
         switch = (f'<a class="lang-switch" href="{e(zh_href)}" hreflang="zh-CN" lang="zh-CN" data-lang="zh">中文</a>')
         alternates = (f'<link rel="alternate" hreflang="zh-CN" href="{e(zh_href)}">'
-                      f'<link rel="alternate" hreflang="en" href="{e(page)}">')
+                      f'<link rel="alternate" hreflang="en" href="{e(tree + page)}">')
     else:
         switch = f'<a class="lang-switch" href="{e(en_href)}" hreflang="en" lang="en" data-lang="en">English</a>'
-        alternates = (f'<link rel="alternate" hreflang="zh-CN" href="{e(page)}">'
+        alternates = (f'<link rel="alternate" hreflang="zh-CN" href="{e(tree + page)}">'
                       f'<link rel="alternate" hreflang="en" href="{e(en_href)}">')
     # 记住读者选择的语言：在中文页面上选过英文的读者，下次打开中文地址时转到对应的英文页面
     remember = ("" if is_en() else

@@ -314,6 +314,9 @@ def test_english_pages_mirror_chinese_pages(loaded):
     assert 'localStorage.getItem("lang")==="en"' in zh_home and "localStorage" not in en_home.split("</head>")[0]
 
     en_study = (site / "en" / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")
+    zh_study = (site / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")
+    assert '<link rel="alternate" hreflang="en" href="../../studies/ust_curve_test/">' in en_study
+    assert '<link rel="alternate" hreflang="zh-CN" href="../../studies/ust_curve_test/">' in zh_study
     assert '<a class="lang-switch" href="../../../studies/ust_curve_test/"' in en_study
     assert f'src="../../../runs/{m["run_id"]}/figures/' in en_study and "Key findings" in en_study
     # 发现由英文措辞从同一结果生成；记录中的中文原文不改写
