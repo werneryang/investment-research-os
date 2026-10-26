@@ -1,0 +1,90 @@
+{
+  "run_id": "company_nike-20261026T232606Z-444194bd",
+  "study_id": "company_nike",
+  "study_path": "config/studies/company_nike.yaml",
+  "study_config": {
+    "study_id": "company_nike",
+    "title": "Nike：年度财报研究",
+    "question": "营收、利润率、经营现金流与资本开支如何变化？哪些公司可以比较？",
+    "result_type": "descriptive",
+    "branch": "company",
+    "scope": {
+      "market": "US",
+      "currency": "USD",
+      "start": "2009-01-01",
+      "end": "2026-12-31",
+      "frequency": "annual",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-10-26T23:26:06+00:00",
+      "data_checked_at": {
+        "company_sec_facts": "2026-10-26T23:20:35+00:00"
+      }
+    },
+    "data": {
+      "facts": "company_sec_facts"
+    },
+    "method": {
+      "description": "年度合并 USD；快照内最新申报，保留全部选中版本；同一申报的比率和同比；缺失不填零。",
+      "cik": 320187
+    },
+    "limitations": [
+      "目的性选择的 15 家样本，不代表全市场或行业；可比性分组为研究判断。",
+      "按财年期末列示，月末为跨来源匹配键，实际期末见申报证据；不等同日历年。",
+      "现金资本开支不含融资租赁或其他非现金取得；OCF 减现金资本开支是派生现金余额，非可分配现金。",
+      "同科目改值为修订候选，可由重述、终止经营重列或更正引起；不能自动认定错误或会计重述。",
+      "部分指标可能来自不同最新申报；派生比率仅在同一申报内计算。"
+    ]
+  },
+  "study_config_hash": "0f5f1395c16c6f547b9ae8e0d7547fed5c140faae18a2d6e8aab674ba97590de",
+  "started_at": "2026-10-26T23:26:06+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "3d2f366e7af1173953a136b08d4b2a5befd3563f9bf91dd7a367920bf7573bab",
+    "git_commit": "8543b94b2b780772ddee3f9e264e207e4f079694",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.13",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "partial",
+  "inputs": [
+    {
+      "role": "facts",
+      "used": true,
+      "dataset_id": "company_sec_facts",
+      "version_id": "v20261026T231944Z-b6955fdb",
+      "content_hash": "b6955fdb7c2e2c7ce0a3d210b14a9727e565465ed3ab98071dc81cae9b670eda",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    }
+  ],
+  "result_hash": "32aa9c94c803ec92659078972ec63b70af00cd774b2bca28e48314718e5a28b9",
+  "warnings": [],
+  "unsupported": [
+    {
+      "item": "全市场排名、因果归因及历史回测",
+      "reason": "目的性选择的 15 家样本；使用快照内最新年度申报，不是历史时点投资信号"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runs/company_nike-20261026T232606Z-444194bd/result.json",
+      "sha256": "39103009b13f6212e70cd7d8955c434d814249026dc0b169f05613ae96f98534"
+    },
+    {
+      "path": "reports/company_nike/company_nike-20261026T232606Z-444194bd/report.md",
+      "sha256": "7f26470566e2208449b6fe5388d82986133724a25b3257b8b10621c9e29ecb1b"
+    },
+    {
+      "path": "reports/company_nike/company_nike-20261026T232606Z-444194bd/report.html",
+      "sha256": "8fdd7a2a56ce476a18e375b520a4b6e39951e496d9b9f93a43cdc82e3b388deb"
+    }
+  ],
+  "finished_at": "2026-10-26T23:26:06+00:00"
+}
