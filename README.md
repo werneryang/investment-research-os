@@ -154,7 +154,7 @@ uv run pytest
 
 ## 文档目录
 
-- [产业链研究数据库与计算模型设计](docs/supply-chain-research-design.md)：规划中的四层产业链、免费数据可行性门槛、模型、工程步骤和验收标准（**未宣称已接入或实现**）。
+- [产业链研究完善方案](docs/supply-chain-research-design.md)：行业分类 → 细分业务 → 公司业务与财务 → 产业关系；包含免费数据门槛、行业模型适配、炼油与芯片对照及验收标准（**规划中，未宣称新能力已接入或实现**）。
 - [当前架构与实施路线](docs/architecture.md)：设计基线（V0.3）
 - [实现说明](docs/implementation.md)：代码结构、契约落地方式、如何扩展、已知限制
 - [研究设计：美国主要资产的长期回报与风险](docs/study-long-run-assets.md)：1928 年以来七类资产的名义与实际回报、风险与相关性（已实现）
