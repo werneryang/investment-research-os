@@ -1,0 +1,28 @@
+[
+  {
+    "name": "eia_weekly_inputs.xls",
+    "url": "https://www.eia.gov/dnav/pet/xls/PET_PNP_WIUP_DCU_NUS_W.xls",
+    "retrieved_at": "2026-10-28T00:14:02.972869+00:00",
+    "scope": "download bytes and file signature only; not parsed or use-validated",
+    "http_status": 200,
+    "content_type": "application/vnd.ms-excel",
+    "final_url": "https://www.eia.gov/dnav/pet/xls/PET_PNP_WIUP_DCU_NUS_W.xls",
+    "bytes": 245248,
+    "sha256": "c6434c40fcef85b55c79f995d2d3c2fd4a52cb36830649af9235ae1930150c5f",
+    "expected_file_signature": true,
+    "status": "downloaded"
+  },
+  {
+    "name": "naics_2022_structure.xlsx",
+    "url": "https://www.census.gov/naics/2022NAICS/2022_NAICS_Structure.xlsx",
+    "retrieved_at": "2026-10-28T00:14:03.331376+00:00",
+    "scope": "download bytes and file signature only; not parsed or use-validated",
+    "http_status": 200,
+    "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "final_url": "https://www.census.gov/naics/2022NAICS/2022_NAICS_Structure.xlsx",
+    "bytes": 88218,
+    "sha256": "217c9e0d4d74e7517bc288f5f308b73aa0de5ee787976a6dd222412be28ada22",
+    "expected_file_signature": true,
+    "status": "downloaded"
+  }
+]
