@@ -1164,3 +1164,59 @@ datasets:
     currency: null
     timezone: UTC
     availability: {type: unknown}
+
+  # ---- EIA 周度炼油投入与利用率（2026-10-27）：同一文件的三个序列，单位不同，分为三个数据集 ----
+  # 观测日期是周结束日（周五），不是期间起点；按周度处理时可用时间为观测日后第 7 天 0 点。
+  # 周报通常在下周三发布（节假日顺延），未逐周核对发布日期，规则偏保守
+
+  eia_refinery_gross_inputs:
+    source_id: eia
+    upstream_id: "EIA: PET_PNP_WIUP_DCU_NUS_W.xls，Data 1，WGIRIUS2"
+    connector: eia_pet_xls
+    description: 美国炼厂周度总投入（Gross Inputs，千桶/日）；不是原油净投入（Crude Oil Inputs）
+    params:
+      file: PET_PNP_WIUP_DCU_NUS_W.xls
+      sheet: Data 1
+      series:
+        WGIRIUS2: Weekly U.S. Gross Inputs into Refineries (Thousand Barrels per Day)
+    frequency: weekly
+    unit: thousand_barrels_per_day
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 0}
+    vintages: none
+    value_range: [0, 30000]
+
+  eia_refinery_operable_capacity:
+    source_id: eia
+    upstream_id: "EIA: PET_PNP_WIUP_DCU_NUS_W.xls，Data 1，WOCLEUS2"
+    connector: eia_pet_xls
+    description: 美国常压蒸馏可运行产能（千桶/日历日）；周度值沿用最近报告的月度产能
+    params:
+      file: PET_PNP_WIUP_DCU_NUS_W.xls
+      sheet: Data 1
+      series:
+        WOCLEUS2: Weekly U. S. Operable Crude Oil Distillation Capacity (Thousand Barrels per Calendar Day)
+    frequency: weekly
+    unit: thousand_barrels_per_calendar_day
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 0}
+    vintages: none
+    value_range: [0, 30000]
+
+  eia_refinery_utilization:
+    source_id: eia
+    upstream_id: "EIA: PET_PNP_WIUP_DCU_NUS_W.xls，Data 1，WPULEUS3"
+    connector: eia_pet_xls
+    description: 美国炼厂周度可运行产能利用率（%）；EIA 以未舍入的总投入 ÷ 可运行产能计算，公布值保留一位小数
+    params:
+      file: PET_PNP_WIUP_DCU_NUS_W.xls
+      sheet: Data 1
+      series:
+        WPULEUS3: Weekly U.S. Percent Utilization of Refinery Operable Capacity (Percent)
+    frequency: weekly
+    unit: percent
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 0}
+    vintages: none
+    # 日历日产能已计入通常停机，超过 100% 不直接视为异常；范围只拦截明显错误
+    value_range: [0, 150]

@@ -1,0 +1,52 @@
+# 产业链研究 P3a：在处理上限假设下提高目标处理量的机械性缺口（docs/supply-chain-research-design.md §5.3）
+study_id: us_refining_throughput_scenarios_2025
+title: 美国炼油处理能力情景（2025 年周度基准）
+question: >-
+  以 2025 年每周的实际总投入为基准，目标处理量提高 5%–20% 时，在可处理上限为可运行产能一定比例的假设下，
+  每周会出现多大的机械性处理缺口？
+result_type: simulation
+branch: refining_throughput
+
+scope:
+  market: US
+  activity: petroleum_refining
+  start: 2025-01-01
+  end: 2025-12-31
+  frequency: weekly
+  vintage_policy: latest
+
+data:
+  inputs: eia_refinery_gross_inputs
+  capacity: eia_refinery_operable_capacity
+  utilization: eia_refinery_utilization
+
+method:
+  # 假设参数的经验参照：报告参照期内官方利用率的分布，不进入计算
+  reference_window: [2015-01-01, 2025-12-31]
+  allowed_assumptions:
+    kappa:
+      range: [0.90, 1.00]
+      unit: 可处理上限 ÷ 可运行产能（日历日口径）
+      rationale: >-
+        上限 1.00 即可运行产能本身，日历日产能已计入通常停机，不再另扣；1990 年以来的周度利用率极少超过 100%。
+        下限 0.90 接近近年周度利用率的平均水平，作为偏紧一端。区间是机械敏感性范围，不是可持续运行上限的估计
+  # g 为外生目标处理量增幅（情景定义，不是预测）；kappa 必须在允许假设范围内
+  scenarios:
+    - {id: k100_g05, g: 0.05, kappa: 1.00, label: 上限为可运行产能，处理量提高 5%}
+    - {id: k100_g10, g: 0.10, kappa: 1.00, label: 上限为可运行产能，处理量提高 10%}
+    - {id: k100_g20, g: 0.20, kappa: 1.00, label: 上限为可运行产能，处理量提高 20%}
+    - {id: k095_g05, g: 0.05, kappa: 0.95, label: 上限为可运行产能的 95%，处理量提高 5%}
+    # 失败示例：kappa 超出允许假设范围，应被阻断（C），不生成数值
+    - {id: k105_g10, g: 0.10, kappa: 1.05, label: 上限高于可运行产能（不允许）}
+
+benchmark: 基准情景（g = 0）下每周可处理量等于实际总投入
+evaluation:
+  - 基准统计单元为 A；含假设上限的情景为 B
+  - 超出允许假设范围的情景被阻断，不生成数值
+  - 基准总投入已超过假设上限的周标为不自洽，不计入缺口
+  - 固定数据版本可重现（iros verify）
+
+limitations:
+  - 只计算处理量的机械关系；不含产品收率、进口、库存、物流与价格，不是汽油需求预测、燃料短缺或炼厂利润结论
+  - 增幅 g 与上限比例 kappa 都是假设，不代表概率；缺口是情景下的计算结果，不是历史真实短缺
+  - 美国全国合计，不区分地区（PADD）、炼厂或公司；周度数据为估计值，只使用当前修订版本

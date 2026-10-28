@@ -36,6 +36,7 @@ categories:
   global_macro: 全球宏观
   china: 中国宏观与证券
   surveys: 调查与模型估计
+  industry: 行业与产业统计
   manual: 人工导入
 
 # 能力缺口：在取得并验证适用的免费数据之前，不承诺相应的完整历史研究能力（architecture §5.2）
@@ -480,6 +481,62 @@ sources:
     access: api
     notes: 原始统计机构；GDP、个人收入与支出等的上游
     next_step: 核验 API 说明、注册要求与额度
+
+  - id: eia
+    name: EIA 石油数据
+    publisher: U.S. Energy Information Administration
+    channel: 石油数据浏览器（dnav/pet）的 .xls 文件直接下载（www.eia.gov/dnav/pet/xls/），无需 key；API v2 需免费 key，为自动化备选
+    url: https://www.eia.gov/dnav/pet/pet_pnp_wiup_dcu_nus_w.htm
+    license: 美国政府出版物，属公有领域；可使用与分发，引用时注明 EIA 与发布日期（www.eia.gov/about/copyrights_reuse.php）；第三方提供的材料除外
+    registration: 文件下载无需注册或 key
+    rate_limit: 未公布；本项目串行请求，失败有界重试
+    revisions: 只有当前版本；周度值随月度、年度报告修订，文件不提供历史版本
+    maintenance: 工作表版式固定（Sourcekey / Date 表头）；按序列代码定位列并逐字核对列标题，不一致即报错
+    alternatives: [fred_graph]
+    category: industry
+    directions: [sector_structure]
+    access: file
+    signup: none
+    redistribution: allowed
+    coverage: 周度炼油投入与利用率：总投入与可运行产能自 1990-01-05 起、利用率自 1990-11-02 起（2026-10-27 取得的文件截至 2026-10-16）；另有月度、年度表
+    offers:
+      - 年度炼厂设施产能（Refinery Capacity Report）
+      - 原油、汽油、馏分油现货价格（裂解价差输入，系列与地点待核验）
+    notes: >-
+      周度利用率 = 总投入 ÷ 最近报告的月度可运行产能（日历日口径），EIA 用未舍入数值计算；
+      日历日产能已计入通常的停机，利用率超过 100% 不能直接判为坏数据。周度数据为 Weekly Petroleum Status Report 的估计，与月度定稿可能不同
+    next_step: 基线运行后登记用途核验；按投资对照需要核验现货价格序列
+    verification:
+      - status: docs_verified
+        date: "2026-10-27"
+        evidence: >-
+          阅读周度投入与利用率页面、日历日与连续运行日产能定义、版权与再使用说明（公有领域，可分发，需注明来源与发布日期）。
+          2026-10-27 无凭证下载 PET_PNP_WIUP_DCU_NUS_W.xls（245,248 字节，HTTP 200，OLE 签名正确，见 docs/evidence/supply-chain-download-probes-20261027.json）
+        scope: 来源整体说明；不代表任一数据集接入成功
+      - dataset: eia_refinery_gross_inputs
+        status: access_verified
+        date: "2026-10-27"
+        evidence: >-
+          经 eia_pet_xls 无凭证取得 PET_PNP_WIUP_DCU_NUS_W.xls（245,248 字节，SHA256 c6434c40…，与 2026-10-27 下载探测一致），
+          「Data 1」按 Sourcekey WGIRIUS2 定位并逐字核对列标题与单位；1990-01-05 至 2026-10-16 共 1918 个有效值（版本 v20261028T014515Z-e8598c9b），
+          起点前的空单元格保留为缺失。用 pandas 独立读取同一原始快照逐值比对，1918 个值全部一致
+        scope: 美国全国周度序列的当前修订版本；不代表用途已验证，也不代表与月度定稿一致
+      - dataset: eia_refinery_operable_capacity
+        status: access_verified
+        date: "2026-10-27"
+        evidence: >-
+          经 eia_pet_xls 无凭证取得 PET_PNP_WIUP_DCU_NUS_W.xls（245,248 字节，SHA256 c6434c40…，与 2026-10-27 下载探测一致），
+          「Data 1」按 Sourcekey WOCLEUS2 定位并逐字核对列标题与单位；1990-01-05 至 2026-10-16 共 1920 个有效值（版本 v20261028T014516Z-6b81778a），
+          起点前的空单元格保留为缺失。用 pandas 独立读取同一原始快照逐值比对，1920 个值全部一致
+        scope: 美国全国周度序列的当前修订版本；不代表用途已验证，也不代表与月度定稿一致
+      - dataset: eia_refinery_utilization
+        status: access_verified
+        date: "2026-10-27"
+        evidence: >-
+          经 eia_pet_xls 无凭证取得 PET_PNP_WIUP_DCU_NUS_W.xls（245,248 字节，SHA256 c6434c40…，与 2026-10-27 下载探测一致），
+          「Data 1」按 Sourcekey WPULEUS3 定位并逐字核对列标题与单位；1990-11-02 至 2026-10-16 共 1863 个有效值（版本 v20261028T014517Z-ef9df9e1），
+          起点前的空单元格保留为缺失。用 pandas 独立读取同一原始快照逐值比对，1863 个值全部一致
+        scope: 美国全国周度序列的当前修订版本；不代表用途已验证，也不代表与月度定稿一致
 
   - id: sec_edgar
     name: SEC EDGAR

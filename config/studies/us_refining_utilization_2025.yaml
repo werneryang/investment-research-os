@@ -1,0 +1,35 @@
+# 产业链研究 P3a：美国炼油周度处理量统计（docs/supply-chain-research-design.md §5）
+study_id: us_refining_utilization_2025
+title: 美国炼油周度总投入、产能与利用率（2025 年）
+question: >-
+  2025 年美国炼厂每周的总投入、可运行产能与官方利用率是否齐全、同口径？
+  按公布精度复算的利用率是否与官方值相容？全年处理量与产能的关系如何？
+result_type: descriptive
+branch: refining_throughput
+
+scope:
+  market: US
+  activity: petroleum_refining
+  start: 2025-01-01
+  end: 2025-12-31
+  frequency: weekly
+  vintage_policy: latest
+
+data:
+  inputs: eia_refinery_gross_inputs
+  capacity: eia_refinery_operable_capacity
+  utilization: eia_refinery_utilization
+
+method: {}
+
+benchmark: EIA 公布的周度利用率（WPULEUS3）
+evaluation:
+  - 预期周全部有三个有效数值，缺失周不插值
+  - 复算利用率与公布值在舍入区间内相容
+  - 固定数据版本可重现（iros verify）
+
+limitations:
+  - 周度数据为 Weekly Petroleum Status Report 的估计，与月度、年度定稿可能不同；只使用当前修订版本
+  - 美国全国合计，不区分地区（PADD）、炼厂或公司
+  - 总投入（Gross Inputs）包含原油以外的投入，不等于原油加工量
+  - 描述历史，不是需求、产量或利润预测
