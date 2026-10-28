@@ -1,0 +1,10 @@
+{
+  "path": "raw/ust_par_yield_curve/20261028T000340Z_7eb8494d.csv",
+  "sha256": "7eb8494d3f36efef53017dcb1c22548fdabaca3a1aac8a25424eef13d693398d",
+  "bytes": 16796,
+  "url": "https://home.treasury.gov/resource-center/data-chart-center/interest-rates/daily-treasury-rates.csv/2026/all?type=daily_treasury_yield_curve&field_tdr_date_value=2026&page&_format=csv",
+  "request": {
+    "year": 2026
+  },
+  "retrieved_at": "2026-10-28T00:03:40+00:00"
+}
