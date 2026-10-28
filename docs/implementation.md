@@ -186,6 +186,21 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - 发现规则 `asset_history-findings.v1`：只描述历史数字，不用「预期」「将会」等措辞；研究页展示组件 `ASSETS`（统计表、相关矩阵、敏感性、四张静态图）。
 - CI 中两项研究单独一步运行，Damodaran、French、Shiller 或 FRED 取得失败时不阻断发布。
 
+### 第五类研究：美国炼油周度统计与处理能力情景（产业链 P0–P3a）
+
+`config/studies/us_refining_utilization_2025.yaml`（`descriptive`）与 `us_refining_throughput_scenarios_2025.yaml`（`simulation`），分支 `refining_throughput`；设计见[产业链研究完善方案](supply-chain-research-design.md) §4、§5。
+
+- 输入为 EIA 同一周度文件的三个数据集：总投入 `eia_refinery_gross_inputs`（WGIRIUS2，千桶/日）、可运行产能 `eia_refinery_operable_capacity`（WOCLEUS2，千桶/日历日）、官方利用率 `eia_refinery_utilization`（WPULEUS3，%）。单位不同，所以分为三个数据集；分支按角色核对序列代码、单位与公布精度，不符为硬错误。
+- 模型适用范围写在分支的 `MODEL` 中（`activity: petroleum_refining`、`market: US`、`frequency: weekly`）；研究定义的 `scope` 不一致时拒绝运行，描述研究也不能夹带情景。
+- 齐全性：窗口内的预期周结束日（周五）逐周要求三个数值都有效；缺失周不插值，列为「完整期间结论」不支持；晚于数据最后观测的周只说明覆盖到该日。观测日期不是周五时报硬错误。
+- 复算（`validation.ratio_check`）：`analytics/rounding.py` 按 G、K 整数与 U 一位小数传播舍入区间，复算区间与 U ± 0.05 相交即相容，不设经验容差。2025 年复算与公布值的最大差为 0.053 个百分点，超过 0.05 但仍相容，说明固定容差会误判。
+- 输入能力（`research/feasibility.py`，`feasibility.v1`）：每个研究单元单独定级并写入 `results.feasibility`。来源未达到 `access_verified` 为未评估；硬错误、复算不相容、假设参数不在 `method.allowed_assumptions` 或超出范围、依赖单元不可计算为 C；使用允许假设为 B；其余为 A。C 与未评估的单元不生成数值。硬错误不能靠改用假设降为 B。
+- 情景：D = (1 + g) × G，Q_cap = kappa × K，经 `analytics/constraints.py` 的固定系数约束引擎求可处理量与缺口。g 是外生情景定义，kappa 是允许假设（0.90–1.00）；基准 G 已超过 Q_cap 的周标为不自洽，不抬高上限、不计入缺口。`validation.baseline_check` 核对 kappa = 1、g = 0 时可处理量逐周等于实际总投入。研究定义中 kappa = 1.05 的情景是有意保留的失败示例，结果为 C。
+- `method.reference_window` 内官方利用率的分布作为假设参照写入 `results.assumption_reference`，不进入计算。
+- 约束引擎（P2）只做数学：缺值、单位不一致、回路、非正系数、多给或少给资源都报错。设计文档 §9 的虚构 GPU 算例与拒绝路径在 `tests/test_refining.py` 中独立验证；它不产生真实产业结论。
+- 只在本机运行：未加入 CI；网站研究页专用组件、发现规则与这两项研究的英文译文暂未注册（来源与数据集的登记文字已有译文）。EIA 允许再分发，但 `archive_data` 暂为 false，接入稳定后再决定是否归档。
+- NAICS 分类表未接入：炼油两项研究不使用分类代码计算，分类导入留到需要 L1↔L2 映射的芯片模块（P3b）。
+
 ## 7. 扩展方法
 
 **美国行业研究**：`research/industry.py` 实现 12/49 行业收益风险、HAC 因子暴露、实际增加值与宏观分组，以及历史 SIC 财报、独立估值快照和指引案例。`evidence_bundle` 接入器保存本地证据包及逐条定位，使用完整快照替换当前数据，同时保留旧版本。财报逐公司事实不进入公开结果。实现范围、准备命令和口径见 [行业研究](study-industries.md)。
@@ -199,6 +214,8 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 **Damodaran 接入器**（`connectors/damodaran.py`，`damodaran_xls`）：读取旧版 Excel（`.xls`，依赖 xlrd）。`params.sheet` 指明工作表，以首列为 `Year` 的行作为表头，`params.columns` 把序列代码对应到表头文字逐字核对；同名表头重复出现时取第一个（年度回报在左，「$100 价值」在右）。从表头下逐行读取，首列不再是年份即停止，汇总行不读入。表中自带的「更新日期」单元格已过时，不作依据。
 
 **Shiller 接入器**（`connectors/shiller.py`，`shiller_xls`）：下载地址带版本号、随更新变化，每次先读 shillerdata.com 页面找 `ie_data.xls` 链接，页面上必须恰好一个。工作表 `Data` 的短名称在首列为 `Date` 的那一行（第 8 行），同名列重复出现，所以 `params.columns` 按列位置登记并逐字核对短名称。日期是小数「年.月」（`2026.1` 为 10 月），按 `round((x − 年) × 100)` 取月份，再与 Date Fraction 列逐行核对并要求月份连续。`NA` 与空单元格为缺失。四个数据集按单位与发布滞后拆分：价格、股息与盈利（滞后约四个月，可用时间取 180 天）、CAPE、实际价格与实际总收益。
+
+**EIA 石油数据接入器**（`connectors/eia.py`，`eia_pet_xls`）：从 `www.eia.gov/dnav/pet/xls/` 下载 `.xls`，无需 key。工作表第 2 行为 `Sourcekey`、第 3 行为 `Date` 表头；`params.series` 把序列代码对应到列标题，按代码定位列并逐字核对标题（空白折叠，标题含单位），不一致即报错。日期为 Excel 日期序号，非日期单元格报错。观测日期是周结束日而不是期间起点，与 `fred_walcl` 相同按周度处理，可用时间为观测日后第 7 天 0 点（美东），偏保守。
 
 **本机与 CI 的分工**（2026-10-24 确认）：接入核验（取样本、查质量、交叉核对、记 `access_verified`）与定时快照都在本机完成。CI 只取得无需凭证、登记了 `scheduled_fetch` 的数据集，用于生成网站与运行研究，同时每天在另一环境复查这些来源仍可取得。需要凭证（如 FRED API key）或人工导入的数据集默认只在本机；只有当 CI 中的研究必须用到时，才给 CI 配置凭证。网站对 CI 中有意不取得的数据集写明原因（需要 API key、人工导入、未登记定时取得，由登记推出，见 `site/collect.py` 的 `skip_reason`）；只有应当取得却没取得时才显示「本次构建未取得」。
 

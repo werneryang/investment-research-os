@@ -6,6 +6,7 @@ from typing import Any
 
 from .base import Connector, FetchError, ParsedPayload, RawPayload
 from .damodaran import DamodaranXlsConnector
+from .eia import EiaPetXlsConnector
 from .evidence import EvidenceBundleConnector
 from .fred import FredApiVintagesConnector, FredGraphCsvConnector
 from .french import FrenchLibraryConnector
@@ -17,7 +18,7 @@ _CONNECTORS = {
     c.name: c
     for c in (TreasuryParCurveConnector, FredGraphCsvConnector, FredApiVintagesConnector,
               FrenchLibraryConnector, DamodaranXlsConnector, ShillerXlsConnector,
-              ManualCsvConnector, EvidenceBundleConnector)
+              ManualCsvConnector, EvidenceBundleConnector, EiaPetXlsConnector)
 }
 
 
