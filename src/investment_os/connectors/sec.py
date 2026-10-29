@@ -191,6 +191,15 @@ SEGMENT_AXES = frozenset({"BusinessSegments", "ProductOrService", "Geographical"
                           "ConcentrationRiskByBenchmark", "ConcentrationRiskByType", "MajorCustomers"})
 
 
+_SEGMENT_DTYPES = {
+    "accession": "string", "cik": "int64", "name": "string", "form": "string", "fiscal_year": "Int64",
+    "fiscal_period": "string", "filing_period_month_end": "datetime64[ns]", "document_period_end": "datetime64[ns]",
+    "accepted_at": "datetime64[ns, UTC]", "taxonomy": "string", "tag": "string", "segments": "string",
+    "period_end": "datetime64[ns]", "duration_quarters": "int64", "unit": "string", "value": "float64",
+    "available_at": "datetime64[ns, UTC]", "source": "string", "retrieved_at": "datetime64[ns, UTC]",
+}
+
+
 def segment_axes(segments: str) -> dict[str, str]:
     """FSDS 的 segments 文本 → {维度: 成员}；空文本为合并口径。"""
     out = {}
@@ -204,7 +213,10 @@ def segment_axes(segments: str) -> dict[str, str]:
 
 def parse_fsds_segments(content: bytes, ciks: set[int], retrieved_at: datetime,
                         axes: frozenset[str] = SEGMENT_AXES) -> pd.DataFrame:
-    """FSDS 季度 ZIP → 指定公司定期报告中的分部与维度事实（只含 axes 内的维度组合，无共同申报人）。"""
+    """FSDS 季度 ZIP → 指定公司定期报告中的分部与维度事实（只含 axes 内的维度组合，无共同申报人）。
+
+    period_end 与 filing_period_month_end 都是 FSDS 的月末口径；document_period_end 留空。
+    """
     try:
         zf = zipfile.ZipFile(io.BytesIO(content))
     except zipfile.BadZipFile as e:
@@ -237,19 +249,21 @@ def parse_fsds_segments(content: bytes, ciks: set[int], retrieved_at: datetime,
                                         "duration_quarters", "unit", "value"])
     sub = pd.DataFrame([{"accession": k, "cik": int(x["cik"]), "name": x["name"], "form": x["form"],
                          "fiscal_year": int(x["fy"]) if x["fy"] else None, "fiscal_period": x["fp"],
-                         "filing_period_end": _yyyymmdd(x["period"]), "accepted": x["accepted"]}
+                         "filing_period_month_end": _yyyymmdd(x["period"]), "accepted": x["accepted"]}
                         for k, x in subs.items()],
                        columns=["accession", "cik", "name", "form", "fiscal_year", "fiscal_period",
-                                "filing_period_end", "accepted"])
+                                "filing_period_month_end", "accepted"])
     facts = facts.merge(sub, on="accession", how="left")
     facts["fiscal_year"] = pd.array(facts["fiscal_year"], dtype="Int64")
     facts["period_end"] = pd.to_datetime(facts["period_end"])
-    facts["filing_period_end"] = pd.to_datetime(facts["filing_period_end"])
+    facts["filing_period_month_end"] = pd.to_datetime(facts["filing_period_month_end"])
+    facts["document_period_end"] = pd.NaT  # FSDS 只有月末口径，精确期末不在此推定
     facts["accepted_at"] = pd.to_datetime(facts["accepted"]).dt.tz_localize(TZ).dt.tz_convert("UTC") \
         if len(facts) else pd.Series([], dtype="datetime64[ns, UTC]")
     facts["available_at"] = available_after(facts["accepted_at"]) if len(facts) else facts["accepted_at"]
     facts["source"], facts["retrieved_at"] = "fsds", pd.Timestamp(retrieved_at).tz_convert("UTC")
-    return facts[SEGMENT_FACT_COLUMNS]
+    # 明确类型：没有分部事实的季度也写出带类型的空分区，多个分区可以一起读取
+    return facts[SEGMENT_FACT_COLUMNS].astype(_SEGMENT_DTYPES)
 
 
 def parse_companyfacts(content: bytes, cik: int, retrieved_at: datetime) -> tuple[pd.DataFrame, pd.DataFrame]:

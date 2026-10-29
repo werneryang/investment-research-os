@@ -339,6 +339,9 @@ def cmd_chain(args: argparse.Namespace) -> int:
     inv = rep.inventory
     print("产业链登记（" + "，".join(f"{k} {v}" for k, v in inv["counts"].items()) + "）")
     print("已核对：" + ("，".join(f"{k} {v}" for k, v in sorted(rep.verified.items())) or "无"))
+    print("证据机器核对：" + "，".join(f"{k} {v}" for k, v in inv["claim_checks"].items())
+          + "；人工复核：" + "，".join(f"{k} {v}" for k, v in sorted(inv["claim_review_status"].items()))
+          + "；映射与关系：" + "，".join(f"{k} {v}" for k, v in inv["link_relation_status"].items()))
     for w in rep.warnings:
         print(f"  [未核对] {w}")
     for e in rep.errors:
