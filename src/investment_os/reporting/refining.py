@@ -5,6 +5,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from ..research.refining import REFERENCE_SCOPE_LABEL
+
 import pandas as pd
 
 GRADE_LABEL = {"A": "A：已核验输入", "B": "B：明示假设的情景", "C": "C：受阻，不生成数值",
@@ -56,9 +58,15 @@ def sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
                       for x in scen]))
     ref = r.get("assumption_reference")
     if ref and ref.get("weeks"):
-        body.append(f"假设参照（不进入计算）：{ref['window'][0]} 至 {ref['window'][1]} 的 {ref['weeks']} 周官方利用率"
-                    f"平均 {_n(ref['mean_utilization'], 1)}%，95 分位 {_n(ref['p95_utilization'], 1)}%，"
-                    f"最高 {_n(ref['max_utilization'], 1)}%（{ref['max_week']}）。")
+        line = (f"假设参照（不进入计算）：{ref['window'][0]} 至 {ref['window'][1]} 的 {ref['weeks']} 周官方利用率"
+                f"平均 {_n(ref['mean_utilization'], 1)}%，95 分位 {_n(ref['p95_utilization'], 1)}%，"
+                f"最高 {_n(ref['max_utilization'], 1)}%（{ref['max_week']}）。")
+        scope = ref.get("use_scope")
+        if scope is not None:
+            gaps = "、".join(f"{a}—{b}" for a, b in scope["uncovered"])
+            line += (f"用途核验：{REFERENCE_SCOPE_LABEL.get(scope['status'], scope['status'])}（{scope['status']}）"
+                     + (f"，未覆盖 {gaps}" if gaps else "") + "。")
+        body.append(line)
     detail: list[Any] = [
         f"预期周 {cov['expected_weeks']}，三项齐全 {cov['valid_weeks']}；缺失周 {len(cov['missing_weeks'])}"
         + (f"（{'、'.join(cov['missing_weeks'][:8])}）" if cov["missing_weeks"] else "")

@@ -48,6 +48,10 @@ INPUT_REQUIREMENTS = {
 }
 WEEK_END = "FRI"  # EIA 周度观测日期为周结束日
 
+# 参照窗口相对用途核验范围的位置（contracts 的 SCOPE_* 取值）
+REFERENCE_SCOPE_LABEL = {"in_scope": "全部在核验范围内", "partial": "部分在核验范围内",
+                         "out_of_scope": "完全在核验范围外", "not_verified": "该用途没有用途核验记录"}
+
 # 日历日产能与日均投入同按每个日历日计；EIA 利用率即二者直接相除。情景中把 K 视为同一时间口径的处理能力
 CAPACITY_AS_THROUGHPUT_UNIT = "thousand_barrels_per_day"
 
@@ -243,6 +247,15 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
         allowed = dict(method.get("allowed_assumptions") or {})
         if method.get("reference_window"):
             reference = _reference(series, [str(x) for x in method["reference_window"]])
+            # 参照数据的用途核验范围与研究期间分开记录；旧运行没有该记录时不写入，保持原结果结构
+            scope = inputs["utilization"].reference_scope
+            if scope is not None:
+                reference["use_scope"] = scope
+                if scope["status"] != "in_scope":
+                    gaps = "、".join(f"{a}—{b}" for a, b in scope["uncovered"]) or f"{scope['window'][0]}—{scope['window'][1]}"
+                    limitations.append(f"假设参照期 {scope['window'][0]} 至 {scope['window'][1]} 的利用率不全在用途核验范围内"
+                                       f"（{REFERENCE_SCOPE_LABEL.get(scope['status'], scope['status'])}；未覆盖 {gaps}）；"
+                                       "参照只说明允许范围的依据，不进入计算")
         scenarios = list(method.get("scenarios") or [])
         if not scenarios:
             raise ValueError("情景研究没有定义任何情景")

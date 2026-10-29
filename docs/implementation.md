@@ -196,8 +196,9 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - 复算（`validation.ratio_check`）：`analytics/rounding.py` 按 G、K 整数与 U 一位小数传播舍入区间，复算区间与 U ± 0.05 相交即相容，不设经验容差。2025 年复算与公布值的最大差为 0.053 个百分点，超过 0.05 但仍相容，说明固定容差会误判。
 - 输入能力（`research/feasibility.py`，`feasibility.v1`）：每个研究单元单独定级并写入 `results.feasibility`。来源未达到 `access_verified` 为未评估；硬错误、复算不相容、假设参数不在 `method.allowed_assumptions` 或超出范围、依赖单元不可计算为 C；使用允许假设为 B；其余为 A。C 与未评估的单元不生成数值。硬错误不能靠改用假设降为 B。
 - 情景：D = (1 + g) × G，Q_cap = kappa × K，经 `analytics/constraints.py` 的固定系数约束引擎求可处理量与缺口。g 是外生情景定义，kappa 是允许假设（0.90–1.00）；基准 G 已超过 Q_cap 的周标为不自洽，不抬高上限、不计入缺口。`validation.baseline_check` 核对 kappa = 1、g = 0 时可处理量逐周等于实际总投入。研究定义中 kappa = 1.05 的情景是有意保留的失败示例，结果为 C。
-- `method.reference_window` 内官方利用率的分布作为假设参照写入 `results.assumption_reference`，不进入计算。
+- `method.reference_window` 内官方利用率的分布作为假设参照写入 `results.assumption_reference`，不进入计算。参照窗口相对用途核验范围的位置与研究期间分开判断（`runs._reference_scope`），作为输入的 `reference_scope` 写入运行清单并在复现时固定，同时写入 `assumption_reference.use_scope`；不全在范围内时追加限制，报告列出状态与未覆盖期间（2026-10-29 起：2015–2025 参照窗口为 partial，未覆盖 2015-01-01—2024-12-31）。旧运行的清单没有该记录，复现时保持原结果结构。
 - 约束引擎（P2）只做数学：缺值、单位不一致、回路、非正系数、多给或少给资源都报错。设计文档 §9 的虚构 GPU 算例与拒绝路径在 `tests/test_refining.py` 中独立验证；它不产生真实产业结论。
+- 原始快照抽查（`raw_spot_check`）只支持 CSV，这两项研究的状态为「跳过」；与 EIA 网页历史表逐值核对 42 个值是另行完成的人工检查，不是自动抽查。
 - 用途核验（2026-10-29）：三个数据集各登记 `descriptive` 与 `scenario` 两条 `use_verified`，覆盖观测 2025-01-01 至 2025-12-31，依据为两项基线运行的复现与网页历史表抽查；情景用途只确认基准输入可用，不验证 g、kappa 取值，参照期 2015–2024 不在范围内。
 - 只在本机运行：未加入 CI；网站研究页专用组件、发现规则与这两项研究的英文译文暂未注册（来源与数据集的登记文字已有译文）。EIA 允许再分发，但 `archive_data` 暂为 false，接入稳定后再决定是否归档。
 - NAICS 分类表未接入：炼油两项研究不使用分类代码计算，分类导入留到需要 L1↔L2 映射的芯片模块（P3b）。

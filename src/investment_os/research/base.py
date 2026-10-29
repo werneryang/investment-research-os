@@ -22,6 +22,9 @@ class StudyInput:
     source_status: str
     # 用途已验证时，研究期间相对核验日期范围的位置（UseCoverage.to_dict()）；其他情况为 None
     use_scope: dict[str, Any] | None = None
+    # 研究定义了参照窗口（method.reference_window）时，该窗口相对用途核验范围的位置（含 window）；否则为 None。
+    # 参照数据不进入计算，但读者需要知道其中哪些期间未经用途核验
+    reference_scope: dict[str, Any] | None = None
 
 
 @dataclass
@@ -101,4 +104,5 @@ def input_record(inp: StudyInput) -> dict[str, Any]:
         "source_status": inp.source_status,
         # 只在有值时写入，旧运行的结果结构与校验值保持不变
         **({"use_scope": inp.use_scope} if inp.use_scope is not None else {}),
+        **({"reference_scope": inp.reference_scope} if inp.reference_scope is not None else {}),
     }

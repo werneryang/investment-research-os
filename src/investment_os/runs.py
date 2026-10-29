@@ -186,8 +186,10 @@ def load_inputs(registry: Registry, store: DataStore, study: StudySpec,
                 out.warnings.append(f"{dataset_id} 有 {n} 行在时点视图中排除：{_EXCLUSION_TEXT[reason]}")
             frame = as_of(frame, at, spec.vintages)
         if fixed:
-            # 按原运行固定：当时的核验状态与范围位置，不受之后新增或修改的核验记录影响
+            # 按原运行固定：当时的核验状态与范围位置，不受之后新增或修改的核验记录影响；
+            # 旧清单没有参照窗口记录时保持没有，结果结构与校验值不变
             status, use_scope = fixed["source_status"], fixed.get("use_scope")
+            reference_scope = fixed.get("reference_scope")
         else:
             source = registry.source_of(dataset_id)
             status = source.status_for(dataset_id, study.use).value
@@ -195,13 +197,27 @@ def load_inputs(registry: Registry, store: DataStore, study: StudySpec,
             if status == VerificationStatus.USE_VERIFIED.value:
                 use_scope = source.use_coverage(dataset_id, study.use, _scope_date(study, "start"),
                                                 _scope_date(study, "end")).to_dict()
+            reference_scope = _reference_scope(source, dataset_id, study)
         out.inputs[role] = StudyInput(role=role, dataset_id=dataset_id, frame=frame, version=version,
-                                      source_status=status, use_scope=use_scope)
+                                      source_status=status, use_scope=use_scope, reference_scope=reference_scope)
     return out
 
 
 def _scope_date(study: StudySpec, key: str) -> date:
     return pd.Timestamp(study.scope[key]).date()
+
+
+def _reference_scope(source: Any, dataset_id: str, study: StudySpec) -> dict[str, Any] | None:
+    """参照窗口（method.reference_window）相对该用途核验范围的位置；没有参照窗口返回 None。
+
+    与研究期间分开判断：研究期间在核验范围内，不代表参照窗口也在范围内。
+    """
+    window = study.method.get("reference_window")
+    if not window:
+        return None
+    lo, hi = (pd.Timestamp(str(x)).date() for x in window)
+    return {"window": [lo.isoformat(), hi.isoformat()],
+            **source.use_coverage(dataset_id, study.use, lo, hi).to_dict()}
 
 
 _EXCLUSION_TEXT = {
@@ -291,7 +307,8 @@ def run_study(root: Path, study_path: Path, pins: dict[str, str] | None = None,
             "inputs": [{"role": i.role, "used": True, "dataset_id": i.dataset_id,
                         "version_id": i.version.version_id, "content_hash": i.version.content_hash,
                         "source_status": i.source_status, "use": study.use.value,
-                        **({"use_scope": i.use_scope} if i.use_scope is not None else {})}
+                        **({"use_scope": i.use_scope} if i.use_scope is not None else {}),
+                        **({"reference_scope": i.reference_scope} if i.reference_scope is not None else {})}
                        for i in loaded.inputs.values()]
             + [{"role": role, "used": False, **info} for role, info in loaded.unused.items()],
             "result_hash": rhash,
