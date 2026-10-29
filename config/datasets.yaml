@@ -1220,3 +1220,18 @@ datasets:
     vintages: none
     # 日历日产能已计入通常停机，超过 100% 不直接视为异常；范围只拦截明显错误
     value_range: [0, 150]
+
+  # ---- 芯片经营分析证据包（2026-10-29）：产业链登记分部的年度 10-K 分部事实与登记状态，由 iros chain bundle 生成 ----
+  # 研究按版本固定证据包，不直接读取 segment_facts 或登记文件；每条记录自带申报、接受时间与可用时间
+  chip_segment_evidence:
+    source_id: sec_edgar
+    upstream_id: "FSDS 分部事实（产业链登记的 NVIDIA、Micron）与 config/supply_chain 登记状态"
+    connector: evidence_bundle
+    params: {replace_snapshot: true}
+    description: "芯片模块 P3b 证据包：登记分部的年度分部营收、利润与成本，合并营收核对行，映射与证据的复核状态"
+    frequency: annual
+    unit: USD
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none

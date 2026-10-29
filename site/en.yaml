@@ -449,6 +449,7 @@ phrases:
   各代码的定义与包含、排除说明（网页；自动访问返回 403，需人工核验）: Definitions with inclusions and exclusions for each code (web pages; automated access returns 403, manual verification needed)
   无需注册或 key: No registration or key
   美国政府发布的分类标准；使用与再分发条款未单独核验: Classification standard published by the U.S. government; terms of use and redistribution not separately verified
+  "芯片模块 P3b 证据包：登记分部的年度分部营收、利润与成本，合并营收核对行，映射与证据的复核状态": "Chip module P3b evidence bundle: annual segment revenue, profit and cost for registered segments, consolidated revenue check rows, and review status of mappings and evidence"
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'

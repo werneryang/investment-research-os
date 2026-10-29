@@ -1,0 +1,36 @@
+# 产业链研究 P3b：芯片经营分析（docs/supply-chain-research-design.md §8，docs/study-chips.md）
+study_id: chip_operations_p3b
+title: 芯片经营分析：NVIDIA 与 Micron 的分部营收与利润
+question: >-
+  NVIDIA 两个分部（2024–2026 财年）与 Micron 新口径四个业务单元（2023–2025 财年）的营收、营业利润与利润率如何变化？
+  按型号的 GPU 出货量、NVIDIA 的 HBM 采购中 Micron 的份额，免费披露能否回答？
+result_type: descriptive
+branch: chip_operations
+
+scope:
+  market: US
+  currency: USD
+  start: 2022-01-01
+  end: 2026-01-31
+  frequency: annual
+  vintage_policy: latest
+
+data:
+  evidence: chip_segment_evidence
+
+method:
+  # 研究单元定义在 config/supply_chain/units.yaml，并随证据包固定
+  units: [chip_nvda_segment_financials, chip_mu_segment_financials, chip_gpu_units_by_model, chip_nvda_hbm_supplier_share]
+
+benchmark: 同一申报的合并营收（分部合计核对）
+evaluation:
+  - 两个经营分析单元取自单一申报，分部合计与合并营收（有则）一致，毛利与营收减销售成本一致
+  - 两个受限请求为 C，不生成数值
+  - 分部到活动的归属未经人工复核时标为候选
+  - 固定证据包版本可重现（iros verify）
+
+limitations:
+  - 分部为申报公司自定的报告分部：NVIDIA 分部含芯片以外的系统、软件与服务，Micron 业务单元按客户市场划分；都不是单一活动或产品的财务
+  - 财年按 FSDS 月末口径对齐（NVIDIA 财年止于 1 月下旬，Micron 止于 8 月下旬），两家公司的财年不可直接逐年比较
+  - 只用申报中的报告值，不推算未披露的分部费用、出货量、价格或供应份额
+  - 描述历史经营，不是需求、利润或股价预测

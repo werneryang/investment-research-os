@@ -329,6 +329,17 @@ def cmd_chain(args: argparse.Namespace) -> int:
         e = import_naics(root, Path(args.file) if args.file else None)
         print(f"NAICS 2022：{e['rows']} 个代码（各层 {e['levels']}），版本 {e['version_id']}，SHA256 {e['sha256'][:16]}…")
         return 0
+    if args.action == "bundle":
+        from .supply_chain.bundle import DATASET_ID, build_bundle, write_bundle
+        doc = build_bundle(root)
+        path = write_bundle(root, doc)
+        result = ingest(Registry.load(root), DataStore(root), DATASET_ID, {"path": str(path)})
+        kinds: dict[str, int] = {}
+        for r in doc["records"]:
+            kinds[r["kind"]] = kinds.get(r["kind"], 0) + 1
+        print(f"证据包 {path.name}：" + "，".join(f"{k} {v}" for k, v in sorted(kinds.items())))
+        print(f"[{result.status}] {DATASET_ID}：{result.message}")
+        return 1 if result.status == "failed" else 0
     cat = load_catalog(root)
     if args.action == "segments":
         res = extract_segments(root, cat.ciks(), args.quarter or None, progress=print)
@@ -416,8 +427,8 @@ def build_parser() -> argparse.ArgumentParser:
     e.add_argument("--as-of", help="annual：只用该日期（UTC）之前已公布的申报")
     e.set_defaults(func=cmd_edgar)
 
-    s = sub.add_parser("chain", help="产业链登记：导入 NAICS、提取分部事实、核对证据")
-    s.add_argument("action", choices=["naics", "segments", "check"])
+    s = sub.add_parser("chain", help="产业链登记：导入 NAICS、提取分部事实、核对证据、生成芯片证据包")
+    s.add_argument("action", choices=["naics", "segments", "check", "bundle"])
     s.add_argument("--file", help="naics：从本地 XLSX 导入（默认从 Census 下载）")
     s.add_argument("--quarter", action="append", help="segments：只处理指定季度（如 2025q4，可重复）")
     s.add_argument("--json", help="check：把核对结果写入 JSON 文件")

@@ -25,6 +25,7 @@ from ..research.findings import COVERAGE_LABEL, completeness, coverage_summary  
 from ..tenor import parse_tenor  # noqa: E402
 from .company import sections as company_sections
 from .industry import figures as industry_figures, sections as industry_sections  # noqa: E402
+from .chip import check_line as chip_check_line, figures as chip_figures, sections as chip_sections  # noqa: E402
 from .refining import baseline_line, figures as refining_figures, ratio_line, sections as refining_sections  # noqa: E402
 
 RESULT_TYPE_LABEL = {"descriptive": "描述与比较", "explanatory": "解释与归因",
@@ -294,7 +295,8 @@ def _asset_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Pat
 
 _FIGURE_BUILDERS = {"rates_curve": _curve_figures, "par_bond_scenarios": _bond_figures,
                     "curve_attribution": _attribution_figures, "asset_history": _asset_figures,
-                    "industry": industry_figures, "refining_throughput": refining_figures}
+                    "industry": industry_figures, "refining_throughput": refining_figures,
+                    "chip_operations": chip_figures}
 
 
 def _figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
@@ -499,7 +501,7 @@ def _asset_sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
 _BRANCH_SECTIONS = {"rates_curve": _curve_sections, "par_bond_scenarios": _bond_sections,
                     "curve_attribution": _attribution_sections, "asset_history": _asset_sections,
                     "industry": industry_sections, "company": company_sections,
-                    "refining_throughput": refining_sections}
+                    "refining_throughput": refining_sections, "chip_operations": chip_sections}
 
 
 def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
@@ -542,7 +544,10 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
                  "closed_form_checks": "封闭解与重新定价核对", "identity_check": "恒等式核对",
                  "cross_check_equity": "股票跨来源核对", "cross_check_tbill": "国库券跨来源核对",
                  "cross_check_real": "实际回报方向核对", "monthly_drawdown": "月度回撤核对",
-                 "ratio_check": "利用率区间复算", "baseline_check": "基准情景核对"}.get(name, name)
+                 "ratio_check": "利用率区间复算", "baseline_check": "基准情景核对",
+                 "segment_total": "分部营收合计核对", "gross_profit": "分部毛利核对"}.get(name.split(":")[0], name)
+        if ":" in name:
+            label += f"（{name.split(':', 1)[1]}）"
         line = f"**{label}：** {STATUS_LABEL.get(v.get('status'), v.get('status'))}"
         if name == "cross_check" and v.get("matched"):
             line += (f"；对照 {v['against']}，共同日期 {v['matched']} 天，最大差 {_fmt(v['max_abs_diff'], 4)}"
@@ -562,6 +567,8 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
                      f"（阈值 {_fmt(v['threshold'] * 100, 0)}%）。{v['note']}")
         elif name == "monthly_drawdown":
             line += f"；月度 {_fmt(v['monthly'] * 100, 1)}%，年度 {_fmt(v['annual'] * 100, 1)}%。{v['note']}"
+        elif name.split(":")[0] in ("segment_total", "gross_profit"):
+            line += chip_check_line(name, v)
         elif name == "ratio_check":
             line += ratio_line(v)
         elif name == "baseline_check" and v.get("checked"):
