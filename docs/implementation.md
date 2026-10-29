@@ -218,6 +218,22 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 
 **EIA 石油数据接入器**（`connectors/eia.py`，`eia_pet_xls`）：从 `www.eia.gov/dnav/pet/xls/` 下载 `.xls`，无需 key。工作表第 2 行为 `Sourcekey`、第 3 行为 `Date` 表头；`params.series` 把序列代码对应到列标题，按代码定位列并逐字核对标题（空白折叠，标题含单位），不一致即报错。日期为 Excel 日期序号，非日期单元格报错。观测日期是周结束日而不是期间起点，与 `fred_walcl` 相同按周度处理，可用时间为观测日后第 7 天 0 点（美东），偏保守。
 
+**产业链登记与分部事实**（芯片 P0，2026-10-29；盘点见[芯片模块 P0](study-chips.md)）：
+
+- `iros chain naics`：`supply_chain/classification.py` 下载或导入 Census 的 NAICS 2022 结构表，按 `classification.v1`（`contracts.CLASSIFICATION_COLUMNS`）保存代码、名称、层级、上级与三国共同代码标记；表头、层级或上级不符即报错。
+- `iros chain segments`：`data/fundamentals.extract_segments` 用各季度当前 facts 分区所用的同一份 FSDS 原始文件，解析登记公司（`config/supply_chain/entities.yaml` 中有 CIK 的公司）的分部与维度事实，写入 `segment_facts` 表（`contracts.SEGMENT_FACT_COLUMNS`）。只保留业务分部、产品、地区、合并项与主要客户维度，`segments` 保留 FSDS 原文。E1 的合并口径事实表不变。
+- `iros chain check`：`supply_chain/catalog.py` 读取 `config/supply_chain/` 的活动、主体、映射、关系、证据与研究单元（`supply_chain.v1`），检查以下各项：
+  - 未知字段一律报错，以拦截 YAML 中未加引号的逗号拆出的键。
+  - 引用必须存在。
+  - 方向约定：有向关系为 provider → recipient，无向关系的 parties 排序后只存一次，竞争关系必须写 market。
+  - 同一关系不重复记录。
+  - 映射与关系至少有一条 confirmed 证据，被否定或撤回的证据不能支撑。
+  - NAICS 代码必须在导入表中。
+  - XBRL 成员与事实数值必须能在分部事实中找到。
+  - 摘录必须逐字出现在本地原文中，原文 SHA256 必须一致。
+
+  本地缺少原文或数据时，相应项目记为未核对。
+
 **本机与 CI 的分工**（2026-10-24 确认）：接入核验（取样本、查质量、交叉核对、记 `access_verified`）与定时快照都在本机完成。CI 只取得无需凭证、登记了 `scheduled_fetch` 的数据集，用于生成网站与运行研究，同时每天在另一环境复查这些来源仍可取得。需要凭证（如 FRED API key）或人工导入的数据集默认只在本机；只有当 CI 中的研究必须用到时，才给 CI 配置凭证。网站对 CI 中有意不取得的数据集写明原因（需要 API key、人工导入、未登记定时取得，由登记推出，见 `site/collect.py` 的 `skip_reason`）；只有应当取得却没取得时才显示「本次构建未取得」。
 
 **SEC EDGAR 财报**（E1，设计见 [EDGAR 设计说明](edgar-design.md)；网站上的两行数据集 `edgar_fsds`、`edgar_companyfacts` 由 `site/collect.py` 的 `fundamentals_datasets` 生成，CI 中没有财报数据时写明只在本机取得的原因）：财报不进入 `series.v1`，另有 `fundamentals.v1` 的申报表与事实表（`contracts.FILING_COLUMNS`、`FACT_COLUMNS`），按季度（FSDS）或公司（Company Facts）分区存放在 `data/edgar/`，DuckDB 读取当前分区；分区变化时旧版本移到 `superseded/`。`iros edgar sync` 同步（FSDS 先 HEAD 再按需下载），`iros edgar annual <公司> <指标> [--as-of 日期]` 给出年度指标及当时已公布的值，`iros edgar check` 报告覆盖与两个来源的一致性。指标与公司登记在 `config/fundamentals.yaml`。

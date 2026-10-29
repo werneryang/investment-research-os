@@ -24,7 +24,7 @@ from typing import Any, Callable
 
 import pandas as pd
 
-from ..contracts import FACT_COLUMNS, FILING_COLUMNS
+from ..contracts import FACT_COLUMNS, FILING_COLUMNS, SEGMENT_FACT_COLUMNS
 from .base import FetchError, fetch_with_retry
 
 FSDS_URL = "https://www.sec.gov/files/dera/data/financial-statement-data-sets/{quarter}.zip"
@@ -184,6 +184,72 @@ def parse_fsds(content: bytes, ciks: set[int], retrieved_at: datetime) -> tuple[
     facts["available_at"] = facts["accession"].map(available)
     facts["source"], facts["retrieved_at"] = "fsds", retrieved
     return filings, facts[FACT_COLUMNS]
+
+
+# 分部事实只保留这些维度的组合；权益构成、公允价值层级等其他维度不属于业务或客户结构
+SEGMENT_AXES = frozenset({"BusinessSegments", "ProductOrService", "Geographical", "ConsolidationItems",
+                          "ConcentrationRiskByBenchmark", "ConcentrationRiskByType", "MajorCustomers"})
+
+
+def segment_axes(segments: str) -> dict[str, str]:
+    """FSDS 的 segments 文本 → {维度: 成员}；空文本为合并口径。"""
+    out = {}
+    for part in filter(None, (segments or "").split(";")):
+        axis, _, member = part.partition("=")
+        if not member:
+            raise FetchError(f"无法解析的 segments：{segments!r}")
+        out[axis] = member
+    return out
+
+
+def parse_fsds_segments(content: bytes, ciks: set[int], retrieved_at: datetime,
+                        axes: frozenset[str] = SEGMENT_AXES) -> pd.DataFrame:
+    """FSDS 季度 ZIP → 指定公司定期报告中的分部与维度事实（只含 axes 内的维度组合，无共同申报人）。"""
+    try:
+        zf = zipfile.ZipFile(io.BytesIO(content))
+    except zipfile.BadZipFile as e:
+        raise FetchError(f"FSDS 文件不是有效的 zip：{e}") from None
+    if not {"sub.txt", "num.txt"} <= set(zf.namelist()):
+        raise FetchError("FSDS zip 缺少 sub.txt 或 num.txt")
+    wanted = {str(c) for c in ciks}
+    with zf.open("sub.txt") as f:
+        subs = {s["adsh"]: s for s in csv.DictReader(io.TextIOWrapper(f, encoding="utf-8", errors="replace"),
+                                                      delimiter="\t")
+                if s["cik"] in wanted and s["form"] in PERIODIC_FORMS}
+    rows = []
+    with zf.open("num.txt") as f:
+        reader = csv.reader(io.TextIOWrapper(f, encoding="utf-8", errors="replace"), delimiter="\t")
+        idx = {k: i for i, k in enumerate(next(reader, []))}
+        missing = {"adsh", "tag", "version", "ddate", "qtrs", "uom", "segments", "coreg", "value"} - set(idx)
+        if missing:
+            raise FetchError(f"num.txt 缺少字段：{sorted(missing)}")
+        a, t, v, d, q, u, s, c, val = (idx[k] for k in ("adsh", "tag", "version", "ddate", "qtrs", "uom",
+                                                          "segments", "coreg", "value"))
+        for r in reader:
+            if r[a] not in subs or not r[s] or r[c]:
+                continue
+            if not set(segment_axes(r[s])) <= axes:
+                continue
+            version = r[v]
+            rows.append((r[a], r[t], version.split("/")[0] if "/" in version else "custom", r[s],
+                         _yyyymmdd(r[d]), int(r[q]), r[u], float(r[val]) if r[val] else None))
+    facts = pd.DataFrame(rows, columns=["accession", "tag", "taxonomy", "segments", "period_end",
+                                        "duration_quarters", "unit", "value"])
+    sub = pd.DataFrame([{"accession": k, "cik": int(x["cik"]), "name": x["name"], "form": x["form"],
+                         "fiscal_year": int(x["fy"]) if x["fy"] else None, "fiscal_period": x["fp"],
+                         "filing_period_end": _yyyymmdd(x["period"]), "accepted": x["accepted"]}
+                        for k, x in subs.items()],
+                       columns=["accession", "cik", "name", "form", "fiscal_year", "fiscal_period",
+                                "filing_period_end", "accepted"])
+    facts = facts.merge(sub, on="accession", how="left")
+    facts["fiscal_year"] = pd.array(facts["fiscal_year"], dtype="Int64")
+    facts["period_end"] = pd.to_datetime(facts["period_end"])
+    facts["filing_period_end"] = pd.to_datetime(facts["filing_period_end"])
+    facts["accepted_at"] = pd.to_datetime(facts["accepted"]).dt.tz_localize(TZ).dt.tz_convert("UTC") \
+        if len(facts) else pd.Series([], dtype="datetime64[ns, UTC]")
+    facts["available_at"] = available_after(facts["accepted_at"]) if len(facts) else facts["accepted_at"]
+    facts["source"], facts["retrieved_at"] = "fsds", pd.Timestamp(retrieved_at).tz_convert("UTC")
+    return facts[SEGMENT_FACT_COLUMNS]
 
 
 def parse_companyfacts(content: bytes, cik: int, retrieved_at: datetime) -> tuple[pd.DataFrame, pd.DataFrame]:

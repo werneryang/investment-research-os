@@ -1,0 +1,84 @@
+# L2 细分业务：芯片活动初始清单 v1（docs/supply-chain-research-design.md §2、§8.1、§9.1）
+#
+# 活动是经营机制，不是官方分类：自定义 ID 不冒充 NAICS 代码。产品类别（DRAM、NAND、逻辑等）、
+# 技术属性与经营方式另作维度，不与活动混为互斥同级分类。
+#
+# 变更规则：新增、删除或拆分活动须在 change_log 写明触发条件（§2.1 三个条件之一：经营机制实质不同、
+# 继续细分改变问题答案、免费数据支持所需输入），并升 version；旧版本保留供旧运行复现，不在原 ID 上改变含义。
+#
+# naics：候选对应，match_type 为 exact / partial / ambiguous。对应依据只是 NAICS 名称与研究判断，
+# Census 定义原文尚未核验（2026-10-29 自动访问 census.gov 定义页返回 403），因此全部为 candidate。
+# 分类代码对应不等于收入权重。
+
+schema_version: supply_chain.v1
+catalog: chip
+version: v1
+change_log:
+  - version: v1
+    date: "2026-10-29"
+    reason: 初始清单；按设计文档 §8.1 的四类经营机制展开为八项，供 P3b 选取至少两个机制不同的活动
+
+activities:
+  - id: act_chip_design
+    name: 芯片设计（无晶圆厂）
+    definition: 设计集成电路并以自有品牌销售，晶圆制造、封装与测试委外
+    includes: [GPU、CPU、网络芯片等逻辑芯片的设计, 随芯片一起销售的参考设计、软件与系统]
+    excludes: [自有晶圆制造（见 act_idm_manufacturing）, 只授权设计而不销售芯片（见 act_eda_ip）]
+    naics:
+      - code: "334413"
+        match_type: ambiguous
+        note: >-
+          无晶圆厂设计公司的标准行业归属有口径歧义：NAICS 2022 对无工厂产品生产者的处理、以及 SEC SIC 3674 的实际用法待核验；
+          作为 L1↔L2 多对多映射的示范，不预设单一答案
+        review_status: candidate
+  - id: act_idm_manufacturing
+    name: 集成器件制造（IDM，逻辑与模拟）
+    definition: 自有晶圆厂制造并销售自有设计的芯片
+    includes: [自有前道晶圆制造, 自有或委外的封装测试]
+    excludes: [存储芯片（见 act_memory_production）, 为第三方代工（见 act_wafer_foundry）]
+    naics:
+      - {code: "334413", match_type: partial, note: 制造环节对应；同一代码也覆盖其他半导体器件, review_status: candidate}
+  - id: act_wafer_foundry
+    name: 晶圆代工
+    definition: 按客户设计为第三方制造晶圆，不以自有品牌销售芯片
+    includes: [前道晶圆制造服务, 代工厂提供的先进封装服务（另记技术属性）]
+    excludes: [自有品牌芯片销售]
+    naics:
+      - {code: "334413", match_type: partial, note: 代工与自有制造同属该代码，经营机制不同，须按活动区分, review_status: candidate}
+  - id: act_memory_production
+    name: 存储芯片生产与销售
+    definition: 自有晶圆厂生产 DRAM、NAND 等存储芯片及模组并对外销售
+    includes: [DRAM、HBM、NAND、NOR 及基于它们的模组与存储产品]
+    excludes: [只组装模组而不制造存储芯片的业务]
+    naics:
+      - {code: "334413", match_type: partial, note: 存储芯片制造属该代码；模组与存储产品可能另属其他代码, review_status: candidate}
+  - id: act_packaging
+    name: 芯片封装（含先进封装）
+    definition: 把裸片封装为器件，包括 2.5D/3D 等先进封装
+    includes: [委外封装（OSAT）, 代工厂或 IDM 的封装环节]
+    excludes: [板卡与整机组装]
+    naics:
+      - {code: "334413", match_type: ambiguous, note: 封装是否全部归入该代码待核验, review_status: candidate}
+  - id: act_test
+    name: 芯片测试
+    definition: 晶圆探针测试与成品测试
+    includes: [委外测试服务, 自有测试环节]
+    excludes: [测试设备制造（见 act_semi_equipment）]
+    naics:
+      - {code: "334413", match_type: ambiguous, note: 与封装一同由委外厂提供时的归属待核验, review_status: candidate}
+      - {code: "541380", match_type: ambiguous, note: 独立测试实验室的可能归属；是否适用于芯片量产测试待核验, review_status: candidate}
+  - id: act_semi_equipment
+    name: 半导体设备制造
+    definition: 制造晶圆加工、封装与测试设备
+    includes: [光刻、刻蚀、沉积、检测等设备]
+    excludes: [设备的二手交易与租赁]
+    naics:
+      - {code: "333242", match_type: partial, note: 半导体机械制造；部分检测仪器可能属其他代码, review_status: candidate}
+  - id: act_eda_ip
+    name: EDA 软件与芯片 IP 授权
+    definition: 提供芯片设计软件，或授权处理器架构与 IP 核，不销售芯片
+    includes: [EDA 软件, 架构与 IP 核授权]
+    excludes: [销售芯片的设计公司]
+    naics:
+      - {code: "513210", match_type: partial, note: 软件出版；只覆盖 EDA 软件部分, review_status: candidate}
+      - {code: "533110", match_type: partial, note: 非金融无形资产出租；只覆盖 IP 授权部分, review_status: candidate}

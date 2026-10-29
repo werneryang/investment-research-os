@@ -3,7 +3,7 @@
 布局（均在 <root>/data/edgar 下，默认不提交 Git）：
     raw/fsds/<季度>_<sha8>.zip                 FSDS 原始文件，内容相同不另存
     raw/companyfacts/<cik>/<时间>_<sha8>.json    Company Facts 原始文件，内容相同不另存
-    <表>/source=<来源>/key=<季度或 cik>/part.parquet    当前分区（表为 filings 或 facts）
+    <表>/source=<来源>/key=<季度或 cik>/part.parquet    当前分区（表为 filings、facts 或 segment_facts）
     superseded/<表>/source=<来源>/key=<…>/<版本>.parquet  被替换的旧分区，保留不删
     catalog/partitions.jsonl                   每个分区的每个版本：校验值、行数、原始文件、登记公司
     catalog/fsds_remote.jsonl                  每次对 FSDS 文件的 HEAD 检查：大小、修改时间、处理结果
@@ -31,11 +31,18 @@ from ..connectors.sec import (
     fsds_quarters,
     parse_companyfacts,
     parse_fsds,
+    parse_fsds_segments,
 )
-from ..contracts import FACT_COLUMNS, FILING_COLUMNS, FUNDAMENTALS_SCHEMA_VERSION, FundamentalsSpec
+from ..contracts import (
+    FACT_COLUMNS,
+    FILING_COLUMNS,
+    FUNDAMENTALS_SCHEMA_VERSION,
+    SEGMENT_FACT_COLUMNS,
+    FundamentalsSpec,
+)
 from .store import compact, sha256_bytes
 
-TABLES = {"filings": FILING_COLUMNS, "facts": FACT_COLUMNS}
+TABLES = {"filings": FILING_COLUMNS, "facts": FACT_COLUMNS, "segment_facts": SEGMENT_FACT_COLUMNS}
 
 
 def _frame_hash(df: pd.DataFrame, columns: list[str]) -> str:
@@ -196,6 +203,33 @@ def sync_fsds(root: Path, spec: FundamentalsSpec, client: SecClient, quarters: l
         store._log("fsds_remote.jsonl", entry)
         results.append(entry)
         progress(f"[{entry['action']}] fsds {q}：申报 {len(filings)}，事实 {len(facts)}（{entry['facts']}）")
+    return results
+
+
+def extract_segments(root: Path, ciks: set[int], quarters: list[str] | None = None,
+                     clock: Callable[[], datetime] = now_utc,
+                     progress: Callable[[str], None] = lambda s: None) -> list[dict[str, Any]]:
+    """用已保存的 FSDS 原始文件（各季度当前 facts 分区所用的那一份）解析指定公司的分部与维度事实。
+
+    不下载：原始文件由 iros edgar sync 取得并校验。公司集合与 E1 财报公司分开登记，
+    结果写入 segment_facts 表；公司集合或原始文件不变时不产生新版本。
+    """
+    store = EdgarStore(root)
+    chash = hashlib.sha256(json.dumps(sorted(ciks)).encode()).hexdigest()[:16]
+    keys = quarters or sorted({p["key"] for p in store.partitions() if (p["table"], p["source"]) == ("facts", "fsds")})
+    results = []
+    for q in keys:
+        current = store.current("facts", "fsds", q)
+        if current is None:
+            results.append({"quarter": q, "action": "missing_raw"})
+            progress(f"[missing] {q}：没有已同步的 FSDS 原始文件")
+            continue
+        content = store.read_raw(current["raw"])
+        facts = parse_fsds_segments(content, ciks, pd.Timestamp(current["raw"]["retrieved_at"]).to_pydatetime())
+        action = store.write_partition("segment_facts", "fsds", q, facts,
+                                       {"raw": current["raw"], "companies": chash}, clock())
+        results.append({"quarter": q, "action": action, "rows": len(facts)})
+        progress(f"[{action}] {q}：分部事实 {len(facts)}")
     return results
 
 

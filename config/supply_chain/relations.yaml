@@ -1,0 +1,58 @@
+# L4：公司之间的关系（docs/supply-chain-research-design.md §7、§9.1）
+#
+# 有向关系（supply、foundry、contract_manufacturing）统一 provider → recipient：提供产品或服务的一方为 provider；
+# 「某公司是另一公司的客户」也按此方向保存，不另存反向边。
+# 无向关系（partnership、competition、substitution）用 parties 保存两端，按 ID 排序只存一次；竞争关系必须写明 market。
+# activity 未能从原文确定时留空，并在 activity_gap 写明原因，不按印象补上。
+# share：只记录原文披露的占比（分子、分母与期间）；未披露即不写。
+# valid_from / valid_to 为现实有效期，原文只说明申报时的状况时留空，as-of 使用以 claim 的 available_at 为准。
+
+schema_version: supply_chain.v1
+
+relations:
+  # ---- NVIDIA 的供应方（来自 NVIDIA 的披露） ----
+  - {id: rel_tsmc_nvda_foundry, type: foundry, provider: co_tsmc, recipient: co_nvidia, activity: act_wafer_foundry,
+     product: 半导体晶圆, claims: [clm_nvda26_foundry]}
+  - {id: rel_samsung_nvda_foundry, type: foundry, provider: co_samsung, recipient: co_nvidia, activity: act_wafer_foundry,
+     product: 半导体晶圆, claims: [clm_nvda26_foundry]}
+  - {id: rel_skhynix_nvda_memory, type: supply, provider: co_sk_hynix, recipient: co_nvidia, activity: act_memory_production,
+     product: 存储芯片（原文未区分 HBM 或其他类型）, claims: [clm_nvda26_memory]}
+  - {id: rel_micron_nvda_memory, type: supply, provider: co_micron, recipient: co_nvidia, activity: act_memory_production,
+     product: 存储芯片（原文未区分 HBM 或其他类型）, claims: [clm_nvda26_memory],
+     note: 只有 NVIDIA 一方披露；Micron 的 10-K 没有点名 NVIDIA，不能据此推出 Micron 的客户集中度或采购份额}
+  - {id: rel_samsung_nvda_memory, type: supply, provider: co_samsung, recipient: co_nvidia, activity: act_memory_production,
+     product: 存储芯片（原文未区分 HBM 或其他类型）, claims: [clm_nvda26_memory]}
+  - {id: rel_honhai_nvda_atp, type: contract_manufacturing, provider: co_hon_hai, recipient: co_nvidia, activity: null,
+     activity_gap: "原文为 assembly, testing and packaging of our final products，未说明是芯片封装测试还是板卡与系统组装",
+     product: 最终产品的组装、测试与封装, claims: [clm_nvda26_atp]}
+  - {id: rel_wistron_nvda_atp, type: contract_manufacturing, provider: co_wistron, recipient: co_nvidia, activity: null,
+     activity_gap: 同上，原文未说明组装对象, product: 最终产品的组装、测试与封装, claims: [clm_nvda26_atp]}
+  - {id: rel_fabrinet_nvda_atp, type: contract_manufacturing, provider: co_fabrinet, recipient: co_nvidia, activity: null,
+     activity_gap: 同上，原文未说明组装对象, product: 最终产品的组装、测试与封装, claims: [clm_nvda26_atp]}
+
+  # ---- NVIDIA 的匿名直接客户：占比为原文披露，名称未披露 ----
+  - {id: rel_nvda_direct_1, type: supply, provider: co_nvidia, recipient: anon_nvda_fy2026_direct_1,
+     activity: null, activity_gap: 原文只说主要归属 Compute & Networking 分部，该分部含芯片以外的系统、软件与服务,
+     product: 主要为 Compute & Networking 分部产品,
+     share: {value: 0.22, numerator: 对该客户的销售, denominator: 总营收, period: FY2026}, claims: [clm_nvda26_customers]}
+  - {id: rel_nvda_direct_2, type: supply, provider: co_nvidia, recipient: anon_nvda_fy2026_direct_2,
+     activity: null, activity_gap: 原文只说主要归属 Compute & Networking 分部，该分部含芯片以外的系统、软件与服务,
+     product: 主要为 Compute & Networking 分部产品,
+     share: {value: 0.14, numerator: 对该客户的销售, denominator: 总营收, period: FY2026}, claims: [clm_nvda26_customers]}
+  - {id: rel_mu_top10, type: supply, provider: co_micron, recipient: anon_mu_fy2025_top10, activity: act_memory_production,
+     product: 存储产品, share: {value: null, bound: "> 0.5", numerator: 对前十大客户的销售, denominator: 总营收, period: FY2025},
+     claims: [clm_mu25_top10], note: 原文只给出「超过一半」，不写成精确值}
+
+  # ---- Micron 的竞争对手（无向，市场范围见 market） ----
+  - {id: cmp_micron_samsung, type: competition, parties: [co_micron, co_samsung], market: 半导体存储与存储产品, activity: act_memory_production,
+     claims: [clm_mu25_competitors]}
+  - {id: cmp_micron_skhynix, type: competition, parties: [co_micron, co_sk_hynix], market: 半导体存储与存储产品, activity: act_memory_production,
+     claims: [clm_mu25_competitors]}
+  - {id: cmp_kioxia_micron, type: competition, parties: [co_kioxia, co_micron], market: 半导体存储与存储产品, activity: act_memory_production,
+     claims: [clm_mu25_competitors]}
+  - {id: cmp_micron_sandisk, type: competition, parties: [co_micron, co_sandisk], market: 半导体存储与存储产品, activity: act_memory_production,
+     claims: [clm_mu25_competitors]}
+  - {id: cmp_cxmt_micron, type: competition, parties: [co_cxmt, co_micron], market: 半导体存储与存储产品, activity: act_memory_production,
+     claims: [clm_mu25_competitors]}
+  - {id: cmp_micron_ymtc, type: competition, parties: [co_micron, co_ymtc], market: 半导体存储与存储产品, activity: act_memory_production,
+     claims: [clm_mu25_competitors]}

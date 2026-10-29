@@ -439,6 +439,16 @@ phrases:
   美国炼厂周度可运行产能利用率（%）；EIA 以未舍入的总投入 ÷ 可运行产能计算，公布值保留一位小数: U.S. refinery weekly utilization of operable capacity (%); EIA divides unrounded gross inputs by operable capacity and publishes one decimal
   美国炼厂周度总投入（Gross Inputs，千桶/日）；不是原油净投入（Crude Oil Inputs）: U.S. refinery weekly gross inputs (thousand barrels per day); not crude oil inputs
   行业与产业统计: Industry statistics
+  # Census NAICS（产业链研究芯片 P0，2026-10-29）
+  2017 ↔ 2022 版本对照表: 2017 ↔ 2022 concordance
+  Census NAICS: Census NAICS
+  NAICS 2022 全部 2–6 位代码与名称；不含各代码的定义说明与历史版本对照: All 2–6 digit NAICS 2022 codes and titles; excludes code definitions and cross-version concordances
+  U.S. Census Bureau（北美产业分类体系，NAICS）: U.S. Census Bureau (North American Industry Classification System, NAICS)
+  人工核验 334413 等代码的定义原文，确认无晶圆厂设计与封装测试的归属: Manually verify the definitions of 334413 and related codes to settle where fabless design and assembly/test belong
+  只作 L1 标准目录与统计定位，不推定公司映射或收入权重。产业链活动到 NAICS 的对应在 config/supply_chain/activities.yaml 维护，均为待核验的候选: Used only as the L1 standard directory and statistical locator; no company mapping or revenue weights are inferred. Mappings from supply-chain activities to NAICS are maintained in config/supply_chain/activities.yaml and are all unverified candidates
+  各代码的定义与包含、排除说明（网页；自动访问返回 403，需人工核验）: Definitions with inclusions and exclusions for each code (web pages; automated access returns 403, manual verification needed)
+  无需注册或 key: No registration or key
+  美国政府发布的分类标准；使用与再分发条款未单独核验: Classification standard published by the U.S. government; terms of use and redistribution not separately verified
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'

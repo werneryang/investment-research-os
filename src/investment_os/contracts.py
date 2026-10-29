@@ -334,6 +334,24 @@ FACT_COLUMNS: list[str] = [
 ]
 
 
+# 分部与维度事实：FSDS num.txt 中 segments 非空的行（docs/supply-chain-research-design.md §3、§7）。
+# 与合并口径事实分表保存：同一数字按不同维度（业务分部、产品、地区、主要客户）各出现一次，不能相加。
+# segments 保留 FSDS 原文（如 BusinessSegments=GraphicsSegment;ConsolidationItems=OperatingSegments;），
+# 成员名称会随申报改变（NVIDIA 的 ComputeAndNetworking → ComputeAndNetworkingSegment），映射在产业链登记中维护。
+# FSDS 的 period_end 是取整到月末的 ddate，不是精确期末；申报本身的期末见 filing_period_end
+SEGMENT_FACT_COLUMNS: list[str] = [
+    "accession", "cik", "name", "form", "fiscal_year", "fiscal_period", "filing_period_end", "accepted_at",
+    "taxonomy", "tag", "segments", "period_end", "duration_quarters", "unit", "value",
+    "available_at", "source", "retrieved_at",
+]
+
+# 官方行业分类（classification.v1）：每个代码一行，保留来源的代码、名称与层级，不改写为其他体系
+CLASSIFICATION_SCHEMA_VERSION = "classification.v1"
+CLASSIFICATION_COLUMNS: list[str] = [
+    "system", "version", "code", "title", "level", "parent", "trilateral", "change_indicator",
+]
+
+
 @dataclass(frozen=True)
 class MetricSpec:
     """研究用指标：按顺序取第一个出现的 XBRL 科目（别名），并记录实际使用了哪个。"""
