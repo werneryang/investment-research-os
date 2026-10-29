@@ -1,0 +1,57 @@
+# 芯片模块（P3b）的研究单元定义：P0 只登记问题、范围与所需输入，等级全部为未评估（docs/supply-chain-research-design.md §4.2、§8）
+#
+# A/B/C 绑定研究单元，不给整个行业打分。expected 是 P0 盘点后对输入能力的预判，不是已授予的等级；
+# P3b 实施时按 research/feasibility.py 的规则逐项评估。
+
+schema_version: supply_chain.v1
+
+units:
+  - id: chip_nvda_segment_financials
+    question: NVIDIA 两个分部 2024–2026 财年的营收与营业利润如何变化？
+    activity: act_chip_design
+    entities: [seg_nvda_compute_networking, seg_nvda_graphics]
+    observation: 业务分部（申报口径），不拆到产品或芯片
+    metrics: [Revenues, OperatingIncomeLoss]
+    period: {fiscal_years: [2024, 2026], frequency: annual}
+    required_inputs: [segment_facts（0001045810-26-000021）]
+    known_gaps:
+      - 分部费用不单独提供给首席经营决策者（clm_nvda26_codm），分部毛利与费用结构未知
+      - 分部还包括芯片以外的系统、软件与服务，结果不能称为芯片设计业务的财务
+    expected: A（财务比率在申报范围内），待 P3b 评估
+    status: unassessed
+  - id: chip_mu_segment_financials
+    question: Micron 新分部口径下 2023–2025 财年各业务单元的营收、销售成本与营业利润如何变化？
+    activity: act_memory_production
+    entities: [seg_mu_cmbu, seg_mu_cdbu, seg_mu_mcbu, seg_mu_aebu]
+    observation: 业务单元（2025 财年重组后的口径，已追溯调整 2023、2024 财年）
+    metrics: [RevenueFromContractWithCustomerExcludingAssessedTax, CostOfGoodsAndServicesSold, OperatingIncomeLoss]
+    period: {fiscal_years: [2023, 2025], frequency: annual}
+    required_inputs: [segment_facts（0000723125-25-000028）]
+    known_gaps:
+      - 重组前的四个业务单元与新口径没有披露对应，2023 财年以前不能按新口径延伸
+      - DRAM / NAND 是另一维度，不按业务单元推定
+    expected: A（财务比率在申报范围内），待 P3b 评估
+    status: unassessed
+  # ---- 正确受限的数值请求：免费披露不支持，预期为 C ----
+  - id: chip_gpu_units_by_model
+    question: NVIDIA 各型号 GPU 的出货量是多少？
+    activity: act_chip_design
+    entities: [co_nvidia]
+    observation: 产品型号
+    metrics: [unit_shipments]
+    period: {fiscal_years: [2026, 2026], frequency: annual}
+    required_inputs: [按型号的出货量（未在申报中披露）]
+    known_gaps: [公司收入不直接给出单型号销量；不能用分部收入除以假设单价推算]
+    expected: C（所需参数既未观察也未获准假设）
+    status: unassessed
+  - id: chip_nvda_hbm_supplier_share
+    question: NVIDIA 采购的 HBM 中，Micron 占多少？
+    activity: act_memory_production
+    entities: [co_nvidia, co_micron]
+    observation: 供应关系 × 产品
+    metrics: [purchase_share]
+    period: {fiscal_years: [2026, 2026], frequency: annual}
+    required_inputs: [按供应商的采购份额（双方都未披露）]
+    known_gaps: [NVIDIA 只列出三家存储供应商，未区分 HBM，也未给份额；Micron 未点名 NVIDIA]
+    expected: C（关键结构无法识别）
+    status: unassessed

@@ -1,0 +1,42 @@
+# L3：公司 / 分部 ↔ L2 活动（docs/supply-chain-research-design.md §7、§9.1）
+#
+# 一个分部可以对应多项活动，一项活动也可以对应多个分部；对应不等于收入权重，未披露的分摊保持未知。
+# scope 写明分部除该活动之外还包含什么，避免把分部财务当成单一活动的财务。
+# valid_from / valid_to 是现实有效期（财年或期间），未知留空并限制 as-of 使用。
+
+schema_version: supply_chain.v1
+
+links:
+  - id: lnk_nvda_cn_design
+    entity: seg_nvda_compute_networking
+    activity: act_chip_design
+    match: partial
+    scope: 分部还包括网络平台、AI 软件、汽车平台与系统、软件和服务；分部收入不等于芯片设计收入
+    valid_from: null
+    valid_to: null
+    claims: [clm_nvda26_fabless, clm_nvda26_segments, clm_nvda26_xbrl_cn_rev]
+  - id: lnk_nvda_gr_design
+    entity: seg_nvda_graphics
+    activity: act_chip_design
+    match: partial
+    scope: 分部为 GeForce 与工作站 GPU；原文未区分芯片、板卡与软件收入，分部收入不等于芯片设计收入
+    valid_from: null
+    valid_to: null
+    claims: [clm_nvda26_fabless, clm_nvda26_segments, clm_nvda26_xbrl_gr_rev]
+  # Micron 的分部按客户市场划分，都属于存储芯片生产；DRAM / NAND 是另一维度（ProductOrService），不按分部推定
+  - id: lnk_mu_cmbu_memory
+    entity: seg_mu_cmbu
+    activity: act_memory_production
+    match: partial
+    scope: 按客户市场划分的分部（大型云客户的存储方案及全部数据中心客户的 HBM）；含模组与存储产品
+    valid_from: null
+    valid_to: null
+    claims: [clm_mu25_fabs, clm_mu25_units, clm_mu25_xbrl_cmbu_rev]
+  - id: lnk_mu_cnbu_memory
+    entity: seg_mu_cnbu
+    activity: act_memory_production
+    match: partial
+    scope: 重组前的分部（2025 财年第四季度起不再使用）；旧口径数字只用于旧口径研究
+    valid_from: null
+    valid_to: null
+    claims: [clm_mu25_reorg, clm_mu24_xbrl_cnbu_rev]

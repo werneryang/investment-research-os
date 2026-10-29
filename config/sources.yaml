@@ -599,6 +599,46 @@ sources:
         scope: >-
           以 2025 年周度数据为基准的处理能力机械情景（D = (1 + g) × G，Q_cap = kappa × K）；只确认基准输入可用于该情景，不验证 g 或 kappa 的取值，也不代表情景结果有预测能力；参照期 2015–2024 的利用率分布只作假设参照，不在本核验范围内。观测日期 2025-01-01 至 2025-12-31。
 
+  - id: census_naics
+    name: Census NAICS
+    publisher: U.S. Census Bureau（北美产业分类体系，NAICS）
+    channel: 2022 NAICS 结构表 XLSX 直接下载（www.census.gov/naics/2022NAICS/2022_NAICS_Structure.xlsx），无需 key
+    url: https://www.census.gov/naics/
+    license: 美国政府发布的分类标准；使用与再分发条款未单独核验
+    registration: 无需注册或 key
+    rate_limit: 未公布；只在导入时请求一次
+    revisions: 按版本发布（2017、2022 等），同一版本的结构表不修订；新版本另行导入，不覆盖旧版本
+    maintenance: 表头固定为 Change Indicator / 2022 NAICS Code / 2022 NAICS Title；找不到即报错；标题末尾的 T 拆为三国共同代码标记
+    alternatives: []
+    category: industry
+    directions: [sector_structure]
+    access: file
+    signup: none
+    redistribution: unknown
+    coverage: NAICS 2022 全部 2–6 位代码与名称；不含各代码的定义说明与历史版本对照
+    offers:
+      - 各代码的定义与包含、排除说明（网页；自动访问返回 403，需人工核验）
+      - 2017 ↔ 2022 版本对照表
+    notes: >-
+      只作 L1 标准目录与统计定位，不推定公司映射或收入权重。产业链活动到 NAICS 的对应在 config/supply_chain/activities.yaml
+      维护，均为待核验的候选
+    next_step: 人工核验 334413 等代码的定义原文，确认无晶圆厂设计与封装测试的归属
+    verification:
+      - status: docs_verified
+        date: "2026-10-29"
+        evidence: >-
+          阅读结构表内的说明行（T 为三国共同代码，Change Indicator 标记 2022 版的新增与改动）；未阅读 NAICS 主页的其他说明。
+          代码定义页（census.gov/naics/?input=…）自动访问返回 HTTP 403，定义原文未读
+        scope: 来源整体说明；不代表定义已核验
+      - dataset: naics_2022_structure
+        status: access_verified
+        date: "2026-10-29"
+        evidence: >-
+          经 iros chain naics 无凭证下载 2022_NAICS_Structure.xlsx（88,218 字节，SHA256 217c9e0d…，与 2026-10-27 下载探测一致），
+          解析出 2,125 个代码：2 位 20、3 位 96、4 位 308、5 位 689、6 位 1,012，与 NAICS 2022 公布的各层数量一致；
+          每个代码的上级都在表中（版本 v20261029T142438Z-217c9e0d）
+        scope: 代码、名称与层级；不含定义原文
+
   - id: sec_edgar
     name: SEC EDGAR
     publisher: U.S. Securities and Exchange Commission（EDGAR）
@@ -653,6 +693,15 @@ sources:
           用 SEC_USER_AGENT 取得全部 FSDS 季度文件（2009q1–2026q3 共 71 个季度：70 个在全量导入中下载，2026q3 此前已取得；2026q4 尚未发布），原始文件约 5.4 GB；
           15 家验证公司的定期报告与合并口径事实已解析入库。字段与设计说明 §3 一致；FSDS 的期末日取整到月末
         scope: E1：15 家验证公司（config/fundamentals.yaml）的申报与合并口径事实
+      - dataset: edgar_segment_facts
+        status: access_verified
+        date: "2026-10-29"
+        evidence: >-
+          用已保存的 FSDS 原始文件（2022q1–2026q3，各季度当前 facts 分区所用的同一份 zip）解析 NVIDIA 与 Micron 定期报告中
+          业务分部、产品、地区与主要客户维度的事实 2,770 行。NVIDIA 2023–2026 年 4 份 10-K 中各年两个业务分部营收之和
+          与合并口径营收逐年相等；Micron 2022–2025 年 4 份 10-K 中业务单元营收之和与 DRAM / NAND / 其他产品营收之和逐年相等。
+          NVIDIA 自 2025 年 2 月的 10-K 起产品维度含上下级成员（数据中心与计算、网络并列），产品营收不能相加
+        scope: 产业链登记的公司（config/supply_chain/entities.yaml 中有 CIK 的公司）；不含合并口径以外的推算
       - dataset: edgar_companyfacts
         status: access_verified
         date: "2026-10-24"

@@ -63,7 +63,7 @@
 | `duration_quarters` | 期间长度（FSDS 的 `qtrs`）：0 为时点，1 为单季，4 为全年 |
 | `unit` | 单位（USD、shares、USD/shares） |
 | `value` | 申报值 |
-| `segments` | 分部或维度；E1 只用合并口径（空） |
+| `segments` | 分部或维度；E1 只用合并口径（空）。产业链研究的公司另有 `segment_facts` 表保存业务分部、产品、地区与主要客户维度（2026-10-29，见[实现说明](implementation.md) §7） |
 | `available_at` | = `accepted_at` 的次日 0 点（美东），保守规则 |
 | `retrieved_at`、`source` | 取得时间与来源（fsds / companyfacts） |
 | `quality_status`、`reason` | 与现有质量规则一致 |

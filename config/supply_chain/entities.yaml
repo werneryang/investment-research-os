@@ -1,0 +1,62 @@
+# 公司、分部与匿名对手方（L3 主体；docs/supply-chain-research-design.md §7、§9.1）
+#
+# 分部用稳定 ID；XBRL 成员名称会随申报改变（xbrl_members 列出已见到的别名及出现该别名的一份申报，不是首次出现的申报），
+# 分部重组时旧分部保留并标 superseded_in（起不再使用的申报），不在旧 ID 上改义；新旧分部之间没有披露一一对应时不推定。
+# 匿名对手方（未披露名称的重大客户）单独成为主体，不能与具名公司合并或猜测对应。
+# 非美国申报主体只记名称与所在地，未核验其申报（20-F/6-K 等）前不登记 CIK。
+
+schema_version: supply_chain.v1
+
+entities:
+  - {id: co_nvidia, type: company, name: "NVIDIA Corporation", cik: 1045810, country: US}
+  - {id: co_micron, type: company, name: "Micron Technology, Inc.", cik: 723125, country: US}
+  - {id: co_tsmc, type: company, name: "Taiwan Semiconductor Manufacturing Company Limited", country: TW}
+  - {id: co_samsung, type: company, name: "Samsung Electronics Co., Ltd.", country: KR}
+  - {id: co_sk_hynix, type: company, name: "SK hynix Inc.", country: KR}
+  - {id: co_hon_hai, type: company, name: "Hon Hai Precision Industry Co., Ltd.", country: TW}
+  - {id: co_wistron, type: company, name: "Wistron Corporation", country: TW}
+  - {id: co_fabrinet, type: company, name: "Fabrinet", country: KY}
+  - {id: co_kioxia, type: company, name: "Kioxia Holdings Corporation", country: JP}
+  - {id: co_sandisk, type: company, name: "Sandisk Corporation", country: US}
+  - {id: co_cxmt, type: company, name: "ChangXin Memory Technologies, Inc.", country: CN}
+  - {id: co_ymtc, type: company, name: "Yangtze Memory Technologies Co., Ltd.", country: CN}
+
+  # ---- NVIDIA 分部：两个分部的 XBRL 成员在 2025 年 2 月的 10-K 起加了 Segment 后缀 ----
+  - id: seg_nvda_compute_networking
+    type: segment
+    parent: co_nvidia
+    name: Compute & Networking
+    xbrl_members:
+      - {member: ComputeAndNetworking, seen_in: 0001045810-24-000029}
+      - {member: ComputeAndNetworkingSegment, seen_in: 0001045810-25-000023}
+  - id: seg_nvda_graphics
+    type: segment
+    parent: co_nvidia
+    name: Graphics
+    xbrl_members:
+      - {member: Graphics, seen_in: 0001045810-24-000029}
+      - {member: GraphicsSegment, seen_in: 0001045810-25-000023}
+
+  # ---- Micron 分部：2025 财年第四季度重组，新分部追溯调整了 2023、2024 财年；旧分部的历史数字保留。
+#      公司没有披露旧分部到新分部的对应，两套口径不能拼接 ----
+  - {id: seg_mu_cnbu, type: segment, parent: co_micron, name: Compute and Networking Business Unit,
+     xbrl_members: [{member: CNBU, seen_in: 0000723125-24-000027}], superseded_in: 0000723125-25-000028}
+  - {id: seg_mu_mbu, type: segment, parent: co_micron, name: Mobile Business Unit,
+     xbrl_members: [{member: MBU, seen_in: 0000723125-24-000027}], superseded_in: 0000723125-25-000028}
+  - {id: seg_mu_ebu, type: segment, parent: co_micron, name: Embedded Business Unit,
+     xbrl_members: [{member: EBU, seen_in: 0000723125-24-000027}], superseded_in: 0000723125-25-000028}
+  - {id: seg_mu_sbu, type: segment, parent: co_micron, name: Storage Business Unit,
+     xbrl_members: [{member: SBU, seen_in: 0000723125-24-000027}], superseded_in: 0000723125-25-000028}
+  - {id: seg_mu_cmbu, type: segment, parent: co_micron, name: Cloud Memory Business Unit,
+     xbrl_members: [{member: CMBU, seen_in: 0000723125-25-000028}]}
+  - {id: seg_mu_cdbu, type: segment, parent: co_micron, name: Core Data Center Business Unit,
+     xbrl_members: [{member: CDBU, seen_in: 0000723125-25-000028}]}
+  - {id: seg_mu_mcbu, type: segment, parent: co_micron, name: Mobile and Client Business Unit,
+     xbrl_members: [{member: MCBU, seen_in: 0000723125-25-000028}]}
+  - {id: seg_mu_aebu, type: segment, parent: co_micron, name: Automotive and Embedded Business Unit,
+     xbrl_members: [{member: AEBU, seen_in: 0000723125-25-000028}]}
+
+  # ---- 匿名对手方 ----
+  - {id: anon_nvda_fy2026_direct_1, type: anonymous, name: "NVIDIA 2026 财年直接客户之一（占总营收 22%）", parent: co_nvidia}
+  - {id: anon_nvda_fy2026_direct_2, type: anonymous, name: "NVIDIA 2026 财年另一直接客户（占总营收 14%）", parent: co_nvidia}
+  - {id: anon_mu_fy2025_top10, type: anonymous, name: "Micron 2025 财年前十大客户（合计，未逐一披露）", parent: co_micron}

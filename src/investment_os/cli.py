@@ -319,6 +319,36 @@ def cmd_edgar(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_chain(args: argparse.Namespace) -> int:
+    from .data.fundamentals import EdgarStore, extract_segments
+    from .supply_chain.catalog import check, load_catalog
+    from .supply_chain.classification import ClassificationStore, import_naics
+
+    root = _root(args.root)
+    if args.action == "naics":
+        e = import_naics(root, Path(args.file) if args.file else None)
+        print(f"NAICS 2022：{e['rows']} 个代码（各层 {e['levels']}），版本 {e['version_id']}，SHA256 {e['sha256'][:16]}…")
+        return 0
+    cat = load_catalog(root)
+    if args.action == "segments":
+        res = extract_segments(root, cat.ciks(), args.quarter or None, progress=print)
+        print(f"分部事实：{len(res)} 个季度，公司 CIK {sorted(cat.ciks())}")
+        return 1 if any(r["action"] == "missing_raw" for r in res) else 0
+    facts = EdgarStore(root).query("segment_facts")
+    rep = check(cat, ClassificationStore(root).load(), facts if len(facts) else None)
+    inv = rep.inventory
+    print("产业链登记（" + "，".join(f"{k} {v}" for k, v in inv["counts"].items()) + "）")
+    print("已核对：" + ("，".join(f"{k} {v}" for k, v in sorted(rep.verified.items())) or "无"))
+    for w in rep.warnings:
+        print(f"  [未核对] {w}")
+    for e in rep.errors:
+        print(f"  [错误] {e}")
+    print(f"已知缺口 {len(inv['gaps'])} 项；匿名对手方：{', '.join(inv['anonymous_counterparties']) or '无'}")
+    if args.json:
+        Path(args.json).write_text(json.dumps(rep.to_dict(), ensure_ascii=False, indent=2), encoding="utf-8")
+    return 1 if rep.errors else 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="iros", description="个人投资研究框架")
     p.add_argument("--root", help="项目根目录（默认当前目录或 IROS_HOME）")
@@ -382,6 +412,13 @@ def build_parser() -> argparse.ArgumentParser:
     e.add_argument("--refresh", action="store_true", help="sync：不论文件头如何都重新下载 FSDS（全面复核用）")
     e.add_argument("--as-of", help="annual：只用该日期（UTC）之前已公布的申报")
     e.set_defaults(func=cmd_edgar)
+
+    s = sub.add_parser("chain", help="产业链登记：导入 NAICS、提取分部事实、核对证据")
+    s.add_argument("action", choices=["naics", "segments", "check"])
+    s.add_argument("--file", help="naics：从本地 XLSX 导入（默认从 Census 下载）")
+    s.add_argument("--quarter", action="append", help="segments：只处理指定季度（如 2025q4，可重复）")
+    s.add_argument("--json", help="check：把核对结果写入 JSON 文件")
+    s.set_defaults(func=cmd_chain)
     return p
 
 
