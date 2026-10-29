@@ -216,3 +216,44 @@ def test_project_study_lists_units_defined_in_the_catalog():
     from .conftest import PROJECT_ROOT
     study = yaml.safe_load((PROJECT_ROOT / "config" / "studies" / "chip_operations_p3b.yaml").read_text(encoding="utf-8"))
     assert set(study["method"]["units"]) <= set(load_catalog(PROJECT_ROOT).units)
+
+
+def test_conflicting_consolidated_revenue_fails_even_if_one_value_matches(project, registry, store):
+    """同一申报同一期末的合并营收有两个值时判为冲突，不挑与分部合计吻合的那个。"""
+    other = rec("A-26", None, None, "Revenues", 2026, 222e6, "2026-02-26T00:00:00-05:00", kind="consolidated")
+    other["id"] += "|2"
+    _, r = run_doc(project, registry, store, bundle_doc(extra=[other]))  # 分部合计 160+60+1=221m
+    fin = next(u for u in r["results"]["units"] if u["id"] == "fin")
+    assert fin["grade"] == "C" and not r["tables"]["fin"]
+    assert any("合并营收有冲突" in x for x in fin["reasons"])
+    row = next(x for x in fin["checks"]["segment_total"] if x["fiscal_year"] == 2026)
+    assert row["status"] == "fail" and row["consolidated"] == [221e6, 222e6]
+
+
+def test_conflicting_gross_profit_fails_instead_of_being_skipped(project, registry, store):
+    other = rec("A-26", "seg_x", "X2", "GrossProfit", 2026, 71e6, "2026-02-26T00:00:00-05:00")
+    _, r = run_doc(project, registry, store, bundle_doc(extra=[other]))
+    gross = next(u for u in r["results"]["units"] if u["id"] == "gross")
+    assert gross["grade"] == "C" and not r["tables"]["gross"]
+    assert gross["checks"]["gross_profit"] == [
+        {"entity": "seg_x", "fiscal_year": 2026, "status": "fail", "reason": "GrossProfit 有冲突"}]
+    # 没有报告 GrossProfit 才是缺失：不核对，单元不受影响
+    _, r = run_doc(project, registry, store, bundle_doc(drop={"A-26|GrossProfit|X|2026-01-31"}))
+    gross = next(u for u in r["results"]["units"] if u["id"] == "gross")
+    assert gross["grade"] == "A" and gross["checks"]["gross_profit"] == []
+
+
+def test_attribution_only_counts_links_to_the_unit_activity(project, registry, store):
+    """分部只有指向其他活动的已确认映射时，本活动仍是未登记映射，限制说明保留。"""
+    units = copy.deepcopy(UNITS)
+    units["fin"]["entities"] = ["seg_x"]
+    doc = bundle_doc(link_status="confirmed", units=units)
+    doc["metadata"]["links"]["lnk_x"]["activity"] = "act_other"
+    _, r = run_doc(project, registry, store, doc)
+    fin = next(u for u in r["results"]["units"] if u["id"] == "fin")
+    assert fin["attribution_status"] == "unmapped" and fin["links"] == []
+    assert any(x.startswith("fin：") and "unmapped" in x for x in r["limitations"])
+    doc["metadata"]["links"]["lnk_x2"] = {**doc["metadata"]["links"]["lnk_x"], "activity": "act_design",
+                                          "status": "invalid"}
+    _, r = run_doc(project, registry, store, doc)  # 无效映射也不算覆盖
+    assert next(u for u in r["results"]["units"] if u["id"] == "fin")["attribution_status"] == "unmapped"
