@@ -352,3 +352,24 @@ def test_wrong_units_are_hard_errors_and_unverified_sources_are_not_computed():
     assert r.results["feasibility"]["weekly_statistics"]["grade"] == "unassessed"
     assert all(s["grade"] == "unassessed" for s in r.results["scenarios"])  # 输入未达接入已验证，情景也不计算
     assert r.results["statistics"] is None and not r.tables["scenario_weeks"]
+
+
+def test_reference_window_coverage_is_recorded_separately(project, registry, store, eia_book):
+    """研究期间在用途核验范围内，不代表参照窗口也在范围内：参照窗口单独记录并在清单中固定。"""
+    _load_all(registry, store)
+    doc = {**SCEN, "method": {**SCEN["method"], "reference_window": ["2015-01-01", "2025-12-31"]}}
+    m = run_study(project, _write(project, doc))
+    r = _result(project, m)
+    util = next(i for i in m["inputs"] if i["role"] == "utilization")
+    assert util["use_scope"]["status"] == "in_scope"  # 研究期间 2025 年
+    ref = r["results"]["assumption_reference"]["use_scope"]
+    assert ref["status"] == "partial" and ref["uncovered"] == [["2015-01-01", "2024-12-31"]]
+    assert util["reference_scope"] == ref
+    assert any("未覆盖 2015-01-01—2024-12-31" in x for x in r["limitations"])
+    report = (project / next(o["path"] for o in m["outputs"] if o["path"].endswith(".md"))).read_text(encoding="utf-8")
+    assert "部分在核验范围内（partial），未覆盖 2015-01-01—2024-12-31" in report
+    assert verify_run(project, m["run_id"])["reproduced"]
+    # 参照窗口完全在核验范围内时不追加限制
+    r2 = _result(project, run_study(project, _write(project, SCEN, "in_scope.yaml")))
+    assert r2["results"]["assumption_reference"]["use_scope"]["status"] == "in_scope"
+    assert not any("假设参照期" in x for x in r2["limitations"])
