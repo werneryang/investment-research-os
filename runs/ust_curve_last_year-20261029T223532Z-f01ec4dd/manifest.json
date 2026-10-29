@@ -1,0 +1,164 @@
+{
+  "run_id": "ust_curve_last_year-20261029T223532Z-f01ec4dd",
+  "study_id": "ust_curve_last_year",
+  "study_path": "config/studies/ust_curve_last_year.yaml",
+  "study_config": {
+    "study_id": "ust_curve_last_year",
+    "title": "近一年美国国债收益率曲线变化",
+    "question": "最近一年美国国债名义票面收益率曲线的水平、斜率与曲率如何变化？",
+    "result_type": "descriptive",
+    "branch": "rates_curve",
+    "scope": {
+      "market": "US",
+      "currency": "USD",
+      "start": "2025-10-29",
+      "end": "2026-10-29",
+      "frequency": "daily",
+      "vintage_policy": "latest",
+      "relative_dates": {
+        "start": "today-1y",
+        "end": "today"
+      },
+      "evaluated_at": "2026-10-29T22:35:32+00:00",
+      "data_checked_at": {
+        "ust_par_yield_curve": "2026-10-29T22:35:19+00:00",
+        "fred_dgs10": "2026-10-29T22:35:19+00:00"
+      }
+    },
+    "data": {
+      "curve": "ust_par_yield_curve",
+      "cross_check": {
+        "dataset": "fred_dgs10",
+        "required": false
+      }
+    },
+    "method": {
+      "key_tenors": [
+        "3M",
+        "2Y",
+        "5Y",
+        "10Y",
+        "30Y"
+      ],
+      "spreads": [
+        [
+          "2Y",
+          "10Y"
+        ],
+        [
+          "3M",
+          "10Y"
+        ]
+      ],
+      "curvature": [
+        "2Y",
+        "5Y",
+        "10Y"
+      ],
+      "curve_snapshots": [
+        "start",
+        "end"
+      ],
+      "min_coverage": 0.95
+    },
+    "benchmark": "期初曲线（窗口内首个有效交易日）",
+    "evaluation": [
+      "标准化结果与原始快照逐点抽查一致（独立解析路径）",
+      "Treasury 10 年与 FRED DGS10 一致性检查（同一上游，不构成独立验证）",
+      "固定数据版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "票面收益率（par yield）曲线，不是零息或远期曲线，也不是债券或债券基金的持有期回报",
+      "名义收益率，未扣除通胀",
+      "期间描述，不含预测或交易含义；相关变化不构成因果解释",
+      "窗口终点为运行当天，最新一两个交易日可能尚未发布",
+      "Treasury 官网不提供历史版本，使用本地快照；结果对应快照内容"
+    ]
+  },
+  "study_config_hash": "778a66d7e54acb88fd1fe70cd04e8e7ee32ed28b06a7bf4b09c20d55012828c2",
+  "started_at": "2026-10-29T22:35:32+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "bf08aee17b56f3035e192d7ed35432900e6e0eb40b64d0326ec6d329fa2c6cb4",
+    "git_commit": "4b67b862bbbda6144fc2deee506662126c1e252f",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.3",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "partial",
+  "inputs": [
+    {
+      "role": "curve",
+      "used": true,
+      "dataset_id": "ust_par_yield_curve",
+      "version_id": "v20261029T223505Z-b8ab888a",
+      "content_hash": "b8ab888a3177d5fe4b88b0c9ca94f758e4fb7cf42f64f5efdb7af595b4caa980",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "partial",
+        "uncovered": [
+          [
+            "2026-10-23",
+            "2026-10-29"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2024-01-01",
+            "2026-10-22"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-23"
+        ]
+      }
+    },
+    {
+      "role": "cross_check",
+      "used": true,
+      "dataset_id": "fred_dgs10",
+      "version_id": "v20261029T223519Z-171251a2",
+      "content_hash": "171251a2c7eade2da40a60e32256cd2b688505a08b12a36ec8f7738feb2b89ce",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    }
+  ],
+  "result_hash": "17b5db44d51ae71cc7eb9ec065afca0ccc1a89ac3b28628b491ab2cb6bf0759e",
+  "warnings": [],
+  "unsupported": [],
+  "outputs": [
+    {
+      "path": "runs/ust_curve_last_year-20261029T223532Z-f01ec4dd/result.json",
+      "sha256": "686a571f25c5e99f7e105d68fc7d5b94dde29b7726df920e0053cd8d0a1254ba"
+    },
+    {
+      "path": "reports/ust_curve_last_year/ust_curve_last_year-20261029T223532Z-f01ec4dd/report.md",
+      "sha256": "70f749f30ae53da6c3600783b3d259042c225d35407df45069011a61be8ac8a0"
+    },
+    {
+      "path": "reports/ust_curve_last_year/ust_curve_last_year-20261029T223532Z-f01ec4dd/report.html",
+      "sha256": "6ca7a7d8057b13091e75c1cd9374ad6328aa7540e26e0930e87387ca9b4e81c6"
+    },
+    {
+      "path": "reports/ust_curve_last_year/ust_curve_last_year-20261029T223532Z-f01ec4dd/figures/curve_snapshots.png",
+      "sha256": "ab75a67f0e900c80a38bbb23ce3e1865df2ce89d9024deaedbe673d2d7af02a6"
+    },
+    {
+      "path": "reports/ust_curve_last_year/ust_curve_last_year-20261029T223532Z-f01ec4dd/figures/key_tenors.png",
+      "sha256": "9c44dceaba2f0290047410e6809be5fe7782e6f8809674cc5a3e9409674caee9"
+    },
+    {
+      "path": "reports/ust_curve_last_year/ust_curve_last_year-20261029T223532Z-f01ec4dd/figures/spreads.png",
+      "sha256": "33140b511ad3d64161a327225a6699aee6e915f0370733f8b7270fdf24a22037"
+    }
+  ],
+  "finished_at": "2026-10-29T22:35:33+00:00"
+}
