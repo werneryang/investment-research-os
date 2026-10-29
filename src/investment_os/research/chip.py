@@ -4,10 +4,11 @@
 - 每个单元的全部数字取自同一份年度申报（最新的、覆盖所需分部 × 指标 × 财年的 10-K），
   不跨申报拼接，因此不会混用分部重组前后的口径或后来修订的比较数
 - 所需指标在证据包中没有观测（如型号出货量、供应商份额）时为 C，不按收入或假设单价推算
-- 分部合计核对：同一申报各分部（含 AllOtherSegments）营收之和与合并营收比较；没有合并营收时跳过，不冒充通过
-- 毛利核对：分部报告了 GrossProfit 时，与营收减销售成本比较
+- 分部合计核对：同一申报各分部（含 AllOtherSegments）营收之和与合并营收比较；没有合并营收时跳过，不冒充通过；
+  合并营收有多个值时判为冲突
+- 毛利核对：分部报告了 GrossProfit 时，与营收减销售成本比较；任一项有多个值时判为冲突，不当作缺失跳过
 
-输入能力等级只评价分部财务输入；分部到芯片活动的归属另记 attribution_status：映射与证据未经人工复核时为 candidate，
+输入能力等级只评价分部财务输入；分部到芯片活动的归属另记 attribution_status（只看指向本单元活动的有效映射）：映射与证据未经人工复核时为 candidate，
 结果按分部口径陈述，不称为某项活动的财务。
 """
 
@@ -96,9 +97,13 @@ def _segment_total_check(recs: list[dict[str, Any]], acc: str, years: list[int])
             rows.append({"fiscal_year": y, "status": "skipped", "segment_total": total, "segments": sorted(members),
                          "reason": "证据包中没有该申报的合并营收（公司不在 E1 财报登记中）"})
             continue
-        ok = any(abs(total - c) <= TOL_USD for c in cons)
-        rows.append({"fiscal_year": y, "status": "pass" if ok else "fail", "segment_total": total,
-                     "consolidated": cons[0] if len(set(cons)) == 1 else sorted(set(cons)), "segments": sorted(members)})
+        consolidated, conflict = _unique(cons)
+        if conflict:  # 同一申报同一期末的合并营收不止一个值：不挑其中吻合的一个
+            rows.append({"fiscal_year": y, "status": "fail", "segment_total": total, "consolidated": sorted(set(cons)),
+                         "segments": sorted(members), "reason": "同一申报同一期末的合并营收有冲突"})
+            continue
+        rows.append({"fiscal_year": y, "status": "pass" if abs(total - consolidated) <= TOL_USD else "fail",
+                     "segment_total": total, "consolidated": consolidated, "segments": sorted(members)})
     return rows
 
 
@@ -107,18 +112,26 @@ def _gross_profit_check(recs: list[dict[str, Any]], acc: str, entities: list[str
     rows = []
     for e in entities:
         for y in years:
-            pick = {t: _unique([r["value"] for r in recs if r["accession"] == acc and r["entity"] == e
-                                and r["tag"] == t and r["fiscal_year"] == y])[0]
-                    for t in (rev_tag, COST_OF_REVENUE, GROSS_PROFIT)}
-            if None in pick.values():
+            found = {t: _unique([r["value"] for r in recs if r["accession"] == acc and r["entity"] == e
+                                 and r["tag"] == t and r["fiscal_year"] == y])
+                     for t in (rev_tag, COST_OF_REVENUE, GROSS_PROFIT)}
+            conflicts = [t for t, (_, conflict) in found.items() if conflict]
+            if conflicts:  # 冲突不同于缺失：不能跳过
+                rows.append({"entity": e, "fiscal_year": y, "status": "fail",
+                             "reason": f"{', '.join(conflicts)} 有冲突"})
                 continue
+            pick = {t: v for t, (v, _) in found.items()}
+            if None in pick.values():
+                continue  # 分部没有报告其中某项：不核对
             diff = pick[rev_tag] - pick[COST_OF_REVENUE] - pick[GROSS_PROFIT]
             rows.append({"entity": e, "fiscal_year": y, "diff": diff, "status": "pass" if abs(diff) <= TOL_USD else "fail"})
     return rows
 
 
-def _attribution(bundle: dict[str, Any], entities: list[str]) -> tuple[str, list[str]]:
-    links = [(lid, lk) for lid, lk in (bundle.get("links") or {}).items() if lk["entity"] in entities]
+def _attribution(bundle: dict[str, Any], entities: list[str], activity: str) -> tuple[str, list[str]]:
+    """只看指向本单元活动的有效映射：指向其他活动的映射不说明本活动的归属。"""
+    links = [(lid, lk) for lid, lk in (bundle.get("links") or {}).items()
+             if lk["entity"] in entities and lk["activity"] == activity and lk["status"] != "invalid"]
     linked = {lk["entity"] for _, lk in links}
     if not links or linked != set(entities):
         return "unmapped", [lid for lid, _ in links]
@@ -159,12 +172,14 @@ def _unit(spec: dict[str, Any], recs: list[dict[str, Any]], bundle: dict[str, An
         rev_tag = next((t for t in tags if t in REVENUE_TAGS), None)
         gross = _gross_profit_check(recs, acc, entities, years, rev_tag) if rev_tag else []
         checks = {"segment_total": totals, "gross_profit": gross}
-        bad = [f"{y['fiscal_year']} 财年分部营收合计与合并营收不一致" for y in totals if y["status"] == "fail"]
-        bad += [f"{g['entity']} {g['fiscal_year']} 财年毛利 ≠ 营收 − 销售成本（差 {g['diff']:,.0f}）"
+        bad = [f"{y['fiscal_year']} 财年分部营收合计与合并营收不一致" + (f"：{y['reason']}" if "reason" in y else "")
+               for y in totals if y["status"] == "fail"]
+        bad += [f"{g['entity']} {g['fiscal_year']} 财年毛利核对失败：{g['reason']}" if "reason" in g
+                else f"{g['entity']} {g['fiscal_year']} 财年毛利 ≠ 营收 − 销售成本（差 {g['diff']:,.0f}）"
                 for g in gross if g["status"] == "fail"]
         failed += bad
     grade = assess(spec["id"], inputs=[inp], hard_errors=hard, failed_checks=failed)
-    attribution, link_ids = _attribution(bundle, entities)
+    attribution, link_ids = _attribution(bundle, entities, spec["activity"])
     rows: list[dict[str, Any]] = []
     if grade.computable and acc is not None:
         rev_tag = next((t for t in tags if t in REVENUE_TAGS), None)
