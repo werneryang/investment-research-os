@@ -308,6 +308,44 @@ def test_human_review_is_separate_from_machine_checks(mini):
     assert any("被否定" in e for e in errors) and any("没有可用的证据" in e for e in errors)
 
 
+def _confirmed(data, idx):
+    d = copy.deepcopy(data)
+    d["claims"]["claims"][idx].update(review_status="confirmed", reviewer="analyst", reviewed_at="2026-10-30")
+    return d
+
+
+@pytest.mark.parametrize("change, messages", [
+    # 另一家公司的已确认 XBRL 证据挂到本公司分部：归属与别名都不符
+    (lambda d: d["claims"]["claims"][2].update(accession="0002-26-1", segments="Geographical=US;",
+                                               period_end="2025-12-31", value=4),
+     ["不属于相关公司", "不是 seg_a 的登记别名"]),
+    # 同一公司另一分部的已确认证据：别名不符
+    (lambda d: d["claims"]["claims"][2].update(segments="Geographical=TW;", value=1), ["不是 seg_a 的登记别名"]),
+])
+def test_failed_ownership_or_alias_never_yields_confirmed(mini, change, messages):
+    """检查报错时，相关映射不能显示为 confirmed：不适用的证据不计入，对象自身有错误即为 invalid。"""
+    root, data = mini
+    d = _confirmed(data, 2)
+    change(d)
+    rep = check(write_catalog(root, d), NAICS, parse_fsds_segments(fsds_zip(), {1045810, 999}, NOW),
+                documents_dir=root / "filings")
+    for m in messages:
+        assert any(m in e and "lnk" in e for e in rep.errors), (m, rep.errors)
+    assert rep.claim_checks["clm_rev"] == "verified"  # 证据本身数值正确，问题在于挂错了对象
+    assert rep.statuses["lnk"] == "invalid"
+
+
+def test_confirmed_requires_an_applicable_verified_claim(mini):
+    root, data = mini
+    rep = run_check(root, _confirmed(data, 2))
+    assert rep.errors == [] and rep.statuses["lnk"] == "confirmed"
+    # 证据人工确认但机器核对失败：报错，映射为 invalid
+    bad = _confirmed(data, 2)
+    bad["claims"]["claims"][2]["value"] = 1
+    rep = run_check(root, bad)
+    assert rep.claim_checks["clm_rev"] == "failed" and rep.statuses["lnk"] == "invalid"
+
+
 def test_duplicate_relations_and_unknown_keys_are_rejected(mini):
     root, data = mini
     dup = copy.deepcopy(data)

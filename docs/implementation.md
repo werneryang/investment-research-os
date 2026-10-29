@@ -229,7 +229,7 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
   - 同一关系不重复记录。
   - 证据须来自相关公司的申报；XBRL 证据须写明数值与单位，单位参与匹配，缺数值或单位时为未核对；分部别名须属于上级公司（按 CIK）的申报，且在业务分部维度中。
   - 原文登记的精确期末（年报封面的 fiscal year ended …）须在原文中出现，且与 FSDS 月末相差不超过半个月。
-  - 被否定或撤回的证据不能支撑映射或关系。机器核对结果（`claim_checks`）与人工复核状态（`review_status`）分开：模型提取的证据为 candidate，confirmed、rejected、retracted 须写明复核人与日期；映射与关系有人工确认且机器核对通过的证据时为 confirmed，否则为 candidate。
+  - 被否定或撤回的证据不能支撑映射或关系。机器核对结果（`claim_checks`）与人工复核状态（`review_status`）分开：模型提取的证据为 candidate，confirmed、rejected、retracted 须写明复核人与日期。映射与关系自身有任何错误时为 invalid；否则有人工确认、机器核对通过且适用（来自相关公司、分部别名相符）的证据时为 confirmed，其余为 candidate。归属或别名不符的证据不计入，P3b 只能选用 confirmed 的映射作为已核验输入。
   - NAICS 代码必须在导入表中。
   - XBRL 成员与事实数值必须能在分部事实中找到。
   - 摘录必须逐字出现在本地原文中，原文 SHA256 必须一致。

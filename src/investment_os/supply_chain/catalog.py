@@ -9,7 +9,8 @@
 - 被否定或撤回的证据不能支撑任何映射或关系
 
 机器核对（claim_checks）与人工复核（review_status）分开记录：模型提取的证据为 candidate，
-confirmed 只能由人工复核给出并写明复核人与日期。映射与关系有至少一条人工确认且机器核对通过的证据时为 confirmed，否则为 candidate。
+confirmed 只能由人工复核给出并写明复核人与日期。映射与关系自身有错误时为 invalid；否则有至少一条人工确认、
+机器核对通过且适用（来自相关公司、分部别名相符）的证据时为 confirmed，其余为 candidate。
 本地缺少原文或分部事实、证据缺数值或单位时，相应项目记为未核对（warning），不冒充通过。
 """
 
@@ -171,7 +172,7 @@ class Report:
     claim_available_at: dict[str, str] = field(default_factory=dict)
     # 机器核对结果：verified / unverified（本地缺少原文或数据、证据缺数值或单位）/ failed
     claim_checks: dict[str, str] = field(default_factory=dict)
-    # 映射与关系的状态：confirmed（至少一条人工确认且机器核对通过的证据）/ candidate
+    # 映射与关系的状态：invalid（自身有错误）/ confirmed（至少一条人工确认、机器核对通过且适用的证据）/ candidate
     statuses: dict[str, str] = field(default_factory=dict)
     inventory: dict[str, Any] = field(default_factory=dict)
 
@@ -341,8 +342,13 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
             return _company_cik(cat, doc.get("entity")) if doc else None
         return _filing_cik(segment_facts, c["accession"])
 
-    def supported(kind: str, item: dict[str, Any], owners: set[int | None]) -> None:
-        """证据须存在、未被否定或撤回、来自相关公司的申报。状态：有人工确认且机器核对通过的证据为 confirmed，否则 candidate。"""
+    def supported(kind: str, item: dict[str, Any], owners: set[int | None], errors_before: int,
+                  excluded: set[str] = frozenset()) -> None:
+        """证据须存在、未被否定或撤回、来自相关公司的申报、机器核对未失败；不满足的证据不计入。
+
+        状态：该对象自身有任何错误为 invalid；否则有人工确认且机器核对通过的证据为 confirmed，其余为 candidate。
+        excluded 为调用方已判定不适用的证据（如分部别名不符）。
+        """
         usable, confirmed = 0, False
         for cid in item.get("claims") or []:
             c = cat.claims.get(cid)
@@ -356,14 +362,19 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
             owner = claim_owner(c)
             if owner is not None and owner not in owners:
                 rep.errors.append(f"{kind} {item['id']} 的证据 {cid} 来自 CIK {owner} 的申报，不属于相关公司")
+                continue
+            if rep.claim_checks.get(cid) == "failed" or cid in excluded:
+                continue  # 机器核对失败或调用方判定不适用：错误已另行报告，不计入
             usable += 1
             confirmed |= c["review_status"] == "confirmed" and rep.claim_checks.get(cid) == "verified"
         if not usable:
             rep.errors.append(f"{kind} {item['id']} 没有可用的证据")
-        rep.statuses[item["id"]] = "confirmed" if confirmed else "candidate"
+        rep.statuses[item["id"]] = ("invalid" if len(rep.errors) > errors_before
+                                    else "confirmed" if confirmed else "candidate")
 
     # ---- L3 映射 ----
     for lk in cat.links.values():
+        before = len(rep.errors)
         e = cat.entities.get(lk["entity"])
         if e is None or e["type"] == "anonymous":
             rep.errors.append(f"映射 {lk['id']} 的主体 {lk['entity']} 未登记或为匿名对手方")
@@ -371,17 +382,20 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
             rep.errors.append(f"映射 {lk['id']} 的活动 {lk['activity']} 未登记")
         # XBRL 证据的业务分部成员须是该分部登记的别名，防止把另一分部或另一公司的数字挂到这里
         aliases = {m["member"] for m in (e or {}).get("xbrl_members") or []}
+        mismatched = set()
         for cid in lk.get("claims") or []:
             c = cat.claims.get(cid)
             if c and c["type"] == "xbrl_segment" and e and e["type"] == "segment" \
                     and _business_segment(c["segments"]) not in aliases:
                 rep.errors.append(f"映射 {lk['id']} 的证据 {cid} 的业务分部 {_business_segment(c['segments'])} "
                                   f"不是 {e['id']} 的登记别名")
-        supported("映射", lk, {_company_cik(cat, lk["entity"])})
+                mismatched.add(cid)
+        supported("映射", lk, {_company_cik(cat, lk["entity"])}, before, mismatched)
 
     # ---- L4 关系 ----
     keys: dict[tuple[Any, ...], str] = {}
     for r in cat.relations.values():
+        before = len(rep.errors)
         where = f"关系 {r['id']}"
         if r["type"] in DIRECTED:
             ends = [r.get("provider"), r.get("recipient")]
@@ -417,7 +431,7 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
         if key in keys:
             rep.errors.append(f"{where} 与 {keys[key]} 重复记录同一关系")
         keys[key] = r["id"]
-        supported("关系", r, {_company_cik(cat, x) for x in ends if x})
+        supported("关系", r, {_company_cik(cat, x) for x in ends if x}, before)
 
     # ---- 研究单元 ----
     for u in cat.units.values():
@@ -431,7 +445,7 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
     rep.inventory["claim_checks"] = {s: sum(v == s for v in rep.claim_checks.values())
                                      for s in ("verified", "unverified", "failed")}
     rep.inventory["link_relation_status"] = {s: sum(v == s for v in rep.statuses.values())
-                                             for s in ("confirmed", "candidate")}
+                                             for s in ("confirmed", "candidate", "invalid")}
     return rep
 
 
