@@ -120,6 +120,8 @@ def test_parse_segments_keeps_only_business_dimensions_of_registered_periodic_fi
     row = df[df["segments"].str.startswith("Business")].iloc[0]
     assert row.value == 22459000000 and row.form == "10-K" and row.fiscal_year == 2026 and row["name"] == "NVIDIA CORP"
     assert row.accepted_at == pd.Timestamp("2026-02-25 16:42", tz="America/New_York")
+    # FSDS 只有月末口径；精确期末不推定
+    assert row.filing_period_month_end == pd.Timestamp("2026-01-31") and pd.isna(row.document_period_end)
     assert row.available_at == pd.Timestamp("2026-02-26", tz="America/New_York")
 
 
@@ -133,6 +135,18 @@ def test_extract_segments_reuses_saved_raw_file_and_is_idempotent(tmp_path):
     assert extract_segments(tmp_path, {1045810}, clock=lambda: NOW)[0]["action"] == "unchanged"
     assert len(store.query("segment_facts")) == 2
     assert extract_segments(tmp_path, {1045810}, ["2025q4"])[0]["action"] == "missing_raw"
+
+
+def test_empty_segment_partitions_are_typed_and_readable(tmp_path):
+    """没有分部事实的季度也写出带类型的空分区，与有数据的分区一起读取。"""
+    store = EdgarStore(tmp_path)
+    for q, ciks in (("2026q1", SUB), ("2009q1", SUB.splitlines()[0] + "\n")):
+        raw = store.save_raw("fsds", q, fsds_zip(sub=ciks), "zip", f"https://example.invalid/{q}.zip", NOW)
+        store.write_partition("facts", "fsds", q, pd.DataFrame(columns=store_columns("facts")),
+                              {"raw": raw, "companies": "x"}, NOW)
+    res = {r["quarter"]: r["rows"] for r in extract_segments(tmp_path, {1045810}, clock=lambda: NOW)}
+    assert res == {"2009q1": 0, "2026q1": 2}
+    assert len(store.query("segment_facts")) == 2
 
 
 def store_columns(table):
@@ -152,7 +166,8 @@ def test_project_catalog_loads_and_has_no_errors_offline():
     assert rep.inventory["counts"]["activities"] == 8
 
 
-DOC_TEXT = ("<p>We utilize foundries, such as <b>Foundry Co</b>, to produce our wafers.</p>"
+DOC_TEXT = ("<p>For the fiscal year ended January 25, 2026</p>"
+            "<p>We utilize foundries, such as <b>Foundry Co</b>, to produce our wafers.</p>"
             "<p>We face competition from “Rival”.</p>")
 
 
@@ -167,23 +182,25 @@ def mini(tmp_path):
         "activities": {"activities": [{"id": "act_design", "name": "设计", "definition": "设计芯片",
                                        "naics": [{"code": "334413", "match_type": "ambiguous", "review_status": "candidate"}]},
                                       {"id": "act_foundry", "name": "代工", "definition": "代工"}]},
-        "entities": {"entities": [{"id": "co_a", "type": "company", "name": "A", "cik": 1},
+        "entities": {"entities": [{"id": "co_a", "type": "company", "name": "A", "cik": 1045810},
+                                  {"id": "co_b", "type": "company", "name": "B", "cik": 2},
                                   {"id": "co_f", "type": "company", "name": "Foundry Co"},
                                   {"id": "co_r", "type": "company", "name": "Rival"},
                                   {"id": "seg_a", "type": "segment", "name": "Seg", "parent": "co_a",
                                    "xbrl_members": [{"member": "GraphicsSegment", "seen_in": "0001-26-1"}]}]},
         "claims": {"documents": [{"id": "doc_a", "accession": "0001-26-1", "url": "https://example.invalid/a.htm",
-                                  "file": "a.htm", "sha256": sha, "accepted_at": "2026-02-25T16:42:00-05:00"}],
+                                  "file": "a.htm", "sha256": sha, "accepted_at": "2026-02-25T16:42:00-05:00",
+                                  "entity": "co_a", "document_period_end": "2026-01-25"}],
                    "claims": [{"id": "clm_foundry", "type": "filing_text", "document": "doc_a", "locator": "Item 1",
                                "excerpt": "We utilize foundries, such as Foundry Co, to produce our wafers.",
-                               "origin_type": "observed", "review_status": "confirmed"},
+                               "origin_type": "observed", "review_status": "candidate"},
                               {"id": "clm_rival", "type": "filing_text", "document": "doc_a", "locator": "Item 1",
                                "excerpt": 'We face competition from "Rival".', "origin_type": "observed",
-                               "review_status": "confirmed"},
+                               "review_status": "candidate"},
                               {"id": "clm_rev", "type": "xbrl_segment", "accession": "0001-26-1", "tag": "Revenues",
                                "segments": "BusinessSegments=GraphicsSegment;ConsolidationItems=OperatingSegments;",
-                               "period_end": "2026-01-31", "duration_quarters": 4, "value": 22459000000,
-                               "origin_type": "observed", "review_status": "confirmed"}]},
+                               "period_end": "2026-01-31", "duration_quarters": 4, "value": 22459000000, "unit": "USD",
+                               "origin_type": "observed", "review_status": "candidate"}]},
         "links": {"links": [{"id": "lnk", "entity": "seg_a", "activity": "act_design", "match": "partial",
                              "claims": ["clm_rev"]}]},
         "relations": {"relations": [{"id": "rel", "type": "foundry", "provider": "co_f", "recipient": "co_a",
@@ -219,7 +236,10 @@ def test_mini_catalog_verifies_excerpts_facts_members_and_codes(mini):
     root, data = mini
     rep = run_check(root, data)
     assert rep.errors == [] and rep.warnings == []
-    assert rep.verified == {"naics_code": 1, "xbrl_member": 1, "document": 1, "excerpt": 2, "xbrl_fact": 1}
+    assert rep.verified == {"naics_code": 1, "xbrl_member": 1, "document": 1, "document_period_end": 1,
+                            "excerpt": 2, "xbrl_fact": 1}
+    assert set(rep.claim_checks.values()) == {"verified"}
+    assert set(rep.statuses.values()) == {"candidate"}  # 机器核对通过不等于人工确认
     assert rep.claim_available_at["clm_foundry"].startswith("2026-02-26T00:00:00")
 
 
@@ -237,20 +257,55 @@ def _broken(data, path, value):
     (("relations", "relations", 1, "parties"), ["co_r", "co_a"], "按 ID 排序"),
     (("relations", "relations", 1, "market"), None, "必须写明 market"),
     (("relations", "relations", 0, "activity"), None, "activity_gap"),
-    (("claims", "claims", 0, "review_status"), "rejected", "被否定"),
-    (("claims", "claims", 0, "review_status"), "candidate", "没有任何 confirmed"),
+    (("relations", "relations", 0, "claims"), ["clm_missing"], "未登记的证据"),
     (("claims", "claims", 0, "excerpt"), "We utilize foundries, such as Another Co.", "没有逐字出现"),
     (("claims", "claims", 2, "value"), 1, "数值"),
     (("claims", "claims", 2, "segments"), "BusinessSegments=Gaming;", "找不到对应的行"),
     (("claims", "documents", 0, "sha256"), "0" * 64, "SHA256"),
     (("activities", "activities", 0, "naics"), [{"code": "999999", "match_type": "exact", "review_status": "candidate"}],
      "不在 NAICS 2022 表中"),
-    (("entities", "entities", 3, "xbrl_members"), [{"member": "Gaming", "seen_in": "0001-26-1"}], "XBRL 成员"),
+    (("entities", "entities", 4, "xbrl_members"), [{"member": "Gaming", "seen_in": "0001-26-1"}], "XBRL 成员"),
+    # 分部改挂到另一家公司：别名所在申报属于原公司
+    (("entities", "entities", 4, "parent"), "co_b", "不是上级公司"),
+    # 产品维度的成员不能当作业务分部别名
+    (("entities", "entities", 4, "xbrl_members"), [{"member": "TW", "seen_in": "0001-26-1"}], "业务分部维度"),
+    (("claims", "claims", 2, "unit"), "shares", "单位 shares"),
+    (("claims", "documents", 0, "document_period_end"), "2026-01-24", "精确期末未得到原文支持"),
+    (("claims", "documents", 0, "entity"), "co_b", "不是登记的 co_b"),
+    # 竞争关系换成与原文无关的两家公司：证据不属于相关公司
+    (("relations", "relations", 1, "parties"), ["co_b", "co_r"], "不属于相关公司"),
 ])
 def test_check_reports_each_rule_violation(mini, path, value, message):
     root, data = mini
     rep = run_check(root, _broken(data, path, value))
     assert any(message in e for e in rep.errors), rep.errors
+
+
+def test_missing_value_is_unverified_not_passed(mini):
+    root, data = mini
+    rep = run_check(root, _broken(data, ("claims", "claims", 2, "value"), None))
+    assert rep.errors == [] and rep.claim_checks["clm_rev"] == "unverified"
+    assert "xbrl_fact" not in rep.verified and any("缺少数值或单位" in w for w in rep.warnings)
+
+
+def test_link_alias_must_match_segment(mini):
+    root, data = mini
+    d = _broken(data, ("claims", "claims", 2, "segments"), "Geographical=TW;")
+    assert any("不是 seg_a 的登记别名" in e for e in run_check(root, d).errors)
+
+
+def test_human_review_is_separate_from_machine_checks(mini):
+    root, data = mini
+    with pytest.raises(CatalogError, match="人工复核记录"):
+        write_catalog(root, _broken(data, ("claims", "claims", 0, "review_status"), "confirmed"))
+    reviewed = _broken(data, ("claims", "claims", 0, "review_status"), "confirmed")
+    reviewed["claims"]["claims"][0].update(reviewer="analyst", reviewed_at="2026-10-30")
+    rep = run_check(root, reviewed)
+    assert rep.statuses["rel"] == "confirmed" and rep.statuses["cmp"] == "candidate"
+    rejected = copy.deepcopy(reviewed)
+    rejected["claims"]["claims"][0]["review_status"] = "rejected"
+    errors = run_check(root, rejected).errors
+    assert any("被否定" in e for e in errors) and any("没有可用的证据" in e for e in errors)
 
 
 def test_duplicate_relations_and_unknown_keys_are_rejected(mini):

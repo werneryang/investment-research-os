@@ -221,13 +221,15 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 **产业链登记与分部事实**（芯片 P0，2026-10-29；盘点见[芯片模块 P0](study-chips.md)）：
 
 - `iros chain naics`：`supply_chain/classification.py` 下载或导入 Census 的 NAICS 2022 结构表，按 `classification.v1`（`contracts.CLASSIFICATION_COLUMNS`）保存代码、名称、层级、上级与三国共同代码标记；表头、层级或上级不符即报错。
-- `iros chain segments`：`data/fundamentals.extract_segments` 用各季度当前 facts 分区所用的同一份 FSDS 原始文件，解析登记公司（`config/supply_chain/entities.yaml` 中有 CIK 的公司）的分部与维度事实，写入 `segment_facts` 表（`contracts.SEGMENT_FACT_COLUMNS`）。只保留业务分部、产品、地区、合并项与主要客户维度，`segments` 保留 FSDS 原文。E1 的合并口径事实表不变。
+- `iros chain segments`：`data/fundamentals.extract_segments` 用各季度当前 facts 分区所用的同一份 FSDS 原始文件，解析登记公司（`config/supply_chain/entities.yaml` 中有 CIK 的公司）的分部与维度事实，写入 `segment_facts` 表（`contracts.SEGMENT_FACT_COLUMNS`，分区布局 `segment_facts.v2`）。`period_end` 与 `filing_period_month_end` 都是 FSDS 的月末口径，`document_period_end`（精确期末）FSDS 不提供，留空；跨来源按期间匹配前须先取得精确期末。没有分部事实的季度也写出带类型的空分区。只保留业务分部、产品、地区、合并项与主要客户维度，`segments` 保留 FSDS 原文。E1 的合并口径事实表不变。
 - `iros chain check`：`supply_chain/catalog.py` 读取 `config/supply_chain/` 的活动、主体、映射、关系、证据与研究单元（`supply_chain.v1`），检查以下各项：
   - 未知字段一律报错，以拦截 YAML 中未加引号的逗号拆出的键。
   - 引用必须存在。
   - 方向约定：有向关系为 provider → recipient，无向关系的 parties 排序后只存一次，竞争关系必须写 market。
   - 同一关系不重复记录。
-  - 映射与关系至少有一条 confirmed 证据，被否定或撤回的证据不能支撑。
+  - 证据须来自相关公司的申报；XBRL 证据须写明数值与单位，单位参与匹配，缺数值或单位时为未核对；分部别名须属于上级公司（按 CIK）的申报，且在业务分部维度中。
+  - 原文登记的精确期末（年报封面的 fiscal year ended …）须在原文中出现，且与 FSDS 月末相差不超过半个月。
+  - 被否定或撤回的证据不能支撑映射或关系。机器核对结果（`claim_checks`）与人工复核状态（`review_status`）分开：模型提取的证据为 candidate，confirmed、rejected、retracted 须写明复核人与日期；映射与关系有人工确认且机器核对通过的证据时为 confirmed，否则为 candidate。
   - NAICS 代码必须在导入表中。
   - XBRL 成员与事实数值必须能在分部事实中找到。
   - 摘录必须逐字出现在本地原文中，原文 SHA256 必须一致。

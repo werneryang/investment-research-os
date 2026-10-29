@@ -115,7 +115,7 @@ class EdgarStore:
         digest = _frame_hash(df, columns)
         previous = self.current(table, source, key)
         if previous is not None and previous["content_hash"] == digest and \
-                previous.get("companies") == meta.get("companies"):
+                previous.get("companies") == meta.get("companies") and previous.get("schema") == meta.get("schema"):
             return "unchanged"
         folder = self._dir(table, source, key)
         folder.mkdir(parents=True, exist_ok=True)
@@ -206,6 +206,10 @@ def sync_fsds(root: Path, spec: FundamentalsSpec, client: SecClient, quarters: l
     return results
 
 
+# segment_facts 分区的列与类型版本（v2：月末口径改名为 filing_period_month_end，新增 document_period_end，空分区也带类型）
+SEGMENT_FACTS_LAYOUT = "segment_facts.v2"
+
+
 def extract_segments(root: Path, ciks: set[int], quarters: list[str] | None = None,
                      clock: Callable[[], datetime] = now_utc,
                      progress: Callable[[str], None] = lambda s: None) -> list[dict[str, Any]]:
@@ -226,8 +230,10 @@ def extract_segments(root: Path, ciks: set[int], quarters: list[str] | None = No
             continue
         content = store.read_raw(current["raw"])
         facts = parse_fsds_segments(content, ciks, pd.Timestamp(current["raw"]["retrieved_at"]).to_pydatetime())
+        # schema 记录列与类型的版本：列或类型改变时，内容相同的分区也要重写
         action = store.write_partition("segment_facts", "fsds", q, facts,
-                                       {"raw": current["raw"], "companies": chash}, clock())
+                                       {"raw": current["raw"], "companies": chash, "schema": SEGMENT_FACTS_LAYOUT},
+                                       clock())
         results.append({"quarter": q, "action": action, "rows": len(facts)})
         progress(f"[{action}] {q}：分部事实 {len(facts)}")
     return results

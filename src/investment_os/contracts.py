@@ -338,9 +338,12 @@ FACT_COLUMNS: list[str] = [
 # 与合并口径事实分表保存：同一数字按不同维度（业务分部、产品、地区、主要客户）各出现一次，不能相加。
 # segments 保留 FSDS 原文（如 BusinessSegments=GraphicsSegment;ConsolidationItems=OperatingSegments;），
 # 成员名称会随申报改变（NVIDIA 的 ComputeAndNetworking → ComputeAndNetworkingSegment），映射在产业链登记中维护。
-# FSDS 的 period_end 是取整到月末的 ddate，不是精确期末；申报本身的期末见 filing_period_end
+# 日期口径：FSDS 把期末取整到最近的月末。period_end（事实的 ddate）与 filing_period_month_end（申报的 period）
+# 都是月末口径，不是精确期末（NVIDIA 2026 财年实际止于 2026-01-25，FSDS 记为 2026-01-31）。
+# document_period_end 为精确期末，FSDS 不提供，未从申报原文或其他来源取得时留空；跨来源按期间匹配前须先取得精确期末
 SEGMENT_FACT_COLUMNS: list[str] = [
-    "accession", "cik", "name", "form", "fiscal_year", "fiscal_period", "filing_period_end", "accepted_at",
+    "accession", "cik", "name", "form", "fiscal_year", "fiscal_period", "filing_period_month_end",
+    "document_period_end", "accepted_at",
     "taxonomy", "tag", "segments", "period_end", "duration_quarters", "unit", "value",
     "available_at", "source", "retrieved_at",
 ]

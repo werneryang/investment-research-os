@@ -2,11 +2,16 @@
 #
 # documents：原文文件的申报编号、地址与 SHA256；本地副本在 data/supply_chain/filings/（不入库）。
 #   接受时间来自 FSDS sub.txt（美东）；available_at = 接受时间次日 0 点（美东），与财报事实相同的保守规则。
+#   document_period_end 是年报封面「fiscal year ended …」的精确期末（FSDS 只有月末口径），须在原文中出现。
 # claims：
 #   filing_text  excerpt 必须逐字出现在原文（去标签、空白折叠、弯引号换直引号之后）；只摘录支撑该事实所需的短句
-#   xbrl_segment 必须在 segment_facts 表中找到同一申报、科目、segments、期末（月末）与期间长度，value 一致
-# origin_type：observed / derived / assumed / inferred / unknown。review_status：candidate / confirmed / rejected / retracted；
+#   xbrl_segment 必须写明 value 与 unit，并在 segment_facts 表中找到同一申报、科目、segments、期末（月末）、期间长度与单位，
+#                value 一致；缺数值或单位时为未核对
+# origin_type：observed / derived / assumed / inferred / unknown。
+# review_status 是人工复核状态：candidate / confirmed / rejected / retracted。机器核对结果由 iros chain check 另行给出（claim_checks），
+# 不写进这里；模型提取的证据一律为 candidate，confirmed、rejected、retracted 须写明 reviewer 与 reviewed_at。
 # 被否定或撤回的 claim 不能支撑任何映射或关系。
+# 2026-10-29 登记的证据均由模型从原文提取，机器核对通过，尚未人工复核。
 
 schema_version: supply_chain.v1
 
@@ -19,6 +24,7 @@ documents:
     file: nvda-20260125.htm
     sha256: 0eea98a9af06031fe62d02fc702a980c29fb700a2cc6cc5780634df9c3cbf0b6
     accepted_at: "2026-02-25T16:42:00-05:00"
+    document_period_end: "2026-01-25"
     retrieved_at: "2026-10-29"
   - id: doc_mu_10k_fy2025
     accession: 0000723125-25-000028
@@ -28,6 +34,7 @@ documents:
     file: mu-20250828.htm
     sha256: e78b5f3a154af1069e33ff8a474e23bb271369879b0e1db91e53204c4468ba7f
     accepted_at: "2025-10-03T14:42:00-04:00"
+    document_period_end: "2025-08-28"
     retrieved_at: "2026-10-29"
 
 claims:
@@ -38,7 +45,7 @@ claims:
     locator: Part I, Item 1 Business — Manufacturing
     excerpt: We utilize a fabless and contracting manufacturing strategy
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
   - id: clm_nvda26_foundry
     type: filing_text
     document: doc_nvda_10k_fy2026
@@ -47,21 +54,21 @@ claims:
       We utilize foundries, such as Taiwan Semiconductor Manufacturing Company Limited, or TSMC, and Samsung Electronics Co., Ltd.,
       or Samsung, to produce our semiconductor wafers.
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
   - id: clm_nvda26_memory
     type: filing_text
     document: doc_nvda_10k_fy2026
     locator: Part I, Item 1 Business — Manufacturing
     excerpt: We purchase memory from SK Hynix Inc., Micron Technology, Inc., and Samsung.
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
   - id: clm_nvda26_cowos
     type: filing_text
     document: doc_nvda_10k_fy2026
     locator: Part I, Item 1 Business — Manufacturing
     excerpt: We utilize CoWoS technology for semiconductor packaging.
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
     note: 原文没有写明 CoWoS 封装的提供方，不据此登记任何供应关系
   - id: clm_nvda26_atp
     type: filing_text
@@ -71,7 +78,7 @@ claims:
       We engage with independent subcontractors and contract manufacturers such as Hon Hai Precision Industry Co., Ltd.,
       Wistron Corporation, and Fabrinet to perform assembly, testing and packaging of our final products.
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
   - id: clm_nvda26_segments
     type: filing_text
     document: doc_nvda_10k_fy2026
@@ -81,14 +88,14 @@ claims:
       and software, and Automotive platforms and autonomous and electric vehicle solutions including software. The Graphics segment
       includes GeForce GPUs for gaming and PCs, and Quadro/NVIDIA RTX GPUs for enterprise workstation graphics.
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
   - id: clm_nvda26_codm
     type: filing_text
     document: doc_nvda_10k_fy2026
     locator: Part II, Item 8 — Notes, Segment Information
     excerpt: CODM reviews expenses on a consolidated basis, and expenses attributable to each segment are not regularly provided to our CODM.
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
   - id: clm_nvda26_customers
     type: filing_text
     document: doc_nvda_10k_fy2026
@@ -97,7 +104,7 @@ claims:
       For fiscal year 2026, sales to one direct customer represented 22% of total revenue and sales to another direct customer
       represented 14% of total revenue, all of which were primarily attributable to the Compute & Networking segment.
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
 
   # ---- Micron 2025 财年 10-K 原文 ----
   - id: clm_mu25_reorg
@@ -108,7 +115,7 @@ claims:
       In the fourth quarter of 2025, we reorganized our business units. All prior-period segment amounts have been retrospectively
       adjusted to reflect this reorganization.
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
   - id: clm_mu25_units
     type: filing_text
     document: doc_mu_10k_fy2025
@@ -117,14 +124,14 @@ claims:
       Cloud Memory Business Unit ("CMBU"): Focused on memory solutions for large hyperscale cloud customers, and HBM for all data
       center customers.
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
   - id: clm_mu25_fabs
     type: filing_text
     document: doc_mu_10k_fy2025
     locator: Part I, Item 2 Properties — principal facilities
     excerpt: Taiwan R&D, wafer fabrication, component assembly and test, module assembly and test
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
   - id: clm_mu25_competitors
     type: filing_text
     document: doc_mu_10k_fy2025
@@ -134,34 +141,34 @@ claims:
       Electronics Co., Ltd.; SK hynix Inc.; Kioxia Holdings Corporation; Sandisk Corporation; ChangXin Memory Technologies, Inc.
       ("CXMT"); and Yangtze Memory Technologies Co., Ltd. ("YMTC").
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
   - id: clm_mu25_top10
     type: filing_text
     document: doc_mu_10k_fy2025
     locator: Part I, Item 1A Risk Factors — customer concentration
     excerpt: In 2025, over half of our total revenue came from our top ten customers.
     origin_type: observed
-    review_status: confirmed
+    review_status: candidate
 
   # ---- 分部 XBRL 事实（FSDS 维度行；period_end 为 FSDS 取整后的月末） ----
   - {id: clm_nvda26_xbrl_cn_rev, type: xbrl_segment, accession: 0001045810-26-000021, tag: Revenues,
      segments: "BusinessSegments=ComputeAndNetworkingSegment;ConsolidationItems=OperatingSegments;",
-     period_end: "2026-01-31", duration_quarters: 4, value: 193479000000, origin_type: observed, review_status: confirmed}
+     period_end: "2026-01-31", duration_quarters: 4, value: 193479000000, unit: USD, origin_type: observed, review_status: candidate}
   - {id: clm_nvda26_xbrl_gr_rev, type: xbrl_segment, accession: 0001045810-26-000021, tag: Revenues,
      segments: "BusinessSegments=GraphicsSegment;ConsolidationItems=OperatingSegments;",
-     period_end: "2026-01-31", duration_quarters: 4, value: 22459000000, origin_type: observed, review_status: confirmed}
+     period_end: "2026-01-31", duration_quarters: 4, value: 22459000000, unit: USD, origin_type: observed, review_status: candidate}
   - {id: clm_nvda24_xbrl_cn_rev, type: xbrl_segment, accession: 0001045810-24-000029, tag: Revenues,
      segments: "BusinessSegments=ComputeAndNetworking;ConsolidationItems=OperatingSegments;",
-     period_end: "2024-01-31", duration_quarters: 4, value: 47405000000, origin_type: observed, review_status: confirmed,
+     period_end: "2024-01-31", duration_quarters: 4, value: 47405000000, unit: USD, origin_type: observed, review_status: candidate,
      note: 旧成员名；同一数值在 2026 财年 10-K 中以 ComputeAndNetworkingSegment 出现}
   - {id: clm_nvda26_xbrl_cn_rev_fy2024, type: xbrl_segment, accession: 0001045810-26-000021, tag: Revenues,
      segments: "BusinessSegments=ComputeAndNetworkingSegment;ConsolidationItems=OperatingSegments;",
-     period_end: "2024-01-31", duration_quarters: 4, value: 47405000000, origin_type: observed, review_status: confirmed}
+     period_end: "2024-01-31", duration_quarters: 4, value: 47405000000, unit: USD, origin_type: observed, review_status: candidate}
   - {id: clm_mu25_xbrl_cmbu_rev, type: xbrl_segment, accession: 0000723125-25-000028,
      tag: RevenueFromContractWithCustomerExcludingAssessedTax,
      segments: "BusinessSegments=CMBU;ConsolidationItems=OperatingSegments;",
-     period_end: "2025-08-31", duration_quarters: 4, value: 13524000000, origin_type: observed, review_status: confirmed}
+     period_end: "2025-08-31", duration_quarters: 4, value: 13524000000, unit: USD, origin_type: observed, review_status: candidate}
   - {id: clm_mu24_xbrl_cnbu_rev, type: xbrl_segment, accession: 0000723125-24-000027,
      tag: RevenueFromContractWithCustomerExcludingAssessedTax, segments: "BusinessSegments=CNBU;",
-     period_end: "2024-08-31", duration_quarters: 4, value: 9513000000, origin_type: observed, review_status: confirmed,
+     period_end: "2024-08-31", duration_quarters: 4, value: 9513000000, unit: USD, origin_type: observed, review_status: candidate,
      note: 重组前口径；2025 财年 10-K 把 2024 财年改按新分部列示，两套数字不能拼接}

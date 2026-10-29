@@ -1,7 +1,8 @@
 # 芯片模块（P3b）的研究单元定义：P0 只登记问题、范围与所需输入，等级全部为未评估（docs/supply-chain-research-design.md §4.2、§8）
 #
 # A/B/C 绑定研究单元，不给整个行业打分。expected 是 P0 盘点后对输入能力的预判，不是已授予的等级；
-# P3b 实施时按 research/feasibility.py 的规则逐项评估。
+# P3b 实施时按 research/feasibility.py 的规则逐项评估；只有人工确认（confirmed）的证据才算已核验输入，
+# 只由 candidate 证据支撑的映射，结果须标为候选。
 
 schema_version: supply_chain.v1
 
