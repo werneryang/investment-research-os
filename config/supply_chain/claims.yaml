@@ -150,6 +150,32 @@ claims:
     origin_type: observed
     review_status: candidate
 
+  - id: clm_mu25_unit_cdbu
+    type: filing_text
+    document: doc_mu_10k_fy2025
+    locator: Part I, Item 1 Business — Business Segments
+    excerpt: >-
+      Core Data Center Business Unit ("CDBU"): Focused on memory solutions for mid-tier cloud, enterprise, and OEM data center
+      customers and storage solutions for all data center customers.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_mu25_unit_mcbu
+    type: filing_text
+    document: doc_mu_10k_fy2025
+    locator: Part I, Item 1 Business — Business Segments
+    excerpt: 'Mobile and Client Business Unit ("MCBU"): Focused on memory and storage solutions for the mobile and client segments.'
+    origin_type: observed
+    review_status: candidate
+  - id: clm_mu25_unit_aebu
+    type: filing_text
+    document: doc_mu_10k_fy2025
+    locator: Part I, Item 1 Business — Business Segments
+    excerpt: >-
+      Automotive and Embedded Business Unit ("AEBU"): Focused on memory and storage solutions for the automotive, industrial,
+      and consumer segments.
+    origin_type: observed
+    review_status: candidate
+
   # ---- 分部 XBRL 事实（FSDS 维度行；period_end 为 FSDS 取整后的月末） ----
   - {id: clm_nvda26_xbrl_cn_rev, type: xbrl_segment, accession: 0001045810-26-000021, tag: Revenues,
      segments: "BusinessSegments=ComputeAndNetworkingSegment;ConsolidationItems=OperatingSegments;",
@@ -172,3 +198,16 @@ claims:
      tag: RevenueFromContractWithCustomerExcludingAssessedTax, segments: "BusinessSegments=CNBU;",
      period_end: "2024-08-31", duration_quarters: 4, value: 9513000000, unit: USD, origin_type: observed, review_status: candidate,
      note: 重组前口径；2025 财年 10-K 把 2024 财年改按新分部列示，两套数字不能拼接}
+
+  - {id: clm_mu25_xbrl_cdbu_rev, type: xbrl_segment, accession: 0000723125-25-000028,
+     tag: RevenueFromContractWithCustomerExcludingAssessedTax,
+     segments: "BusinessSegments=CDBU;ConsolidationItems=OperatingSegments;",
+     period_end: "2025-08-31", duration_quarters: 4, value: 7229000000, unit: USD, origin_type: observed, review_status: candidate}
+  - {id: clm_mu25_xbrl_mcbu_rev, type: xbrl_segment, accession: 0000723125-25-000028,
+     tag: RevenueFromContractWithCustomerExcludingAssessedTax,
+     segments: "BusinessSegments=MCBU;ConsolidationItems=OperatingSegments;",
+     period_end: "2025-08-31", duration_quarters: 4, value: 11859000000, unit: USD, origin_type: observed, review_status: candidate}
+  - {id: clm_mu25_xbrl_aebu_rev, type: xbrl_segment, accession: 0000723125-25-000028,
+     tag: RevenueFromContractWithCustomerExcludingAssessedTax,
+     segments: "BusinessSegments=AEBU;ConsolidationItems=OperatingSegments;",
+     period_end: "2025-08-31", duration_quarters: 4, value: 4753000000, unit: USD, origin_type: observed, review_status: candidate}

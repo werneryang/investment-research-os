@@ -702,6 +702,14 @@ sources:
           与合并口径营收逐年相等；Micron 2022–2025 年 4 份 10-K 中业务单元营收之和与 DRAM / NAND / 其他产品营收之和逐年相等。
           NVIDIA 自 2025 年 2 月的 10-K 起产品维度含上下级成员（数据中心与计算、网络并列），产品营收不能相加
         scope: 产业链登记的公司（config/supply_chain/entities.yaml 中有 CIK 的公司）；不含合并口径以外的推算
+      - dataset: chip_segment_evidence
+        status: access_verified
+        date: "2026-10-29"
+        evidence: >-
+          经 iros chain bundle 生成并导入证据包（首个版本 v20261029T185018Z-8b3a5663；补登 Micron 三个业务单元映射后为
+          v20261029T185226Z-0dd9fed3，均为 1,154 条：登记分部 576、同一申报的其他分部 533、合并营收核对行 45）。生成前产业链登记核对零错误、零未核对。逐条与 segment_facts 按申报、科目、维度与期末比对，
+          两个版本的 1,109 条分部记录数值全部一致，无缺失值
+        scope: 产业链登记公司的年度 10-K 分部事实与登记状态快照；映射与证据的人工复核状态随包记录，不因接入核验而改变
       - dataset: edgar_companyfacts
         status: access_verified
         date: "2026-10-24"

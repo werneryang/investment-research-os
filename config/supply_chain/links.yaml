@@ -32,6 +32,30 @@ links:
     valid_from: null
     valid_to: null
     claims: [clm_mu25_fabs, clm_mu25_units, clm_mu25_xbrl_cmbu_rev]
+  - id: lnk_mu_cdbu_memory
+    entity: seg_mu_cdbu
+    activity: act_memory_production
+    match: partial
+    scope: 按客户市场划分的分部（中型云、企业与 OEM 数据中心客户的存储方案及全部数据中心客户的存储产品）；含模组与存储产品
+    valid_from: null
+    valid_to: null
+    claims: [clm_mu25_fabs, clm_mu25_unit_cdbu, clm_mu25_xbrl_cdbu_rev]
+  - id: lnk_mu_mcbu_memory
+    entity: seg_mu_mcbu
+    activity: act_memory_production
+    match: partial
+    scope: 按客户市场划分的分部（移动与客户端市场的存储方案）；含模组与存储产品
+    valid_from: null
+    valid_to: null
+    claims: [clm_mu25_fabs, clm_mu25_unit_mcbu, clm_mu25_xbrl_mcbu_rev]
+  - id: lnk_mu_aebu_memory
+    entity: seg_mu_aebu
+    activity: act_memory_production
+    match: partial
+    scope: 按客户市场划分的分部（汽车、工业与消费市场的存储方案）；含模组与存储产品
+    valid_from: null
+    valid_to: null
+    claims: [clm_mu25_fabs, clm_mu25_unit_aebu, clm_mu25_xbrl_aebu_rev]
   - id: lnk_mu_cnbu_memory
     entity: seg_mu_cnbu
     activity: act_memory_production

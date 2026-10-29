@@ -237,6 +237,14 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 
   本地缺少原文或数据时，相应项目记为未核对。
 
+**芯片经营分析**（P3b，2026-10-29；见[芯片模块 P0](study-chips.md) §7）：`iros chain bundle`（`supply_chain/bundle.py`）把分部事实与登记状态打包为 `industry-evidence.v1` 证据包，经 `evidence_bundle` 接入器导入 `chip_segment_evidence`；登记核对有错误或未核对项时拒绝生成。分支 `chip_operations`（`research/chip.py`）按 `config/supply_chain/units.yaml` 的研究单元（随证据包固定）逐一评估：
+- 每个单元的全部数字取自同一份最新的、覆盖所需分部 × 指标 × 财年且无冲突的年度申报。
+- 所需指标没有观测时为 C。
+- 分部营收合计与合并营收、分部毛利与营收减销售成本分别核对，不一致为 C；没有合并营收时跳过。
+- 活动归属另列为 `attribution_status`（confirmed / candidate / unmapped）。
+
+报告段落与图表在 `reporting/chip.py`。只在本机运行，未加入 CI。
+
 **本机与 CI 的分工**（2026-10-24 确认）：接入核验（取样本、查质量、交叉核对、记 `access_verified`）与定时快照都在本机完成。CI 只取得无需凭证、登记了 `scheduled_fetch` 的数据集，用于生成网站与运行研究，同时每天在另一环境复查这些来源仍可取得。需要凭证（如 FRED API key）或人工导入的数据集默认只在本机；只有当 CI 中的研究必须用到时，才给 CI 配置凭证。网站对 CI 中有意不取得的数据集写明原因（需要 API key、人工导入、未登记定时取得，由登记推出，见 `site/collect.py` 的 `skip_reason`）；只有应当取得却没取得时才显示「本次构建未取得」。
 
 **SEC EDGAR 财报**（E1，设计见 [EDGAR 设计说明](edgar-design.md)；网站上的两行数据集 `edgar_fsds`、`edgar_companyfacts` 由 `site/collect.py` 的 `fundamentals_datasets` 生成，CI 中没有财报数据时写明只在本机取得的原因）：财报不进入 `series.v1`，另有 `fundamentals.v1` 的申报表与事实表（`contracts.FILING_COLUMNS`、`FACT_COLUMNS`），按季度（FSDS）或公司（Company Facts）分区存放在 `data/edgar/`，DuckDB 读取当前分区；分区变化时旧版本移到 `superseded/`。`iros edgar sync` 同步（FSDS 先 HEAD 再按需下载），`iros edgar annual <公司> <指标> [--as-of 日期]` 给出年度指标及当时已公布的值，`iros edgar check` 报告覆盖与两个来源的一致性。指标与公司登记在 `config/fundamentals.yaml`。
