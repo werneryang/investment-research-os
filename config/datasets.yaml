@@ -1221,6 +1221,134 @@ datasets:
     # 日历日产能已计入通常停机，超过 100% 不直接视为异常；范围只拦截明显错误
     value_range: [0, 150]
 
+  # ---- EIA 周度现货价格（2026-10-30）：炼油投资对照（§5.4）的裂解价差成分，同一文件的三个序列 ----
+  # 周度值是 EIA 对该周每日收盘现货价的不加权平均（定义与注释页）；日度价格来自 Refinitiv（LSEG），
+  # EIA 的再使用说明不包括第三方材料，所以只在本地使用，不进公开存档。观测日期为周结束日（周五）
+
+  eia_spot_wti_cushing:
+    source_id: eia
+    upstream_id: "EIA: PET_PRI_SPT_S1_W.xls，Data 1，RWTC"
+    connector: eia_pet_xls
+    description: WTI 原油库欣现货价周均值（美元/桶）；裂解价差的原油成分
+    params:
+      file: PET_PRI_SPT_S1_W.xls
+      sheet: Data 1
+      series:
+        RWTC: Weekly Cushing, OK WTI Spot Price FOB (Dollars per Barrel)
+    frequency: weekly
+    unit: usd_per_barrel
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 0}
+    vintages: none
+    # 2020 年 4 月日度价格曾为负，周均值可能接近零；范围只拦截明显错误
+    value_range: [-100, 300]
+
+  eia_spot_gasoline_gulf:
+    source_id: eia
+    upstream_id: "EIA: PET_PRI_SPT_S1_W.xls，Data 2，EER_EPMRU_PF4_RGC_DPG"
+    connector: eia_pet_xls
+    description: 美国墨西哥湾沿岸常规普通汽油现货价周均值（美元/加仑）；裂解价差的汽油成分
+    params:
+      file: PET_PRI_SPT_S1_W.xls
+      sheet: Data 2
+      series:
+        EER_EPMRU_PF4_RGC_DPG: Weekly U.S. Gulf Coast Conventional Gasoline Regular Spot Price FOB (Dollars per Gallon)
+    frequency: weekly
+    unit: usd_per_gallon
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 0}
+    vintages: none
+    value_range: [0, 15]
+
+  eia_spot_ulsd_gulf:
+    source_id: eia
+    upstream_id: "EIA: PET_PRI_SPT_S1_W.xls，Data 5，EER_EPD2DXL0_PF4_RGC_DPG"
+    connector: eia_pet_xls
+    description: 美国墨西哥湾沿岸超低硫 2 号柴油现货价周均值（美元/加仑），2006-06 起；裂解价差的馏分油成分
+    params:
+      file: PET_PRI_SPT_S1_W.xls
+      sheet: Data 5
+      series:
+        EER_EPD2DXL0_PF4_RGC_DPG: Weekly U.S. Gulf Coast Ultra-Low Sulfur No 2 Diesel Spot Price (Dollars per Gallon)
+    frequency: weekly
+    unit: usd_per_gallon
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 0}
+    vintages: none
+    value_range: [0, 15]
+
+  # ---- 炼油公司 10-K 业绩图（2026-10-30）：累计股东总收益指数，基期 = 100，含股息再投资 ----
+  # 每份申报各有基期，序列 ID 为「company|申报编号」「sp500|申报编号」，研究按申报分别换算年度收益。
+  # 只登记以文字列出数值表的申报：Phillips 66、Marathon Petroleum、HF Sinclair、Delek、CVR 的业绩图只有图片，Exxon 的 10-K 没有业绩图。
+  # 同伴组合（peer group）各公司自选、逐年调整，不登记。发布时间为 EDGAR 接受日期（美东）
+
+  sec_tsr_valero:
+    source_id: sec_edgar
+    upstream_id: "SEC EDGAR：Valero 10-K Item 5 业绩图数值表（FY2020、FY2022、FY2025）"
+    connector: sec_performance_graph
+    description: Valero 普通股与标普 500 的累计总收益指数（每份申报以五年前年末为 100）
+    params:
+      filings:
+        - accession: 0001035002-21-000051
+          url: https://www.sec.gov/Archives/edgar/data/1035002/000103500221000051/vlo-20201231.htm
+          accepted_at: "2021-02-23"
+          header: As of December 31, 2015 2016 2017 2018 2019 2020
+          dates: ["2015-12-31", "2016-12-31", "2017-12-31", "2018-12-31", "2019-12-31", "2020-12-31"]
+          rows: {company: Valero Common Stock, sp500: S&P 500}
+        - accession: 0001035002-23-000027
+          url: https://www.sec.gov/Archives/edgar/data/1035002/000103500223000027/vlo-20221231.htm
+          accepted_at: "2023-02-23"
+          header: As of December 31, 2017 2018 2019 2020 2021 2022
+          dates: ["2017-12-31", "2018-12-31", "2019-12-31", "2020-12-31", "2021-12-31", "2022-12-31"]
+          rows: {company: Valero common stock, sp500: S&P 500 Index}
+        - accession: 0001628280-26-011499
+          url: https://www.sec.gov/Archives/edgar/data/1035002/000162828026011499/vlo-20251231.htm
+          accepted_at: "2026-02-25"
+          header: As of December 31, 2020 2021 2022 2023 2024 2025
+          dates: ["2020-12-31", "2021-12-31", "2022-12-31", "2023-12-31", "2024-12-31", "2025-12-31"]
+          rows: {company: Valero common stock, sp500: S&P 500 Index}
+    frequency: annual
+    unit: index_base_100
+    timezone: America/New_York
+    availability: {type: published_next_day}
+    vintages: none
+    value_range: [0, 10000]
+
+  sec_tsr_pbf:
+    source_id: sec_edgar
+    upstream_id: "SEC EDGAR：PBF Energy 10-K Item 5 业绩图数值表（FY2020、FY2022、FY2025）"
+    connector: sec_performance_graph
+    description: PBF Energy A 类普通股与标普 500 的累计总收益指数（每份申报以五年前年末为 100）
+    params:
+      filings:
+        - accession: 0001534504-21-000008
+          url: https://www.sec.gov/Archives/edgar/data/1534504/000153450421000008/pbf-20201231.htm
+          accepted_at: "2021-02-18"
+          header: 12/31/2015 12/31/2016 12/31/2017 12/31/2018 12/31/2019 12/31/2020
+          dates: ["2015-12-31", "2016-12-31", "2017-12-31", "2018-12-31", "2019-12-31", "2020-12-31"]
+          rows: {company: PBF Energy Class A common stock, sp500: S&P 500}
+        - accession: 0001534504-23-000011
+          url: https://www.sec.gov/Archives/edgar/data/1534504/000153450423000011/pbf-20221231.htm
+          accepted_at: "2023-02-16"
+          header: 12/31/2017 12/31/2018 12/31/2019 12/31/2020 12/31/2021 12/31/2022
+          dates: ["2017-12-31", "2018-12-31", "2019-12-31", "2020-12-31", "2021-12-31", "2022-12-31"]
+          rows: {company: PBF Energy Class A common stock, sp500: S&P 500}
+        - accession: 0001534504-26-000010
+          url: https://www.sec.gov/Archives/edgar/data/1534504/000153450426000010/pbf-20251231.htm
+          accepted_at: "2026-02-12"
+          header: 12/31/2020 12/31/2021 12/31/2022 12/31/2023 12/31/2024 12/31/2025
+          dates: ["2020-12-31", "2021-12-31", "2022-12-31", "2023-12-31", "2024-12-31", "2025-12-31"]
+          rows: {company: PBF Energy Class A common stock, sp500: S&P 500}
+    frequency: annual
+    unit: index_base_100
+    timezone: America/New_York
+    availability: {type: published_next_day}
+    vintages: none
+    value_range: [0, 10000]
+
   # ---- 芯片经营分析证据包（2026-10-29）：产业链登记分部的年度 10-K 分部事实与登记状态，由 iros chain bundle 生成 ----
   # 研究按版本固定证据包，不直接读取 segment_facts 或登记文件；每条记录自带申报、接受时间与可用时间
   chip_segment_evidence:

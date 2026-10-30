@@ -26,7 +26,8 @@ from ..tenor import parse_tenor  # noqa: E402
 from .company import sections as company_sections
 from .industry import figures as industry_figures, sections as industry_sections  # noqa: E402
 from .chip import check_line as chip_check_line, figures as chip_figures, sections as chip_sections  # noqa: E402
-from .refining import baseline_line, figures as refining_figures, ratio_line, sections as refining_sections  # noqa: E402
+from .refining import (baseline_line, figures as refining_figures, investment_figures, investment_sections,  # noqa: E402
+                       overlap_line, ratio_line, sections as refining_sections, sp500_line)
 
 RESULT_TYPE_LABEL = {"descriptive": "描述与比较", "explanatory": "解释与归因",
                      "forecast": "预测", "simulation": "情景与策略模拟"}
@@ -296,7 +297,7 @@ def _asset_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Pat
 _FIGURE_BUILDERS = {"rates_curve": _curve_figures, "par_bond_scenarios": _bond_figures,
                     "curve_attribution": _attribution_figures, "asset_history": _asset_figures,
                     "industry": industry_figures, "refining_throughput": refining_figures,
-                    "chip_operations": chip_figures}
+                    "refining_investment": investment_figures, "chip_operations": chip_figures}
 
 
 def _figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
@@ -501,7 +502,8 @@ def _asset_sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
 _BRANCH_SECTIONS = {"rates_curve": _curve_sections, "par_bond_scenarios": _bond_sections,
                     "curve_attribution": _attribution_sections, "asset_history": _asset_sections,
                     "industry": industry_sections, "company": company_sections,
-                    "refining_throughput": refining_sections, "chip_operations": chip_sections}
+                    "refining_throughput": refining_sections, "refining_investment": investment_sections,
+                    "chip_operations": chip_sections}
 
 
 def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
@@ -545,7 +547,8 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
                  "cross_check_equity": "股票跨来源核对", "cross_check_tbill": "国库券跨来源核对",
                  "cross_check_real": "实际回报方向核对", "monthly_drawdown": "月度回撤核对",
                  "ratio_check": "利用率区间复算", "baseline_check": "基准情景核对",
-                 "segment_total": "分部营收合计核对", "gross_profit": "分部毛利核对"}.get(name.split(":")[0], name)
+                 "segment_total": "分部营收合计核对", "gross_profit": "分部毛利核对",
+                 "overlap_check": "重叠申报收益核对", "sp500_cross_issuer": "标普 500 跨公司核对"}.get(name.split(":")[0], name)
         if ":" in name:
             label += f"（{name.split(':', 1)[1]}）"
         line = f"**{label}：** {STATUS_LABEL.get(v.get('status'), v.get('status'))}"
@@ -571,6 +574,10 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
             line += chip_check_line(name, v)
         elif name == "ratio_check":
             line += ratio_line(v)
+        elif name.split(":")[0] == "overlap_check":
+            line += overlap_line(v)
+        elif name == "sp500_cross_issuer":
+            line += sp500_line(v)
         elif name == "baseline_check" and v.get("checked"):
             line += baseline_line(v)
         elif name == "raw_spot_check" and v.get("checked"):

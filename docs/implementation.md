@@ -203,6 +203,19 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - 只在本机运行：未加入 CI；网站研究页专用组件、发现规则与这两项研究的英文译文暂未注册（来源与数据集的登记文字已有译文）。EIA 允许再分发，但 `archive_data` 暂为 false，接入稳定后再决定是否归档。
 - NAICS 分类表未接入：炼油两项研究不使用分类代码计算，分类导入留到需要 L1↔L2 映射的芯片模块（P3b）。
 
+#### 炼油投资对照（§5.4）
+
+`config/studies/us_refining_investment_2016_2025.yaml`（`descriptive`），分支 `refining_investment`；设计见[产业链研究完善方案](supply-chain-research-design.md) §5.4。
+
+- 价格输入：EIA 周度现货文件 `PET_PRI_SPT_S1_W.xls` 的三个数据集，复用 `eia_pet_xls`：`eia_spot_wti_cushing`（RWTC，美元/桶）、`eia_spot_gasoline_gulf`（墨西哥湾沿岸常规汽油，美元/加仑）、`eia_spot_ulsd_gulf`（墨西哥湾沿岸超低硫柴油，美元/加仑，2006-06 起）。周值是 EIA 对日度收盘价的不加权平均；用日度文件复算，2016–2025 年多数周与周值一致，少数差异未查明。日度价格来自 Refinitiv（LSEG），只在本地使用。
+- 股票输入：新接入器 `connectors/sec_graph.py`（`sec_performance_graph`）取得登记的 10-K 原文，按 `params.filings` 中逐字登记的表头与行标签定位 Item 5 业绩图数值表，数值个数、基期 100、表头唯一性不符即报错，不按位置猜测。序列 ID 为「company|申报编号」「sp500|申报编号」，因为各申报的基期不同。数据集 `sec_tsr_valero`、`sec_tsr_pbf` 各登记 FY2020、FY2022、FY2025 三份申报，可用时间为 EDGAR 接受日次日。
+- 裂解价差：`method.crack_spread` 声明桶数，产品桶数之和须等于原油桶数；3-2-1 价差 = (2 × 42 × 汽油 + 42 × 柴油 − 3 × 原油) ÷ 3（美元/桶）。缺任一成分的周不计算、不插值，缺周年份不给年度汇总。
+- 日历年总收益：每年取 `primary` 中第一份同时含两个年末的申报，r = V_t ÷ V_(t-1) − 1。其他已登记申报与主申报重叠的年份按指数两位小数的舍入区间核对（`validation.overlap_check:<公司>`），两家公司申报中的标普 500 年度收益互相核对（`validation.sp500_cross_issuer`）；任一不一致时相关公司的总收益单元为 C。
+- 研究单元：`crack_spread`、`utilization_crack`、每家公司的 `tsr:<id>` 与 `comparison:<id>`。对照为年度超额收益（公司 − 标普 500）与年均价差、价差变化、年均利用率的 Spearman 相关，用平均秩的 Pearson 相关计算（不依赖 scipy），少于 3 年不给数值。`method.not_covered` 的公司写入限制，不算受限结论。
+- 基线运行 `us_refining_investment_2016_2025-20261030T232029Z-94aa6116`（代码 1f21cdb，dirty=false，结果校验值 4debaa0f…）：六个单元均为 A；522 周四项齐全；Valero 与 PBF 各 5 个重叠年份（公司与标普 500 共 10 项）和两家公司之间 10 个标普 500 年度收益全部一致。周度利用率与价差的水平相关 Pearson 0.30、Spearman 0.26，逐年 Pearson 相关在 −0.59 至 0.44 之间变化；年度超额收益与价差变化的 Spearman 为 0.92（Valero）、0.90（PBF），只有 9 年。
+- 用途核验（2026-10-30）：`eia_refinery_utilization` 追加一条、三个现货价与两个总收益数据集各一条 `descriptive` 的 `use_verified`，覆盖 2016–2025。依据为基线复现、与 EIA 网页历史表逐值核对 522 周 × 4 个序列（2,088 个值全部一致），以及总收益的重叠申报核对与跨公司核对；标普 500 年度收益与 Damodaran 同号、相差 0.07–0.38 个百分点（股息口径不同）。公司收益本身没有独立价格来源可核对。经模型技术复核登记，未人工签认。
+- 只在本机运行：未加入 CI，网站研究页组件、发现规则与英文译文暂未注册。
+
 ## 7. 扩展方法
 
 **美国行业研究**：`research/industry.py` 实现 12/49 行业收益风险、HAC 因子暴露、实际增加值与宏观分组，以及历史 SIC 财报、独立估值快照和指引案例。`evidence_bundle` 接入器保存本地证据包及逐条定位，使用完整快照替换当前数据，同时保留旧版本。财报逐公司事实不进入公开结果。实现范围、准备命令和口径见 [行业研究](study-industries.md)。

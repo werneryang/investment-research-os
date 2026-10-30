@@ -427,17 +427,22 @@ phrases:
   "七类资产年度回报的描述统计、实际回报、风险溢价与相关性（如美国主要资产的长期回报与风险），债券回报为收益率推算、房地产不含租金等口径限制不变；使用最新修订数据；观测日期 1928-01-01 至 2025-12-31。 不包括时点研究（当时公布的值）、预测与交易回测；核验范围之外的日期须先补充核验。": "Descriptive statistics, real returns, risk premia and correlations of the seven asset classes' annual returns (such as the long-run US asset study), with the stated basis limits (bond returns repriced from yields, real estate without rent, etc.), on the latest revision; observation dates 1928-01-01 to 2025-12-31. Excludes point-in-time studies (values as published then), forecasts and trading backtests; dates outside the verified range need further verification first."
   # EIA 石油数据（产业链研究 P3a，2026-10-27）
   EIA 石油数据: EIA petroleum data
-  原油、汽油、馏分油现货价格（裂解价差输入，系列与地点待核验）: Crude oil, gasoline and distillate spot prices (crack-spread inputs; series and locations to be verified)
+  原油、汽油、馏分油周度现货价格（裂解价差输入；WTI 库欣、墨西哥湾沿岸汽油与超低硫柴油已接入）: 'Weekly crude oil, gasoline and distillate spot prices (crack-spread inputs; WTI Cushing, Gulf Coast gasoline and ultra-low-sulfur diesel connected)'
   ? 周度利用率 = 总投入 ÷ 最近报告的月度可运行产能（日历日口径），EIA 用未舍入数值计算； 日历日产能已计入通常的停机，利用率超过 100% 不能直接判为坏数据。周度数据为 Weekly Petroleum Status Report 的估计，与月度定稿可能不同
   : Weekly utilization = gross inputs ÷ latest reported monthly operable capacity (calendar-day basis), computed by EIA from unrounded values; calendar-day capacity already allows for normal downtime, so utilization above 100% is not by itself bad data. Weekly figures are Weekly Petroleum Status Report estimates and can differ from the monthly and annual final data
   周度炼油投入与利用率：总投入与可运行产能自 1990-01-05 起、利用率自 1990-11-02 起（2026-10-27 取得的文件截至 2026-10-16）；另有月度、年度表: 'Weekly refinery inputs and utilization: gross inputs and operable capacity from 1990-01-05, utilization from 1990-11-02 (the file retrieved on 2026-10-27 ends at 2026-10-16); monthly and annual tables also available'
-  基线运行后登记用途核验；按投资对照需要核验现货价格序列: Register use verification after baseline runs; verify spot price series as the investment comparison requires
+  按研究需要补充其他地点的现货价格；用途核验以各研究的基线运行为准: Add spot prices for other locations as studies require; use verification follows each study's baseline run
   年度炼厂设施产能（Refinery Capacity Report）: Annual refinery capacity by facility (Refinery Capacity Report)
   文件下载无需注册或 key: File downloads need no registration or key
   美国常压蒸馏可运行产能（千桶/日历日）；周度值沿用最近报告的月度产能: U.S. operable crude distillation capacity (thousand barrels per calendar day); weekly values carry the latest reported monthly capacity
   美国政府出版物，属公有领域；可使用与分发，引用时注明 EIA 与发布日期（www.eia.gov/about/copyrights_reuse.php）；第三方提供的材料除外: U.S. government publication in the public domain; may be used and distributed, citing EIA and the publication date (www.eia.gov/about/copyrights_reuse.php); third-party material excepted
   美国炼厂周度可运行产能利用率（%）；EIA 以未舍入的总投入 ÷ 可运行产能计算，公布值保留一位小数: U.S. refinery weekly utilization of operable capacity (%); EIA divides unrounded gross inputs by operable capacity and publishes one decimal
   美国炼厂周度总投入（Gross Inputs，千桶/日）；不是原油净投入（Crude Oil Inputs）: U.S. refinery weekly gross inputs (thousand barrels per day); not crude oil inputs
+  WTI 原油库欣现货价周均值（美元/桶）；裂解价差的原油成分: WTI crude oil Cushing spot price, weekly average (USD per barrel); crude component of the crack spread
+  美国墨西哥湾沿岸常规普通汽油现货价周均值（美元/加仑）；裂解价差的汽油成分: U.S. Gulf Coast conventional regular gasoline spot price, weekly average (USD per gallon); gasoline component of the crack spread
+  美国墨西哥湾沿岸超低硫 2 号柴油现货价周均值（美元/加仑），2006-06 起；裂解价差的馏分油成分: U.S. Gulf Coast ultra-low-sulfur No. 2 diesel spot price, weekly average (USD per gallon), from 2006-06; distillate component of the crack spread
+  Valero 普通股与标普 500 的累计总收益指数（每份申报以五年前年末为 100）: Cumulative total return index of Valero common stock and the S&P 500 (each filing sets the year-end five years earlier to 100)
+  PBF Energy A 类普通股与标普 500 的累计总收益指数（每份申报以五年前年末为 100）: Cumulative total return index of PBF Energy Class A common stock and the S&P 500 (each filing sets the year-end five years earlier to 100)
   行业与产业统计: Industry statistics
   # Census NAICS（产业链研究芯片 P0，2026-10-29）
   2017 ↔ 2022 版本对照表: 2017 ↔ 2022 concordance
