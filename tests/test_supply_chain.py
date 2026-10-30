@@ -388,3 +388,17 @@ def test_confirming_a_figure_does_not_confirm_the_mapping(mini):
     assert rep.errors == [] and rep.statuses["lnk"] == "confirmed"
     rep = run_check(root, _review(d, "links", 0, "rejected"))
     assert rep.errors == [] and rep.statuses["lnk"] == "rejected"
+
+
+def test_a_failed_claim_among_several_makes_the_item_invalid(mini):
+    """多条证据中有一条机器核对失败时，其余证据全部确认也不能让映射显示为 confirmed。"""
+    root, data = mini
+    d = copy.deepcopy(data)
+    d["links"]["links"][0]["claims"] = ["clm_foundry", "clm_rev"]
+    d = _review(_confirmed(_confirmed(d, 0), 2), "links", 0)
+    assert run_check(root, d).statuses["lnk"] == "confirmed"
+    d["claims"]["claims"][0]["excerpt"] = "This sentence is not in the filing."
+    rep = run_check(root, d)
+    assert rep.claim_checks["clm_foundry"] == "failed" and rep.claim_checks["clm_rev"] == "verified"
+    assert rep.statuses["lnk"] == "invalid" and any("lnk 引用的证据 clm_foundry 机器核对失败" in e for e in rep.errors)
+    assert rep.statuses["rel"] == "invalid"  # 同一证据支撑的关系同样无效
