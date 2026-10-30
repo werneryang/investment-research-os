@@ -265,8 +265,8 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
         if why:
             limitations.append(f"{uid}：分部到活动（{u['activity']}）的归属为 {u['attribution_status']}——{why}")
         partial = [x["link"] for x in u["link_review"] if x["match"] != "exact"]
-        if partial or u["attribution_status"] == "unmapped":
-            limitations.append(f"{uid}：映射为 partial（{', '.join(partial)}）或不完整，分部还包括该活动以外的业务；"
+        if partial:
+            limitations.append(f"{uid}：映射为 partial（{', '.join(partial)}），分部还包括该活动以外的业务；"
                                "结果按分部口径陈述，不按活动分摊收入，不称为该活动的财务")
         undated = [x["link"] for x in u["link_review"] if not (x["valid_from"] or x["valid_to"])]
         if undated:
