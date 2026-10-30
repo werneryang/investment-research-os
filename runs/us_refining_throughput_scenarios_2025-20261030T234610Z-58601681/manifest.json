@@ -1,0 +1,278 @@
+{
+  "run_id": "us_refining_throughput_scenarios_2025-20261030T234610Z-58601681",
+  "study_id": "us_refining_throughput_scenarios_2025",
+  "study_path": "config/studies/us_refining_throughput_scenarios_2025.yaml",
+  "study_config": {
+    "study_id": "us_refining_throughput_scenarios_2025",
+    "title": "美国炼油处理能力情景（2025 年周度基准）",
+    "question": "以 2025 年每周的实际总投入为基准，目标处理量提高 5%–20% 时，在可处理上限为可运行产能一定比例的假设下， 每周会出现多大的机械性处理缺口？",
+    "result_type": "simulation",
+    "branch": "refining_throughput",
+    "scope": {
+      "market": "US",
+      "activity": "petroleum_refining",
+      "start": "2025-01-01",
+      "end": "2025-12-31",
+      "frequency": "weekly",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-10-30T23:46:10+00:00",
+      "data_checked_at": {
+        "eia_refinery_gross_inputs": "2026-10-30T23:45:56+00:00",
+        "eia_refinery_operable_capacity": "2026-10-30T23:45:56+00:00",
+        "eia_refinery_utilization": "2026-10-30T23:45:56+00:00"
+      }
+    },
+    "data": {
+      "inputs": "eia_refinery_gross_inputs",
+      "capacity": "eia_refinery_operable_capacity",
+      "utilization": "eia_refinery_utilization"
+    },
+    "method": {
+      "reference_window": [
+        "2015-01-01",
+        "2025-12-31"
+      ],
+      "allowed_assumptions": {
+        "kappa": {
+          "range": [
+            0.9,
+            1.0
+          ],
+          "unit": "可处理上限 ÷ 可运行产能（日历日口径）",
+          "rationale": "上限 1.00 即可运行产能本身，日历日产能已计入通常停机，不再另扣；1990 年以来的周度利用率极少超过 100%。 下限 0.90 接近近年周度利用率的平均水平，作为偏紧一端。区间是机械敏感性范围，不是可持续运行上限的估计"
+        }
+      },
+      "scenarios": [
+        {
+          "id": "k100_g05",
+          "g": 0.05,
+          "kappa": 1.0,
+          "label": "上限为可运行产能，处理量提高 5%"
+        },
+        {
+          "id": "k100_g10",
+          "g": 0.1,
+          "kappa": 1.0,
+          "label": "上限为可运行产能，处理量提高 10%"
+        },
+        {
+          "id": "k100_g20",
+          "g": 0.2,
+          "kappa": 1.0,
+          "label": "上限为可运行产能，处理量提高 20%"
+        },
+        {
+          "id": "k095_g05",
+          "g": 0.05,
+          "kappa": 0.95,
+          "label": "上限为可运行产能的 95%，处理量提高 5%"
+        },
+        {
+          "id": "k105_g10",
+          "g": 0.1,
+          "kappa": 1.05,
+          "label": "上限高于可运行产能（不允许）"
+        }
+      ]
+    },
+    "benchmark": "基准情景（g = 0）下每周可处理量等于实际总投入",
+    "evaluation": [
+      "基准统计单元为 A；含假设上限的情景为 B",
+      "超出允许假设范围的情景被阻断，不生成数值",
+      "基准总投入已超过假设上限的周标为不自洽，不计入缺口",
+      "固定数据版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "只计算处理量的机械关系；不含产品收率、进口、库存、物流与价格，不是汽油需求预测、燃料短缺或炼厂利润结论",
+      "增幅 g 与上限比例 kappa 都是假设，不代表概率；缺口是情景下的计算结果，不是历史真实短缺",
+      "美国全国合计，不区分地区（PADD）、炼厂或公司；周度数据为估计值，只使用当前修订版本"
+    ]
+  },
+  "study_config_hash": "a580b46a5d7c6d5bbdc6f3aa741e9a6776dabcb0d1fd4aa25c405c8e07885c37",
+  "started_at": "2026-10-30T23:46:10+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "7e0c3b96f9327d1b94bddd47c12af48988c3cb0b5cfff6e7e031f5f9321f3e05",
+    "git_commit": "feda9ca98326d1dcdcd02292a7b02f2bb111e6e1",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.3",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "partial",
+  "inputs": [
+    {
+      "role": "inputs",
+      "used": true,
+      "dataset_id": "eia_refinery_gross_inputs",
+      "version_id": "v20261030T234556Z-1b58f864",
+      "content_hash": "1b58f864bc1c0f5692c5bdb9de182f389401c6eff278f9175f3f157382f80c3e",
+      "source_status": "use_verified",
+      "use": "scenario",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      },
+      "reference_scope": {
+        "window": [
+          "2015-01-01",
+          "2025-12-31"
+        ],
+        "status": "partial",
+        "uncovered": [
+          [
+            "2015-01-01",
+            "2024-12-31"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      }
+    },
+    {
+      "role": "capacity",
+      "used": true,
+      "dataset_id": "eia_refinery_operable_capacity",
+      "version_id": "v20261030T234556Z-063f81ec",
+      "content_hash": "063f81ec646b4bc866f5cb8f5630ad16b1d0c45b5260416462622ac5a6c087fe",
+      "source_status": "use_verified",
+      "use": "scenario",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      },
+      "reference_scope": {
+        "window": [
+          "2015-01-01",
+          "2025-12-31"
+        ],
+        "status": "partial",
+        "uncovered": [
+          [
+            "2015-01-01",
+            "2024-12-31"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      }
+    },
+    {
+      "role": "utilization",
+      "used": true,
+      "dataset_id": "eia_refinery_utilization",
+      "version_id": "v20261030T234556Z-7137591f",
+      "content_hash": "7137591ffdeac3c2e0cd4a5a500ade5b33f2fd7ad7e586d8ddc3c4cc36998e83",
+      "source_status": "use_verified",
+      "use": "scenario",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      },
+      "reference_scope": {
+        "window": [
+          "2015-01-01",
+          "2025-12-31"
+        ],
+        "status": "partial",
+        "uncovered": [
+          [
+            "2015-01-01",
+            "2024-12-31"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      }
+    }
+  ],
+  "result_hash": "b80252ce807eb2f6c912f35414ab9e650fb54624d470688bb1d3c48be9d5f8f0",
+  "warnings": [],
+  "unsupported": [
+    {
+      "item": "情景 k105_g10",
+      "reason": "输入能力为 C：参数 kappa = 1.05 超出允许范围 [0.9, 1]（可处理上限 ÷ 可运行产能（日历日口径））"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runs/us_refining_throughput_scenarios_2025-20261030T234610Z-58601681/result.json",
+      "sha256": "2b9f268d420d7d75cbce52325ffd1603668a5aa1dfcf6d4fee001a86445fca85"
+    },
+    {
+      "path": "reports/us_refining_throughput_scenarios_2025/us_refining_throughput_scenarios_2025-20261030T234610Z-58601681/report.md",
+      "sha256": "359f8a38c9b44895da7d7415491cc15d493f5b8397e997d9f4cc55819d2c0ba4"
+    },
+    {
+      "path": "reports/us_refining_throughput_scenarios_2025/us_refining_throughput_scenarios_2025-20261030T234610Z-58601681/report.html",
+      "sha256": "d2a861b286a83740b928c670f09115a6703e7c9362ef58f0d7e808e28a7702b8"
+    },
+    {
+      "path": "reports/us_refining_throughput_scenarios_2025/us_refining_throughput_scenarios_2025-20261030T234610Z-58601681/figures/refining_inputs_capacity.png",
+      "sha256": "9fc77bea820a19a3391ccf090db51cef86343c7186d3df9651c1b25596adb755"
+    },
+    {
+      "path": "reports/us_refining_throughput_scenarios_2025/us_refining_throughput_scenarios_2025-20261030T234610Z-58601681/figures/refining_utilization_check.png",
+      "sha256": "1bce75829ed335a7213858109d3c839989622704944e2280a270b85a2db3fd85"
+    },
+    {
+      "path": "reports/us_refining_throughput_scenarios_2025/us_refining_throughput_scenarios_2025-20261030T234610Z-58601681/figures/refining_scenario_shortfall.png",
+      "sha256": "a6fd5420bb47910d85d44daba45fe297508b0675b3690401385a02e4baf120fa"
+    }
+  ],
+  "finished_at": "2026-10-30T23:46:11+00:00"
+}

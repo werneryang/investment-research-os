@@ -1,0 +1,3206 @@
+{
+  "study_id": "us_refining_throughput_scenarios_2025",
+  "title": "美国炼油处理能力情景（2025 年周度基准）",
+  "question": "以 2025 年每周的实际总投入为基准，目标处理量提高 5%–20% 时，在可处理上限为可运行产能一定比例的假设下， 每周会出现多大的机械性处理缺口？",
+  "result_type": "simulation",
+  "branch": "refining_throughput",
+  "scope": {
+    "market": "US",
+    "activity": "petroleum_refining",
+    "start": "2025-01-01",
+    "end": "2025-12-31",
+    "frequency": "weekly",
+    "vintage_policy": "latest",
+    "evaluated_at": "2026-10-30T23:46:10+00:00",
+    "data_checked_at": {
+      "eia_refinery_gross_inputs": "2026-10-30T23:45:56+00:00",
+      "eia_refinery_operable_capacity": "2026-10-30T23:45:56+00:00",
+      "eia_refinery_utilization": "2026-10-30T23:45:56+00:00"
+    }
+  },
+  "data_cutoff": "2025-12-26",
+  "methods": {
+    "description": "逐周核对 EIA 周度总投入、可运行产能与官方利用率；按公布精度的舍入区间复算利用率；缺失周不插值、不混用四周平均。情景中 D = (1 + g) × G、Q_cap = kappa × K，经固定系数约束引擎计算可处理量与缺口；g 为外生情景定义，kappa 为允许假设清单内的参数。",
+    "benchmark": "基准情景（g = 0）下每周可处理量等于实际总投入",
+    "model": {
+      "model_id": "refining_throughput.v1",
+      "activity": "petroleum_refining",
+      "market": "US",
+      "frequency": "weekly",
+      "answers": [
+        "周度总投入、可运行产能与利用率的齐全性、复算与描述统计",
+        "给定处理上限假设下，目标处理量提高时的机械性处理缺口"
+      ],
+      "cannot_answer": [
+        "汽油、馏分油等产品供需或短缺（不含收率、进口、库存与物流）",
+        "价格、裂解价差、炼厂或公司利润",
+        "单个炼厂、地区（PADD）或公司",
+        "需求预测；增幅 g 是外生情景定义"
+      ]
+    },
+    "input_requirements": {
+      "inputs": {
+        "series": "WGIRIUS2",
+        "unit": "thousand_barrels_per_day",
+        "decimals": 0,
+        "meaning": "总投入 G（Gross Inputs）"
+      },
+      "capacity": {
+        "series": "WOCLEUS2",
+        "unit": "thousand_barrels_per_calendar_day",
+        "decimals": 0,
+        "meaning": "可运行产能 K（日历日口径）"
+      },
+      "utilization": {
+        "series": "WPULEUS3",
+        "unit": "percent",
+        "decimals": 1,
+        "meaning": "官方利用率 U"
+      }
+    },
+    "parameters": {
+      "reference_window": [
+        "2015-01-01",
+        "2025-12-31"
+      ],
+      "allowed_assumptions": {
+        "kappa": {
+          "range": [
+            0.9,
+            1.0
+          ],
+          "unit": "可处理上限 ÷ 可运行产能（日历日口径）",
+          "rationale": "上限 1.00 即可运行产能本身，日历日产能已计入通常停机，不再另扣；1990 年以来的周度利用率极少超过 100%。 下限 0.90 接近近年周度利用率的平均水平，作为偏紧一端。区间是机械敏感性范围，不是可持续运行上限的估计"
+        }
+      },
+      "scenarios": [
+        {
+          "id": "k100_g05",
+          "g": 0.05,
+          "kappa": 1.0,
+          "label": "上限为可运行产能，处理量提高 5%"
+        },
+        {
+          "id": "k100_g10",
+          "g": 0.1,
+          "kappa": 1.0,
+          "label": "上限为可运行产能，处理量提高 10%"
+        },
+        {
+          "id": "k100_g20",
+          "g": 0.2,
+          "kappa": 1.0,
+          "label": "上限为可运行产能，处理量提高 20%"
+        },
+        {
+          "id": "k095_g05",
+          "g": 0.05,
+          "kappa": 0.95,
+          "label": "上限为可运行产能的 95%，处理量提高 5%"
+        },
+        {
+          "id": "k105_g10",
+          "g": 0.1,
+          "kappa": 1.05,
+          "label": "上限高于可运行产能（不允许）"
+        }
+      ]
+    },
+    "availability_rule": "观测期间结束后第 0 天结束时（来源时区）"
+  },
+  "inputs": [
+    {
+      "role": "inputs",
+      "dataset_id": "eia_refinery_gross_inputs",
+      "version_id": "v20261030T234556Z-1b58f864",
+      "content_hash": "1b58f864bc1c0f5692c5bdb9de182f389401c6eff278f9175f3f157382f80c3e",
+      "source_id": "eia",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      },
+      "reference_scope": {
+        "window": [
+          "2015-01-01",
+          "2025-12-31"
+        ],
+        "status": "partial",
+        "uncovered": [
+          [
+            "2015-01-01",
+            "2024-12-31"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      }
+    },
+    {
+      "role": "capacity",
+      "dataset_id": "eia_refinery_operable_capacity",
+      "version_id": "v20261030T234556Z-063f81ec",
+      "content_hash": "063f81ec646b4bc866f5cb8f5630ad16b1d0c45b5260416462622ac5a6c087fe",
+      "source_id": "eia",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      },
+      "reference_scope": {
+        "window": [
+          "2015-01-01",
+          "2025-12-31"
+        ],
+        "status": "partial",
+        "uncovered": [
+          [
+            "2015-01-01",
+            "2024-12-31"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      }
+    },
+    {
+      "role": "utilization",
+      "dataset_id": "eia_refinery_utilization",
+      "version_id": "v20261030T234556Z-7137591f",
+      "content_hash": "7137591ffdeac3c2e0cd4a5a500ade5b33f2fd7ad7e586d8ddc3c4cc36998e83",
+      "source_id": "eia",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      },
+      "reference_scope": {
+        "window": [
+          "2015-01-01",
+          "2025-12-31"
+        ],
+        "status": "partial",
+        "uncovered": [
+          [
+            "2015-01-01",
+            "2024-12-31"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      }
+    }
+  ],
+  "results": {
+    "feasibility": {
+      "weekly_statistics": {
+        "unit": "weekly_statistics",
+        "grade": "A",
+        "reasons": [
+          "关键基准输入全部核验通过，未使用假设参数"
+        ],
+        "assumptions": [],
+        "depends_on": [],
+        "gate_policy_version": "feasibility.v1"
+      },
+      "scenario:k100_g05": {
+        "unit": "scenario:k100_g05",
+        "grade": "B",
+        "reasons": [
+          "使用假设参数 kappa = 1.0"
+        ],
+        "assumptions": [
+          {
+            "name": "kappa",
+            "value": 1.0,
+            "origin_type": "assumed",
+            "unit": "可处理上限 ÷ 可运行产能（日历日口径）",
+            "allowed_range": [
+              0.9,
+              1.0
+            ],
+            "rationale": "上限 1.00 即可运行产能本身，日历日产能已计入通常停机，不再另扣；1990 年以来的周度利用率极少超过 100%。 下限 0.90 接近近年周度利用率的平均水平，作为偏紧一端。区间是机械敏感性范围，不是可持续运行上限的估计"
+          }
+        ],
+        "depends_on": [
+          "weekly_statistics"
+        ],
+        "gate_policy_version": "feasibility.v1"
+      },
+      "scenario:k100_g10": {
+        "unit": "scenario:k100_g10",
+        "grade": "B",
+        "reasons": [
+          "使用假设参数 kappa = 1.0"
+        ],
+        "assumptions": [
+          {
+            "name": "kappa",
+            "value": 1.0,
+            "origin_type": "assumed",
+            "unit": "可处理上限 ÷ 可运行产能（日历日口径）",
+            "allowed_range": [
+              0.9,
+              1.0
+            ],
+            "rationale": "上限 1.00 即可运行产能本身，日历日产能已计入通常停机，不再另扣；1990 年以来的周度利用率极少超过 100%。 下限 0.90 接近近年周度利用率的平均水平，作为偏紧一端。区间是机械敏感性范围，不是可持续运行上限的估计"
+          }
+        ],
+        "depends_on": [
+          "weekly_statistics"
+        ],
+        "gate_policy_version": "feasibility.v1"
+      },
+      "scenario:k100_g20": {
+        "unit": "scenario:k100_g20",
+        "grade": "B",
+        "reasons": [
+          "使用假设参数 kappa = 1.0"
+        ],
+        "assumptions": [
+          {
+            "name": "kappa",
+            "value": 1.0,
+            "origin_type": "assumed",
+            "unit": "可处理上限 ÷ 可运行产能（日历日口径）",
+            "allowed_range": [
+              0.9,
+              1.0
+            ],
+            "rationale": "上限 1.00 即可运行产能本身，日历日产能已计入通常停机，不再另扣；1990 年以来的周度利用率极少超过 100%。 下限 0.90 接近近年周度利用率的平均水平，作为偏紧一端。区间是机械敏感性范围，不是可持续运行上限的估计"
+          }
+        ],
+        "depends_on": [
+          "weekly_statistics"
+        ],
+        "gate_policy_version": "feasibility.v1"
+      },
+      "scenario:k095_g05": {
+        "unit": "scenario:k095_g05",
+        "grade": "B",
+        "reasons": [
+          "使用假设参数 kappa = 0.95"
+        ],
+        "assumptions": [
+          {
+            "name": "kappa",
+            "value": 0.95,
+            "origin_type": "assumed",
+            "unit": "可处理上限 ÷ 可运行产能（日历日口径）",
+            "allowed_range": [
+              0.9,
+              1.0
+            ],
+            "rationale": "上限 1.00 即可运行产能本身，日历日产能已计入通常停机，不再另扣；1990 年以来的周度利用率极少超过 100%。 下限 0.90 接近近年周度利用率的平均水平，作为偏紧一端。区间是机械敏感性范围，不是可持续运行上限的估计"
+          }
+        ],
+        "depends_on": [
+          "weekly_statistics"
+        ],
+        "gate_policy_version": "feasibility.v1"
+      },
+      "scenario:k105_g10": {
+        "unit": "scenario:k105_g10",
+        "grade": "C",
+        "reasons": [
+          "参数 kappa = 1.05 超出允许范围 [0.9, 1]（可处理上限 ÷ 可运行产能（日历日口径））"
+        ],
+        "assumptions": [],
+        "depends_on": [
+          "weekly_statistics"
+        ],
+        "gate_policy_version": "feasibility.v1"
+      }
+    },
+    "statistics": {
+      "weeks": 52,
+      "mean_gross_inputs": 16574.25,
+      "mean_operable_capacity": 18253.865384615383,
+      "mean_utilization": 90.8173076923077,
+      "aggregate_utilization": 90.79857690836819,
+      "min_utilization": 83.5,
+      "min_week": "2025-01-24",
+      "max_utilization": 96.9,
+      "max_week": "2025-08-01",
+      "weeks_at_or_above_95": 5,
+      "capacity_values": [
+        18089.0,
+        18160.0,
+        18161.0,
+        18326.0,
+        18347.0,
+        18354.0,
+        18406.0,
+        18416.0
+      ]
+    },
+    "scenarios": [
+      {
+        "id": "k100_g05",
+        "g": 0.05,
+        "kappa": 1.0,
+        "label": "上限为可运行产能，处理量提高 5%",
+        "weeks": 52,
+        "weeks_evaluated": 52,
+        "weeks_inconsistent": 0,
+        "inconsistent_weeks": [],
+        "weeks_with_shortfall": 5,
+        "mean_demand": 17402.9625,
+        "mean_output": 17386.371153846154,
+        "mean_shortfall": 16.591346153846224,
+        "max_shortfall": 309.1000000000022,
+        "max_shortfall_week": "2025-08-01",
+        "grade": "B"
+      },
+      {
+        "id": "k100_g10",
+        "g": 0.1,
+        "kappa": 1.0,
+        "label": "上限为可运行产能，处理量提高 10%",
+        "weeks": 52,
+        "weeks_evaluated": 52,
+        "weeks_inconsistent": 0,
+        "inconsistent_weeks": [],
+        "weeks_with_shortfall": 27,
+        "mean_demand": 18231.675000000003,
+        "mean_output": 17889.96346153846,
+        "mean_shortfall": 341.71153846153913,
+        "max_shortfall": 1185.2000000000007,
+        "max_shortfall_week": "2025-08-01",
+        "grade": "B"
+      },
+      {
+        "id": "k100_g20",
+        "g": 0.2,
+        "kappa": 1.0,
+        "label": "上限为可运行产能，处理量提高 20%",
+        "weeks": 52,
+        "weeks_evaluated": 52,
+        "weeks_inconsistent": 0,
+        "inconsistent_weeks": [],
+        "weeks_with_shortfall": 52,
+        "mean_demand": 19889.1,
+        "mean_output": 18253.865384615383,
+        "mean_shortfall": 1635.2346153846145,
+        "max_shortfall": 2937.399999999998,
+        "max_shortfall_week": "2025-08-01",
+        "grade": "B"
+      },
+      {
+        "id": "k095_g05",
+        "g": 0.05,
+        "kappa": 0.95,
+        "label": "上限为可运行产能的 95%，处理量提高 5%",
+        "weeks": 52,
+        "weeks_evaluated": 47,
+        "weeks_inconsistent": 5,
+        "inconsistent_weeks": [
+          "2025-07-18",
+          "2025-07-25",
+          "2025-08-01",
+          "2025-08-08",
+          "2025-08-15"
+        ],
+        "weeks_with_shortfall": 23,
+        "mean_demand": 17308.602127659575,
+        "mean_output": 17014.05106382979,
+        "mean_shortfall": 294.55106382978755,
+        "max_shortfall": 844.75,
+        "max_shortfall_week": "2025-06-27",
+        "grade": "B"
+      },
+      {
+        "id": "k105_g10",
+        "g": 0.1,
+        "kappa": 1.05,
+        "label": "上限高于可运行产能（不允许）",
+        "grade": "C"
+      }
+    ],
+    "assumption_reference": {
+      "window": [
+        "2015-01-01",
+        "2025-12-31"
+      ],
+      "weeks": 574,
+      "max_utilization": 98.1,
+      "max_week": "2018-08-10",
+      "p95_utilization": 95.5,
+      "mean_utilization": 89.30662020905923,
+      "use_scope": {
+        "window": [
+          "2015-01-01",
+          "2025-12-31"
+        ],
+        "status": "partial",
+        "uncovered": [
+          [
+            "2015-01-01",
+            "2024-12-31"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      }
+    }
+  },
+  "coverage": {
+    "first_week": "2025-01-03",
+    "last_week": "2025-12-26",
+    "expected_weeks": 52,
+    "valid_weeks": 52,
+    "missing_weeks": [],
+    "not_yet_available_weeks": [],
+    "data_last_observation": "2026-10-23",
+    "completeness": "complete"
+  },
+  "unsupported": [
+    {
+      "item": "情景 k105_g10",
+      "reason": "输入能力为 C：参数 kappa = 1.05 超出允许范围 [0.9, 1]（可处理上限 ÷ 可运行产能（日历日口径））"
+    }
+  ],
+  "limitations": [
+    "只计算处理量的机械关系；不含产品收率、进口、库存、物流与价格，不是汽油需求预测、燃料短缺或炼厂利润结论",
+    "增幅 g 与上限比例 kappa 都是假设，不代表概率；缺口是情景下的计算结果，不是历史真实短缺",
+    "美国全国合计，不区分地区（PADD）、炼厂或公司；周度数据为估计值，只使用当前修订版本",
+    "假设参照期 2015-01-01 至 2025-12-31 的利用率不全在用途核验范围内（部分在核验范围内；未覆盖 2015-01-01—2024-12-31）；参照只说明允许范围的依据，不进入计算",
+    "情景 k095_g05：5 周的基准总投入已超过假设上限，标为不自洽，未计入缺口"
+  ],
+  "validation": {
+    "ratio_check": {
+      "status": "pass",
+      "checked": 52,
+      "failures": [],
+      "max_abs_diff_pp": 0.05264317180616729,
+      "rule": "按 G、K 整数与 U 一位小数的公布精度传播舍入区间，复算区间与 U ± 0.05 相交即相容；不设经验容差"
+    },
+    "baseline_check": {
+      "status": "pass",
+      "checked": 52,
+      "matched": 52,
+      "inconsistent": 0,
+      "failures": []
+    },
+    "raw_spot_check": {
+      "status": "skipped",
+      "reason": "没有可在原始 CSV 中定位的合格观测"
+    }
+  },
+  "tables": {
+    "weekly": [
+      {
+        "week_ending": "2025-01-03",
+        "gross_inputs": 17089.0,
+        "operable_capacity": 18326.0,
+        "utilization": 93.3,
+        "utilization_calc": 93.25002728364073,
+        "calc_low": 93.24475486317627,
+        "calc_high": 93.25529999181468,
+        "diff_pp": -0.049972716359263814,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-01-10",
+        "gross_inputs": 16816.0,
+        "operable_capacity": 18347.0,
+        "utilization": 91.7,
+        "utilization_calc": 91.65531149506731,
+        "calc_low": 91.65008856792478,
+        "calc_high": 91.66053470689232,
+        "diff_pp": -0.04468850493269372,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-01-17",
+        "gross_inputs": 15762.0,
+        "operable_capacity": 18347.0,
+        "utilization": 85.9,
+        "utilization_calc": 85.91050307952254,
+        "calc_low": 85.90543670799836,
+        "calc_high": 85.91556972719593,
+        "diff_pp": 0.01050307952253604,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-01-24",
+        "gross_inputs": 15318.0,
+        "operable_capacity": 18347.0,
+        "utilization": 83.5,
+        "utilization_calc": 83.49048890826838,
+        "calc_low": 83.48548848616977,
+        "calc_high": 83.49548960292154,
+        "diff_pp": -0.009511091731624788,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-01-31",
+        "gross_inputs": 15511.0,
+        "operable_capacity": 18347.0,
+        "utilization": 84.5,
+        "utilization_calc": 84.54243200523246,
+        "calc_low": 84.5374029159286,
+        "calc_high": 84.54746136865342,
+        "diff_pp": 0.04243200523245605,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-02-07",
+        "gross_inputs": 15595.0,
+        "operable_capacity": 18347.0,
+        "utilization": 85.0,
+        "utilization_calc": 85.00027252411839,
+        "calc_low": 84.99523095789617,
+        "calc_high": 85.00531436513776,
+        "diff_pp": 0.00027252411838674107,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-02-14",
+        "gross_inputs": 15589.0,
+        "operable_capacity": 18354.0,
+        "utilization": 84.9,
+        "utilization_calc": 84.93516399694889,
+        "calc_low": 84.9301261271078,
+        "calc_high": 84.94020214128095,
+        "diff_pp": 0.035163996948881504,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-02-21",
+        "gross_inputs": 15880.0,
+        "operable_capacity": 18354.0,
+        "utilization": 86.5,
+        "utilization_calc": 86.52064944971123,
+        "calc_low": 86.51556838922335,
+        "calc_high": 86.52573078704334,
+        "diff_pp": 0.02064944971122884,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-02-28",
+        "gross_inputs": 15767.0,
+        "operable_capacity": 18354.0,
+        "utilization": 85.9,
+        "utilization_calc": 85.90497984090662,
+        "calc_low": 85.89991555204446,
+        "calc_high": 85.91004440569918,
+        "diff_pp": 0.004979840906614186,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-03-07",
+        "gross_inputs": 15880.0,
+        "operable_capacity": 18354.0,
+        "utilization": 86.5,
+        "utilization_calc": 86.52064944971123,
+        "calc_low": 86.51556838922335,
+        "calc_high": 86.52573078704334,
+        "diff_pp": 0.02064944971122884,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-03-14",
+        "gross_inputs": 15949.0,
+        "operable_capacity": 18354.0,
+        "utilization": 86.9,
+        "utilization_calc": 86.89658929933529,
+        "calc_low": 86.89149799776621,
+        "calc_high": 86.90168087830659,
+        "diff_pp": -0.0034107006647161597,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-03-21",
+        "gross_inputs": 15970.0,
+        "operable_capacity": 18354.0,
+        "utilization": 87.0,
+        "utilization_calc": 87.01100577530784,
+        "calc_low": 87.00591135688795,
+        "calc_high": 87.01610047129975,
+        "diff_pp": 0.01100577530783653,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-03-28",
+        "gross_inputs": 15789.0,
+        "operable_capacity": 18354.0,
+        "utilization": 86.0,
+        "utilization_calc": 86.0248447204969,
+        "calc_low": 86.01977716636247,
+        "calc_high": 86.02991255073964,
+        "diff_pp": 0.024844720496901118,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-04-04",
+        "gross_inputs": 15912.0,
+        "operable_capacity": 18354.0,
+        "utilization": 86.7,
+        "utilization_calc": 86.69499836547891,
+        "calc_low": 86.6899125555041,
+        "calc_high": 86.70008445255674,
+        "diff_pp": -0.005001634521093479,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-04-11",
+        "gross_inputs": 15838.0,
+        "operable_capacity": 18354.0,
+        "utilization": 86.3,
+        "utilization_calc": 86.29181649776615,
+        "calc_low": 86.28674167097986,
+        "calc_high": 86.29689160105701,
+        "diff_pp": -0.008183502233848117,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-04-18",
+        "gross_inputs": 16217.0,
+        "operable_capacity": 18416.0,
+        "utilization": 88.1,
+        "utilization_calc": 88.05929626411816,
+        "calc_low": 88.05419053566095,
+        "calc_high": 88.06440226982704,
+        "diff_pp": -0.04070373588183429,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-04-25",
+        "gross_inputs": 16326.0,
+        "operable_capacity": 18416.0,
+        "utilization": 88.6,
+        "utilization_calc": 88.6511728931364,
+        "calc_low": 88.64605109548502,
+        "calc_high": 88.65629496891206,
+        "diff_pp": 0.05117289313641038,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-05-02",
+        "gross_inputs": 16384.0,
+        "operable_capacity": 18416.0,
+        "utilization": 89.0,
+        "utilization_calc": 88.96611642050391,
+        "calc_low": 88.96098607227215,
+        "calc_high": 88.97124704732427,
+        "diff_pp": -0.03388357949609144,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-05-09",
+        "gross_inputs": 16610.0,
+        "operable_capacity": 18406.0,
+        "utilization": 90.2,
+        "utilization_calc": 90.24231228947083,
+        "calc_low": 90.23714448700187,
+        "calc_high": 90.24748037271468,
+        "diff_pp": 0.042312289470828546,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-05-16",
+        "gross_inputs": 16693.0,
+        "operable_capacity": 18406.0,
+        "utilization": 90.7,
+        "utilization_calc": 90.69325220036944,
+        "calc_low": 90.68807214842583,
+        "calc_high": 90.6984325337535,
+        "diff_pp": -0.006747799630559825,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-05-23",
+        "gross_inputs": 16600.0,
+        "operable_capacity": 18406.0,
+        "utilization": 90.2,
+        "utilization_calc": 90.187982179724,
+        "calc_low": 90.18281585309538,
+        "calc_high": 90.19314878704735,
+        "diff_pp": -0.01201782027600018,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-05-30",
+        "gross_inputs": 17192.0,
+        "operable_capacity": 18406.0,
+        "utilization": 93.4,
+        "utilization_calc": 93.40432467673585,
+        "calc_low": 93.3990709803602,
+        "calc_high": 93.40957865855314,
+        "diff_pp": 0.004324676735848243,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-06-06",
+        "gross_inputs": 17364.0,
+        "operable_capacity": 18406.0,
+        "utilization": 94.3,
+        "utilization_calc": 94.33880256438118,
+        "calc_low": 94.333523483552,
+        "calc_high": 94.34408193203119,
+        "diff_pp": 0.03880256438118579,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-06-13",
+        "gross_inputs": 17147.0,
+        "operable_capacity": 18406.0,
+        "utilization": 93.2,
+        "utilization_calc": 93.15983918287515,
+        "calc_low": 93.15459212778094,
+        "calc_high": 93.16508652305018,
+        "diff_pp": -0.04016081712485686,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-06-20",
+        "gross_inputs": 17199.0,
+        "operable_capacity": 18160.0,
+        "utilization": 94.7,
+        "utilization_calc": 94.70814977973568,
+        "calc_low": 94.7027890201261,
+        "calc_high": 94.71351083454941,
+        "diff_pp": 0.008149779735674656,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-06-27",
+        "gross_inputs": 17235.0,
+        "operable_capacity": 18160.0,
+        "utilization": 94.9,
+        "utilization_calc": 94.90638766519824,
+        "calc_low": 94.90102144764737,
+        "calc_high": 94.9117541782538,
+        "diff_pp": 0.006387665198232639,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-07-04",
+        "gross_inputs": 17199.0,
+        "operable_capacity": 18160.0,
+        "utilization": 94.7,
+        "utilization_calc": 94.70814977973568,
+        "calc_low": 94.7027890201261,
+        "calc_high": 94.71351083454941,
+        "diff_pp": 0.008149779735674656,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-07-11",
+        "gross_inputs": 17048.0,
+        "operable_capacity": 18160.0,
+        "utilization": 93.9,
+        "utilization_calc": 93.87665198237886,
+        "calc_low": 93.87131411580077,
+        "calc_high": 93.8819901429004,
+        "diff_pp": -0.0233480176211458,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-07-18",
+        "gross_inputs": 17272.0,
+        "operable_capacity": 18089.0,
+        "utilization": 95.5,
+        "utilization_calc": 95.4834429763945,
+        "calc_low": 95.47803974681445,
+        "calc_high": 95.4888465046853,
+        "diff_pp": -0.016557023605500376,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-07-25",
+        "gross_inputs": 17261.0,
+        "operable_capacity": 18089.0,
+        "utilization": 95.4,
+        "utilization_calc": 95.42263253911217,
+        "calc_low": 95.41723099035352,
+        "calc_high": 95.42803438648865,
+        "diff_pp": 0.022632539112166228,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-08-01",
+        "gross_inputs": 17522.0,
+        "operable_capacity": 18089.0,
+        "utilization": 96.9,
+        "utilization_calc": 96.86549836917463,
+        "calc_low": 96.86005693910832,
+        "calc_high": 96.87094010006358,
+        "diff_pp": -0.03450163082537472,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-08-08",
+        "gross_inputs": 17506.0,
+        "operable_capacity": 18160.0,
+        "utilization": 96.4,
+        "utilization_calc": 96.39867841409692,
+        "calc_low": 96.39327111037692,
+        "calc_high": 96.40408601558413,
+        "diff_pp": -0.0013215859030850652,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-08-15",
+        "gross_inputs": 17534.0,
+        "operable_capacity": 18160.0,
+        "utilization": 96.6,
+        "utilization_calc": 96.55286343612335,
+        "calc_low": 96.5474518873379,
+        "calc_high": 96.55827528290978,
+        "diff_pp": -0.04713656387664855,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-08-22",
+        "gross_inputs": 17175.0,
+        "operable_capacity": 18160.0,
+        "utilization": 94.6,
+        "utilization_calc": 94.57599118942731,
+        "calc_low": 94.57063406844526,
+        "calc_high": 94.58134860541314,
+        "diff_pp": -0.024008810572681227,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-08-29",
+        "gross_inputs": 17120.0,
+        "operable_capacity": 18160.0,
+        "utilization": 94.3,
+        "utilization_calc": 94.27312775330397,
+        "calc_low": 94.26777897084331,
+        "calc_high": 94.2784768303092,
+        "diff_pp": -0.026872246696029833,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-09-05",
+        "gross_inputs": 17230.0,
+        "operable_capacity": 18160.0,
+        "utilization": 94.9,
+        "utilization_calc": 94.87885462555066,
+        "calc_low": 94.8734891660472,
+        "calc_high": 94.88422038051708,
+        "diff_pp": -0.021145374449346832,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-09-12",
+        "gross_inputs": 16939.0,
+        "operable_capacity": 18160.0,
+        "utilization": 93.3,
+        "utilization_calc": 93.27643171806167,
+        "calc_low": 93.27111037691694,
+        "calc_high": 93.28175335223987,
+        "diff_pp": -0.023568281938324276,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-09-19",
+        "gross_inputs": 16886.0,
+        "operable_capacity": 18160.0,
+        "utilization": 93.0,
+        "utilization_calc": 92.98458149779735,
+        "calc_low": 92.97926819195507,
+        "calc_high": 92.98989509623063,
+        "diff_pp": -0.01541850220264962,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-09-26",
+        "gross_inputs": 16604.0,
+        "operable_capacity": 18160.0,
+        "utilization": 91.4,
+        "utilization_calc": 91.431718061674,
+        "calc_low": 91.42644750970513,
+        "calc_high": 91.43698890387951,
+        "diff_pp": 0.03171806167399893,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-10-03",
+        "gross_inputs": 16777.0,
+        "operable_capacity": 18160.0,
+        "utilization": 92.4,
+        "utilization_calc": 92.38436123348018,
+        "calc_low": 92.37906445307122,
+        "calc_high": 92.38965830557008,
+        "diff_pp": -0.015638766519828096,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-10-10",
+        "gross_inputs": 15568.0,
+        "operable_capacity": 18160.0,
+        "utilization": 85.7,
+        "utilization_calc": 85.72687224669603,
+        "calc_low": 85.72175876214862,
+        "calc_high": 85.73198601283075,
+        "diff_pp": 0.026872246696029833,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-10-17",
+        "gross_inputs": 16090.0,
+        "operable_capacity": 18160.0,
+        "utilization": 88.6,
+        "utilization_calc": 88.60132158590308,
+        "calc_low": 88.59612896120701,
+        "calc_high": 88.6065144965445,
+        "diff_pp": 0.0013215859030850652,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-10-24",
+        "gross_inputs": 15717.0,
+        "operable_capacity": 18160.0,
+        "utilization": 86.6,
+        "utilization_calc": 86.54735682819383,
+        "calc_low": 86.54222075383387,
+        "calc_high": 86.55249318538506,
+        "diff_pp": -0.05264317180616729,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-10-31",
+        "gross_inputs": 15615.0,
+        "operable_capacity": 18160.0,
+        "utilization": 86.0,
+        "utilization_calc": 85.98568281938326,
+        "calc_low": 85.98056220919028,
+        "calc_high": 85.99080371155594,
+        "diff_pp": -0.01431718061674303,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-11-07",
+        "gross_inputs": 16238.0,
+        "operable_capacity": 18160.0,
+        "utilization": 89.4,
+        "utilization_calc": 89.41629955947137,
+        "calc_low": 89.41108449657223,
+        "calc_high": 89.42151490955148,
+        "diff_pp": 0.016299559471363523,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-11-14",
+        "gross_inputs": 16343.0,
+        "operable_capacity": 18160.0,
+        "utilization": 90.0,
+        "utilization_calc": 89.99449339207048,
+        "calc_low": 89.98926241017593,
+        "calc_high": 89.99972466202263,
+        "diff_pp": -0.0055066079295187365,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-11-21",
+        "gross_inputs": 16763.0,
+        "operable_capacity": 18160.0,
+        "utilization": 92.3,
+        "utilization_calc": 92.30726872246696,
+        "calc_low": 92.30197406459074,
+        "calc_high": 92.31256367190727,
+        "diff_pp": 0.007268722466960753,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-11-28",
+        "gross_inputs": 17088.0,
+        "operable_capacity": 18160.0,
+        "utilization": 94.1,
+        "utilization_calc": 94.09691629955947,
+        "calc_low": 94.09157236860219,
+        "calc_high": 94.10226052479419,
+        "diff_pp": -0.003083700440527082,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-12-05",
+        "gross_inputs": 17152.0,
+        "operable_capacity": 18160.0,
+        "utilization": 94.5,
+        "utilization_calc": 94.44933920704845,
+        "calc_low": 94.44398557308445,
+        "calc_high": 94.45469313582423,
+        "diff_pp": -0.050660792951546796,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-12-12",
+        "gross_inputs": 17209.0,
+        "operable_capacity": 18161.0,
+        "utilization": 94.8,
+        "utilization_calc": 94.7579979076042,
+        "calc_low": 94.75263607080913,
+        "calc_high": 94.76336003964649,
+        "diff_pp": -0.04200209239579067,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-12-19",
+        "gross_inputs": 17175.0,
+        "operable_capacity": 18161.0,
+        "utilization": 94.6,
+        "utilization_calc": 94.5707835471615,
+        "calc_low": 94.5654268645211,
+        "calc_high": 94.5761405247653,
+        "diff_pp": -0.029216452838497275,
+        "compatible": "True"
+      },
+      {
+        "week_ending": "2025-12-26",
+        "gross_inputs": 17198.0,
+        "operable_capacity": 18161.0,
+        "utilization": 94.7,
+        "utilization_calc": 94.69742855569628,
+        "calc_low": 94.69206838642182,
+        "calc_high": 94.7027890201261,
+        "diff_pp": -0.0025714443037259116,
+        "compatible": "True"
+      }
+    ],
+    "scenario_weeks": [
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-01-03",
+        "gross_inputs": 17089.0,
+        "demand": 17943.45,
+        "q_cap": 18326.0,
+        "status": "ok",
+        "output": 17943.45,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-01-10",
+        "gross_inputs": 16816.0,
+        "demand": 17656.8,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 17656.8,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-01-17",
+        "gross_inputs": 15762.0,
+        "demand": 16550.100000000002,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 16550.100000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-01-24",
+        "gross_inputs": 15318.0,
+        "demand": 16083.900000000001,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 16083.900000000001,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-01-31",
+        "gross_inputs": 15511.0,
+        "demand": 16286.550000000001,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 16286.550000000001,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-02-07",
+        "gross_inputs": 15595.0,
+        "demand": 16374.75,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 16374.75,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-02-14",
+        "gross_inputs": 15589.0,
+        "demand": 16368.45,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 16368.45,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-02-21",
+        "gross_inputs": 15880.0,
+        "demand": 16674.0,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 16674.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-02-28",
+        "gross_inputs": 15767.0,
+        "demand": 16555.350000000002,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 16555.350000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-03-07",
+        "gross_inputs": 15880.0,
+        "demand": 16674.0,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 16674.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-03-14",
+        "gross_inputs": 15949.0,
+        "demand": 16746.45,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 16746.45,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-03-21",
+        "gross_inputs": 15970.0,
+        "demand": 16768.5,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 16768.5,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-03-28",
+        "gross_inputs": 15789.0,
+        "demand": 16578.45,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 16578.45,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-04-04",
+        "gross_inputs": 15912.0,
+        "demand": 16707.600000000002,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 16707.600000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-04-11",
+        "gross_inputs": 15838.0,
+        "demand": 16629.9,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 16629.9,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-04-18",
+        "gross_inputs": 16217.0,
+        "demand": 17027.850000000002,
+        "q_cap": 18416.0,
+        "status": "ok",
+        "output": 17027.850000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-04-25",
+        "gross_inputs": 16326.0,
+        "demand": 17142.3,
+        "q_cap": 18416.0,
+        "status": "ok",
+        "output": 17142.3,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-05-02",
+        "gross_inputs": 16384.0,
+        "demand": 17203.2,
+        "q_cap": 18416.0,
+        "status": "ok",
+        "output": 17203.2,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-05-09",
+        "gross_inputs": 16610.0,
+        "demand": 17440.5,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 17440.5,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-05-16",
+        "gross_inputs": 16693.0,
+        "demand": 17527.65,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 17527.65,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-05-23",
+        "gross_inputs": 16600.0,
+        "demand": 17430.0,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 17430.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-05-30",
+        "gross_inputs": 17192.0,
+        "demand": 18051.600000000002,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18051.600000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-06-06",
+        "gross_inputs": 17364.0,
+        "demand": 18232.2,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18232.2,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-06-13",
+        "gross_inputs": 17147.0,
+        "demand": 18004.350000000002,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18004.350000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-06-20",
+        "gross_inputs": 17199.0,
+        "demand": 18058.95,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18058.95,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-06-27",
+        "gross_inputs": 17235.0,
+        "demand": 18096.75,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18096.75,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-07-04",
+        "gross_inputs": 17199.0,
+        "demand": 18058.95,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18058.95,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-07-11",
+        "gross_inputs": 17048.0,
+        "demand": 17900.4,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17900.4,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-07-18",
+        "gross_inputs": 17272.0,
+        "demand": 18135.600000000002,
+        "q_cap": 18089.0,
+        "status": "ok",
+        "output": 18089.0,
+        "shortfall": 46.60000000000218
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-07-25",
+        "gross_inputs": 17261.0,
+        "demand": 18124.05,
+        "q_cap": 18089.0,
+        "status": "ok",
+        "output": 18089.0,
+        "shortfall": 35.04999999999927
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-08-01",
+        "gross_inputs": 17522.0,
+        "demand": 18398.100000000002,
+        "q_cap": 18089.0,
+        "status": "ok",
+        "output": 18089.0,
+        "shortfall": 309.1000000000022
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-08-08",
+        "gross_inputs": 17506.0,
+        "demand": 18381.3,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 221.29999999999927
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-08-15",
+        "gross_inputs": 17534.0,
+        "demand": 18410.7,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 250.70000000000073
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-08-22",
+        "gross_inputs": 17175.0,
+        "demand": 18033.75,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18033.75,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-08-29",
+        "gross_inputs": 17120.0,
+        "demand": 17976.0,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17976.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-09-05",
+        "gross_inputs": 17230.0,
+        "demand": 18091.5,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18091.5,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-09-12",
+        "gross_inputs": 16939.0,
+        "demand": 17785.95,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17785.95,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-09-19",
+        "gross_inputs": 16886.0,
+        "demand": 17730.3,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17730.3,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-09-26",
+        "gross_inputs": 16604.0,
+        "demand": 17434.2,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17434.2,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-10-03",
+        "gross_inputs": 16777.0,
+        "demand": 17615.850000000002,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17615.850000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-10-10",
+        "gross_inputs": 15568.0,
+        "demand": 16346.400000000001,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 16346.400000000001,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-10-17",
+        "gross_inputs": 16090.0,
+        "demand": 16894.5,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 16894.5,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-10-24",
+        "gross_inputs": 15717.0,
+        "demand": 16502.850000000002,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 16502.850000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-10-31",
+        "gross_inputs": 15615.0,
+        "demand": 16395.75,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 16395.75,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-11-07",
+        "gross_inputs": 16238.0,
+        "demand": 17049.9,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17049.9,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-11-14",
+        "gross_inputs": 16343.0,
+        "demand": 17160.15,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17160.15,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-11-21",
+        "gross_inputs": 16763.0,
+        "demand": 17601.15,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17601.15,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-11-28",
+        "gross_inputs": 17088.0,
+        "demand": 17942.4,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17942.4,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-12-05",
+        "gross_inputs": 17152.0,
+        "demand": 18009.600000000002,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18009.600000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-12-12",
+        "gross_inputs": 17209.0,
+        "demand": 18069.45,
+        "q_cap": 18161.0,
+        "status": "ok",
+        "output": 18069.45,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-12-19",
+        "gross_inputs": 17175.0,
+        "demand": 18033.75,
+        "q_cap": 18161.0,
+        "status": "ok",
+        "output": 18033.75,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g05",
+        "week_ending": "2025-12-26",
+        "gross_inputs": 17198.0,
+        "demand": 18057.9,
+        "q_cap": 18161.0,
+        "status": "ok",
+        "output": 18057.9,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-01-03",
+        "gross_inputs": 17089.0,
+        "demand": 18797.9,
+        "q_cap": 18326.0,
+        "status": "ok",
+        "output": 18326.0,
+        "shortfall": 471.90000000000146
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-01-10",
+        "gross_inputs": 16816.0,
+        "demand": 18497.600000000002,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 18347.0,
+        "shortfall": 150.60000000000218
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-01-17",
+        "gross_inputs": 15762.0,
+        "demand": 17338.2,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 17338.2,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-01-24",
+        "gross_inputs": 15318.0,
+        "demand": 16849.800000000003,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 16849.800000000003,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-01-31",
+        "gross_inputs": 15511.0,
+        "demand": 17062.100000000002,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 17062.100000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-02-07",
+        "gross_inputs": 15595.0,
+        "demand": 17154.5,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 17154.5,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-02-14",
+        "gross_inputs": 15589.0,
+        "demand": 17147.9,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 17147.9,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-02-21",
+        "gross_inputs": 15880.0,
+        "demand": 17468.0,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 17468.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-02-28",
+        "gross_inputs": 15767.0,
+        "demand": 17343.7,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 17343.7,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-03-07",
+        "gross_inputs": 15880.0,
+        "demand": 17468.0,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 17468.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-03-14",
+        "gross_inputs": 15949.0,
+        "demand": 17543.9,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 17543.9,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-03-21",
+        "gross_inputs": 15970.0,
+        "demand": 17567.0,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 17567.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-03-28",
+        "gross_inputs": 15789.0,
+        "demand": 17367.9,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 17367.9,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-04-04",
+        "gross_inputs": 15912.0,
+        "demand": 17503.2,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 17503.2,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-04-11",
+        "gross_inputs": 15838.0,
+        "demand": 17421.800000000003,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 17421.800000000003,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-04-18",
+        "gross_inputs": 16217.0,
+        "demand": 17838.7,
+        "q_cap": 18416.0,
+        "status": "ok",
+        "output": 17838.7,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-04-25",
+        "gross_inputs": 16326.0,
+        "demand": 17958.600000000002,
+        "q_cap": 18416.0,
+        "status": "ok",
+        "output": 17958.600000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-05-02",
+        "gross_inputs": 16384.0,
+        "demand": 18022.4,
+        "q_cap": 18416.0,
+        "status": "ok",
+        "output": 18022.4,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-05-09",
+        "gross_inputs": 16610.0,
+        "demand": 18271.0,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18271.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-05-16",
+        "gross_inputs": 16693.0,
+        "demand": 18362.300000000003,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18362.300000000003,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-05-23",
+        "gross_inputs": 16600.0,
+        "demand": 18260.0,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18260.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-05-30",
+        "gross_inputs": 17192.0,
+        "demand": 18911.2,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18406.0,
+        "shortfall": 505.2000000000007
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-06-06",
+        "gross_inputs": 17364.0,
+        "demand": 19100.4,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18406.0,
+        "shortfall": 694.4000000000015
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-06-13",
+        "gross_inputs": 17147.0,
+        "demand": 18861.7,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18406.0,
+        "shortfall": 455.7000000000007
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-06-20",
+        "gross_inputs": 17199.0,
+        "demand": 18918.9,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 758.9000000000015
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-06-27",
+        "gross_inputs": 17235.0,
+        "demand": 18958.5,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 798.5
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-07-04",
+        "gross_inputs": 17199.0,
+        "demand": 18918.9,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 758.9000000000015
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-07-11",
+        "gross_inputs": 17048.0,
+        "demand": 18752.800000000003,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 592.8000000000029
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-07-18",
+        "gross_inputs": 17272.0,
+        "demand": 18999.2,
+        "q_cap": 18089.0,
+        "status": "ok",
+        "output": 18089.0,
+        "shortfall": 910.2000000000007
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-07-25",
+        "gross_inputs": 17261.0,
+        "demand": 18987.100000000002,
+        "q_cap": 18089.0,
+        "status": "ok",
+        "output": 18089.0,
+        "shortfall": 898.1000000000022
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-08-01",
+        "gross_inputs": 17522.0,
+        "demand": 19274.2,
+        "q_cap": 18089.0,
+        "status": "ok",
+        "output": 18089.0,
+        "shortfall": 1185.2000000000007
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-08-08",
+        "gross_inputs": 17506.0,
+        "demand": 19256.600000000002,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 1096.6000000000022
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-08-15",
+        "gross_inputs": 17534.0,
+        "demand": 19287.4,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 1127.4000000000015
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-08-22",
+        "gross_inputs": 17175.0,
+        "demand": 18892.5,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 732.5
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-08-29",
+        "gross_inputs": 17120.0,
+        "demand": 18832.0,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 672.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-09-05",
+        "gross_inputs": 17230.0,
+        "demand": 18953.0,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 793.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-09-12",
+        "gross_inputs": 16939.0,
+        "demand": 18632.9,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 472.90000000000146
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-09-19",
+        "gross_inputs": 16886.0,
+        "demand": 18574.600000000002,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 414.6000000000022
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-09-26",
+        "gross_inputs": 16604.0,
+        "demand": 18264.4,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 104.40000000000146
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-10-03",
+        "gross_inputs": 16777.0,
+        "demand": 18454.7,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 294.7000000000007
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-10-10",
+        "gross_inputs": 15568.0,
+        "demand": 17124.800000000003,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17124.800000000003,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-10-17",
+        "gross_inputs": 16090.0,
+        "demand": 17699.0,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17699.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-10-24",
+        "gross_inputs": 15717.0,
+        "demand": 17288.7,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17288.7,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-10-31",
+        "gross_inputs": 15615.0,
+        "demand": 17176.5,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17176.5,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-11-07",
+        "gross_inputs": 16238.0,
+        "demand": 17861.800000000003,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17861.800000000003,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-11-14",
+        "gross_inputs": 16343.0,
+        "demand": 17977.300000000003,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 17977.300000000003,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-11-21",
+        "gross_inputs": 16763.0,
+        "demand": 18439.300000000003,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 279.3000000000029
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-11-28",
+        "gross_inputs": 17088.0,
+        "demand": 18796.800000000003,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 636.8000000000029
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-12-05",
+        "gross_inputs": 17152.0,
+        "demand": 18867.2,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 707.2000000000007
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-12-12",
+        "gross_inputs": 17209.0,
+        "demand": 18929.9,
+        "q_cap": 18161.0,
+        "status": "ok",
+        "output": 18161.0,
+        "shortfall": 768.9000000000015
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-12-19",
+        "gross_inputs": 17175.0,
+        "demand": 18892.5,
+        "q_cap": 18161.0,
+        "status": "ok",
+        "output": 18161.0,
+        "shortfall": 731.5
+      },
+      {
+        "scenario": "k100_g10",
+        "week_ending": "2025-12-26",
+        "gross_inputs": 17198.0,
+        "demand": 18917.800000000003,
+        "q_cap": 18161.0,
+        "status": "ok",
+        "output": 18161.0,
+        "shortfall": 756.8000000000029
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-01-03",
+        "gross_inputs": 17089.0,
+        "demand": 20506.8,
+        "q_cap": 18326.0,
+        "status": "ok",
+        "output": 18326.0,
+        "shortfall": 2180.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-01-10",
+        "gross_inputs": 16816.0,
+        "demand": 20179.2,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 18347.0,
+        "shortfall": 1832.2000000000007
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-01-17",
+        "gross_inputs": 15762.0,
+        "demand": 18914.399999999998,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 18347.0,
+        "shortfall": 567.3999999999978
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-01-24",
+        "gross_inputs": 15318.0,
+        "demand": 18381.6,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 18347.0,
+        "shortfall": 34.599999999998545
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-01-31",
+        "gross_inputs": 15511.0,
+        "demand": 18613.2,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 18347.0,
+        "shortfall": 266.2000000000007
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-02-07",
+        "gross_inputs": 15595.0,
+        "demand": 18714.0,
+        "q_cap": 18347.0,
+        "status": "ok",
+        "output": 18347.0,
+        "shortfall": 367.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-02-14",
+        "gross_inputs": 15589.0,
+        "demand": 18706.8,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 18354.0,
+        "shortfall": 352.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-02-21",
+        "gross_inputs": 15880.0,
+        "demand": 19056.0,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 18354.0,
+        "shortfall": 702.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-02-28",
+        "gross_inputs": 15767.0,
+        "demand": 18920.399999999998,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 18354.0,
+        "shortfall": 566.3999999999978
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-03-07",
+        "gross_inputs": 15880.0,
+        "demand": 19056.0,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 18354.0,
+        "shortfall": 702.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-03-14",
+        "gross_inputs": 15949.0,
+        "demand": 19138.8,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 18354.0,
+        "shortfall": 784.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-03-21",
+        "gross_inputs": 15970.0,
+        "demand": 19164.0,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 18354.0,
+        "shortfall": 810.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-03-28",
+        "gross_inputs": 15789.0,
+        "demand": 18946.8,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 18354.0,
+        "shortfall": 592.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-04-04",
+        "gross_inputs": 15912.0,
+        "demand": 19094.399999999998,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 18354.0,
+        "shortfall": 740.3999999999978
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-04-11",
+        "gross_inputs": 15838.0,
+        "demand": 19005.6,
+        "q_cap": 18354.0,
+        "status": "ok",
+        "output": 18354.0,
+        "shortfall": 651.5999999999985
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-04-18",
+        "gross_inputs": 16217.0,
+        "demand": 19460.399999999998,
+        "q_cap": 18416.0,
+        "status": "ok",
+        "output": 18416.0,
+        "shortfall": 1044.3999999999978
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-04-25",
+        "gross_inputs": 16326.0,
+        "demand": 19591.2,
+        "q_cap": 18416.0,
+        "status": "ok",
+        "output": 18416.0,
+        "shortfall": 1175.2000000000007
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-05-02",
+        "gross_inputs": 16384.0,
+        "demand": 19660.8,
+        "q_cap": 18416.0,
+        "status": "ok",
+        "output": 18416.0,
+        "shortfall": 1244.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-05-09",
+        "gross_inputs": 16610.0,
+        "demand": 19932.0,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18406.0,
+        "shortfall": 1526.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-05-16",
+        "gross_inputs": 16693.0,
+        "demand": 20031.6,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18406.0,
+        "shortfall": 1625.5999999999985
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-05-23",
+        "gross_inputs": 16600.0,
+        "demand": 19920.0,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18406.0,
+        "shortfall": 1514.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-05-30",
+        "gross_inputs": 17192.0,
+        "demand": 20630.399999999998,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18406.0,
+        "shortfall": 2224.399999999998
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-06-06",
+        "gross_inputs": 17364.0,
+        "demand": 20836.8,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18406.0,
+        "shortfall": 2430.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-06-13",
+        "gross_inputs": 17147.0,
+        "demand": 20576.399999999998,
+        "q_cap": 18406.0,
+        "status": "ok",
+        "output": 18406.0,
+        "shortfall": 2170.399999999998
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-06-20",
+        "gross_inputs": 17199.0,
+        "demand": 20638.8,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2478.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-06-27",
+        "gross_inputs": 17235.0,
+        "demand": 20682.0,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2522.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-07-04",
+        "gross_inputs": 17199.0,
+        "demand": 20638.8,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2478.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-07-11",
+        "gross_inputs": 17048.0,
+        "demand": 20457.6,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2297.5999999999985
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-07-18",
+        "gross_inputs": 17272.0,
+        "demand": 20726.399999999998,
+        "q_cap": 18089.0,
+        "status": "ok",
+        "output": 18089.0,
+        "shortfall": 2637.399999999998
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-07-25",
+        "gross_inputs": 17261.0,
+        "demand": 20713.2,
+        "q_cap": 18089.0,
+        "status": "ok",
+        "output": 18089.0,
+        "shortfall": 2624.2000000000007
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-08-01",
+        "gross_inputs": 17522.0,
+        "demand": 21026.399999999998,
+        "q_cap": 18089.0,
+        "status": "ok",
+        "output": 18089.0,
+        "shortfall": 2937.399999999998
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-08-08",
+        "gross_inputs": 17506.0,
+        "demand": 21007.2,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2847.2000000000007
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-08-15",
+        "gross_inputs": 17534.0,
+        "demand": 21040.8,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2880.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-08-22",
+        "gross_inputs": 17175.0,
+        "demand": 20610.0,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2450.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-08-29",
+        "gross_inputs": 17120.0,
+        "demand": 20544.0,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2384.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-09-05",
+        "gross_inputs": 17230.0,
+        "demand": 20676.0,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2516.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-09-12",
+        "gross_inputs": 16939.0,
+        "demand": 20326.8,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2166.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-09-19",
+        "gross_inputs": 16886.0,
+        "demand": 20263.2,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2103.2000000000007
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-09-26",
+        "gross_inputs": 16604.0,
+        "demand": 19924.8,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 1764.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-10-03",
+        "gross_inputs": 16777.0,
+        "demand": 20132.399999999998,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 1972.3999999999978
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-10-10",
+        "gross_inputs": 15568.0,
+        "demand": 18681.6,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 521.5999999999985
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-10-17",
+        "gross_inputs": 16090.0,
+        "demand": 19308.0,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 1148.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-10-24",
+        "gross_inputs": 15717.0,
+        "demand": 18860.399999999998,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 700.3999999999978
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-10-31",
+        "gross_inputs": 15615.0,
+        "demand": 18738.0,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 578.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-11-07",
+        "gross_inputs": 16238.0,
+        "demand": 19485.6,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 1325.5999999999985
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-11-14",
+        "gross_inputs": 16343.0,
+        "demand": 19611.6,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 1451.5999999999985
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-11-21",
+        "gross_inputs": 16763.0,
+        "demand": 20115.6,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 1955.5999999999985
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-11-28",
+        "gross_inputs": 17088.0,
+        "demand": 20505.6,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2345.5999999999985
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-12-05",
+        "gross_inputs": 17152.0,
+        "demand": 20582.399999999998,
+        "q_cap": 18160.0,
+        "status": "ok",
+        "output": 18160.0,
+        "shortfall": 2422.399999999998
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-12-12",
+        "gross_inputs": 17209.0,
+        "demand": 20650.8,
+        "q_cap": 18161.0,
+        "status": "ok",
+        "output": 18161.0,
+        "shortfall": 2489.7999999999993
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-12-19",
+        "gross_inputs": 17175.0,
+        "demand": 20610.0,
+        "q_cap": 18161.0,
+        "status": "ok",
+        "output": 18161.0,
+        "shortfall": 2449.0
+      },
+      {
+        "scenario": "k100_g20",
+        "week_ending": "2025-12-26",
+        "gross_inputs": 17198.0,
+        "demand": 20637.6,
+        "q_cap": 18161.0,
+        "status": "ok",
+        "output": 18161.0,
+        "shortfall": 2476.5999999999985
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-01-03",
+        "gross_inputs": 17089.0,
+        "demand": 17943.45,
+        "q_cap": 17409.7,
+        "status": "ok",
+        "output": 17409.7,
+        "shortfall": 533.75
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-01-10",
+        "gross_inputs": 16816.0,
+        "demand": 17656.8,
+        "q_cap": 17429.649999999998,
+        "status": "ok",
+        "output": 17429.649999999998,
+        "shortfall": 227.15000000000146
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-01-17",
+        "gross_inputs": 15762.0,
+        "demand": 16550.100000000002,
+        "q_cap": 17429.649999999998,
+        "status": "ok",
+        "output": 16550.100000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-01-24",
+        "gross_inputs": 15318.0,
+        "demand": 16083.900000000001,
+        "q_cap": 17429.649999999998,
+        "status": "ok",
+        "output": 16083.900000000001,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-01-31",
+        "gross_inputs": 15511.0,
+        "demand": 16286.550000000001,
+        "q_cap": 17429.649999999998,
+        "status": "ok",
+        "output": 16286.550000000001,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-02-07",
+        "gross_inputs": 15595.0,
+        "demand": 16374.75,
+        "q_cap": 17429.649999999998,
+        "status": "ok",
+        "output": 16374.75,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-02-14",
+        "gross_inputs": 15589.0,
+        "demand": 16368.45,
+        "q_cap": 17436.3,
+        "status": "ok",
+        "output": 16368.45,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-02-21",
+        "gross_inputs": 15880.0,
+        "demand": 16674.0,
+        "q_cap": 17436.3,
+        "status": "ok",
+        "output": 16674.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-02-28",
+        "gross_inputs": 15767.0,
+        "demand": 16555.350000000002,
+        "q_cap": 17436.3,
+        "status": "ok",
+        "output": 16555.350000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-03-07",
+        "gross_inputs": 15880.0,
+        "demand": 16674.0,
+        "q_cap": 17436.3,
+        "status": "ok",
+        "output": 16674.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-03-14",
+        "gross_inputs": 15949.0,
+        "demand": 16746.45,
+        "q_cap": 17436.3,
+        "status": "ok",
+        "output": 16746.45,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-03-21",
+        "gross_inputs": 15970.0,
+        "demand": 16768.5,
+        "q_cap": 17436.3,
+        "status": "ok",
+        "output": 16768.5,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-03-28",
+        "gross_inputs": 15789.0,
+        "demand": 16578.45,
+        "q_cap": 17436.3,
+        "status": "ok",
+        "output": 16578.45,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-04-04",
+        "gross_inputs": 15912.0,
+        "demand": 16707.600000000002,
+        "q_cap": 17436.3,
+        "status": "ok",
+        "output": 16707.600000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-04-11",
+        "gross_inputs": 15838.0,
+        "demand": 16629.9,
+        "q_cap": 17436.3,
+        "status": "ok",
+        "output": 16629.9,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-04-18",
+        "gross_inputs": 16217.0,
+        "demand": 17027.850000000002,
+        "q_cap": 17495.2,
+        "status": "ok",
+        "output": 17027.850000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-04-25",
+        "gross_inputs": 16326.0,
+        "demand": 17142.3,
+        "q_cap": 17495.2,
+        "status": "ok",
+        "output": 17142.3,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-05-02",
+        "gross_inputs": 16384.0,
+        "demand": 17203.2,
+        "q_cap": 17495.2,
+        "status": "ok",
+        "output": 17203.2,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-05-09",
+        "gross_inputs": 16610.0,
+        "demand": 17440.5,
+        "q_cap": 17485.7,
+        "status": "ok",
+        "output": 17440.5,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-05-16",
+        "gross_inputs": 16693.0,
+        "demand": 17527.65,
+        "q_cap": 17485.7,
+        "status": "ok",
+        "output": 17485.7,
+        "shortfall": 41.95000000000073
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-05-23",
+        "gross_inputs": 16600.0,
+        "demand": 17430.0,
+        "q_cap": 17485.7,
+        "status": "ok",
+        "output": 17430.0,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-05-30",
+        "gross_inputs": 17192.0,
+        "demand": 18051.600000000002,
+        "q_cap": 17485.7,
+        "status": "ok",
+        "output": 17485.7,
+        "shortfall": 565.9000000000015
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-06-06",
+        "gross_inputs": 17364.0,
+        "demand": 18232.2,
+        "q_cap": 17485.7,
+        "status": "ok",
+        "output": 17485.7,
+        "shortfall": 746.5
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-06-13",
+        "gross_inputs": 17147.0,
+        "demand": 18004.350000000002,
+        "q_cap": 17485.7,
+        "status": "ok",
+        "output": 17485.7,
+        "shortfall": 518.6500000000015
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-06-20",
+        "gross_inputs": 17199.0,
+        "demand": 18058.95,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 806.9500000000007
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-06-27",
+        "gross_inputs": 17235.0,
+        "demand": 18096.75,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 844.75
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-07-04",
+        "gross_inputs": 17199.0,
+        "demand": 18058.95,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 806.9500000000007
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-07-11",
+        "gross_inputs": 17048.0,
+        "demand": 17900.4,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 648.4000000000015
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-07-18",
+        "gross_inputs": 17272.0,
+        "demand": 18135.600000000002,
+        "q_cap": 17184.55,
+        "status": "inconsistent_baseline",
+        "output": null,
+        "shortfall": null
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-07-25",
+        "gross_inputs": 17261.0,
+        "demand": 18124.05,
+        "q_cap": 17184.55,
+        "status": "inconsistent_baseline",
+        "output": null,
+        "shortfall": null
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-08-01",
+        "gross_inputs": 17522.0,
+        "demand": 18398.100000000002,
+        "q_cap": 17184.55,
+        "status": "inconsistent_baseline",
+        "output": null,
+        "shortfall": null
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-08-08",
+        "gross_inputs": 17506.0,
+        "demand": 18381.3,
+        "q_cap": 17252.0,
+        "status": "inconsistent_baseline",
+        "output": null,
+        "shortfall": null
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-08-15",
+        "gross_inputs": 17534.0,
+        "demand": 18410.7,
+        "q_cap": 17252.0,
+        "status": "inconsistent_baseline",
+        "output": null,
+        "shortfall": null
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-08-22",
+        "gross_inputs": 17175.0,
+        "demand": 18033.75,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 781.75
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-08-29",
+        "gross_inputs": 17120.0,
+        "demand": 17976.0,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 724.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-09-05",
+        "gross_inputs": 17230.0,
+        "demand": 18091.5,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 839.5
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-09-12",
+        "gross_inputs": 16939.0,
+        "demand": 17785.95,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 533.9500000000007
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-09-19",
+        "gross_inputs": 16886.0,
+        "demand": 17730.3,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 478.2999999999993
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-09-26",
+        "gross_inputs": 16604.0,
+        "demand": 17434.2,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 182.20000000000073
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-10-03",
+        "gross_inputs": 16777.0,
+        "demand": 17615.850000000002,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 363.8500000000022
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-10-10",
+        "gross_inputs": 15568.0,
+        "demand": 16346.400000000001,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 16346.400000000001,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-10-17",
+        "gross_inputs": 16090.0,
+        "demand": 16894.5,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 16894.5,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-10-24",
+        "gross_inputs": 15717.0,
+        "demand": 16502.850000000002,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 16502.850000000002,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-10-31",
+        "gross_inputs": 15615.0,
+        "demand": 16395.75,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 16395.75,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-11-07",
+        "gross_inputs": 16238.0,
+        "demand": 17049.9,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17049.9,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-11-14",
+        "gross_inputs": 16343.0,
+        "demand": 17160.15,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17160.15,
+        "shortfall": 0.0
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-11-21",
+        "gross_inputs": 16763.0,
+        "demand": 17601.15,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 349.15000000000146
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-11-28",
+        "gross_inputs": 17088.0,
+        "demand": 17942.4,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 690.4000000000015
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-12-05",
+        "gross_inputs": 17152.0,
+        "demand": 18009.600000000002,
+        "q_cap": 17252.0,
+        "status": "ok",
+        "output": 17252.0,
+        "shortfall": 757.6000000000022
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-12-12",
+        "gross_inputs": 17209.0,
+        "demand": 18069.45,
+        "q_cap": 17252.95,
+        "status": "ok",
+        "output": 17252.95,
+        "shortfall": 816.5
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-12-19",
+        "gross_inputs": 17175.0,
+        "demand": 18033.75,
+        "q_cap": 17252.95,
+        "status": "ok",
+        "output": 17252.95,
+        "shortfall": 780.7999999999993
+      },
+      {
+        "scenario": "k095_g05",
+        "week_ending": "2025-12-26",
+        "gross_inputs": 17198.0,
+        "demand": 18057.9,
+        "q_cap": 17252.95,
+        "status": "ok",
+        "output": 17252.95,
+        "shortfall": 804.9500000000007
+      }
+    ]
+  },
+  "run_id": "us_refining_throughput_scenarios_2025-20261030T234610Z-58601681",
+  "generated_at": "2026-10-30T23:46:11+00:00",
+  "result_hash": "b80252ce807eb2f6c912f35414ab9e650fb54624d470688bb1d3c48be9d5f8f0"
+}

@@ -1,0 +1,161 @@
+{
+  "run_id": "us_refining_utilization_2025-20261030T234609Z-d6e20900",
+  "study_id": "us_refining_utilization_2025",
+  "study_path": "config/studies/us_refining_utilization_2025.yaml",
+  "study_config": {
+    "study_id": "us_refining_utilization_2025",
+    "title": "美国炼油周度总投入、产能与利用率（2025 年）",
+    "question": "2025 年美国炼厂每周的总投入、可运行产能与官方利用率是否齐全、同口径？ 按公布精度复算的利用率是否与官方值相容？全年处理量与产能的关系如何？",
+    "result_type": "descriptive",
+    "branch": "refining_throughput",
+    "scope": {
+      "market": "US",
+      "activity": "petroleum_refining",
+      "start": "2025-01-01",
+      "end": "2025-12-31",
+      "frequency": "weekly",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-10-30T23:46:09+00:00",
+      "data_checked_at": {
+        "eia_refinery_gross_inputs": "2026-10-30T23:45:56+00:00",
+        "eia_refinery_operable_capacity": "2026-10-30T23:45:56+00:00",
+        "eia_refinery_utilization": "2026-10-30T23:45:56+00:00"
+      }
+    },
+    "data": {
+      "inputs": "eia_refinery_gross_inputs",
+      "capacity": "eia_refinery_operable_capacity",
+      "utilization": "eia_refinery_utilization"
+    },
+    "method": {},
+    "benchmark": "EIA 公布的周度利用率（WPULEUS3）",
+    "evaluation": [
+      "预期周全部有三个有效数值，缺失周不插值",
+      "复算利用率与公布值在舍入区间内相容",
+      "固定数据版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "周度数据为 Weekly Petroleum Status Report 的估计，与月度、年度定稿可能不同；只使用当前修订版本",
+      "美国全国合计，不区分地区（PADD）、炼厂或公司",
+      "总投入（Gross Inputs）包含原油以外的投入，不等于原油加工量",
+      "描述历史，不是需求、产量或利润预测"
+    ]
+  },
+  "study_config_hash": "3bbc456725555d1681ca6c862500bef55301534ad49d18d726c7597e7715d96b",
+  "started_at": "2026-10-30T23:46:09+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "7e0c3b96f9327d1b94bddd47c12af48988c3cb0b5cfff6e7e031f5f9321f3e05",
+    "git_commit": "feda9ca98326d1dcdcd02292a7b02f2bb111e6e1",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.3",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "success",
+  "inputs": [
+    {
+      "role": "inputs",
+      "used": true,
+      "dataset_id": "eia_refinery_gross_inputs",
+      "version_id": "v20261030T234556Z-1b58f864",
+      "content_hash": "1b58f864bc1c0f5692c5bdb9de182f389401c6eff278f9175f3f157382f80c3e",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      }
+    },
+    {
+      "role": "capacity",
+      "used": true,
+      "dataset_id": "eia_refinery_operable_capacity",
+      "version_id": "v20261030T234556Z-063f81ec",
+      "content_hash": "063f81ec646b4bc866f5cb8f5630ad16b1d0c45b5260416462622ac5a6c087fe",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29"
+        ]
+      }
+    },
+    {
+      "role": "utilization",
+      "used": true,
+      "dataset_id": "eia_refinery_utilization",
+      "version_id": "v20261030T234556Z-7137591f",
+      "content_hash": "7137591ffdeac3c2e0cd4a5a500ade5b33f2fd7ad7e586d8ddc3c4cc36998e83",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ],
+          [
+            "2016-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29",
+          "2026-10-30"
+        ]
+      }
+    }
+  ],
+  "result_hash": "c78a6ec9803751ef7605ae4f939ff3913002dd00a97c7729e3fc20740f4a2981",
+  "warnings": [],
+  "unsupported": [],
+  "outputs": [
+    {
+      "path": "runs/us_refining_utilization_2025-20261030T234609Z-d6e20900/result.json",
+      "sha256": "551a21ace1c8ffc4302c744570755533e1965624c3341303c5bb3b49b0354979"
+    },
+    {
+      "path": "reports/us_refining_utilization_2025/us_refining_utilization_2025-20261030T234609Z-d6e20900/report.md",
+      "sha256": "81d834f5beffdc676ca267e48680b9f9ded1b10671aaa93c17c0327bc3daf3c7"
+    },
+    {
+      "path": "reports/us_refining_utilization_2025/us_refining_utilization_2025-20261030T234609Z-d6e20900/report.html",
+      "sha256": "7b98f63cb4972b08953e3ff830d9a1161c523d1e864bf4664df60bc757a21e46"
+    },
+    {
+      "path": "reports/us_refining_utilization_2025/us_refining_utilization_2025-20261030T234609Z-d6e20900/figures/refining_inputs_capacity.png",
+      "sha256": "9fc77bea820a19a3391ccf090db51cef86343c7186d3df9651c1b25596adb755"
+    },
+    {
+      "path": "reports/us_refining_utilization_2025/us_refining_utilization_2025-20261030T234609Z-d6e20900/figures/refining_utilization_check.png",
+      "sha256": "1bce75829ed335a7213858109d3c839989622704944e2280a270b85a2db3fd85"
+    }
+  ],
+  "finished_at": "2026-10-30T23:46:10+00:00"
+}
