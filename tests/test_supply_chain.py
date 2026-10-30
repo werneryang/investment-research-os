@@ -15,7 +15,7 @@ import yaml
 from investment_os.connectors.base import FetchError
 from investment_os.connectors.sec import parse_fsds_segments, segment_axes
 from investment_os.data.fundamentals import EdgarStore, extract_segments
-from investment_os.supply_chain.catalog import CatalogError, check, load_catalog, normalize_text
+from investment_os.supply_chain.catalog import CatalogError, check, fingerprint, load_catalog, normalize_text
 from investment_os.supply_chain.classification import ClassificationStore, import_naics, parse_naics_structure
 
 from .conftest import PROJECT_ROOT
@@ -162,6 +162,7 @@ def test_project_catalog_loads_and_has_no_errors_offline():
     rep = check(cat, naics=None, segment_facts=None, documents_dir=PROJECT_ROOT / "no-such-dir")
     assert rep.errors == []
     assert rep.warnings and not rep.verified
+    assert "reviewed" not in rep.statuses.values()  # 证据未能核对时，技术复核过的映射也只算候选
     assert {1045810, 723125} == cat.ciks()
     assert rep.inventory["counts"]["activities"] == 8
 
@@ -209,6 +210,7 @@ def mini(tmp_path):
                                      "market": "芯片", "activity": "act_design", "claims": ["clm_rival"]}]},
         "units": {"units": [{"id": "u", "question": "?", "activity": "act_design", "entities": ["seg_a"],
                              "status": "unassessed"}]},
+        "reviews": {"reviews": []},
     }
     return tmp_path, data
 
@@ -383,7 +385,7 @@ def test_confirming_a_figure_does_not_confirm_the_mapping(mini):
         write_catalog(root, _broken(numbers_only, ("links", "links", 0, "review_status"), "confirmed"))
     # 映射已人工确认但业务定义证据未确认：报错，不让确认越过证据
     rep = run_check(root, _review(numbers_only, "links", 0))
-    assert rep.statuses["lnk"] == "invalid" and any("clm_foundry 未经人工确认" in e for e in rep.errors)
+    assert rep.statuses["lnk"] == "invalid" and any("clm_foundry 未经复核" in e for e in rep.errors)
     rep = run_check(root, _review(_confirmed(numbers_only, 0), "links", 0))
     assert rep.errors == [] and rep.statuses["lnk"] == "confirmed"
     rep = run_check(root, _review(d, "links", 0, "rejected"))
@@ -402,3 +404,66 @@ def test_a_failed_claim_among_several_makes_the_item_invalid(mini):
     assert rep.claim_checks["clm_foundry"] == "failed" and rep.claim_checks["clm_rev"] == "verified"
     assert rep.statuses["lnk"] == "invalid" and any("lnk 引用的证据 clm_foundry 机器核对失败" in e for e in rep.errors)
     assert rep.statuses["rel"] == "invalid"  # 同一证据支撑的关系同样无效
+
+
+def _technical(root, data, ids, result="passed"):
+    """为 ids 追加一条技术复核记录，指纹取当前内容。"""
+    d = copy.deepcopy(data)
+    cat = write_catalog(root, d)
+    d["reviews"]["reviews"].append({
+        "id": f"trv_{len(d['reviews']['reviews'])}", "kind": "technical", "reviewer": "model", "reviewed_at": "2026-10-30",
+        "method": "事实核对与语义复核",
+        "items": [{"id": i, "fingerprint": fingerprint(cat, i) if i in {**cat.claims, **cat.links, **cat.relations} else "0" * 16,
+                   "result": result, "limits": "边界"} for i in ids]})
+    return d
+
+
+def test_technical_review_gives_reviewed_not_confirmed(mini):
+    """技术复核通过的映射为 reviewed（不是人工签认的 confirmed）；只复核数值不改变映射状态。"""
+    root, data = mini
+    d = copy.deepcopy(data)
+    d["links"]["links"][0]["claims"] = ["clm_foundry", "clm_rev"]
+    rep = run_check(root, _technical(root, d, ["clm_rev"]))
+    assert rep.errors == [] and rep.statuses["lnk"] == "candidate" and rep.technical["clm_rev"] == "passed"
+    # 映射复核了，但业务性质证据没有复核：报错，不让复核越过证据
+    rep = run_check(root, _technical(root, d, ["clm_rev", "lnk"]))
+    assert rep.statuses["lnk"] == "invalid" and any("clm_foundry 未经复核" in e for e in rep.errors)
+    full = _technical(root, d, ["clm_foundry", "clm_rev", "lnk"])
+    rep = run_check(root, full)
+    assert rep.errors == [] and rep.statuses["lnk"] == "reviewed"
+    assert rep.inventory["claim_technical_review"] == {"passed": 2, "failed": 0, "stale": 0}
+    assert rep.statuses["rel"] == "candidate"  # 同一证据支撑的关系没有自己的复核
+    # 人工复核为可选：人工确认映射时，证据经技术复核即可
+    rep = run_check(root, _review(full, "links", 0))
+    assert rep.errors == [] and rep.statuses["lnk"] == "confirmed"
+    # 人工否定优先于技术复核
+    rep = run_check(root, _review(full, "links", 0, "rejected"))
+    assert rep.statuses["lnk"] == "rejected"
+
+
+def test_changed_content_invalidates_the_technical_review(mini):
+    root, data = mini
+    d = copy.deepcopy(data)
+    d["links"]["links"][0]["claims"] = ["clm_foundry", "clm_rev"]
+    full = _technical(root, d, ["clm_foundry", "clm_rev", "lnk"])
+    edited = copy.deepcopy(full)
+    edited["links"]["links"][0]["scope"] = "改写后的范围"
+    rep = run_check(root, edited)
+    assert rep.technical["lnk"] == "stale" and rep.statuses["lnk"] == "candidate" and rep.errors == []
+    assert any("lnk 的技术复核记录" in w and "需重新复核" in w for w in rep.warnings)
+    edited = copy.deepcopy(full)  # 证据内容改变：证据记录失效，映射不再算已复核
+    edited["claims"]["claims"][2]["note"] = "补充说明"
+    rep = run_check(root, edited)
+    assert rep.technical["clm_rev"] == "stale" and rep.statuses["lnk"] == "candidate" and rep.errors == []
+    # 追加新记录后恢复
+    rep = run_check(root, _technical(root, edited, ["clm_rev"]))
+    assert rep.warnings == [] and rep.statuses["lnk"] == "reviewed"
+
+
+def test_failed_technical_review_blocks_the_claim(mini):
+    root, data = mini
+    rep = run_check(root, _technical(root, data, ["clm_rev"], result="failed"))
+    assert any("clm_rev 技术复核未通过" in e for e in rep.errors) and rep.statuses["lnk"] == "invalid"
+    bad = _technical(root, data, ["clm_nope"])
+    with pytest.raises(CatalogError, match="未登记的证据、映射或关系"):
+        write_catalog(root, bad)

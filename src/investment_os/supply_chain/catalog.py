@@ -8,11 +8,15 @@
 - 原文登记的精确期末须在原文中出现，且与 FSDS 的月末相差不超过半个月
 - 被否定或撤回的证据不能支撑任何映射或关系
 
-机器核对（claim_checks）与人工复核（review_status）分开记录：模型提取的证据为 candidate，
-confirmed 只能由人工复核给出并写明复核人与日期。映射与关系有自己的人工复核记录（未写为 candidate）：
-证据确认的是摘录或数值，不等于确认了业务归属或关系。状态：对象自身有错误时为 invalid（引用的任一证据机器核对失败也算）；
-人工否定或撤回的为 rejected / retracted；对象经人工确认、且引用的每条证据都经人工确认并机器核对通过时为 confirmed；
-其余为 candidate。对象已确认而证据未全部确认时报错，不让确认越过证据。
+三种核对分开记录：
+- 机器核对（claim_checks）：摘录能否在原文中逐字找到、数值能否在分部事实中找到
+- 技术复核（reviews.yaml，technical）：事实核对（原文、金额、单位、期间、申报版本与计算）与语义复核（证据是否真正支持结论，
+  有没有把公司模式扩大到每个分部、把 memory 扩大成 HBM、把业务关联解释为收入权重）；每项记录内容指纹，
+  内容改变后记录失效（未核对），须重新复核；可以由模型完成，不等于人工签认
+- 人工复核（review_status）：可选，用于争议、证据冲突或特别关注的判断；confirmed 只表示人工签认，须写明复核人与日期
+证据确认的是摘录或数值，不等于确认了业务归属或关系，映射与关系各有自己的复核。证据「已复核」指机器核对通过且经人工确认或技术复核通过。
+状态：对象自身有错误时为 invalid（引用的任一证据机器核对失败或技术复核未通过也算）；人工否定或撤回的为 rejected / retracted；
+人工确认的为 confirmed，技术复核通过的为 reviewed，两者都要求引用的每条证据都已复核（否则报错，不让复核越过证据）；其余为 candidate。
 本地缺少原文或分部事实、证据缺数值或单位时，相应项目记为未核对（warning），不冒充通过。
 """
 
@@ -20,6 +24,7 @@ from __future__ import annotations
 
 import hashlib
 import html
+import json
 import re
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -30,11 +35,13 @@ import pandas as pd
 import yaml
 
 SCHEMA_VERSION = "supply_chain.v1"
-FILES = ("activities", "entities", "links", "relations", "claims", "units")
+FILES = ("activities", "entities", "links", "relations", "claims", "units", "reviews")
 DIRECTED = ("supply", "foundry", "contract_manufacturing")
 UNDIRECTED = ("partnership", "competition", "substitution")
 MATCH_TYPES = ("exact", "partial", "ambiguous")
 REVIEW = ("candidate", "confirmed", "rejected", "retracted")
+TECHNICAL = ("passed", "failed")
+_REVIEW_FIELDS = ("review_status", "reviewer", "reviewed_at")
 ORIGIN = ("observed", "derived", "assumed", "inferred", "unknown")
 ENTITY_TYPES = ("company", "segment", "anonymous")
 UNIT_STATUS = ("unassessed", "A", "B", "C")
@@ -69,6 +76,9 @@ class Catalog:
     documents: dict[str, dict[str, Any]]
     units: dict[str, dict[str, Any]]
     version: str = ""
+    reviews: dict[str, dict[str, Any]] = field(default_factory=dict)
+    # 每个对象最近一次技术复核：{review, reviewed_at, result, fingerprint, limits}
+    technical: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def ciks(self) -> set[int]:
         return {int(e["cik"]) for e in self.entities.values() if e.get("cik")}
@@ -92,6 +102,7 @@ FIELDS = {
              "review_status", "reviewer", "reviewed_at"},
     "关系": {"id", "type", "provider", "recipient", "parties", "market", "activity", "activity_gap", "product",
              "share", "valid_from", "valid_to", "claims", "note", "review_status", "reviewer", "reviewed_at"},
+    "复核": {"id", "kind", "reviewer", "reviewed_at", "method", "scope", "basis", "record", "items"},
     "研究单元": {"id", "question", "activity", "entities", "observation", "metrics", "period", "required_inputs",
                  "known_gaps", "expected", "status"},
 }
@@ -108,6 +119,36 @@ def _reviewed(item: dict[str, Any], where: str) -> None:
     _choice(item["review_status"], REVIEW, f"{where} 的 review_status")
     if item["review_status"] in ("confirmed", "rejected", "retracted"):
         _need(item, ("reviewer", "reviewed_at"), f"{where}（{item['review_status']} 须有人工复核记录）")
+
+
+def fingerprint(cat: "Catalog", item_id: str) -> str:
+    """技术复核所针对的内容指纹：对象的全部字段（不含人工复核字段）；原文摘录另含原文的申报编号与 SHA256。"""
+    item = cat.claims.get(item_id) or cat.links.get(item_id) or cat.relations.get(item_id)
+    if item is None:
+        raise CatalogError(f"未登记的证据、映射或关系：{item_id}")
+    content = {k: v for k, v in item.items() if k not in _REVIEW_FIELDS}
+    doc = cat.documents.get(item.get("document") or "")
+    if doc:
+        content["_document"] = {"accession": doc["accession"], "sha256": doc["sha256"]}
+    return hashlib.sha256(json.dumps(content, sort_keys=True, ensure_ascii=False, default=str).encode()).hexdigest()[:16]
+
+
+def _technical(reviews: dict[str, dict[str, Any]], known: set[str]) -> dict[str, dict[str, Any]]:
+    """各对象最近一次技术复核（按复核日期，同日以登记顺序靠后者为准）。"""
+    out: dict[str, dict[str, Any]] = {}
+    for r in sorted(reviews.values(), key=lambda r: str(r["reviewed_at"])):
+        _choice(r["kind"], ("technical",), f"复核 {r['id']} 的 kind")
+        for it in r["items"]:
+            _need(it, ("id", "fingerprint", "result"), f"复核 {r['id']} 的条目")
+            unknown = sorted(set(it) - {"id", "fingerprint", "result", "limits"})
+            if unknown:
+                raise CatalogError(f"复核 {r['id']} 的条目 {it['id']} 有未知字段：{', '.join(unknown)}")
+            _choice(it["result"], TECHNICAL, f"复核 {r['id']} 的条目 {it['id']} 的 result")
+            if it["id"] not in known:
+                raise CatalogError(f"复核 {r['id']} 引用了未登记的证据、映射或关系 {it['id']}")
+            out[it["id"]] = {"review": r["id"], "reviewed_at": str(r["reviewed_at"]), "result": it["result"],
+                             "fingerprint": str(it["fingerprint"]), "limits": it.get("limits", "")}
+    return out
 
 
 def load_catalog(root: Path) -> Catalog:
@@ -165,8 +206,10 @@ def load_catalog(root: Path) -> Catalog:
     units = index(docs["units"].get("units"), "研究单元", ("question", "activity", "entities", "status"))
     for u in units.values():
         _choice(u["status"], UNIT_STATUS, f"研究单元 {u['id']} 的 status")
+    reviews = index(docs["reviews"].get("reviews"), "复核", ("kind", "reviewer", "reviewed_at", "method", "items"))
+    technical = _technical(reviews, set(claims) | set(links) | set(relations))
     return Catalog(Path(root), activities, entities, links, relations, claims, documents, units,
-                   docs["activities"].get("version", ""))
+                   docs["activities"].get("version", ""), reviews, technical)
 
 
 def _available_at(accepted: str) -> str:
@@ -183,8 +226,10 @@ class Report:
     claim_available_at: dict[str, str] = field(default_factory=dict)
     # 机器核对结果：verified / unverified（本地缺少原文或数据、证据缺数值或单位）/ failed
     claim_checks: dict[str, str] = field(default_factory=dict)
+    # 技术复核：passed / failed / stale（内容已改变，记录失效）；没有记录的对象不出现
+    technical: dict[str, str] = field(default_factory=dict)
     # 映射与关系的状态：invalid（自身有错误）/ rejected / retracted（人工否定或撤回）/
-    # confirmed（对象经人工确认，引用的证据全部人工确认且机器核对通过）/ candidate
+    # confirmed（人工确认）/ reviewed（技术复核通过）/ candidate；confirmed 与 reviewed 要求引用的证据全部已复核
     statuses: dict[str, str] = field(default_factory=dict)
     inventory: dict[str, Any] = field(default_factory=dict)
 
@@ -347,6 +392,22 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
         rep.claim_checks[c["id"]] = "verified"
         rep.ok("xbrl_fact")
 
+    # ---- 技术复核记录：内容指纹须与当前内容一致 ----
+    for item_id, t in cat.technical.items():
+        current = fingerprint(cat, item_id)
+        if current != t["fingerprint"]:
+            rep.technical[item_id] = "stale"
+            rep.warnings.append(f"{item_id} 的技术复核记录（{t['review']}）与当前内容不一致（当前指纹 {current}），需重新复核")
+        else:
+            rep.technical[item_id] = t["result"]
+            if t["result"] == "failed" and item_id in cat.claims:
+                rep.errors.append(f"证据 {item_id} 技术复核未通过（{t['review']}）")
+
+    def reviewed(cid: str) -> bool:
+        """证据已复核：机器核对通过，且经人工确认或技术复核通过。"""
+        return rep.claim_checks.get(cid) == "verified" and (
+            cat.claims[cid]["review_status"] == "confirmed" or rep.technical.get(cid) == "passed")
+
     def claim_owner(c: dict[str, Any]) -> int | None:
         """证据来自哪家公司的申报：原文看登记的主体，XBRL 看分部事实中的申报主体。"""
         if c["type"] == "filing_text":
@@ -358,11 +419,11 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
                   excluded: set[str] = frozenset()) -> None:
         """证据须存在、未被否定或撤回、来自相关公司的申报、机器核对未失败；不满足的证据不计入，并记为对象自身的错误。
 
-        状态：该对象自身有任何错误为 invalid；人工否定或撤回的取其复核状态；对象经人工确认且引用的每条证据
-        都人工确认、机器核对通过时为 confirmed，其余为 candidate。确认数值或摘录本身不会让对象变为 confirmed。
+        状态：该对象自身有任何错误为 invalid；人工否定或撤回的取其复核状态；人工确认的为 confirmed，技术复核通过的
+        为 reviewed，两者都要求引用的每条证据已复核；其余为 candidate。复核数值或摘录本身不会改变对象的状态。
         excluded 为调用方已判定不适用的证据（如分部别名不符）。
         """
-        usable, unconfirmed = 0, []
+        usable, unconfirmed, unchecked = 0, [], []
         for cid in item.get("claims") or []:
             c = cat.claims.get(cid)
             if c is None:
@@ -376,6 +437,9 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
             if owner is not None and owner not in owners:
                 rep.errors.append(f"{kind} {item['id']} 的证据 {cid} 来自 CIK {owner} 的申报，不属于相关公司")
                 continue
+            if rep.technical.get(cid) == "failed":
+                rep.errors.append(f"{kind} {item['id']} 引用了技术复核未通过的证据 {cid}")
+                continue
             if rep.claim_checks.get(cid) == "failed":
                 # 证据的错误记在证据上；引用它的对象也须为 invalid，不能靠其余证据显示为 confirmed
                 rep.errors.append(f"{kind} {item['id']} 引用的证据 {cid} 机器核对失败")
@@ -383,15 +447,24 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
             if cid in excluded:
                 continue  # 调用方判定不适用（如分部别名不符），已作为该对象的错误报告
             usable += 1
-            if not (c["review_status"] == "confirmed" and rep.claim_checks.get(cid) == "verified"):
+            if rep.claim_checks.get(cid) != "verified" or (
+                    rep.technical.get(cid) == "stale" and c["review_status"] != "confirmed"):
+                unchecked.append(cid)  # 本地缺少原文或分部事实、或复核记录已失效：未核对，已另记 warning
+            elif not reviewed(cid):
                 unconfirmed.append(cid)
         if not usable:
             rep.errors.append(f"{kind} {item['id']} 没有可用的证据")
-        review = item["review_status"]
-        if review == "confirmed" and unconfirmed:
-            rep.errors.append(f"{kind} {item['id']} 已人工确认，但证据 {', '.join(unconfirmed)} 未经人工确认或机器核对未通过")
-        rep.statuses[item["id"]] = ("invalid" if len(rep.errors) > errors_before
-                                    else review if review in ("confirmed", "rejected", "retracted") else "candidate")
+        review, tech = item["review_status"], rep.technical.get(item["id"])
+        if tech == "failed":
+            rep.errors.append(f"{kind} {item['id']} 技术复核未通过（{cat.technical[item['id']]['review']}）")
+        status = (review if review in ("confirmed", "rejected", "retracted")
+                  else "reviewed" if tech == "passed" else "candidate")
+        if status in ("confirmed", "reviewed") and unconfirmed:
+            rep.errors.append(f"{kind} {item['id']} 已{'人工确认' if status == 'confirmed' else '通过技术复核'}，"
+                              f"但证据 {', '.join(unconfirmed)} 未经复核（人工确认或技术复核）")
+        if status in ("confirmed", "reviewed") and unchecked:
+            status = "candidate"  # 证据本次未能机器核对：不报错，也不冒充已复核
+        rep.statuses[item["id"]] = "invalid" if len(rep.errors) > errors_before else status
 
     # ---- L3 映射 ----
     for lk in cat.links.values():
@@ -466,7 +539,10 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
     rep.inventory["claim_checks"] = {s: sum(v == s for v in rep.claim_checks.values())
                                      for s in ("verified", "unverified", "failed")}
     rep.inventory["link_relation_status"] = {s: sum(v == s for v in rep.statuses.values())
-                                             for s in ("confirmed", "candidate", "rejected", "retracted", "invalid")}
+                                             for s in ("confirmed", "reviewed", "candidate", "rejected", "retracted",
+                                                       "invalid")}
+    rep.inventory["claim_technical_review"] = {s: sum(rep.technical.get(c) == s for c in cat.claims)
+                                               for s in ("passed", "failed", "stale")}
     return rep
 
 

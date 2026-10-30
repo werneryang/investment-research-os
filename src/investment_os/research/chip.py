@@ -8,8 +8,10 @@
   合并营收有多个值时判为冲突
 - 毛利核对：分部报告了 GrossProfit 时，与营收减销售成本比较；任一项有多个值时判为冲突，不当作缺失跳过
 
-输入能力等级只评价分部财务输入；分部到芯片活动的归属另记 attribution_status（只看指向本单元活动的有效映射）：映射与证据未经人工复核时为 candidate，
-结果按分部口径陈述，不称为某项活动的财务。
+输入能力等级只评价分部财务输入；分部到芯片活动的归属另记 attribution_status（只看指向本单元活动的有效映射）：
+全部人工确认为 confirmed，全部经技术复核（或人工确认）为 reviewed，否则为 candidate。reviewed 不等于人工签认。
+不论复核状态，partial 映射与未登记的有效期都作为限制保留：结果按分部口径陈述，不按活动分摊收入。
+证据包带有技术复核记录时，结果另列各映射的结论边界（旧证据包没有该记录，结果结构不变）。
 """
 
 from __future__ import annotations
@@ -128,14 +130,19 @@ def _gross_profit_check(recs: list[dict[str, Any]], acc: str, entities: list[str
     return rows
 
 
+USABLE_LINKS = ("confirmed", "reviewed", "candidate")
+
+
 def _attribution(bundle: dict[str, Any], entities: list[str], activity: str) -> tuple[str, list[str]]:
     """只看指向本单元活动、且未被判为无效或人工否定 / 撤回的映射：指向其他活动的映射不说明本活动的归属。"""
     links = [(lid, lk) for lid, lk in (bundle.get("links") or {}).items()
-             if lk["entity"] in entities and lk["activity"] == activity and lk["status"] in ("confirmed", "candidate")]
+             if lk["entity"] in entities and lk["activity"] == activity and lk["status"] in USABLE_LINKS]
     linked = {lk["entity"] for _, lk in links}
     if not links or linked != set(entities):
         return "unmapped", [lid for lid, _ in links]
-    status = "confirmed" if all(lk["status"] == "confirmed" for _, lk in links) else "candidate"
+    states = {lk["status"] for _, lk in links}
+    status = ("confirmed" if states == {"confirmed"} else "reviewed" if states <= {"confirmed", "reviewed"}
+              else "candidate")
     return status, [lid for lid, _ in links]
 
 
@@ -205,6 +212,11 @@ def _unit(spec: dict[str, Any], recs: list[dict[str, Any]], bundle: dict[str, An
         "filing": acc, "filing_available_at": max((r["available_at"] for r in filing_recs), default=None),
         "filings_skipped": notes, "known_gaps": list(spec.get("known_gaps") or []), "checks": checks,
     }
+    if "reviews" in bundle:  # 带技术复核记录的证据包：列出各映射的匹配程度、有效期、复核与结论边界
+        links = bundle["links"]
+        out["link_review"] = [{"link": lid, "match": links[lid]["match"], "valid_from": links[lid]["valid_from"],
+                               "valid_to": links[lid]["valid_to"], "status": links[lid]["status"],
+                               "technical_review": links[lid]["technical_review"]} for lid in link_ids]
     return out, rows, grade.to_dict()
 
 
@@ -241,11 +253,24 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
                 "status": "fail" if "fail" in statuses else ("pass" if statuses == {"pass"} else "skipped"),
                 "checked": sum(x["status"] != "skipped" for x in items), "rows": items,
                 **({"reason": items[0]["reason"]} if statuses == {"skipped"} else {})}
-        if u["attribution_status"] != "confirmed":
-            why = ("映射与证据尚未人工复核" if u["attribution_status"] == "candidate"
-                   else "部分分部没有登记活动映射")
-            limitations.append(f"{uid}：分部到活动（{u['activity']}）的归属为 {u['attribution_status']}——{why}；"
-                               "结果按分部口径陈述，不称为该活动的财务")
+        if "link_review" not in u:  # 旧证据包：沿用原限制说明，结果结构与校验值不变
+            if u["attribution_status"] != "confirmed":
+                why = ("映射与证据尚未人工复核" if u["attribution_status"] == "candidate"
+                       else "部分分部没有登记活动映射")
+                limitations.append(f"{uid}：分部到活动（{u['activity']}）的归属为 {u['attribution_status']}——{why}；"
+                                   "结果按分部口径陈述，不称为该活动的财务")
+            continue
+        why = {"reviewed": "映射与证据经技术复核（事实核对与语义复核），未经人工签认",
+               "candidate": "映射或证据尚未复核", "unmapped": "部分分部没有登记活动映射"}.get(u["attribution_status"])
+        if why:
+            limitations.append(f"{uid}：分部到活动（{u['activity']}）的归属为 {u['attribution_status']}——{why}")
+        partial = [x["link"] for x in u["link_review"] if x["match"] != "exact"]
+        if partial or u["attribution_status"] == "unmapped":
+            limitations.append(f"{uid}：映射为 partial（{', '.join(partial)}）或不完整，分部还包括该活动以外的业务；"
+                               "结果按分部口径陈述，不按活动分摊收入，不称为该活动的财务")
+        undated = [x["link"] for x in u["link_review"] if not (x["valid_from"] or x["valid_to"])]
+        if undated:
+            limitations.append(f"{uid}：映射有效期未登记（{', '.join(undated)}），不据此断言历史时点的归属")
     computed = [u for u in units if u["grade"] in ("A", "B")]
     cutoff = max((u["filing_available_at"] for u in computed if u["filing_available_at"]), default=None)
     return ResearchResult(

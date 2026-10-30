@@ -230,7 +230,7 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
   - 同一关系不重复记录。
   - 证据须来自相关公司的申报；XBRL 证据须写明数值与单位，单位参与匹配，缺数值或单位时为未核对；分部别名须属于上级公司（按 CIK）的申报，且在业务分部维度中。
   - 原文登记的精确期末（年报封面的 fiscal year ended …）须在原文中出现，且与 FSDS 月末相差不超过半个月。
-  - 被否定或撤回的证据不能支撑映射或关系。机器核对结果（`claim_checks`）与人工复核状态（`review_status`）分开：模型提取的证据为 candidate，confirmed、rejected、retracted 须写明复核人与日期。映射与关系有自己的人工复核记录（`review_status`，未写为 candidate），与证据的复核分开：确认数值或摘录不等于确认业务归属。状态：自身有任何错误为 invalid（引用的任一证据机器核对失败、归属或别名不符都算，不能靠其余证据显示为 confirmed）；人工否定或撤回为 rejected / retracted；自身经人工确认、且引用的每条证据都经人工确认并机器核对通过时为 confirmed（自身已确认而证据未全部确认时报错）；其余为 candidate。归属或别名不符的证据不计入，P3b 只能选用 confirmed 的映射作为已核验输入。
+  - 被否定、撤回或技术复核未通过的证据不能支撑映射或关系。三种核对分开记录：机器核对（`claim_checks`）；技术复核（`config/supply_chain/reviews.yaml`，事实核对与语义复核，可由模型完成，每项记录内容指纹 `catalog.fingerprint`，内容改变后失效并报未核对）；可选的人工复核（`review_status`，confirmed 只表示人工签认，confirmed、rejected、retracted 须写明复核人与日期）。映射与关系各有自己的复核，复核数值或摘录不等于复核业务归属。状态：自身有任何错误为 invalid（引用的任一证据机器核对失败或技术复核未通过、归属或别名不符都算）；人工否定或撤回为 rejected / retracted；人工确认为 confirmed，技术复核通过为 reviewed，两者都要求引用的每条证据已复核（机器核对通过，且经技术复核或人工确认），否则报错；证据因本地缺数据未能核对或复核记录失效时降为 candidate；其余为 candidate。技术复核通过即可用于声明范围内的研究。
   - NAICS 代码必须在导入表中。
   - XBRL 成员与事实数值必须能在分部事实中找到。
   - 摘录必须逐字出现在本地原文中，原文 SHA256 必须一致。
@@ -241,7 +241,7 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - 每个单元的全部数字取自同一份最新的、覆盖所需分部 × 指标 × 财年且无冲突的年度申报。
 - 所需指标没有观测时为 C。
 - 分部营收合计与合并营收、分部毛利与营收减销售成本分别核对，不一致为 C；没有合并营收时跳过。
-- 活动归属另列为 `attribution_status`（confirmed / candidate / unmapped）：只计入指向本单元活动、状态为 confirmed 或 candidate 的映射。
+- 活动归属另列为 `attribution_status`（confirmed / reviewed / candidate / unmapped）：只计入指向本单元活动、状态为 confirmed、reviewed 或 candidate 的映射；reviewed 不等于人工签认。证据包带技术复核记录时，结果另列各映射的匹配程度、有效期与结论边界，partial 与未登记有效期作为限制保留；旧证据包保持原结果结构。
 
 报告段落与图表在 `reporting/chip.py`。只在本机运行，未加入 CI。
 
