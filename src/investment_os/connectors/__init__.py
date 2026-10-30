@@ -11,6 +11,7 @@ from .evidence import EvidenceBundleConnector
 from .fred import FredApiVintagesConnector, FredGraphCsvConnector
 from .french import FrenchLibraryConnector
 from .manual import ManualCsvConnector
+from .sec_graph import SecPerformanceGraphConnector
 from .shiller import ShillerXlsConnector
 from .treasury import TreasuryParCurveConnector
 
@@ -18,7 +19,7 @@ _CONNECTORS = {
     c.name: c
     for c in (TreasuryParCurveConnector, FredGraphCsvConnector, FredApiVintagesConnector,
               FrenchLibraryConnector, DamodaranXlsConnector, ShillerXlsConnector,
-              ManualCsvConnector, EvidenceBundleConnector, EiaPetXlsConnector)
+              ManualCsvConnector, EvidenceBundleConnector, EiaPetXlsConnector, SecPerformanceGraphConnector)
 }
 
 

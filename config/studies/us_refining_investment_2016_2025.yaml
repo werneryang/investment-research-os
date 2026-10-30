@@ -1,0 +1,54 @@
+# 产业链研究 §5.4：炼油投资对照（docs/supply-chain-research-design.md §5.4，P3a 附加交付）
+study_id: us_refining_investment_2016_2025
+title: 美国炼油利用率、裂解价差与炼油公司股东总收益（2016–2025 年）
+question: >-
+  2016–2025 年美国炼厂周度利用率与墨西哥湾沿岸 3-2-1 裂解价差的历史关系如何？
+  同期独立炼油公司 Valero、PBF Energy 的日历年股东总收益相对标普 500 的表现，与年均价差、利用率如何对照？
+result_type: descriptive
+branch: refining_investment
+
+scope:
+  market: US
+  activity: petroleum_refining
+  start: 2016-01-01
+  end: 2025-12-31
+  frequency: weekly
+  vintage_policy: latest
+
+data:
+  utilization: eia_refinery_utilization
+  crude: eia_spot_wti_cushing
+  gasoline: eia_spot_gasoline_gulf
+  distillate: eia_spot_ulsd_gulf
+  tsr_valero: sec_tsr_valero
+  tsr_pbf: sec_tsr_pbf
+
+method:
+  # 3 桶 WTI → 2 桶汽油 + 1 桶馏分油；产品为墨西哥湾沿岸现货，原油为库欣现货（地点不同，是常用的指标约定）
+  crack_spread: {id: gulf_coast_321, crude: 3, gasoline: 2, distillate: 1, gallons_per_barrel: 42}
+  # primary：按顺序取第一份同时含两个年末的申报换算年度收益；其他已登记申报只用于重叠年份的核对
+  companies:
+    - {id: valero, name: Valero Energy, role: tsr_valero,
+       primary: [0001035002-21-000051, 0001628280-26-011499]}
+    - {id: pbf, name: PBF Energy, role: tsr_pbf,
+       primary: [0001534504-21-000008, 0001534504-26-000010]}
+  not_covered:
+    - name: Phillips 66、Marathon Petroleum、HF Sinclair、Delek US、CVR Energy
+      reason: 10-K 业绩图只有图片，没有以文字列出的数值表，不能逐值核对；本项目也没有已核验的个股总收益来源
+    - name: Exxon Mobil 等一体化石油公司
+      reason: Exxon 的 10-K 没有业绩图；一体化公司还受上游、化工与零售影响，需分部数据另行对照
+
+benchmark: 标普 500 累计总收益指数（同一份 10-K 业绩图）
+evaluation:
+  - 2016–2025 年预期周的利用率与三个价格全部有效，缺失周不插值
+  - 每个日历年的公司与标普 500 收益都有主申报覆盖；重叠申报换算的收益在舍入区间内一致
+  - 两家公司申报中的标普 500 年度收益在舍入区间内一致
+  - 固定数据版本可重现（iros verify）
+
+limitations:
+  - 裂解价差是声明的指标定义，不是炼厂实际毛利；不含 RIN 合规成本、运输、产品结构与原油价差
+  - 现货价为 EIA 对日度收盘价的周均值，日度价格来自 Refinitiv（LSEG）；只使用当前修订版本
+  - 利用率是美国全国周度估计，不区分地区（PADD）或炼厂，也不等于样本公司的利用率
+  - 公司只有 Valero 与 PBF 两家独立炼油公司；Valero 另有乙醇与可再生柴油业务，PBF 有物流业务，总收益不只反映炼油
+  - 业绩图数值为公司在 10-K 中披露的累计总收益（含股息再投资），未与独立价格来源核对
+  - 描述历史关系，不是因果解释、交易信号或收益预测
