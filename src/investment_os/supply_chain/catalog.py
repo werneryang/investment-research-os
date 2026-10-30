@@ -9,8 +9,10 @@
 - 被否定或撤回的证据不能支撑任何映射或关系
 
 机器核对（claim_checks）与人工复核（review_status）分开记录：模型提取的证据为 candidate，
-confirmed 只能由人工复核给出并写明复核人与日期。映射与关系自身有错误时为 invalid；否则有至少一条人工确认、
-机器核对通过且适用（来自相关公司、分部别名相符）的证据时为 confirmed，其余为 candidate。
+confirmed 只能由人工复核给出并写明复核人与日期。映射与关系有自己的人工复核记录（未写为 candidate）：
+证据确认的是摘录或数值，不等于确认了业务归属或关系。状态：对象自身有错误时为 invalid；
+人工否定或撤回的为 rejected / retracted；对象经人工确认、且引用的每条证据都经人工确认并机器核对通过时为 confirmed；
+其余为 candidate。对象已确认而证据未全部确认时报错，不让确认越过证据。
 本地缺少原文或分部事实、证据缺数值或单位时，相应项目记为未核对（warning），不冒充通过。
 """
 
@@ -86,9 +88,10 @@ FIELDS = {
              "document_period_end"},
     "证据": {"id", "type", "document", "locator", "excerpt", "accession", "tag", "segments", "period_end",
              "duration_quarters", "value", "unit", "origin_type", "review_status", "reviewer", "reviewed_at", "note"},
-    "映射": {"id", "entity", "activity", "match", "scope", "valid_from", "valid_to", "claims"},
+    "映射": {"id", "entity", "activity", "match", "scope", "valid_from", "valid_to", "claims",
+             "review_status", "reviewer", "reviewed_at"},
     "关系": {"id", "type", "provider", "recipient", "parties", "market", "activity", "activity_gap", "product",
-             "share", "valid_from", "valid_to", "claims", "note"},
+             "share", "valid_from", "valid_to", "claims", "note", "review_status", "reviewer", "reviewed_at"},
     "研究单元": {"id", "question", "activity", "entities", "observation", "metrics", "period", "required_inputs",
                  "known_gaps", "expected", "status"},
 }
@@ -97,6 +100,14 @@ FIELDS = {
 def _choice(value: Any, choices: tuple[str, ...], where: str) -> None:
     if value not in choices:
         raise CatalogError(f"{where} 的取值 {value!r} 无效；可用：{', '.join(choices)}")
+
+
+def _reviewed(item: dict[str, Any], where: str) -> None:
+    """人工复核状态（映射与关系未写时为 candidate）；confirmed、rejected、retracted 须写明复核人与日期。"""
+    item.setdefault("review_status", "candidate")
+    _choice(item["review_status"], REVIEW, f"{where} 的 review_status")
+    if item["review_status"] in ("confirmed", "rejected", "retracted"):
+        _need(item, ("reviewer", "reviewed_at"), f"{where}（{item['review_status']} 须有人工复核记录）")
 
 
 def load_catalog(root: Path) -> Catalog:
@@ -139,18 +150,18 @@ def load_catalog(root: Path) -> Catalog:
     for c in claims.values():
         _choice(c["type"], ("filing_text", "xbrl_segment"), f"证据 {c['id']} 的 type")
         _choice(c["origin_type"], ORIGIN, f"证据 {c['id']} 的 origin_type")
-        _choice(c["review_status"], REVIEW, f"证据 {c['id']} 的 review_status")
         _need(c, ("document", "locator", "excerpt") if c["type"] == "filing_text" else
               ("accession", "tag", "segments", "period_end", "duration_quarters"), f"证据 {c['id']}")
         # 人工复核状态与机器核对分开：confirmed 只能由人工复核给出，须写明复核人与日期
-        if c["review_status"] in ("confirmed", "rejected", "retracted"):
-            _need(c, ("reviewer", "reviewed_at"), f"证据 {c['id']}（{c['review_status']} 须有人工复核记录）")
+        _reviewed(c, f"证据 {c['id']}")
     links = index(docs["links"].get("links"), "映射", ("entity", "activity", "match", "claims"))
     for lk in links.values():
         _choice(lk["match"], MATCH_TYPES, f"映射 {lk['id']} 的 match")
+        _reviewed(lk, f"映射 {lk['id']}")
     relations = index(docs["relations"].get("relations"), "关系", ("type", "claims"))
     for r in relations.values():
         _choice(r["type"], DIRECTED + UNDIRECTED, f"关系 {r['id']} 的 type")
+        _reviewed(r, f"关系 {r['id']}")
     units = index(docs["units"].get("units"), "研究单元", ("question", "activity", "entities", "status"))
     for u in units.values():
         _choice(u["status"], UNIT_STATUS, f"研究单元 {u['id']} 的 status")
@@ -172,7 +183,8 @@ class Report:
     claim_available_at: dict[str, str] = field(default_factory=dict)
     # 机器核对结果：verified / unverified（本地缺少原文或数据、证据缺数值或单位）/ failed
     claim_checks: dict[str, str] = field(default_factory=dict)
-    # 映射与关系的状态：invalid（自身有错误）/ confirmed（至少一条人工确认、机器核对通过且适用的证据）/ candidate
+    # 映射与关系的状态：invalid（自身有错误）/ rejected / retracted（人工否定或撤回）/
+    # confirmed（对象经人工确认，引用的证据全部人工确认且机器核对通过）/ candidate
     statuses: dict[str, str] = field(default_factory=dict)
     inventory: dict[str, Any] = field(default_factory=dict)
 
@@ -346,10 +358,11 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
                   excluded: set[str] = frozenset()) -> None:
         """证据须存在、未被否定或撤回、来自相关公司的申报、机器核对未失败；不满足的证据不计入。
 
-        状态：该对象自身有任何错误为 invalid；否则有人工确认且机器核对通过的证据为 confirmed，其余为 candidate。
+        状态：该对象自身有任何错误为 invalid；人工否定或撤回的取其复核状态；对象经人工确认且引用的每条证据
+        都人工确认、机器核对通过时为 confirmed，其余为 candidate。确认数值或摘录本身不会让对象变为 confirmed。
         excluded 为调用方已判定不适用的证据（如分部别名不符）。
         """
-        usable, confirmed = 0, False
+        usable, unconfirmed = 0, []
         for cid in item.get("claims") or []:
             c = cat.claims.get(cid)
             if c is None:
@@ -366,11 +379,15 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
             if rep.claim_checks.get(cid) == "failed" or cid in excluded:
                 continue  # 机器核对失败或调用方判定不适用：错误已另行报告，不计入
             usable += 1
-            confirmed |= c["review_status"] == "confirmed" and rep.claim_checks.get(cid) == "verified"
+            if not (c["review_status"] == "confirmed" and rep.claim_checks.get(cid) == "verified"):
+                unconfirmed.append(cid)
         if not usable:
             rep.errors.append(f"{kind} {item['id']} 没有可用的证据")
+        review = item["review_status"]
+        if review == "confirmed" and unconfirmed:
+            rep.errors.append(f"{kind} {item['id']} 已人工确认，但证据 {', '.join(unconfirmed)} 未经人工确认或机器核对未通过")
         rep.statuses[item["id"]] = ("invalid" if len(rep.errors) > errors_before
-                                    else "confirmed" if confirmed else "candidate")
+                                    else review if review in ("confirmed", "rejected", "retracted") else "candidate")
 
     # ---- L3 映射 ----
     for lk in cat.links.values():
@@ -445,7 +462,7 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
     rep.inventory["claim_checks"] = {s: sum(v == s for v in rep.claim_checks.values())
                                      for s in ("verified", "unverified", "failed")}
     rep.inventory["link_relation_status"] = {s: sum(v == s for v in rep.statuses.values())
-                                             for s in ("confirmed", "candidate", "invalid")}
+                                             for s in ("confirmed", "candidate", "rejected", "retracted", "invalid")}
     return rep
 
 

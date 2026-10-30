@@ -115,7 +115,8 @@ def build_bundle(root: Path, cat: Catalog | None = None, facts: pd.DataFrame | N
             "claims": {cid: {"review_status": c["review_status"], "machine_check": rep.claim_checks.get(cid)}
                        for cid, c in cat.claims.items()},
             "links": {lid: {"entity": lk["entity"], "activity": lk["activity"], "match": lk["match"],
-                            "scope": lk.get("scope", ""), "status": rep.statuses[lid]}
+                            "scope": lk.get("scope", ""), "review_status": lk["review_status"],
+                            "status": rep.statuses[lid]}
                       for lid, lk in cat.links.items()},
             "entities": {e["id"]: {"name": e["name"], "parent": e.get("parent"), "type": e["type"],
                                    "superseded_in": e.get("superseded_in")}

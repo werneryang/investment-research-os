@@ -1,6 +1,7 @@
 # 证据：申报文件与逐条 claim（四层共用；docs/supply-chain-research-design.md §7、§9.1）
 #
 # documents：原文文件的申报编号、地址与 SHA256；本地副本在 data/supply_chain/filings/（不入库）。
+#   SEC 每次下载都在文末附加一段不同的 <script> 标签，SHA256 固定的是本地副本；重新下载的文件去掉该标签后再与旧副本比较。
 #   接受时间来自 FSDS sub.txt（美东）；available_at = 接受时间次日 0 点（美东），与财报事实相同的保守规则。
 #   document_period_end 是年报封面「fiscal year ended …」的精确期末（FSDS 只有月末口径），须在原文中出现。
 # claims：
@@ -11,7 +12,7 @@
 # review_status 是人工复核状态：candidate / confirmed / rejected / retracted。机器核对结果由 iros chain check 另行给出（claim_checks），
 # 不写进这里；模型提取的证据一律为 candidate，confirmed、rejected、retracted 须写明 reviewer 与 reviewed_at。
 # 被否定或撤回的 claim 不能支撑任何映射或关系。
-# 2026-10-29 登记的证据均由模型从原文提取，机器核对通过，尚未人工复核。
+# 2026-10-29 登记的证据均由模型从原文提取，机器核对通过，尚未人工复核（映射与关系的人工复核另见 links.yaml）。
 
 schema_version: supply_chain.v1
 
@@ -35,6 +36,17 @@ documents:
     sha256: e78b5f3a154af1069e33ff8a474e23bb271369879b0e1db91e53204c4468ba7f
     accepted_at: "2025-10-03T14:42:00-04:00"
     document_period_end: "2025-08-28"
+    retrieved_at: "2026-10-29"
+  # 重组前口径（CNBU / MBU / EBU / SBU）的原文，用于旧 CNBU 映射的业务定义与制造方式
+  - id: doc_mu_10k_fy2024
+    accession: 0000723125-24-000027
+    form: 10-K
+    entity: co_micron
+    url: https://www.sec.gov/Archives/edgar/data/723125/000072312524000027/mu-20240829.htm
+    file: mu-20240829.htm
+    sha256: 5d4810a0b6e3c99ee818fd0baec330829debf9d4b3f81291e3ac03efd7b95926
+    accepted_at: "2024-10-04T16:13:00-04:00"
+    document_period_end: "2024-08-29"
     retrieved_at: "2026-10-29"
 
 claims:
@@ -123,6 +135,25 @@ claims:
     excerpt: >-
       Cloud Memory Business Unit ("CMBU"): Focused on memory solutions for large hyperscale cloud customers, and HBM for all data
       center customers.
+    origin_type: observed
+    review_status: candidate
+  # ---- Micron 2024 财年 10-K 原文（重组前口径）----
+  - id: clm_mu24_unit_cnbu
+    type: filing_text
+    document: doc_mu_10k_fy2024
+    locator: Part I, Item 1 Business — business units (reportable segments)
+    excerpt: >-
+      Compute and Networking Business Unit ("CNBU"): Includes memory products and solutions sold into the data center, PC, graphics,
+      and networking markets.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_mu24_manufacturing
+    type: filing_text
+    document: doc_mu_10k_fy2024
+    locator: Part I, Item 1 Business — Manufacturing
+    excerpt: >-
+      We manufacture our products within our own facilities located in Taiwan, Singapore, Japan, the United States, Malaysia, China,
+      and India and also utilize subcontractors to perform certain manufacturing processes.
     origin_type: observed
     review_status: candidate
   - id: clm_mu25_fabs

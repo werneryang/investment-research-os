@@ -257,3 +257,6 @@ def test_attribution_only_counts_links_to_the_unit_activity(project, registry, s
                                           "status": "invalid"}
     _, r = run_doc(project, registry, store, doc)  # 无效映射也不算覆盖
     assert next(u for u in r["results"]["units"] if u["id"] == "fin")["attribution_status"] == "unmapped"
+    doc["metadata"]["links"]["lnk_x2"]["status"] = "rejected"
+    _, r = run_doc(project, registry, store, doc)  # 人工否定的映射同样不算
+    assert next(u for u in r["results"]["units"] if u["id"] == "fin")["attribution_status"] == "unmapped"

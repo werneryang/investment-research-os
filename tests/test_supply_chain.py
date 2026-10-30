@@ -301,7 +301,10 @@ def test_human_review_is_separate_from_machine_checks(mini):
     reviewed = _broken(data, ("claims", "claims", 0, "review_status"), "confirmed")
     reviewed["claims"]["claims"][0].update(reviewer="analyst", reviewed_at="2026-10-30")
     rep = run_check(root, reviewed)
-    assert rep.statuses["rel"] == "confirmed" and rep.statuses["cmp"] == "candidate"
+    assert rep.statuses["rel"] == "candidate"  # 证据确认不等于关系确认：关系有自己的复核记录
+    both = _review(reviewed, "relations", 0)
+    rep = run_check(root, both)
+    assert rep.errors == [] and rep.statuses["rel"] == "confirmed" and rep.statuses["cmp"] == "candidate"
     rejected = copy.deepcopy(reviewed)
     rejected["claims"]["claims"][0]["review_status"] = "rejected"
     errors = run_check(root, rejected).errors
@@ -309,8 +312,12 @@ def test_human_review_is_separate_from_machine_checks(mini):
 
 
 def _confirmed(data, idx):
+    return _review(data, "claims", idx)
+
+
+def _review(data, kind, idx, status="confirmed"):
     d = copy.deepcopy(data)
-    d["claims"]["claims"][idx].update(review_status="confirmed", reviewer="analyst", reviewed_at="2026-10-30")
+    d[kind][kind][idx].update(review_status=status, reviewer="analyst", reviewed_at="2026-10-30")
     return d
 
 
@@ -337,10 +344,10 @@ def test_failed_ownership_or_alias_never_yields_confirmed(mini, change, messages
 
 def test_confirmed_requires_an_applicable_verified_claim(mini):
     root, data = mini
-    rep = run_check(root, _confirmed(data, 2))
+    rep = run_check(root, _review(_confirmed(data, 2), "links", 0))
     assert rep.errors == [] and rep.statuses["lnk"] == "confirmed"
     # 证据人工确认但机器核对失败：报错，映射为 invalid
-    bad = _confirmed(data, 2)
+    bad = _review(_confirmed(data, 2), "links", 0)
     bad["claims"]["claims"][2]["value"] = 1
     rep = run_check(root, bad)
     assert rep.claim_checks["clm_rev"] == "failed" and rep.statuses["lnk"] == "invalid"
@@ -362,3 +369,22 @@ def test_duplicate_relations_and_unknown_keys_are_rejected(mini):
 def test_normalize_text_matches_curly_quotes_and_tags():
     assert normalize_text("<p>A “B”\n  C</p>") == 'A "B" C'
     assert normalize_text("such as <b>Foundry Co</b>, to<br>next") == "such as Foundry Co, to next"
+
+
+def test_confirming_a_figure_does_not_confirm_the_mapping(mini):
+    """只确认营收数值、业务定义证据仍为候选时，映射不能变为 confirmed；映射须有自己的人工复核，且证据全部确认。"""
+    root, data = mini
+    d = copy.deepcopy(data)
+    d["links"]["links"][0]["claims"] = ["clm_foundry", "clm_rev"]  # 业务性质（摘录）+ 分部营收（数值）
+    numbers_only = _confirmed(d, 2)
+    rep = run_check(root, numbers_only)
+    assert rep.errors == [] and rep.statuses["lnk"] == "candidate"
+    with pytest.raises(CatalogError, match="人工复核记录"):
+        write_catalog(root, _broken(numbers_only, ("links", "links", 0, "review_status"), "confirmed"))
+    # 映射已人工确认但业务定义证据未确认：报错，不让确认越过证据
+    rep = run_check(root, _review(numbers_only, "links", 0))
+    assert rep.statuses["lnk"] == "invalid" and any("clm_foundry 未经人工确认" in e for e in rep.errors)
+    rep = run_check(root, _review(_confirmed(numbers_only, 0), "links", 0))
+    assert rep.errors == [] and rep.statuses["lnk"] == "confirmed"
+    rep = run_check(root, _review(d, "links", 0, "rejected"))
+    assert rep.errors == [] and rep.statuses["lnk"] == "rejected"

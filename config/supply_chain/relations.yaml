@@ -6,6 +6,7 @@
 # activity 未能从原文确定时留空，并在 activity_gap 写明原因，不按印象补上。
 # share：只记录原文披露的占比（分子、分母与期间）；未披露即不写。
 # valid_from / valid_to 为现实有效期，原文只说明申报时的状况时留空，as-of 使用以 claim 的 available_at 为准。
+# review_status 是关系自身的人工复核（未写为 candidate），规则与映射相同（见 links.yaml）。
 
 schema_version: supply_chain.v1
 

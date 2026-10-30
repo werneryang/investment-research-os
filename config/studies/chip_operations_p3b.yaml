@@ -10,7 +10,7 @@ branch: chip_operations
 scope:
   market: US
   currency: USD
-  start: 2022-09-01  # 最早的财年期间：Micron 2023 财年自 2022-09-02 起
+  start: 2022-09-01  # 按月归一化的覆盖起点；Micron 2023 财年的精确起点为 2022-09-02
   end: 2026-01-31
   frequency: annual
   vintage_policy: latest
