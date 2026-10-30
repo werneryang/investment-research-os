@@ -53,8 +53,9 @@ def test_bundle_pins_segment_facts_and_catalog_state(mini):
     assert seg["entity"] == "seg_a" and seg["fiscal_year"] == 2026 and seg["value"] == 22459000000
     meta = doc["metadata"]
     assert meta["catalog_check"]["errors"] == [] and meta["links"]["lnk"]["status"] == "candidate"
-    assert meta["claims"]["clm_rev"] == {"review_status": "candidate", "machine_check": "verified"}
-    assert set(meta["catalog_files"]) == {"activities", "entities", "links", "relations", "claims", "units"}
+    assert meta["claims"]["clm_rev"] == {"review_status": "candidate", "machine_check": "verified",
+                                         "technical_review": None}
+    assert set(meta["catalog_files"]) == {"activities", "entities", "links", "relations", "claims", "units", "reviews"}
 
 
 def test_bundle_refuses_when_catalog_has_errors_or_unverified_items(mini):
@@ -260,3 +261,42 @@ def test_attribution_only_counts_links_to_the_unit_activity(project, registry, s
     doc["metadata"]["links"]["lnk_x2"]["status"] = "rejected"
     _, r = run_doc(project, registry, store, doc)  # 人工否定的映射同样不算
     assert next(u for u in r["results"]["units"] if u["id"] == "fin")["attribution_status"] == "unmapped"
+
+
+def _reviewed_doc(status="reviewed"):
+    """带技术复核记录的新格式证据包。"""
+    doc = bundle_doc()
+    doc["metadata"]["reviews"] = {"trv": {"kind": "technical", "reviewer": "model", "reviewed_at": "2026-10-29"}}
+    for lk in doc["metadata"]["links"].values():
+        lk.update(status=status, valid_from=None, valid_to=None,
+                  technical_review={"review": "trv", "reviewed_at": "2026-10-29", "result": "passed", "limits": "边界"})
+    return doc
+
+
+def test_technically_reviewed_attribution_keeps_partial_and_validity_limits(project, registry, store):
+    _, r = run_doc(project, registry, store, _reviewed_doc())
+    fin = next(u for u in r["results"]["units"] if u["id"] == "fin")
+    assert fin["grade"] == "A" and fin["attribution_status"] == "reviewed"
+    assert [x["link"] for x in fin["link_review"]] == ["lnk_x", "lnk_y"]
+    assert fin["link_review"][0]["technical_review"]["limits"] == "边界"
+    lims = [x for x in r["limitations"] if x.startswith("fin：")]
+    assert any("归属为 reviewed" in x and "未经人工签认" in x for x in lims)
+    assert any("partial" in x and "不按活动分摊收入" in x for x in lims)
+    assert any("有效期未登记" in x for x in lims)
+    # 全部人工签认时不再有复核限制，但 partial 与有效期限制保留
+    _, r = run_doc(project, registry, store, _reviewed_doc("confirmed"))
+    lims = [x for x in r["limitations"] if x.startswith("fin：")]
+    assert not any("归属为" in x for x in lims) and any("partial" in x for x in lims)
+    # 部分映射仍为候选：整体为 candidate
+    doc = _reviewed_doc()
+    doc["metadata"]["links"]["lnk_y"]["status"] = "candidate"
+    _, r = run_doc(project, registry, store, doc)
+    assert next(u for u in r["results"]["units"] if u["id"] == "fin")["attribution_status"] == "candidate"
+
+
+def test_old_bundles_without_reviews_keep_their_result_structure(project, registry, store):
+    _, r = run_doc(project, registry, store, bundle_doc())
+    fin = next(u for u in r["results"]["units"] if u["id"] == "fin")
+    assert "link_review" not in fin
+    assert [x for x in r["limitations"] if x.startswith("fin：")] == [
+        "fin：分部到活动（act_design）的归属为 candidate——映射与证据尚未人工复核；结果按分部口径陈述，不称为该活动的财务"]

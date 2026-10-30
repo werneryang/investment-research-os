@@ -3,7 +3,7 @@
 证据包是一个自包含的 JSON（industry-evidence.v1），经 evidence_bundle 接入器进入版本库：
 - records：登记分部（按 XBRL 别名）在年度 10-K 中的分部事实；同一申报的其他分部（如 AllOtherSegments）
   营收与合并口径营收（E1 事实表，有则附上）只用于分部合计核对
-- metadata：产业链登记的核对结果（必须零错误）、映射与证据的人工复核和机器核对状态、研究单元定义、
+- metadata：产业链登记的核对结果（必须零错误）、映射与证据的机器核对、技术复核（含结论边界）与可选人工复核状态、研究单元定义、
   所用分部事实分区版本与登记文件校验值
 
 研究只读取证据包，不直接读取 segment_facts 或登记文件，因此登记或分部事实之后的变化不影响已有运行的复现。
@@ -112,12 +112,16 @@ def build_bundle(root: Path, cat: Catalog | None = None, facts: pd.DataFrame | N
             "catalog_version": cat.version,
             "catalog_files": {n: hashlib.sha256((base / f"{n}.yaml").read_bytes()).hexdigest() for n in FILES},
             "catalog_check": {"errors": rep.errors, "warnings": rep.warnings, "verified": rep.verified},
-            "claims": {cid: {"review_status": c["review_status"], "machine_check": rep.claim_checks.get(cid)}
+            "claims": {cid: {"review_status": c["review_status"], "machine_check": rep.claim_checks.get(cid),
+                             "technical_review": _technical(cat, rep, cid)}
                        for cid, c in cat.claims.items()},
             "links": {lid: {"entity": lk["entity"], "activity": lk["activity"], "match": lk["match"],
-                            "scope": lk.get("scope", ""), "review_status": lk["review_status"],
-                            "status": rep.statuses[lid]}
+                            "scope": lk.get("scope", ""), "valid_from": _iso_date(lk.get("valid_from")),
+                            "valid_to": _iso_date(lk.get("valid_to")), "review_status": lk["review_status"],
+                            "technical_review": _technical(cat, rep, lid), "status": rep.statuses[lid]}
                       for lid, lk in cat.links.items()},
+            "reviews": {rid: {k: r.get(k) for k in ("kind", "reviewer", "reviewed_at", "method", "scope", "basis", "record")}
+                        for rid, r in cat.reviews.items()},
             "entities": {e["id"]: {"name": e["name"], "parent": e.get("parent"), "type": e["type"],
                                    "superseded_in": e.get("superseded_in")}
                          for e in cat.entities.values() if e["type"] in ("company", "segment")},
@@ -125,6 +129,18 @@ def build_bundle(root: Path, cat: Catalog | None = None, facts: pd.DataFrame | N
             "segment_fact_partitions": dict(sorted(partitions.items())),
         },
     }
+
+
+def _technical(cat: Catalog, rep: Any, item_id: str) -> dict[str, Any] | None:
+    """对象的技术复核：所用记录、复核日期、结果（passed / failed / stale）与结论边界；没有记录为 None。"""
+    t = cat.technical.get(item_id)
+    if t is None:
+        return None
+    return {"review": t["review"], "reviewed_at": t["reviewed_at"], "result": rep.technical[item_id], "limits": t["limits"]}
+
+
+def _iso_date(value: Any) -> str | None:
+    return None if value is None else str(value)
 
 
 def _consolidated_revenue(root: Path, store: EdgarStore) -> pd.DataFrame:

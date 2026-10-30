@@ -3,8 +3,9 @@
 # 一个分部可以对应多项活动，一项活动也可以对应多个分部；对应不等于收入权重，未披露的分摊保持未知。
 # scope 写明分部除该活动之外还包含什么，避免把分部财务当成单一活动的财务。
 # valid_from / valid_to 是现实有效期（财年或期间），未知留空并限制 as-of 使用。
-# review_status 是映射自身的人工复核（未写为 candidate）：确认证据的摘录或数值不等于确认业务归属。
-#   confirmed 须写明 reviewer 与 reviewed_at，且引用的每条证据都已人工确认、机器核对通过。
+# 映射有自己的复核，复核证据的摘录或数值不等于复核业务归属：
+#   技术复核（reviews.yaml）通过为 reviewed，可用于声明范围内的研究；review_status 是可选的人工复核（未写为 candidate），
+#   confirmed 只表示人工签认，须写明 reviewer 与 reviewed_at。两者都要求引用的每条证据已复核（技术复核或人工确认）。
 
 schema_version: supply_chain.v1
 

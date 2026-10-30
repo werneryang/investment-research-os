@@ -6,7 +6,8 @@ from pathlib import Path
 from typing import Any
 
 GRADE_LABEL = {"A": "A：已核验输入", "B": "B：明示假设", "C": "C：受阻，不生成数值", "unassessed": "未评估：不计算"}
-ATTRIBUTION_LABEL = {"confirmed": "已人工确认", "candidate": "候选（未人工复核）", "unmapped": "未登记映射"}
+ATTRIBUTION_LABEL = {"confirmed": "已人工签认", "reviewed": "技术复核通过（未人工签认）", "candidate": "候选（未复核）",
+                     "unmapped": "未登记映射"}
 METRIC_LABEL = {"Revenues": "营收", "RevenueFromContractWithCustomerExcludingAssessedTax": "营收",
                 "OperatingIncomeLoss": "营业利润", "CostOfGoodsAndServicesSold": "销售成本"}
 
@@ -24,7 +25,7 @@ def sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
     units = result["results"]["units"]
     body: list[Any] = [
         "每个研究单元单独定级，数字全部取自同一份年度申报；比率与同比只在该申报内计算。"
-        "输入能力只评价分部财务输入；分部到芯片活动的归属另列，未经人工复核时为候选。",
+        "输入能力只评价分部财务输入；分部到芯片活动的归属另列：技术复核通过为 reviewed（不等于人工签认），未复核为候选。",
         ("table", ["研究单元", "输入能力", "活动归属", "所用申报", "依据"],
          [[u["id"], GRADE_LABEL.get(u["grade"], u["grade"]),
            ATTRIBUTION_LABEL.get(u["attribution_status"], u["attribution_status"]) if u["grade"] in ("A", "B") else "—",
@@ -47,6 +48,13 @@ def sections(result: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
         names[u["id"]] = u
     detail: list[Any] = []
     for u in units:
+        if u.get("link_review"):
+            detail.append(("table", ["映射", "匹配", "有效期", "状态", "技术复核与结论边界"], [
+                [f"`{x['link']}`", x["match"], f"{x['valid_from'] or '未登记'} — {x['valid_to'] or '未登记'}",
+                 ATTRIBUTION_LABEL.get(x["status"], x["status"]),
+                 (f"{x['technical_review']['review']}（{x['technical_review']['reviewed_at']}，"
+                  f"{x['technical_review']['result']}）：{x['technical_review']['limits']}")
+                 if x["technical_review"] else "—"] for x in u["link_review"]]))
         if u["known_gaps"]:
             detail.append(f"**{u['id']}** 已知缺口：" + "；".join(u["known_gaps"]))
         if u["filings_skipped"]:

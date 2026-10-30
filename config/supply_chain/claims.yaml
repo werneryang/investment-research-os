@@ -9,10 +9,11 @@
 #   xbrl_segment 必须写明 value 与 unit，并在 segment_facts 表中找到同一申报、科目、segments、期末（月末）、期间长度与单位，
 #                value 一致；缺数值或单位时为未核对
 # origin_type：observed / derived / assumed / inferred / unknown。
-# review_status 是人工复核状态：candidate / confirmed / rejected / retracted。机器核对结果由 iros chain check 另行给出（claim_checks），
-# 不写进这里；模型提取的证据一律为 candidate，confirmed、rejected、retracted 须写明 reviewer 与 reviewed_at。
-# 被否定或撤回的 claim 不能支撑任何映射或关系。
-# 2026-10-29 登记的证据均由模型从原文提取，机器核对通过，尚未人工复核（映射与关系的人工复核另见 links.yaml）。
+# 三种核对分开：机器核对由 iros chain check 给出（claim_checks），不写进这里；技术复核（事实核对与语义复核）记录在 reviews.yaml；
+# review_status 是可选的人工复核：candidate / confirmed / rejected / retracted，confirmed 只表示人工签认，
+# confirmed、rejected、retracted 须写明 reviewer 与 reviewed_at。
+# 被否定、撤回或技术复核未通过的 claim 不能支撑任何映射或关系。
+# 2026-10-29 登记的 27 条证据由模型从原文提取，机器核对通过，技术复核通过（trv_chip_20261029），未人工复核。
 
 schema_version: supply_chain.v1
 

@@ -1,0 +1,101 @@
+# 技术复核记录（docs/study-chips.md §7）
+#
+# 技术复核包括两部分，可由模型完成，不等于人工签认：
+#   事实核对  原文、金额、单位、期间、申报版本与计算是否一致
+#   语义复核  证据是否真正支持结论：有没有把公司模式扩大到每个分部、把 memory 扩大成 HBM、把业务关联解释为收入权重
+# 技术复核通过（result: passed）的证据、映射与关系可用于声明范围内的研究；limits 写明结论边界，随证据包进入研究结果。
+# fingerprint 是复核时的内容指纹（catalog.fingerprint：对象全部字段，不含人工复核字段；原文摘录另含原文 SHA256）。
+# 内容改变后指纹不符，记录失效（iros chain check 报未核对并给出当前指纹），须重新复核后追加新记录，不改写旧记录。
+# 人工复核（各文件中的 review_status）为可选，用于争议、证据冲突或特别关注的判断。
+
+schema_version: supply_chain.v1
+
+reviews:
+  - id: trv_chip_20261029
+    kind: technical
+    reviewer: 模型技术复核（外部审查两轮，复核意见由用户提供；本项目另行独立提取核对）
+    reviewed_at: "2026-10-29"
+    method: >-
+      事实核对：四份 10-K 原文（NVIDIA FY2026、FY2024，Micron FY2025、FY2024）SHA256 与登记一致；16 条摘录逐字并结合上下文核对；
+      9 条 XBRL 证据直接解析原文 inline XBRL 的 context、单位、scale 与符号，申报、维度、年度期间、USD 与金额一致；
+      基线表格 48 个值、Micron 12 项毛利恒等式、两家公司各 3 年分部营收合计与原文一致。第二轮核对新增的 CNBU 业务定义与制造说明，
+      两份下载副本只在 SEC 文末附加的脚本上不同。语义复核：逐条判断证据支持的结论与边界（见各条 limits），7 条映射均只支持 partial。
+    scope: >-
+      27 条证据与 7 条映射（17 条关系未复核，仍为候选）。映射均为 partial，有效期未登记，不表示收入可按活动分摊。
+    basis: >-
+      第一轮审查提交 474d930（25 条证据、7 条映射；旧 CNBU 映射当时缺业务定义）；第二轮审查提交 49925b5 之后（补登 CNBU 两条证据并改映射引用）。
+      证据包 v20261030T001840Z-34884fa5，基线运行 chip_operations_p3b-20261030T001853Z-5f1b2e24。
+    record: reports/chip-review-2026-10-29/review.md 与 audit.json（本地，不入库）；第二轮意见见 2026-10-29 会话
+    items:
+      # ---- NVIDIA FY2026 原文 ----
+      - {id: clm_nvda26_fabless, fingerprint: e95f08f4cbe4b7d7, result: passed,
+         limits: "支持公司采用无晶圆厂与委外制造模式；不能单独证明每个分部的活动边界"}
+      - {id: clm_nvda26_foundry, fingerprint: 4232b49111cb0a53, result: passed,
+         limits: "支持 TSMC、Samsung 为披露的晶圆代工方；不证明份额、独家关系或全部期间"}
+      - {id: clm_nvda26_memory, fingerprint: b79c5da004e495cd, result: passed,
+         limits: "支持向 SK Hynix、Micron、Samsung 采购 memory；不能升级为 HBM、型号或采购份额"}
+      - {id: clm_nvda26_cowos, fingerprint: fb3fcfa89326ddfb, result: passed,
+         limits: "支持使用 CoWoS 封装；此句不指认提供方"}
+      - {id: clm_nvda26_atp, fingerprint: fbd8a9d48494fade, result: passed,
+         limits: "支持最终产品的组装、测试与封装委外；对象可能含板卡与系统，不能等同芯片封装测试"}
+      - {id: clm_nvda26_segments, fingerprint: 1512cf30dbbdea7e, result: passed,
+         limits: "支持两个分部的业务组成；两者都宽于单一芯片活动"}
+      - {id: clm_nvda26_codm, fingerprint: 7d002ad9bde2af48, result: passed,
+         limits: "支持分部费用不单独提供给 CODM；不能理解为分部利润没有分摊共同费用"}
+      - {id: clm_nvda26_customers, fingerprint: 86cbf1ae2b3e1a30, result: passed,
+         limits: "22% 与 14% 是两个匿名直接客户占公司总营收的比重，主要归属 C&N；不推测客户身份"}
+      # ---- Micron FY2025 与 FY2024 原文 ----
+      - {id: clm_mu25_reorg, fingerprint: a780433788e4c01b, result: passed,
+         limits: "支持 FY2025 第四季度重组及比较期追溯调整；不证明新旧业务单元一一对应"}
+      - {id: clm_mu25_units, fingerprint: c2e7e0a0872e65e1, result: passed,
+         limits: "CMBU 为大型云客户的 memory 及全部数据中心客户的 HBM；不能把 CMBU 收入全部当作 HBM"}
+      - {id: clm_mu24_unit_cnbu, fingerprint: 08241d7df3d6fc45, result: passed,
+         limits: "旧 CNBU 为数据中心、PC、图形与网络市场的 memory 产品与方案；只用于重组前口径"}
+      - {id: clm_mu24_manufacturing, fingerprint: f7a9e4f6a5ccc738, result: passed,
+         limits: "支持公司在自有工厂生产并委外部分工序（FY2024）；不表示某个业务单元独占工厂或产能"}
+      - {id: clm_mu25_fabs, fingerprint: 431cacd69e49ede4, result: passed,
+         limits: "台湾设施含晶圆制造与组件 / 模组组装测试，是公司层面的设施证据；不表示某个业务单元独占"}
+      - {id: clm_mu25_competitors, fingerprint: 88f95449bc39dbde, result: passed,
+         limits: "所列公司为 memory 与 storage 市场的竞争者；不代表每种产品都直接竞争"}
+      - {id: clm_mu25_top10, fingerprint: 779886abaebe50c2, result: passed,
+         limits: "前十名客户合计超过总营收一半；不是单一客户份额，也不识别 NVIDIA"}
+      - {id: clm_mu25_unit_cdbu, fingerprint: 4fb503ab77137c90, result: passed,
+         limits: "CDBU 为中型云、企业与 OEM 数据中心客户的 memory，及全部数据中心客户的 storage；memory 与 storage 须区分"}
+      - {id: clm_mu25_unit_mcbu, fingerprint: e670313af58adc58, result: passed,
+         limits: "支持移动与客户端市场的 memory 与 storage；不能据此推导 DRAM / NAND 收入分摊"}
+      - {id: clm_mu25_unit_aebu, fingerprint: c61f3094a2ef21c3, result: passed,
+         limits: "支持汽车、工业与消费市场的 memory 与 storage；不代表纯汽车芯片业务"}
+      # ---- XBRL 分部数值（原文期末为精确日期，登记为 FSDS 月末口径）----
+      - {id: clm_nvda26_xbrl_cn_rev, fingerprint: dcb208df2991be32, result: passed,
+         limits: "FY2026 C&N 营收 193,479 百万美元；原文期末 2026-01-25"}
+      - {id: clm_nvda26_xbrl_gr_rev, fingerprint: 3032a1ba8a532e91, result: passed,
+         limits: "FY2026 Graphics 营收 22,459 百万美元；原文期末 2026-01-25"}
+      - {id: clm_nvda24_xbrl_cn_rev, fingerprint: 5ece1e590aa08494, result: passed,
+         limits: "直接核对 FY2024 原申报，C&N 营收 47,405 百万美元；原文期末 2024-01-28"}
+      - {id: clm_nvda26_xbrl_cn_rev_fy2024, fingerprint: 7e9a7c836e031962, result: passed,
+         limits: "FY2026 申报中 FY2024 比较列为 47,405 百万美元；与旧申报一致不表示所有历史版本都一致"}
+      - {id: clm_mu25_xbrl_cmbu_rev, fingerprint: 57c53b3dd3834545, result: passed,
+         limits: "FY2025 CMBU 营收 13,524 百万美元；原文期末 2025-08-28"}
+      - {id: clm_mu24_xbrl_cnbu_rev, fingerprint: 3ae75b9f0e3b4e81, result: passed,
+         limits: "直接核对 FY2024 原申报，旧 CNBU 营收 9,513 百万美元；原文期末 2024-08-29；不与新业务单元拼接"}
+      - {id: clm_mu25_xbrl_cdbu_rev, fingerprint: 74ef3c239c243bf0, result: passed,
+         limits: "FY2025 CDBU 营收 7,229 百万美元；原文期末 2025-08-28"}
+      - {id: clm_mu25_xbrl_mcbu_rev, fingerprint: 61b885574d23bae6, result: passed,
+         limits: "FY2025 MCBU 营收 11,859 百万美元；原文期末 2025-08-28"}
+      - {id: clm_mu25_xbrl_aebu_rev, fingerprint: 4fa577b84cffe413, result: passed,
+         limits: "FY2025 AEBU 营收 4,753 百万美元；原文期末 2025-08-28"}
+      # ---- 映射：均只支持 partial，有效期未登记 ----
+      - {id: lnk_nvda_cn_design, fingerprint: aa80c109230afd31, result: passed,
+         limits: "公司无晶圆厂模式、C&N 组成与分部数值构成证据链；系统、网络、AI 软件等不能剥离，分部营收不是芯片设计营收"}
+      - {id: lnk_nvda_gr_design, fingerprint: 2a36ed57708bb875, result: passed,
+         limits: "公司无晶圆厂模式与 Graphics 的 GPU 组成；板卡与软件未单独拆分，分部营收不是纯芯片销售额"}
+      - {id: lnk_mu_cmbu_memory, fingerprint: 1c63bf938c8c73b8, result: passed,
+         limits: "客户市场定义、公司自有晶圆厂与分部营收支持联系；不能给出 HBM 比重或业务单元自有产能"}
+      - {id: lnk_mu_cdbu_memory, fingerprint: cbb072d4b63e3f39, result: passed,
+         limits: "同 CMBU；memory 与 storage 的客户覆盖不同，应保持区分"}
+      - {id: lnk_mu_mcbu_memory, fingerprint: cd72086bb1f91f89, result: passed,
+         limits: "移动与客户端的 memory 与 storage 加公司生产模式支持联系；不推导产品份额"}
+      - {id: lnk_mu_aebu_memory, fingerprint: 241c4bb445b81db2, result: passed,
+         limits: "汽车、工业与消费市场的 memory 与 storage 加公司生产模式支持联系；不推导具体产品份额"}
+      - {id: lnk_mu_cnbu_memory, fingerprint: d3a80127e6b5cc10, result: passed,
+         limits: "FY2024 业务定义与自有工厂制造说明支持联系；只用于重组前口径，不与新业务单元拼接"}
