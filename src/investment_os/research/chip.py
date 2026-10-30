@@ -129,9 +129,9 @@ def _gross_profit_check(recs: list[dict[str, Any]], acc: str, entities: list[str
 
 
 def _attribution(bundle: dict[str, Any], entities: list[str], activity: str) -> tuple[str, list[str]]:
-    """只看指向本单元活动的有效映射：指向其他活动的映射不说明本活动的归属。"""
+    """只看指向本单元活动、且未被判为无效或人工否定 / 撤回的映射：指向其他活动的映射不说明本活动的归属。"""
     links = [(lid, lk) for lid, lk in (bundle.get("links") or {}).items()
-             if lk["entity"] in entities and lk["activity"] == activity and lk["status"] != "invalid"]
+             if lk["entity"] in entities and lk["activity"] == activity and lk["status"] in ("confirmed", "candidate")]
     linked = {lk["entity"] for _, lk in links}
     if not links or linked != set(entities):
         return "unmapped", [lid for lid, _ in links]

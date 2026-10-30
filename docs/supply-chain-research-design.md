@@ -337,6 +337,7 @@ l3_link:            # 公司/分部 ↔ 细分业务
   valid_from: null           # 未知时留空，并限制 as-of 使用
   valid_to: null
   claim_ids: [clm_0002]
+  review_status: candidate   # 映射自身的人工复核，与证据分开；confirmed 须证据全部人工确认
 
 l3_observation:     # 同一财务观察只存一次，不随业务标签复制
   observation_id: obs_0001
@@ -359,6 +360,7 @@ l4_relation:
   valid_from: null
   valid_to: null
   claim_ids: [clm_0004]
+  review_status: candidate   # 关系自身的人工复核，规则同映射
 
 claim:              # 四层共用证据
   claim_id: clm_0004
