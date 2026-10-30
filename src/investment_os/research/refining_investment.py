@@ -242,8 +242,14 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
     by_year: list[dict[str, Any]] = []
     if crack_unit.computable:
         c = weekly["crack"].dropna()
-        weekly_rows = [{"week_ending": d.date().isoformat(), **{k: (None if pd.isna(v) else float(v))
-                        for k, v in r.items()}} for d, r in weekly.iterrows()]
+        # method.weekly_columns 限定周度表的列：现货价来自第三方（Refinitiv），公开归档的研究只保留利用率与价差；
+        # 未声明时保留全部列，旧运行的结果结构不变
+        columns = list(method.get("weekly_columns") or weekly.columns)
+        unknown = [c for c in columns if c not in weekly.columns]
+        if unknown:
+            raise ValueError(f"weekly_columns 中的列不存在：{unknown}；可用：{list(weekly.columns)}")
+        weekly_rows = [{"week_ending": d.date().isoformat(), **{k: (None if pd.isna(r[k]) else float(r[k]))
+                        for k in columns}} for d, r in weekly.iterrows()]
         if len(c):
             crack_stats = {"weeks": int(len(c)), "mean": float(c.mean()), "median": float(c.median()),
                            "min": float(c.min()), "min_week": c.idxmin().date().isoformat(),

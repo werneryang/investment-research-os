@@ -26,6 +26,8 @@ data:
 method:
   # 3 桶 WTI → 2 桶汽油 + 1 桶馏分油；产品为墨西哥湾沿岸现货，原油为库欣现货（地点不同，是常用的指标约定）
   crack_spread: {id: gulf_coast_321, crude: 3, gasoline: 2, distillate: 1, gallons_per_barrel: 42}
+  # 周度表只保留利用率与价差：现货价来自 Refinitiv（EIA 再使用说明不含第三方材料），不进公开档案
+  weekly_columns: [utilization, crack]
   # primary：按顺序取第一份同时含两个年末的申报换算年度收益；其他已登记申报只用于重叠年份的核对
   companies:
     - {id: valero, name: Valero Energy, role: tsr_valero,

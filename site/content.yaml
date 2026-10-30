@@ -6,7 +6,8 @@ tagline: 基于公开免费数据、可追溯、可复现的市场研究
 
 # 研究的显示顺序：第一项为研究焦点（日常查看的滚动研究），首页在其研究方向下显示关键数字
 study_order: [us_industry_dossier, us_industry_12, us_industry_49, ust_curve_last_year, ust_curve_attribution_last_year, us_asset_history_last_25y, ust_par_bond_rate_risk,
-              ust_curve_2024, ust_curve_attribution_2024, us_asset_history]
+              ust_curve_2024, ust_curve_attribution_2024, us_asset_history, us_refining_investment_2016_2025, us_refining_utilization_2025,
+              us_refining_throughput_scenarios_2025]
 
 studies:
   us_industry_dossier: {label: 四层行业专题}
@@ -19,6 +20,9 @@ studies:
   ust_curve_attribution_2024: {label: 分解案例}
   us_asset_history: {label: 长期统计}
   us_asset_history_last_25y: {label: 滚动统计}
+  us_refining_investment_2016_2025: {label: 炼油投资对照}
+  us_refining_utilization_2025: {label: 炼油统计}
+  us_refining_throughput_scenarios_2025: {label: 炼油情景}
 
 # 研究框架（docs/research-map.md）：研究分支为主轴（架构 §4），分支下是研究方向。
 # 方向的数据、分析与验证状态由登记和运行记录自动得出，分支状态取其方向中最好的一项；
@@ -139,13 +143,17 @@ branches:
     directions:
       - id: sector_structure
         name: 行业与地区结构
-        summary: 美国 12 与 49 行业的收益风险、因子暴露，以及经济、历史公司财报、估值和指引专题
+        summary: 美国 12 与 49 行业的收益风险、因子暴露，经济、历史公司财报、估值和指引专题，以及炼油产业链的处理量、裂解价差与公司总收益
         risk: [equity]
-        datasets: [french_ind12_vw, french_ind49_vw, french_ind12_ew, french_ind12_firms, french_ind12_bm, fred_rvam, fred_rvama, fred_rvar, fred_rvaw, fred_rvai, industry_sec_facts, industry_valuation, industry_guidance]
-        studies: [us_industry_dossier, us_industry_12, us_industry_49]
+        datasets: [french_ind12_vw, french_ind49_vw, french_ind12_ew, french_ind12_firms, french_ind12_bm, fred_rvam, fred_rvama, fred_rvar, fred_rvaw, fred_rvai, industry_sec_facts, industry_valuation, industry_guidance,
+                   eia_refinery_gross_inputs, eia_refinery_operable_capacity, eia_refinery_utilization, eia_spot_wti_cushing,
+                   eia_spot_gasoline_gulf, eia_spot_ulsd_gulf, sec_tsr_valero, sec_tsr_pbf]
+        studies: [us_industry_dossier, us_industry_12, us_industry_49, us_refining_investment_2016_2025, us_refining_utilization_2025,
+                  us_refining_throughput_scenarios_2025]
         can_answer:
           - 哪些行业的历史回报伴随更高风险或风格暴露
           - 选定行业的实体经济、历史申报样本盈利和管理层指引如何变化
+          - 美国炼厂利用率与裂解价差的历史关系，以及独立炼油公司总收益与二者的描述性对照
         cannot_answer:
           - 精确的行业盈利—估值回报分解、历史成分权重和全市场一致预期
           - 美国以外的地区与行业

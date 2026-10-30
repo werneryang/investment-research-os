@@ -364,6 +364,7 @@ def test_reference_window_coverage_is_recorded_separately(project, registry, sto
     assert util["use_scope"]["status"] == "in_scope"  # 研究期间 2025 年
     ref = r["results"]["assumption_reference"]["use_scope"]
     assert ref["status"] == "partial" and ref["uncovered"] == [["2015-01-01", "2024-12-31"]]
+    assert r["coverage"]["missing_weeks"] == []  # 参照窗口的未覆盖期间不能写成研究窗口的缺失周
     assert util["reference_scope"] == ref
     assert any("未覆盖 2015-01-01—2024-12-31" in x for x in r["limitations"])
     report = (project / next(o["path"] for o in m["outputs"] if o["path"].endswith(".md"))).read_text(encoding="utf-8")

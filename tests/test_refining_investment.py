@@ -252,3 +252,28 @@ def test_report_sections_and_figures(project):
         assert needle in text
     paths = write_report(project, result)
     assert any(p.suffix == ".md" for p in paths)
+
+
+def test_weekly_columns_limit_the_published_table():
+    r = _run(method={**STUDY["method"], "weekly_columns": ["utilization", "crack"]})
+    assert set(r.tables["weekly"][0]) == {"week_ending", "utilization", "crack"}
+    assert r.results["crack_spread"] == _run().results["crack_spread"]  # 只影响表格，不影响计算
+    assert {"crude", "gasoline", "distillate"} <= set(_run().tables["weekly"][0])  # 未声明时保留全部列
+    with pytest.raises(ValueError, match="不存在"):
+        _run(method={**STUDY["method"], "weekly_columns": ["price"]})
+
+
+def test_site_renderers_are_registered_for_both_refining_branches():
+    from investment_os.site.i18n import use
+    from investment_os.site.renderers import get_renderer
+
+    assert get_renderer("refining_throughput").supported and get_renderer("refining_investment").supported
+    result = _run().to_dict()
+    r = get_renderer("refining_investment")
+    for language in ("zh", "en"):
+        with use(language, {"phrases": {}, "patterns": []}):
+            html = r.key_stats(result) + r.coverage_section(result)
+            rows = r.evidence_rows(result)
+    assert "Alpha" in html and "S&P 500" in html
+    assert any("S&P 500 cross-issuer check" in label for label, _ in rows)
+    assert [f for f, _ in r.figures] == ["refining_crack_utilization.png", "refining_excess_vs_crack.png"]
