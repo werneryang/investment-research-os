@@ -629,6 +629,46 @@ sources:
           基线运行 us_refining_throughput_scenarios_2025-20261028T020015Z-54e7b0bd，代码 ff78c68，dirty=false，2026-10-29 iros verify 以固定输入重算结果校验值一致（f1b5e6c2…）。统计单元为 A；基准情景核对（kappa = 1、g = 0）52 周可处理量全部等于实际总投入；四个允许假设内的情景为 B 并生成数值，kappa = 1.05 的失败示例为 C 且未生成数值。与 EIA 网页历史表（dnav/pet/hist，WGIRIUS2、WOCLEUS2、WPULEUS3）逐值核对 2025 年 1、8、12 月共 14 周 × 3 个序列，42 个值全部一致。2026-10-29 经用户确认登记。
         scope: >-
           以 2025 年周度数据为基准的处理能力机械情景（D = (1 + g) × G，Q_cap = kappa × K）；只确认基准输入可用于该情景，不验证 g 或 kappa 的取值，也不代表情景结果有预测能力；参照期 2015–2024 的利用率分布只作假设参照，不在本核验范围内。观测日期 2025-01-01 至 2025-12-31。
+      - dataset: eia_refinery_utilization
+        status: use_verified
+        use: descriptive
+        date: "2026-10-30"
+        valid_from: "2016-01-01"
+        valid_through: "2025-12-31"
+        evidence: >-
+          基线运行 us_refining_investment_2016_2025-20261030T232029Z-94aa6116，代码 1f21cdb，dirty=false，2026-10-30 iros verify 以固定输入重算结果校验值一致（4debaa0f…）；六个研究单元均为 A。2016–2025 年 522 个周五的利用率与三个现货价全部有效。与 EIA 网页历史表（dnav/pet/hist，RWTC、EER_EPMRU_PF4_RGC_DPG、EER_EPD2DXL0_PF4_RGC_DPG、WPULEUS3）逐值核对 2016–2025 年全部 522 周 × 4 个序列，2,088 个值全部一致。2026-10-30 经模型技术复核登记，未人工签认。
+        scope: >-
+          全国周度利用率与墨西哥湾沿岸 3-2-1 裂解价差的水平相关、日历年汇总及与公司年度总收益的描述性对照（炼油投资对照）；使用当前修订数据；观测日期 2016-01-01 至 2025-12-31。不包括地区（PADD）、炼厂或公司层面的利用率、时点研究或预测。
+      - dataset: eia_spot_wti_cushing
+        status: use_verified
+        use: descriptive
+        date: "2026-10-30"
+        valid_from: "2016-01-01"
+        valid_through: "2025-12-31"
+        evidence: >-
+          基线运行 us_refining_investment_2016_2025-20261030T232029Z-94aa6116，代码 1f21cdb，dirty=false，2026-10-30 iros verify 以固定输入重算结果校验值一致（4debaa0f…）；六个研究单元均为 A。2016–2025 年 522 个周五的利用率与三个现货价全部有效。与 EIA 网页历史表（dnav/pet/hist，RWTC、EER_EPMRU_PF4_RGC_DPG、EER_EPD2DXL0_PF4_RGC_DPG、WPULEUS3）逐值核对 2016–2025 年全部 522 周 × 4 个序列，2,088 个值全部一致。2026-10-30 经模型技术复核登记，未人工签认。
+        scope: >-
+          以周度现货价计算墨西哥湾沿岸 3-2-1 裂解价差（WTI 库欣原油），用于价差与全国周度利用率的水平相关、日历年汇总及与公司年度总收益的描述性对照；使用当前修订数据；观测日期 2016-01-01 至 2025-12-31。价差是指标定义，不代表炼厂毛利；不包括日度、其他地点、时点研究或预测。
+      - dataset: eia_spot_gasoline_gulf
+        status: use_verified
+        use: descriptive
+        date: "2026-10-30"
+        valid_from: "2016-01-01"
+        valid_through: "2025-12-31"
+        evidence: >-
+          基线运行 us_refining_investment_2016_2025-20261030T232029Z-94aa6116，代码 1f21cdb，dirty=false，2026-10-30 iros verify 以固定输入重算结果校验值一致（4debaa0f…）；六个研究单元均为 A。2016–2025 年 522 个周五的利用率与三个现货价全部有效。与 EIA 网页历史表（dnav/pet/hist，RWTC、EER_EPMRU_PF4_RGC_DPG、EER_EPD2DXL0_PF4_RGC_DPG、WPULEUS3）逐值核对 2016–2025 年全部 522 周 × 4 个序列，2,088 个值全部一致。2026-10-30 经模型技术复核登记，未人工签认。
+        scope: >-
+          以周度现货价计算墨西哥湾沿岸 3-2-1 裂解价差（WTI 库欣原油），用于价差与全国周度利用率的水平相关、日历年汇总及与公司年度总收益的描述性对照；使用当前修订数据；观测日期 2016-01-01 至 2025-12-31。价差是指标定义，不代表炼厂毛利；不包括日度、其他地点、时点研究或预测。
+      - dataset: eia_spot_ulsd_gulf
+        status: use_verified
+        use: descriptive
+        date: "2026-10-30"
+        valid_from: "2016-01-01"
+        valid_through: "2025-12-31"
+        evidence: >-
+          基线运行 us_refining_investment_2016_2025-20261030T232029Z-94aa6116，代码 1f21cdb，dirty=false，2026-10-30 iros verify 以固定输入重算结果校验值一致（4debaa0f…）；六个研究单元均为 A。2016–2025 年 522 个周五的利用率与三个现货价全部有效。与 EIA 网页历史表（dnav/pet/hist，RWTC、EER_EPMRU_PF4_RGC_DPG、EER_EPD2DXL0_PF4_RGC_DPG、WPULEUS3）逐值核对 2016–2025 年全部 522 周 × 4 个序列，2,088 个值全部一致。2026-10-30 经模型技术复核登记，未人工签认。
+        scope: >-
+          以周度现货价计算墨西哥湾沿岸 3-2-1 裂解价差（WTI 库欣原油），用于价差与全国周度利用率的水平相关、日历年汇总及与公司年度总收益的描述性对照；使用当前修订数据；观测日期 2016-01-01 至 2025-12-31。价差是指标定义，不代表炼厂毛利；不包括日度、其他地点、时点研究或预测。
 
   - id: census_naics
     name: Census NAICS
@@ -790,6 +830,26 @@ sources:
           （版本 v20261030T231102Z-58e32642）。用 HTML 表格单元格独立解析同一原始快照：每个行标签在每份申报中恰好一行，36 个值全部一致；
           各份申报的标普 500 行与 Valero 同年申报逐值相同。SEC 每次下载在文末附加不同的脚本，原始快照的 SHA256 每次不同，标准化内容不变
         scope: 公司在 10-K 中披露的累计总收益指数（含股息再投资）；未与独立价格来源核对；同伴组合未登记；不代表用途已验证
+      - dataset: sec_tsr_valero
+        status: use_verified
+        use: descriptive
+        date: "2026-10-30"
+        valid_from: "2015-12-31"
+        valid_through: "2025-12-31"
+        evidence: >-
+          基线运行 us_refining_investment_2016_2025-20261030T232029Z-94aa6116，代码 1f21cdb，dirty=false，2026-10-30 iros verify 以固定输入重算结果校验值一致（4debaa0f…）；六个研究单元均为 A。两家公司各 10 个日历年的收益由主申报（FY2020、FY2025）换算；与 FY2022 申报重叠的 2018–2022 年，公司与标普 500 各 5 年按两位小数舍入区间全部一致。本公司与 PBF 申报中的标普 500 年度收益 10 年全部一致，并与 Damodaran 年度标普 500 收益（damodaran_histret，含股息）同号、相差 0.07–0.38 个百分点（股息口径不同）。公司总收益本身没有独立价格来源可核对。2026-10-30 经模型技术复核登记，未人工签认。
+        scope: >-
+          Valero 普通股与标普 500 的日历年总收益（由 10-K 业绩图累计总收益指数换算，含股息再投资），用于与年均裂解价差、利用率的描述性对照；年末 2015-12-31 至 2025-12-31。不代表公司业绩只反映炼油，不用于交易信号或收益预测。
+      - dataset: sec_tsr_pbf
+        status: use_verified
+        use: descriptive
+        date: "2026-10-30"
+        valid_from: "2015-12-31"
+        valid_through: "2025-12-31"
+        evidence: >-
+          基线运行 us_refining_investment_2016_2025-20261030T232029Z-94aa6116，代码 1f21cdb，dirty=false，2026-10-30 iros verify 以固定输入重算结果校验值一致（4debaa0f…）；六个研究单元均为 A。两家公司各 10 个日历年的收益由主申报（FY2020、FY2025）换算；与 FY2022 申报重叠的 2018–2022 年，公司与标普 500 各 5 年按两位小数舍入区间全部一致。本公司与 Valero 申报中的标普 500 年度收益 10 年全部一致，并与 Damodaran 年度标普 500 收益（damodaran_histret，含股息）同号、相差 0.07–0.38 个百分点（股息口径不同）。公司总收益本身没有独立价格来源可核对。2026-10-30 经模型技术复核登记，未人工签认。
+        scope: >-
+          PBF Energy A 类普通股与标普 500 的日历年总收益（由 10-K 业绩图累计总收益指数换算，含股息再投资），用于与年均裂解价差、利用率的描述性对照；年末 2015-12-31 至 2025-12-31。不代表公司业绩只反映炼油，不用于交易信号或收益预测。
 
   - id: fund_issuers
     name: 基金发行方资料
