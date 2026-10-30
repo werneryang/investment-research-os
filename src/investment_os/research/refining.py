@@ -252,9 +252,10 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
             if scope is not None:
                 reference["use_scope"] = scope
                 if scope["status"] != "in_scope":
-                    gaps = "、".join(f"{a}—{b}" for a, b in scope["uncovered"]) or f"{scope['window'][0]}—{scope['window'][1]}"
+                    # 不能复用 gaps：它是研究窗口内的缺失周，写入 coverage
+                    uncovered = "、".join(f"{a}—{b}" for a, b in scope["uncovered"]) or f"{scope['window'][0]}—{scope['window'][1]}"
                     limitations.append(f"假设参照期 {scope['window'][0]} 至 {scope['window'][1]} 的利用率不全在用途核验范围内"
-                                       f"（{REFERENCE_SCOPE_LABEL.get(scope['status'], scope['status'])}；未覆盖 {gaps}）；"
+                                       f"（{REFERENCE_SCOPE_LABEL.get(scope['status'], scope['status'])}；未覆盖 {uncovered}）；"
                                        "参照只说明允许范围的依据，不进入计算")
         scenarios = list(method.get("scenarios") or [])
         if not scenarios:

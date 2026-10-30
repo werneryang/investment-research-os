@@ -78,6 +78,16 @@ jobs:
           uv run iros run config/studies/us_asset_history_last_25y.yaml || s=1
           exit $s
 
+      # 炼油周度统计与情景（2025 年）：EIA 周度文件无需凭证，由上一步 fetch --all 取得；取得或运行失败不阻断发布。
+      # 投资对照 us_refining_investment_2016_2025 需要 SEC 10-K 业绩图（SEC_USER_AGENT），只在本机运行，网站恢复已验证档案
+      - name: Run refining studies (EIA; failures do not block)
+        continue-on-error: true
+        run: |
+          s=0
+          uv run iros run config/studies/us_refining_utilization_2025.yaml || s=1
+          uv run iros run config/studies/us_refining_throughput_scenarios_2025.yaml || s=1
+          exit $s
+
       # The full dossier uses locally archived SEC source files and manually checked
       # guidance evidence. The 16 company_* studies also use verified archived results.
       # Publish these results; do not redownload

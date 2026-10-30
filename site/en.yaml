@@ -455,6 +455,79 @@ phrases:
   无需注册或 key: No registration or key
   美国政府发布的分类标准；使用与再分发条款未单独核验: Classification standard published by the U.S. government; terms of use and redistribution not separately verified
   "芯片模块 P3b 证据包：登记分部的年度分部营收、利润与成本，合并营收核对行，映射与证据的复核状态": "Chip module P3b evidence bundle: annual segment revenue, profit and cost for registered segments, consolidated revenue check rows, and review status of mappings and evidence"
+  # ---- 炼油研究（2026-10-30）----
+  炼油投资对照: Refining investment comparison
+  炼油统计: Refining statistics
+  炼油情景: Refining scenarios
+  美国炼油利用率、裂解价差与炼油公司股东总收益（2016–2025 年）: U.S. refinery utilization, crack spreads and refiners' shareholder returns (2016–2025)
+  美国炼油周度总投入、产能与利用率（2025 年）: U.S. refinery weekly gross inputs, capacity and utilization (2025)
+  美国炼油处理能力情景（2025 年周度基准）: U.S. refining throughput scenarios (2025 weekly baseline)
+  2016–2025 年美国炼厂周度利用率与墨西哥湾沿岸 3-2-1 裂解价差的历史关系如何？ 同期独立炼油公司 Valero、PBF Energy 的日历年股东总收益相对标普 500 的表现，与年均价差、利用率如何对照？: How did weekly U.S. refinery utilization relate to the Gulf Coast 3-2-1 crack spread in 2016–2025? Over the same years, how did the calendar-year total shareholder return of the independent refiners Valero and PBF Energy compare with the S&P 500, and with the annual mean crack spread and utilization?
+  2025 年美国炼厂每周的总投入、可运行产能与官方利用率是否齐全、同口径？ 按公布精度复算的利用率是否与官方值相容？全年处理量与产能的关系如何？: Were weekly U.S. refinery gross inputs, operable capacity and official utilization in 2025 complete and on a consistent basis? Is utilization recomputed at the published precision compatible with the official values? How did throughput relate to capacity over the year?
+  以 2025 年每周的实际总投入为基准，目标处理量提高 5%–20% 时，在可处理上限为可运行产能一定比例的假设下， 每周会出现多大的机械性处理缺口？: Taking each week's actual gross inputs in 2025 as the baseline, how large a mechanical throughput shortfall would arise each week if target throughput rose by 5%–20%, assuming the processing ceiling is a given share of operable capacity?
+  EIA WTI 现货油价（美元/桶）；用于能源周期背景，含负价格，不是期货总收益: EIA WTI spot oil price (USD per barrel); energy-cycle background, includes negative prices, not a futures total return
+  美联储制造业产能利用率；当前版本，仅用于事后描述: Federal Reserve manufacturing capacity utilization; current vintage, for after-the-fact description only
+  EIA 公布的周度利用率（WPULEUS3）: EIA's published weekly utilization (WPULEUS3)
+  标普 500 累计总收益指数（同一份 10-K 业绩图）: S&P 500 cumulative total return index (from the same 10-K performance graph)
+  关键基准输入全部核验通过，未使用假设参数: All key baseline inputs verified; no assumed parameters
+  可处理上限 ÷ 可运行产能（日历日口径）: processing ceiling ÷ operable capacity (calendar-day basis)
+  周度总投入、可运行产能与利用率的齐全性、复算与描述统计: Completeness, recomputation and descriptive statistics of weekly gross inputs, operable capacity and utilization
+  给定处理上限假设下，目标处理量提高时的机械性处理缺口: The mechanical throughput shortfall when target throughput rises, under an assumed processing ceiling
+  汽油、馏分油等产品供需或短缺（不含收率、进口、库存与物流）: Supply, demand or shortages of gasoline, distillate and other products (no yields, imports, inventories or logistics)
+  价格、裂解价差、炼厂或公司利润: Prices, crack spreads, refinery or company profits
+  单个炼厂、地区（PADD）或公司: Individual refineries, regions (PADD) or companies
+  需求预测；增幅 g 是外生情景定义: Demand forecasts; the increase g is an exogenous scenario definition
+  周度炼厂利用率与声明裂解价差的历史关系（水平相关与年度汇总）: The historical relation between weekly refinery utilization and the declared crack spread (level correlation and annual summaries)
+  选定炼油公司日历年股东总收益相对标普 500 的表现，与年均价差、利用率的描述性对照: Calendar-year shareholder return of selected refiners relative to the S&P 500, compared descriptively with the annual mean crack spread and utilization
+  炼厂或公司的实际炼油毛利（价差是指标定义）: Actual refining margins of refineries or companies (the spread is an indicator definition)
+  业绩图未以文字列出数值的公司: Companies whose performance graph does not list values as text
+  股价预测、交易信号或因果关系: Share-price forecasts, trading signals or causal relations
+  一体化石油公司（上游、化工、零售另有影响）: Integrated oil companies (upstream, chemicals and retail also matter)
+  ? 逐周核对 EIA 周度总投入、可运行产能与官方利用率；按公布精度的舍入区间复算利用率；缺失周不插值、不混用四周平均。情景中 D = (1 + g) × G、Q_cap = kappa × K，经固定系数约束引擎计算可处理量与缺口；g 为外生情景定义，kappa 为允许假设清单内的参数。
+  : Weekly check of EIA gross inputs, operable capacity and official utilization; utilization recomputed with rounding intervals at the published precision; missing weeks are not interpolated and four-week averages are not mixed in. In scenarios D = (1 + g) × G and Q_cap = kappa × K; a fixed-coefficient constraint engine computes output and shortfall; g is an exogenous scenario definition and kappa a parameter from the allowed-assumption list.
+  逐周核对 EIA 周度总投入、可运行产能与官方利用率；按公布精度的舍入区间复算利用率；缺失周不插值、不混用四周平均。: Weekly check of EIA gross inputs, operable capacity and official utilization; utilization recomputed with rounding intervals at the published precision; missing weeks are not interpolated and four-week averages are not mixed in.
+  ? 逐周计算 3-2-1 裂解价差 = (2 × 42 × 汽油 + 1 × 42 × 柴油 − 3 × 原油) ÷ 3（美元/桶），缺任一成分的周不计算；利用率与价差取同周水平相关与逐年汇总。公司日历年总收益由 10-K 业绩图累计总收益指数相邻年末之比换算，重叠申报与跨公司的标普 500 按舍入区间核对；超额收益 = 公司 − 标普 500。
+  : Weekly 3-2-1 crack spread = (2 × 42 × gasoline + 1 × 42 × diesel − 3 × crude) ÷ 3 (USD per barrel); weeks missing any component are not computed; utilization and the spread are compared by same-week level correlation and annual summaries. Calendar-year company total return is the ratio of consecutive year-end values of the 10-K performance-graph cumulative total return index; overlapping filings and the S&P 500 across companies are checked with rounding intervals; excess return = company − S&P 500.
+  只计算处理量的机械关系；不含产品收率、进口、库存、物流与价格，不是汽油需求预测、燃料短缺或炼厂利润结论: Only the mechanical throughput relation is computed; no product yields, imports, inventories, logistics or prices; not a gasoline-demand forecast, fuel-shortage or refinery-profit conclusion
+  增幅 g 与上限比例 kappa 都是假设，不代表概率；缺口是情景下的计算结果，不是历史真实短缺: Both the increase g and the ceiling ratio kappa are assumptions, not probabilities; shortfalls are scenario calculations, not historical shortages
+  美国全国合计，不区分地区（PADD）、炼厂或公司；周度数据为估计值，只使用当前修订版本: U.S. national totals, not by region (PADD), refinery or company; weekly data are estimates and only the current revision is used
+  美国全国合计，不区分地区（PADD）、炼厂或公司: U.S. national totals, not by region (PADD), refinery or company
+  总投入（Gross Inputs）包含原油以外的投入，不等于原油加工量: Gross inputs include inputs other than crude oil and are not crude runs
+  裂解价差是声明的指标定义，不是炼厂实际毛利；不含 RIN 合规成本、运输、产品结构与原油价差: The crack spread is a declared indicator, not an actual refining margin; it excludes RIN compliance costs, transport, product slate and crude differentials
+  现货价为 EIA 对日度收盘价的周均值，日度价格来自 Refinitiv（LSEG）；只使用当前修订版本: Spot prices are EIA's weekly averages of daily closing prices; the daily prices come from Refinitiv (LSEG); only the current revision is used
+  利用率是美国全国周度估计，不区分地区（PADD）或炼厂，也不等于样本公司的利用率: Utilization is a U.S. national weekly estimate, not by region (PADD) or refinery, and is not the sample companies' utilization
+  公司只有 Valero 与 PBF 两家独立炼油公司；Valero 另有乙醇与可再生柴油业务，PBF 有物流业务，总收益不只反映炼油: Only two independent refiners, Valero and PBF; Valero also has ethanol and renewable diesel businesses and PBF has logistics, so total return does not reflect refining alone
+  业绩图数值为公司在 10-K 中披露的累计总收益（含股息再投资），未与独立价格来源核对: Performance-graph values are the cumulative total returns the companies disclose in their 10-Ks (dividends reinvested); not checked against an independent price source
+  Exxon Mobil 等一体化石油公司: Exxon Mobil and other integrated oil companies
+  Exxon 的 10-K 没有业绩图；一体化公司还受上游、化工与零售影响，需分部数据另行对照: Exxon's 10-K has no performance graph; integrated companies are also driven by upstream, chemicals and retail, and need segment data for a separate comparison
+  10-K 业绩图只有图片，没有以文字列出的数值表，不能逐值核对；本项目也没有已核验的个股总收益来源: The 10-K performance graph is an image only, with no value table in text, so values cannot be checked one by one; the project also has no verified source of individual-stock total returns
+  基准情景（g = 0）下每周可处理量等于实际总投入: In the baseline scenario (g = 0), each week's output equals actual gross inputs
+  美国 12 与 49 行业的收益风险、因子暴露，经济、历史公司财报、估值和指引专题，以及炼油产业链的处理量、裂解价差与公司总收益: Return, risk and factor exposures of 12 and 49 U.S. industries; economy, historical filings, valuation and guidance dossiers; and refining throughput, crack spreads and company total returns
+  美国炼厂利用率与裂解价差的历史关系，以及独立炼油公司总收益与二者的描述性对照: The historical relation between U.S. refinery utilization and crack spreads, and a descriptive comparison of independent refiners' total returns with both
+  ? 以 2025 年周度数据为基准的处理能力机械情景（D = (1 + g) × G，Q_cap = kappa × K）；只确认基准输入可用于该情景，不验证 g 或 kappa 的取值，也不代表情景结果有预测能力；参照期 2015–2024 的利用率分布只作假设参照，不在本核验范围内。观测日期 2025-01-01 至 2025-12-31。
+  : Mechanical throughput scenarios on the 2025 weekly baseline (D = (1 + g) × G, Q_cap = kappa × K); confirms only that the baseline inputs can be used for the scenarios, does not validate the values of g or kappa, and does not imply predictive power; the 2015–2024 utilization distribution is only an assumption reference and is outside this verification. Observation dates 2025-01-01 to 2025-12-31.
+  美国全国周度总投入、可运行产能与利用率的齐全性、利用率复算与描述统计；使用当前修订数据；观测日期 2025-01-01 至 2025-12-31。不包括时点研究、预测、地区（PADD）、炼厂或公司层面的研究；核验范围之外的日期须先补充核验。: Completeness, utilization recomputation and descriptive statistics of U.S. national weekly gross inputs, operable capacity and utilization; current revised data; observation dates 2025-01-01 to 2025-12-31. Excludes point-in-time studies, forecasts, and regional (PADD), refinery or company research; dates outside the verified range need further verification first.
+  ? 全国周度利用率与墨西哥湾沿岸 3-2-1 裂解价差的水平相关、日历年汇总及与公司年度总收益的描述性对照（炼油投资对照）；使用当前修订数据；观测日期 2016-01-01 至 2025-12-31。不包括地区（PADD）、炼厂或公司层面的利用率、时点研究或预测。
+  : Level correlation and calendar-year summaries of national weekly utilization and the Gulf Coast 3-2-1 crack spread, and descriptive comparison with company annual total returns (refining investment comparison); current revised data; observation dates 2016-01-01 to 2025-12-31. Excludes regional (PADD), refinery or company utilization, point-in-time studies and forecasts.
+  ? 以周度现货价计算墨西哥湾沿岸 3-2-1 裂解价差（WTI 库欣原油），用于价差与全国周度利用率的水平相关、日历年汇总及与公司年度总收益的描述性对照；使用当前修订数据；观测日期 2016-01-01 至 2025-12-31。价差是指标定义，不代表炼厂毛利；不包括日度、其他地点、时点研究或预测。
+  : Weekly spot prices used to compute the Gulf Coast 3-2-1 crack spread (WTI Cushing crude), for its level correlation with national weekly utilization, calendar-year summaries and descriptive comparison with company annual total returns; current revised data; observation dates 2016-01-01 to 2025-12-31. The spread is an indicator definition, not a refining margin; excludes daily data, other locations, point-in-time studies and forecasts.
+  ? Valero 普通股与标普 500 的日历年总收益（由 10-K 业绩图累计总收益指数换算，含股息再投资），用于与年均裂解价差、利用率的描述性对照；年末 2015-12-31 至 2025-12-31。不代表公司业绩只反映炼油，不用于交易信号或收益预测。
+  : Calendar-year total returns of Valero common stock and the S&P 500 (converted from the 10-K performance-graph cumulative total return index, dividends reinvested), for descriptive comparison with the annual mean crack spread and utilization; year-ends 2015-12-31 to 2025-12-31. Does not imply the company's performance reflects refining alone; not for trading signals or return forecasts.
+  ? PBF Energy A 类普通股与标普 500 的日历年总收益（由 10-K 业绩图累计总收益指数换算，含股息再投资），用于与年均裂解价差、利用率的描述性对照；年末 2015-12-31 至 2025-12-31。不代表公司业绩只反映炼油，不用于交易信号或收益预测。
+  : Calendar-year total returns of PBF Energy Class A common stock and the S&P 500 (converted from the 10-K performance-graph cumulative total return index, dividends reinvested), for descriptive comparison with the annual mean crack spread and utilization; year-ends 2015-12-31 to 2025-12-31. Does not imply the company's performance reflects refining alone; not for trading signals or return forecasts.
+  ? 基线运行 us_refining_investment_2016_2025-20261030T232029Z-94aa6116，代码 1f21cdb，dirty=false，2026-10-30 iros verify 以固定输入重算结果校验值一致（4debaa0f…）；六个研究单元均为 A。2016–2025 年 522 个周五的利用率与三个现货价全部有效。与 EIA 网页历史表（dnav/pet/hist，RWTC、EER_EPMRU_PF4_RGC_DPG、EER_EPD2DXL0_PF4_RGC_DPG、WPULEUS3）逐值核对 2016–2025 年全部 522 周 × 4 个序列，2,088 个值全部一致。2026-10-30 经模型技术复核登记，未人工签认。
+  : 'Baseline run us_refining_investment_2016_2025-20261030T232029Z-94aa6116, code 1f21cdb, dirty=false; on 2026-10-30 iros verify recomputed the same result hash from pinned inputs (4debaa0f…); all six research units are A. All 522 Fridays in 2016–2025 have utilization and the three spot prices. Checked value by value against EIA''s web history tables (dnav/pet/hist; RWTC, EER_EPMRU_PF4_RGC_DPG, EER_EPD2DXL0_PF4_RGC_DPG, WPULEUS3) for all 522 weeks × 4 series in 2016–2025: all 2,088 values agree. Registered on 2026-10-30 after a model technical review, without human sign-off.'
+  ? 基线运行 us_refining_investment_2016_2025-20261030T232029Z-94aa6116，代码 1f21cdb，dirty=false，2026-10-30 iros verify 以固定输入重算结果校验值一致（4debaa0f…）；六个研究单元均为 A。两家公司各 10 个日历年的收益由主申报（FY2020、FY2025）换算；与 FY2022 申报重叠的 2018–2022 年，公司与标普 500 各 5 年按两位小数舍入区间全部一致。本公司与 PBF 申报中的标普 500 年度收益 10 年全部一致，并与 Damodaran 年度标普 500 收益（damodaran_histret，含股息）同号、相差 0.07–0.38 个百分点（股息口径不同）。公司总收益本身没有独立价格来源可核对。2026-10-30 经模型技术复核登记，未人工签认。
+  : Baseline run us_refining_investment_2016_2025-20261030T232029Z-94aa6116, code 1f21cdb, dirty=false; on 2026-10-30 iros verify recomputed the same result hash from pinned inputs (4debaa0f…); all six research units are A. Each company's 10 calendar-year returns come from the primary filings (FY2020, FY2025); for 2018–2022, which overlap the FY2022 filing, the company and S&P 500 returns (5 years each) all agree within two-decimal rounding intervals. The S&P 500 annual returns in this company's and PBF's filings agree in all 10 years, and have the same sign as Damodaran's annual S&P 500 returns (damodaran_histret, with dividends), differing by 0.07–0.38 percentage points (different dividend treatment). The company total returns themselves have no independent price source to check against. Registered on 2026-10-30 after a model technical review, without human sign-off.
+  ? 基线运行 us_refining_investment_2016_2025-20261030T232029Z-94aa6116，代码 1f21cdb，dirty=false，2026-10-30 iros verify 以固定输入重算结果校验值一致（4debaa0f…）；六个研究单元均为 A。两家公司各 10 个日历年的收益由主申报（FY2020、FY2025）换算；与 FY2022 申报重叠的 2018–2022 年，公司与标普 500 各 5 年按两位小数舍入区间全部一致。本公司与 Valero 申报中的标普 500 年度收益 10 年全部一致，并与 Damodaran 年度标普 500 收益（damodaran_histret，含股息）同号、相差 0.07–0.38 个百分点（股息口径不同）。公司总收益本身没有独立价格来源可核对。2026-10-30 经模型技术复核登记，未人工签认。
+  : Baseline run us_refining_investment_2016_2025-20261030T232029Z-94aa6116, code 1f21cdb, dirty=false; on 2026-10-30 iros verify recomputed the same result hash from pinned inputs (4debaa0f…); all six research units are A. Each company's 10 calendar-year returns come from the primary filings (FY2020, FY2025); for 2018–2022, which overlap the FY2022 filing, the company and S&P 500 returns (5 years each) all agree within two-decimal rounding intervals. The S&P 500 annual returns in this company's and Valero's filings agree in all 10 years, and have the same sign as Damodaran's annual S&P 500 returns (damodaran_histret, with dividends), differing by 0.07–0.38 percentage points (different dividend treatment). The company total returns themselves have no independent price source to check against. Registered on 2026-10-30 after a model technical review, without human sign-off.
+  ? 基线运行 us_refining_throughput_scenarios_2025-20261028T020015Z-54e7b0bd，代码 ff78c68，dirty=false，2026-10-29 iros verify 以固定输入重算结果校验值一致（f1b5e6c2…）。统计单元为 A；基准情景核对（kappa = 1、g = 0）52 周可处理量全部等于实际总投入；四个允许假设内的情景为 B 并生成数值，kappa = 1.05 的失败示例为 C 且未生成数值。与 EIA 网页历史表（dnav/pet/hist，WGIRIUS2、WOCLEUS2、WPULEUS3）逐值核对 2025 年 1、8、12 月共 14 周 × 3 个序列，42 个值全部一致。2026-10-29 经用户确认登记。
+  : 'Baseline run us_refining_throughput_scenarios_2025-20261028T020015Z-54e7b0bd, code ff78c68, dirty=false; on 2026-10-29 iros verify recomputed the same result hash from pinned inputs (f1b5e6c2…). The statistics unit is A; in the baseline check (kappa = 1, g = 0) output equals actual gross inputs in all 52 weeks; the four scenarios within allowed assumptions are B and produce values, and the kappa = 1.05 failure example is C with no values. Checked against EIA''s web history tables (dnav/pet/hist; WGIRIUS2, WOCLEUS2, WPULEUS3) for 14 weeks in January, August and December 2025 × 3 series: all 42 values agree. Registered on 2026-10-29 with the user''s confirmation.'
+  ? 基线运行 us_refining_utilization_2025-20261028T020014Z-259b0fdc，代码 ff78c68，dirty=false，2026-10-29 iros verify 以固定输入重算结果校验值一致（8f8995e8…）。统计单元为 A：2025-01-03 至 2025-12-26 预期 52 周三项全部有效；按公布精度传播舍入区间复算利用率，52 周全部与公布值相容（最大差 0.053 个百分点）。与 EIA 网页历史表（dnav/pet/hist，WGIRIUS2、WOCLEUS2、WPULEUS3）逐值核对 2025 年 1、8、12 月共 14 周 × 3 个序列，42 个值全部一致。2026-10-29 经用户确认登记。
+  : 'Baseline run us_refining_utilization_2025-20261028T020014Z-259b0fdc, code ff78c68, dirty=false; on 2026-10-29 iros verify recomputed the same result hash from pinned inputs (8f8995e8…). The statistics unit is A: all three values are valid in the 52 expected weeks from 2025-01-03 to 2025-12-26; utilization recomputed with rounding intervals at the published precision is compatible with the published value in all 52 weeks (max difference 0.053 pp). Checked against EIA''s web history tables (dnav/pet/hist; WGIRIUS2, WOCLEUS2, WPULEUS3) for 14 weeks in January, August and December 2025 × 3 series: all 42 values agree. Registered on 2026-10-29 with the user''s confirmation.'
+  部分在核验范围内: partly within the verified range
+  Phillips 66、Marathon Petroleum、HF Sinclair、Delek US、CVR Energy: Phillips 66, Marathon Petroleum, HF Sinclair, Delek US, CVR Energy
+
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'
@@ -486,3 +559,19 @@ patterns:
   en: 'Pinned as unused by the original run: {reason}'
 - zh: (?P<a>\d{4}-\d\d-\d\d) 至 (?P<b>\d{4}-\d\d-\d\d)
   en: '{a} to {b}'
+- zh: 使用假设参数 (?P<name>\S+) = (?P<v>\S+)
+  en: Uses assumed parameter {name} = {v}
+- zh: 参数 (?P<name>\S+) = (?P<v>\S+) 超出允许范围 (?P<range>\[[^\]]*\])（(?P<unit>.+)）
+  en: Parameter {name} = {v} is outside the allowed range {range} ({unit})
+- zh: 输入能力为 (?P<grade>\S+?)：(?P<reasons>.+)
+  en: 'Input capability {grade}: {reasons}'
+- zh: 情景 (?P<id>[A-Za-z0-9_.]+)：(?P<n>\d+) 周的基准总投入已超过假设上限，标为不自洽，未计入缺口
+  en: 'Scenario {id}: in {n} weeks baseline gross inputs already exceed the assumed ceiling; marked inconsistent and not counted as shortfall'
+- zh: 情景 (?P<id>[A-Za-z0-9_.]+)
+  en: Scenario {id}
+- zh: 假设参照期 (?P<a>\S+) 至 (?P<b>\S+) 的利用率不全在用途核验范围内（(?P<state>[^；]+)；未覆盖 (?P<gaps>[^）]+)）；参照只说明允许范围的依据，不进入计算
+  en: 'Utilization in the assumption reference period {a} to {b} is not fully within the use-verified range ({state}; not covered: {gaps}); the reference only explains the allowed range and is not used in the calculation'
+- zh: 年度对照只有 (?P<n>\d+) 年（价差变化 (?P<m>\d+) 年），Spearman 相关只描述排序关系，不检验显著性
+  en: The annual comparison has only {n} years ({m} for spread changes); Spearman correlations describe rank relations only and are not tested for significance
+- zh: 未纳入 (?P<name>[^：]+)：(?P<reason>.+)
+  en: 'Not included: {name}. {reason}'

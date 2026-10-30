@@ -49,7 +49,7 @@ scripts/snapshot-agent.sh install
 
 线上地址：<https://werneryang.github.io/investment-research-os/>
 
-`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 取得登记的公开数据 → 运行国债曲线、利率情景、曲线归因、长期资产和 `us_industry_12` / `us_industry_49` → `iros verify --all` → 归档到 `archive` 分支并恢复历史 → 生成静态网站 → 发布到 GitHub Pages。依赖可选来源的研究取得失败不阻断其他研究发布；任何必需步骤失败都不发布。四层专题 `us_industry_dossier` 和 `company_*` 公司研究使用本地准备的财报与指引证据，网站恢复其已验证档案，不在每次 CI 下载全部原始财报。线上更新时间、工作流徽章与「已过期」提示会显示更新停滞。
+`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 取得登记的公开数据 → 运行国债曲线、利率情景、曲线归因、长期资产、`us_industry_12` / `us_industry_49` 和两项 2025 年炼油研究 → `iros verify --all` → 归档到 `archive` 分支并恢复历史 → 生成静态网站 → 发布到 GitHub Pages。依赖可选来源的研究取得失败不阻断其他研究发布；任何必需步骤失败都不发布。四层专题 `us_industry_dossier`、`company_*` 公司研究和炼油投资对照 `us_refining_investment_2016_2025` 使用本地准备的财报与指引证据（或需要 SEC 联系邮箱），网站恢复其已验证档案，不在每次 CI 下载全部原始财报。线上更新时间、工作流徽章与「已过期」提示会显示更新停滞。
 
 网站定位为研究门户，分工回答四个问题：
 
