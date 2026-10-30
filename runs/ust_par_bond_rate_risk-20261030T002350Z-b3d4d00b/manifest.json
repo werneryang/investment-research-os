@@ -1,0 +1,119 @@
+{
+  "run_id": "ust_par_bond_rate_risk-20261030T002350Z-b3d4d00b",
+  "study_id": "ust_par_bond_rate_risk",
+  "study_path": "config/studies/ust_par_bond_rate_risk.yaml",
+  "study_config": {
+    "study_id": "ust_par_bond_rate_risk",
+    "title": "假设平价国债的利率敏感性情景",
+    "question": "以最近一个交易日的美国国债票面收益率构造假设平价债券，收益率平移时价格如何变化？ 久期与久期 + 凸性近似相对完整重新定价的误差有多大？",
+    "result_type": "simulation",
+    "branch": "par_bond_scenarios",
+    "scope": {
+      "market": "US",
+      "currency": "USD",
+      "start": "2026-10-16",
+      "end": "2026-10-30",
+      "frequency": "daily",
+      "vintage_policy": "latest",
+      "relative_dates": {
+        "start": "today-14d",
+        "end": "today"
+      },
+      "evaluated_at": "2026-10-30T00:23:50+00:00",
+      "data_checked_at": {
+        "ust_par_yield_curve": "2026-10-30T00:23:33+00:00"
+      }
+    },
+    "data": {
+      "curve": "ust_par_yield_curve"
+    },
+    "method": {
+      "tenors": [
+        "2Y",
+        "5Y",
+        "10Y",
+        "30Y"
+      ],
+      "coupon_frequency": 2,
+      "shocks_bp": [
+        -200,
+        -100,
+        -50,
+        -25,
+        25,
+        50,
+        100,
+        200
+      ],
+      "finite_difference_bp": 1
+    },
+    "benchmark": "完整重新定价（按冲击后收益率贴现全部现金流）",
+    "evaluation": [
+      "平价债券价格等于面值",
+      "解析修正久期与平价债券封闭解一致",
+      "解析久期、凸性与有限差分重新定价一致",
+      "固定数据版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "假设债券：票息等于基准日票面收益率、恰在付息日估值、无应计利息；不是任何真实国债或债券基金（如 TLT）的风险",
+      "冲击施加在每只债券自身的收益率上（平移），不是对整条曲线的一致重定价；票面收益率不等于零息利率",
+      "冲击幅度是假设情景，不代表概率或预测",
+      "只计算价格变化，不含持有期票息收入、再投资与融资成本"
+    ]
+  },
+  "study_config_hash": "0936abb54a160b24449f5a1598d3aacc609773a43ddce2cb64b6058f62fadb2c",
+  "started_at": "2026-10-30T00:23:50+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "ae3493be086064cbf9d8fc18251ac0335a9524b3f4cda0a899d42dd05d33cce1",
+    "git_commit": "49925b5b630080d5e83b04ed21a6ae2bd4d85d2f",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.3",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "success",
+  "inputs": [
+    {
+      "role": "curve",
+      "used": true,
+      "dataset_id": "ust_par_yield_curve",
+      "version_id": "v20261030T002312Z-b8ab888a",
+      "content_hash": "b8ab888a3177d5fe4b88b0c9ca94f758e4fb7cf42f64f5efdb7af595b4caa980",
+      "source_status": "access_verified",
+      "use": "scenario"
+    }
+  ],
+  "result_hash": "4ac4f5e66cc5e9897695056cf062b8918a3d3a5cfdee24c67802b8f14fa96de2",
+  "warnings": [],
+  "unsupported": [],
+  "outputs": [
+    {
+      "path": "runs/ust_par_bond_rate_risk-20261030T002350Z-b3d4d00b/result.json",
+      "sha256": "0f481c4673472393beabb3ba25db0a231e5e8e7edb9d3932656446118790409e"
+    },
+    {
+      "path": "reports/ust_par_bond_rate_risk/ust_par_bond_rate_risk-20261030T002350Z-b3d4d00b/report.md",
+      "sha256": "7b4b93431cee810bb24f8879fbfb5b8b27b7ecb66d389571006054375a179945"
+    },
+    {
+      "path": "reports/ust_par_bond_rate_risk/ust_par_bond_rate_risk-20261030T002350Z-b3d4d00b/report.html",
+      "sha256": "32ed6cc72c3166afebae88411848d800cf834c0bc61439d52c48f2ff6b2293b3"
+    },
+    {
+      "path": "reports/ust_par_bond_rate_risk/ust_par_bond_rate_risk-20261030T002350Z-b3d4d00b/figures/scenario_price.png",
+      "sha256": "0ccec34bfe2f24e0278635f9ab86a054d5e91c6c7ac642ecaefe5ed81698b050"
+    },
+    {
+      "path": "reports/ust_par_bond_rate_risk/ust_par_bond_rate_risk-20261030T002350Z-b3d4d00b/figures/approx_error.png",
+      "sha256": "19f7070348e38a7c58c7bcdc34dacd239a820cf9cceaafbe6bc4011e083f6408"
+    }
+  ],
+  "finished_at": "2026-10-30T00:23:51+00:00"
+}
