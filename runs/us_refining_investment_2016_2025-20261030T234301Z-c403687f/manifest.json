@@ -1,0 +1,278 @@
+{
+  "run_id": "us_refining_investment_2016_2025-20261030T234301Z-c403687f",
+  "study_id": "us_refining_investment_2016_2025",
+  "study_path": "config/studies/us_refining_investment_2016_2025.yaml",
+  "study_config": {
+    "study_id": "us_refining_investment_2016_2025",
+    "title": "美国炼油利用率、裂解价差与炼油公司股东总收益（2016–2025 年）",
+    "question": "2016–2025 年美国炼厂周度利用率与墨西哥湾沿岸 3-2-1 裂解价差的历史关系如何？ 同期独立炼油公司 Valero、PBF Energy 的日历年股东总收益相对标普 500 的表现，与年均价差、利用率如何对照？",
+    "result_type": "descriptive",
+    "branch": "refining_investment",
+    "scope": {
+      "market": "US",
+      "activity": "petroleum_refining",
+      "start": "2016-01-01",
+      "end": "2025-12-31",
+      "frequency": "weekly",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-10-30T23:43:01+00:00",
+      "data_checked_at": {
+        "eia_refinery_utilization": "2026-10-28T01:45:17+00:00",
+        "eia_spot_wti_cushing": "2026-10-30T23:10:54+00:00",
+        "eia_spot_gasoline_gulf": "2026-10-30T23:10:56+00:00",
+        "eia_spot_ulsd_gulf": "2026-10-30T23:10:57+00:00",
+        "sec_tsr_valero": "2026-10-30T23:11:00+00:00",
+        "sec_tsr_pbf": "2026-10-30T23:11:02+00:00"
+      }
+    },
+    "data": {
+      "utilization": "eia_refinery_utilization",
+      "crude": "eia_spot_wti_cushing",
+      "gasoline": "eia_spot_gasoline_gulf",
+      "distillate": "eia_spot_ulsd_gulf",
+      "tsr_valero": "sec_tsr_valero",
+      "tsr_pbf": "sec_tsr_pbf"
+    },
+    "method": {
+      "crack_spread": {
+        "id": "gulf_coast_321",
+        "crude": 3,
+        "gasoline": 2,
+        "distillate": 1,
+        "gallons_per_barrel": 42
+      },
+      "weekly_columns": [
+        "utilization",
+        "crack"
+      ],
+      "companies": [
+        {
+          "id": "valero",
+          "name": "Valero Energy",
+          "role": "tsr_valero",
+          "primary": [
+            "0001035002-21-000051",
+            "0001628280-26-011499"
+          ]
+        },
+        {
+          "id": "pbf",
+          "name": "PBF Energy",
+          "role": "tsr_pbf",
+          "primary": [
+            "0001534504-21-000008",
+            "0001534504-26-000010"
+          ]
+        }
+      ],
+      "not_covered": [
+        {
+          "name": "Phillips 66、Marathon Petroleum、HF Sinclair、Delek US、CVR Energy",
+          "reason": "10-K 业绩图只有图片，没有以文字列出的数值表，不能逐值核对；本项目也没有已核验的个股总收益来源"
+        },
+        {
+          "name": "Exxon Mobil 等一体化石油公司",
+          "reason": "Exxon 的 10-K 没有业绩图；一体化公司还受上游、化工与零售影响，需分部数据另行对照"
+        }
+      ]
+    },
+    "benchmark": "标普 500 累计总收益指数（同一份 10-K 业绩图）",
+    "evaluation": [
+      "2016–2025 年预期周的利用率与三个价格全部有效，缺失周不插值",
+      "每个日历年的公司与标普 500 收益都有主申报覆盖；重叠申报换算的收益在舍入区间内一致",
+      "两家公司申报中的标普 500 年度收益在舍入区间内一致",
+      "固定数据版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "裂解价差是声明的指标定义，不是炼厂实际毛利；不含 RIN 合规成本、运输、产品结构与原油价差",
+      "现货价为 EIA 对日度收盘价的周均值，日度价格来自 Refinitiv（LSEG）；只使用当前修订版本",
+      "利用率是美国全国周度估计，不区分地区（PADD）或炼厂，也不等于样本公司的利用率",
+      "公司只有 Valero 与 PBF 两家独立炼油公司；Valero 另有乙醇与可再生柴油业务，PBF 有物流业务，总收益不只反映炼油",
+      "业绩图数值为公司在 10-K 中披露的累计总收益（含股息再投资），未与独立价格来源核对",
+      "描述历史关系，不是因果解释、交易信号或收益预测"
+    ]
+  },
+  "study_config_hash": "0acf467cb869fb8141b67826aa053736f0dedec2563763a3c81002782f11815c",
+  "started_at": "2026-10-30T23:43:01+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "7e0c3b96f9327d1b94bddd47c12af48988c3cb0b5cfff6e7e031f5f9321f3e05",
+    "git_commit": "feda9ca98326d1dcdcd02292a7b02f2bb111e6e1",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.13",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "success",
+  "inputs": [
+    {
+      "role": "utilization",
+      "used": true,
+      "dataset_id": "eia_refinery_utilization",
+      "version_id": "v20261028T014517Z-ef9df9e1",
+      "content_hash": "ef9df9e1bbab2a646c1b6e207658c9f5d0cb202ebc7f8a7591f55d20b252a32f",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ],
+          [
+            "2016-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29",
+          "2026-10-30"
+        ]
+      }
+    },
+    {
+      "role": "crude",
+      "used": true,
+      "dataset_id": "eia_spot_wti_cushing",
+      "version_id": "v20261030T231054Z-0d65dee2",
+      "content_hash": "0d65dee21674c2234116e7c2f07ff03870bfd0b099b2dc96bd28d3d24d68751e",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2016-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-30"
+        ]
+      }
+    },
+    {
+      "role": "gasoline",
+      "used": true,
+      "dataset_id": "eia_spot_gasoline_gulf",
+      "version_id": "v20261030T231056Z-8037df11",
+      "content_hash": "8037df110eee0990671ac15baff893c6594c7f81da4e714f4e54a27f9941baca",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2016-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-30"
+        ]
+      }
+    },
+    {
+      "role": "distillate",
+      "used": true,
+      "dataset_id": "eia_spot_ulsd_gulf",
+      "version_id": "v20261030T231057Z-f181367f",
+      "content_hash": "f181367fda2e2de9017ff7c8bf79e0aadcb9a4a7d1d0a4a07655f3d5e2e56ba5",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2016-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-30"
+        ]
+      }
+    },
+    {
+      "role": "tsr_valero",
+      "used": true,
+      "dataset_id": "sec_tsr_valero",
+      "version_id": "v20261030T231100Z-41e2aeda",
+      "content_hash": "41e2aedacb826cd1942c87b9b6da3ad1bc8518ece5f27489289eb2ec28c688c8",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2015-12-31",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-30"
+        ]
+      }
+    },
+    {
+      "role": "tsr_pbf",
+      "used": true,
+      "dataset_id": "sec_tsr_pbf",
+      "version_id": "v20261030T231102Z-58e32642",
+      "content_hash": "58e32642c43d4608a7ee4e2aadba6c59ad7eda213227f0e79c9014a3feeb9095",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2015-12-31",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-30"
+        ]
+      }
+    }
+  ],
+  "result_hash": "b567506fdfa42785c5999bd990d3c74b272a70b483feb05279c542a90f9985ea",
+  "warnings": [],
+  "unsupported": [],
+  "outputs": [
+    {
+      "path": "runs/us_refining_investment_2016_2025-20261030T234301Z-c403687f/result.json",
+      "sha256": "ba3e214e5354f3342b94c60ff8aca5c2b11d714df36ac23b632cbb1f67e4e7b0"
+    },
+    {
+      "path": "reports/us_refining_investment_2016_2025/us_refining_investment_2016_2025-20261030T234301Z-c403687f/report.md",
+      "sha256": "a151b6dd52d903c929d5e54160795863d9c78be4b9aa0221b8eb69694ccc37cf"
+    },
+    {
+      "path": "reports/us_refining_investment_2016_2025/us_refining_investment_2016_2025-20261030T234301Z-c403687f/report.html",
+      "sha256": "ee1d00e95a9fe940cfe02c27ec6fc9c8077e8625f508cab491451353ef82c135"
+    },
+    {
+      "path": "reports/us_refining_investment_2016_2025/us_refining_investment_2016_2025-20261030T234301Z-c403687f/figures/refining_crack_utilization.png",
+      "sha256": "2c437f97fde3cce34fa76474f6b842758b9629b6af4711e71f4b5a909adb8371"
+    },
+    {
+      "path": "reports/us_refining_investment_2016_2025/us_refining_investment_2016_2025-20261030T234301Z-c403687f/figures/refining_excess_vs_crack.png",
+      "sha256": "95655f120569565b1fc3fffd6fae70395b5437c8297e356e63aa086863b7d207"
+    }
+  ],
+  "finished_at": "2026-10-30T23:43:03+00:00"
+}

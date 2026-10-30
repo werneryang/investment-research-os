@@ -1,0 +1,3400 @@
+{
+  "study_id": "us_refining_investment_2016_2025",
+  "title": "美国炼油利用率、裂解价差与炼油公司股东总收益（2016–2025 年）",
+  "question": "2016–2025 年美国炼厂周度利用率与墨西哥湾沿岸 3-2-1 裂解价差的历史关系如何？ 同期独立炼油公司 Valero、PBF Energy 的日历年股东总收益相对标普 500 的表现，与年均价差、利用率如何对照？",
+  "result_type": "descriptive",
+  "branch": "refining_investment",
+  "scope": {
+    "market": "US",
+    "activity": "petroleum_refining",
+    "start": "2016-01-01",
+    "end": "2025-12-31",
+    "frequency": "weekly",
+    "vintage_policy": "latest",
+    "evaluated_at": "2026-10-30T23:43:01+00:00",
+    "data_checked_at": {
+      "eia_refinery_utilization": "2026-10-28T01:45:17+00:00",
+      "eia_spot_wti_cushing": "2026-10-30T23:10:54+00:00",
+      "eia_spot_gasoline_gulf": "2026-10-30T23:10:56+00:00",
+      "eia_spot_ulsd_gulf": "2026-10-30T23:10:57+00:00",
+      "sec_tsr_valero": "2026-10-30T23:11:00+00:00",
+      "sec_tsr_pbf": "2026-10-30T23:11:02+00:00"
+    }
+  },
+  "data_cutoff": "2025-12-26",
+  "methods": {
+    "description": "逐周计算 3-2-1 裂解价差 = (2 × 42 × 汽油 + 1 × 42 × 柴油 − 3 × 原油) ÷ 3（美元/桶），缺任一成分的周不计算；利用率与价差取同周水平相关与逐年汇总。公司日历年总收益由 10-K 业绩图累计总收益指数相邻年末之比换算，重叠申报与跨公司的标普 500 按舍入区间核对；超额收益 = 公司 − 标普 500。",
+    "benchmark": "标普 500 累计总收益指数（同一份 10-K 业绩图）",
+    "model": {
+      "model_id": "refining_investment.v1",
+      "activity": "petroleum_refining",
+      "market": "US",
+      "frequency": "weekly",
+      "answers": [
+        "周度炼厂利用率与声明裂解价差的历史关系（水平相关与年度汇总）",
+        "选定炼油公司日历年股东总收益相对标普 500 的表现，与年均价差、利用率的描述性对照"
+      ],
+      "cannot_answer": [
+        "炼厂或公司的实际炼油毛利（价差是指标定义）",
+        "股价预测、交易信号或因果关系",
+        "业绩图未以文字列出数值的公司",
+        "一体化石油公司（上游、化工、零售另有影响）"
+      ]
+    },
+    "series_requirements": {
+      "utilization": {
+        "series": "WPULEUS3",
+        "unit": "percent",
+        "meaning": "官方周度利用率"
+      },
+      "crude": {
+        "series": "RWTC",
+        "unit": "usd_per_barrel",
+        "meaning": "WTI 库欣现货周均价"
+      },
+      "gasoline": {
+        "series": "EER_EPMRU_PF4_RGC_DPG",
+        "unit": "usd_per_gallon",
+        "meaning": "墨西哥湾沿岸常规汽油现货周均价"
+      },
+      "distillate": {
+        "series": "EER_EPD2DXL0_PF4_RGC_DPG",
+        "unit": "usd_per_gallon",
+        "meaning": "墨西哥湾沿岸超低硫柴油现货周均价"
+      }
+    },
+    "crack_spread": {
+      "id": "gulf_coast_321",
+      "crude": 3,
+      "gasoline": 2,
+      "distillate": 1,
+      "gallons_per_barrel": 42
+    },
+    "parameters": {
+      "crack_spread": {
+        "id": "gulf_coast_321",
+        "crude": 3,
+        "gasoline": 2,
+        "distillate": 1,
+        "gallons_per_barrel": 42
+      },
+      "weekly_columns": [
+        "utilization",
+        "crack"
+      ],
+      "companies": [
+        {
+          "id": "valero",
+          "name": "Valero Energy",
+          "role": "tsr_valero",
+          "primary": [
+            "0001035002-21-000051",
+            "0001628280-26-011499"
+          ]
+        },
+        {
+          "id": "pbf",
+          "name": "PBF Energy",
+          "role": "tsr_pbf",
+          "primary": [
+            "0001534504-21-000008",
+            "0001534504-26-000010"
+          ]
+        }
+      ],
+      "not_covered": [
+        {
+          "name": "Phillips 66、Marathon Petroleum、HF Sinclair、Delek US、CVR Energy",
+          "reason": "10-K 业绩图只有图片，没有以文字列出的数值表，不能逐值核对；本项目也没有已核验的个股总收益来源"
+        },
+        {
+          "name": "Exxon Mobil 等一体化石油公司",
+          "reason": "Exxon 的 10-K 没有业绩图；一体化公司还受上游、化工与零售影响，需分部数据另行对照"
+        }
+      ]
+    },
+    "availability_rule": "观测期间结束后第 0 天结束时（来源时区）"
+  },
+  "inputs": [
+    {
+      "role": "utilization",
+      "dataset_id": "eia_refinery_utilization",
+      "version_id": "v20261028T014517Z-ef9df9e1",
+      "content_hash": "ef9df9e1bbab2a646c1b6e207658c9f5d0cb202ebc7f8a7591f55d20b252a32f",
+      "source_id": "eia",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2025-01-01",
+            "2025-12-31"
+          ],
+          [
+            "2016-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-29",
+          "2026-10-30"
+        ]
+      }
+    },
+    {
+      "role": "crude",
+      "dataset_id": "eia_spot_wti_cushing",
+      "version_id": "v20261030T231054Z-0d65dee2",
+      "content_hash": "0d65dee21674c2234116e7c2f07ff03870bfd0b099b2dc96bd28d3d24d68751e",
+      "source_id": "eia",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2016-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-30"
+        ]
+      }
+    },
+    {
+      "role": "gasoline",
+      "dataset_id": "eia_spot_gasoline_gulf",
+      "version_id": "v20261030T231056Z-8037df11",
+      "content_hash": "8037df110eee0990671ac15baff893c6594c7f81da4e714f4e54a27f9941baca",
+      "source_id": "eia",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2016-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-30"
+        ]
+      }
+    },
+    {
+      "role": "distillate",
+      "dataset_id": "eia_spot_ulsd_gulf",
+      "version_id": "v20261030T231057Z-f181367f",
+      "content_hash": "f181367fda2e2de9017ff7c8bf79e0aadcb9a4a7d1d0a4a07655f3d5e2e56ba5",
+      "source_id": "eia",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2016-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-30"
+        ]
+      }
+    },
+    {
+      "role": "tsr_valero",
+      "dataset_id": "sec_tsr_valero",
+      "version_id": "v20261030T231100Z-41e2aeda",
+      "content_hash": "41e2aedacb826cd1942c87b9b6da3ad1bc8518ece5f27489289eb2ec28c688c8",
+      "source_id": "sec_edgar",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2015-12-31",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-30"
+        ]
+      }
+    },
+    {
+      "role": "tsr_pbf",
+      "dataset_id": "sec_tsr_pbf",
+      "version_id": "v20261030T231102Z-58e32642",
+      "content_hash": "58e32642c43d4608a7ee4e2aadba6c59ad7eda213227f0e79c9014a3feeb9095",
+      "source_id": "sec_edgar",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2015-12-31",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-30"
+        ]
+      }
+    }
+  ],
+  "results": {
+    "feasibility": {
+      "crack_spread": {
+        "unit": "crack_spread",
+        "grade": "A",
+        "reasons": [
+          "关键基准输入全部核验通过，未使用假设参数"
+        ],
+        "assumptions": [],
+        "depends_on": [],
+        "gate_policy_version": "feasibility.v1"
+      },
+      "utilization_crack": {
+        "unit": "utilization_crack",
+        "grade": "A",
+        "reasons": [
+          "关键基准输入全部核验通过，未使用假设参数"
+        ],
+        "assumptions": [],
+        "depends_on": [
+          "crack_spread"
+        ],
+        "gate_policy_version": "feasibility.v1"
+      },
+      "tsr:valero": {
+        "unit": "tsr:valero",
+        "grade": "A",
+        "reasons": [
+          "关键基准输入全部核验通过，未使用假设参数"
+        ],
+        "assumptions": [],
+        "depends_on": [],
+        "gate_policy_version": "feasibility.v1"
+      },
+      "comparison:valero": {
+        "unit": "comparison:valero",
+        "grade": "A",
+        "reasons": [
+          "关键基准输入全部核验通过，未使用假设参数"
+        ],
+        "assumptions": [],
+        "depends_on": [
+          "utilization_crack",
+          "tsr:valero"
+        ],
+        "gate_policy_version": "feasibility.v1"
+      },
+      "tsr:pbf": {
+        "unit": "tsr:pbf",
+        "grade": "A",
+        "reasons": [
+          "关键基准输入全部核验通过，未使用假设参数"
+        ],
+        "assumptions": [],
+        "depends_on": [],
+        "gate_policy_version": "feasibility.v1"
+      },
+      "comparison:pbf": {
+        "unit": "comparison:pbf",
+        "grade": "A",
+        "reasons": [
+          "关键基准输入全部核验通过，未使用假设参数"
+        ],
+        "assumptions": [],
+        "depends_on": [
+          "utilization_crack",
+          "tsr:pbf"
+        ],
+        "gate_policy_version": "feasibility.v1"
+      }
+    },
+    "crack_spread": {
+      "weeks": 522,
+      "mean": 19.743095785440616,
+      "median": 17.992999999999988,
+      "min": 3.484000000000004,
+      "min_week": "2020-05-29",
+      "max": 61.35200000000001,
+      "max_week": "2022-06-24",
+      "weeks_negative": 0
+    },
+    "utilization_crack": {
+      "n": 522,
+      "pearson": 0.30094479817163433,
+      "spearman": 0.25735392638499993
+    },
+    "by_year": [
+      {
+        "year": 2016,
+        "weeks": 53,
+        "complete_weeks": 53,
+        "complete": true,
+        "mean_utilization": 90.05283018867924,
+        "mean_crack": 12.522867924528303,
+        "corr_pearson": 0.23199460414714212,
+        "corr_spearman": 0.21132015565447648,
+        "crack_change": null
+      },
+      {
+        "year": 2017,
+        "weeks": 52,
+        "complete_weeks": 52,
+        "complete": true,
+        "mean_utilization": 90.84038461538461,
+        "mean_crack": 16.751423076923075,
+        "corr_pearson": -0.3426444797190628,
+        "corr_spearman": 0.046240554403270705,
+        "crack_change": 4.228555152394772
+      },
+      {
+        "year": 2018,
+        "weeks": 52,
+        "complete_weeks": 52,
+        "complete": true,
+        "mean_utilization": 93.10000000000001,
+        "mean_crack": 16.237115384615386,
+        "corr_pearson": 0.1998307174098421,
+        "corr_spearman": 0.21411339085307884,
+        "crack_change": -0.514307692307689
+      },
+      {
+        "year": 2019,
+        "weeks": 52,
+        "complete_weeks": 52,
+        "complete": true,
+        "mean_utilization": 90.6269230769231,
+        "mean_crack": 16.98557692307692,
+        "corr_pearson": -0.06316365341611277,
+        "corr_spearman": -0.05268776004952544,
+        "crack_change": 0.7484615384615338
+      },
+      {
+        "year": 2020,
+        "weeks": 52,
+        "complete_weeks": 52,
+        "complete": true,
+        "mean_utilization": 78.58269230769231,
+        "mean_crack": 9.021269230769231,
+        "corr_pearson": 0.44086202511528344,
+        "corr_spearman": 0.48215505640230577,
+        "crack_change": -7.964307692307688
+      },
+      {
+        "year": 2021,
+        "weeks": 53,
+        "complete_weeks": 53,
+        "complete": true,
+        "mean_utilization": 85.88113207547171,
+        "mean_crack": 17.762226415094343,
+        "corr_pearson": 0.37711014810339644,
+        "corr_spearman": 0.28118006935356016,
+        "crack_change": 8.740957184325111
+      },
+      {
+        "year": 2022,
+        "weeks": 52,
+        "complete_weeks": 52,
+        "complete": true,
+        "mean_utilization": 91.16923076923078,
+        "mean_crack": 36.79992307692308,
+        "corr_pearson": 0.3349253505529319,
+        "corr_spearman": 0.3261960225012465,
+        "crack_change": 19.037696661828736
+      },
+      {
+        "year": 2023,
+        "weeks": 52,
+        "complete_weeks": 52,
+        "complete": true,
+        "mean_utilization": 90.05192307692306,
+        "mean_crack": 30.2321923076923,
+        "corr_pearson": 0.28054126636483007,
+        "corr_spearman": 0.2726904083307636,
+        "crack_change": -6.567730769230778
+      },
+      {
+        "year": 2024,
+        "weeks": 52,
+        "complete_weeks": 52,
+        "complete": true,
+        "mean_utilization": 89.92499999999998,
+        "mean_crack": 19.161538461538463,
+        "corr_pearson": -0.5906113962435494,
+        "corr_spearman": -0.48620838487135193,
+        "crack_change": -11.070653846153839
+      },
+      {
+        "year": 2025,
+        "weeks": 52,
+        "complete_weeks": 52,
+        "complete": true,
+        "mean_utilization": 90.8173076923077,
+        "mean_crack": 22.133769230769232,
+        "corr_pearson": 0.3349324486198486,
+        "corr_spearman": 0.33557506790057307,
+        "crack_change": 2.9722307692307695
+      }
+    ],
+    "tsr": {
+      "valero": {
+        "name": "Valero Energy",
+        "years": 10,
+        "cumulative": {
+          "company": 2.45387182,
+          "sp500": 2.9828326400000007
+        },
+        "annualized": {
+          "company": 0.13195880394489223,
+          "sp500": 0.14820439729565082
+        },
+        "years_beating_sp500": 4
+      },
+      "pbf": {
+        "name": "PBF Energy",
+        "years": 10,
+        "cumulative": {
+          "company": -0.02839767999999998,
+          "sp500": 2.9828326400000007
+        },
+        "annualized": {
+          "company": -0.0028767236820935738,
+          "sp500": 0.14820439729565082
+        },
+        "years_beating_sp500": 3
+      }
+    },
+    "comparison": {
+      "valero": {
+        "name": "Valero Energy",
+        "excess_vs_mean_crack": {
+          "n": 10,
+          "spearman": 0.4545454545454545
+        },
+        "excess_vs_crack_change": {
+          "n": 9,
+          "spearman": 0.9166666666666666
+        },
+        "excess_vs_mean_utilization": {
+          "n": 10,
+          "spearman": 0.5878787878787878
+        }
+      },
+      "pbf": {
+        "name": "PBF Energy",
+        "excess_vs_mean_crack": {
+          "n": 10,
+          "spearman": 0.46666666666666656
+        },
+        "excess_vs_crack_change": {
+          "n": 9,
+          "spearman": 0.9
+        },
+        "excess_vs_mean_utilization": {
+          "n": 10,
+          "spearman": 0.5757575757575756
+        }
+      }
+    }
+  },
+  "coverage": {
+    "first_week": "2016-01-01",
+    "last_week": "2025-12-26",
+    "expected_weeks": 522,
+    "valid_weeks": 522,
+    "missing_weeks": [],
+    "years": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+    ],
+    "incomplete_years": [],
+    "tsr_missing_years": {},
+    "completeness": "complete"
+  },
+  "unsupported": [],
+  "limitations": [
+    "裂解价差是声明的指标定义，不是炼厂实际毛利；不含 RIN 合规成本、运输、产品结构与原油价差",
+    "现货价为 EIA 对日度收盘价的周均值，日度价格来自 Refinitiv（LSEG）；只使用当前修订版本",
+    "利用率是美国全国周度估计，不区分地区（PADD）或炼厂，也不等于样本公司的利用率",
+    "公司只有 Valero 与 PBF 两家独立炼油公司；Valero 另有乙醇与可再生柴油业务，PBF 有物流业务，总收益不只反映炼油",
+    "业绩图数值为公司在 10-K 中披露的累计总收益（含股息再投资），未与独立价格来源核对",
+    "描述历史关系，不是因果解释、交易信号或收益预测",
+    "未纳入 Phillips 66、Marathon Petroleum、HF Sinclair、Delek US、CVR Energy：10-K 业绩图只有图片，没有以文字列出的数值表，不能逐值核对；本项目也没有已核验的个股总收益来源",
+    "未纳入 Exxon Mobil 等一体化石油公司：Exxon 的 10-K 没有业绩图；一体化公司还受上游、化工与零售影响，需分部数据另行对照",
+    "年度对照只有 10 年（价差变化 9 年），Spearman 相关只描述排序关系，不检验显著性"
+  ],
+  "validation": {
+    "overlap_check:valero": {
+      "status": "pass",
+      "checked": 10,
+      "failures": [],
+      "filings": [
+        "0001035002-21-000051",
+        "0001035002-23-000027",
+        "0001628280-26-011499"
+      ],
+      "rule": "同一年由两份申报换算的收益，按指数两位小数传播舍入区间，区间相交即一致"
+    },
+    "overlap_check:pbf": {
+      "status": "pass",
+      "checked": 10,
+      "failures": [],
+      "filings": [
+        "0001534504-21-000008",
+        "0001534504-23-000011",
+        "0001534504-26-000010"
+      ],
+      "rule": "同一年由两份申报换算的收益，按指数两位小数传播舍入区间，区间相交即一致"
+    },
+    "sp500_cross_issuer": {
+      "status": "pass",
+      "checked": 10,
+      "failures": [],
+      "companies": [
+        "valero",
+        "pbf"
+      ]
+    },
+    "raw_spot_check": {
+      "status": "skipped",
+      "reason": "没有可在原始 CSV 中定位的合格观测"
+    }
+  },
+  "tables": {
+    "weekly": [
+      {
+        "week_ending": "2016-01-01",
+        "utilization": 92.5,
+        "crack": 10.063999999999993
+      },
+      {
+        "week_ending": "2016-01-08",
+        "utilization": 91.2,
+        "crack": 10.5
+      },
+      {
+        "week_ending": "2016-01-15",
+        "utilization": 90.6,
+        "crack": 10.15
+      },
+      {
+        "week_ending": "2016-01-22",
+        "utilization": 87.4,
+        "crack": 10.065999999999997
+      },
+      {
+        "week_ending": "2016-01-29",
+        "utilization": 86.6,
+        "crack": 9.994000000000005
+      },
+      {
+        "week_ending": "2016-02-05",
+        "utilization": 86.1,
+        "crack": 8.514000000000001
+      },
+      {
+        "week_ending": "2016-02-12",
+        "utilization": 88.3,
+        "crack": 10.191999999999998
+      },
+      {
+        "week_ending": "2016-02-19",
+        "utilization": 87.3,
+        "crack": 10.509999999999996
+      },
+      {
+        "week_ending": "2016-02-26",
+        "utilization": 88.3,
+        "crack": 9.937999999999997
+      },
+      {
+        "week_ending": "2016-03-04",
+        "utilization": 89.1,
+        "crack": 8.900000000000006
+      },
+      {
+        "week_ending": "2016-03-11",
+        "utilization": 89.0,
+        "crack": 11.463999999999999
+      },
+      {
+        "week_ending": "2016-03-18",
+        "utilization": 88.4,
+        "crack": 13.129999999999995
+      },
+      {
+        "week_ending": "2016-03-25",
+        "utilization": 90.4,
+        "crack": 13.735999999999995
+      },
+      {
+        "week_ending": "2016-04-01",
+        "utilization": 91.4,
+        "crack": 13.776000000000002
+      },
+      {
+        "week_ending": "2016-04-08",
+        "utilization": 89.2,
+        "crack": 12.644000000000005
+      },
+      {
+        "week_ending": "2016-04-15",
+        "utilization": 89.4,
+        "crack": 12.935999999999998
+      },
+      {
+        "week_ending": "2016-04-22",
+        "utilization": 88.1,
+        "crack": 13.258000000000004
+      },
+      {
+        "week_ending": "2016-04-29",
+        "utilization": 89.7,
+        "crack": 14.948000000000008
+      },
+      {
+        "week_ending": "2016-05-06",
+        "utilization": 89.1,
+        "crack": 12.130000000000004
+      },
+      {
+        "week_ending": "2016-05-13",
+        "utilization": 90.5,
+        "crack": 11.400000000000006
+      },
+      {
+        "week_ending": "2016-05-20",
+        "utilization": 89.7,
+        "crack": 13.162000000000006
+      },
+      {
+        "week_ending": "2016-05-27",
+        "utilization": 89.8,
+        "crack": 13.635999999999996
+      },
+      {
+        "week_ending": "2016-06-03",
+        "utilization": 90.9,
+        "crack": 13.943999999999997
+      },
+      {
+        "week_ending": "2016-06-10",
+        "utilization": 90.2,
+        "crack": 13.506
+      },
+      {
+        "week_ending": "2016-06-17",
+        "utilization": 91.3,
+        "crack": 12.282000000000002
+      },
+      {
+        "week_ending": "2016-06-24",
+        "utilization": 93.0,
+        "crack": 13.772
+      },
+      {
+        "week_ending": "2016-07-01",
+        "utilization": 92.5,
+        "crack": 12.870000000000005
+      },
+      {
+        "week_ending": "2016-07-08",
+        "utilization": 92.3,
+        "crack": 12.209999999999999
+      },
+      {
+        "week_ending": "2016-07-15",
+        "utilization": 93.2,
+        "crack": 11.576000000000002
+      },
+      {
+        "week_ending": "2016-07-22",
+        "utilization": 92.4,
+        "crack": 11.644000000000005
+      },
+      {
+        "week_ending": "2016-07-29",
+        "utilization": 93.3,
+        "crack": 12.868
+      },
+      {
+        "week_ending": "2016-08-05",
+        "utilization": 92.2,
+        "crack": 14.24200000000001
+      },
+      {
+        "week_ending": "2016-08-12",
+        "utilization": 93.5,
+        "crack": 13.212000000000009
+      },
+      {
+        "week_ending": "2016-08-19",
+        "utilization": 92.5,
+        "crack": 13.684000000000006
+      },
+      {
+        "week_ending": "2016-08-26",
+        "utilization": 92.8,
+        "crack": 16.51
+      },
+      {
+        "week_ending": "2016-09-02",
+        "utilization": 93.7,
+        "crack": 14.530000000000001
+      },
+      {
+        "week_ending": "2016-09-09",
+        "utilization": 92.9,
+        "crack": 12.042000000000002
+      },
+      {
+        "week_ending": "2016-09-16",
+        "utilization": 92.0,
+        "crack": 13.969999999999999
+      },
+      {
+        "week_ending": "2016-09-23",
+        "utilization": 90.1,
+        "crack": 13.187999999999997
+      },
+      {
+        "week_ending": "2016-09-30",
+        "utilization": 88.3,
+        "crack": 14.630000000000004
+      },
+      {
+        "week_ending": "2016-10-07",
+        "utilization": 85.5,
+        "crack": 14.822000000000003
+      },
+      {
+        "week_ending": "2016-10-14",
+        "utilization": 85.0,
+        "crack": 13.465999999999989
+      },
+      {
+        "week_ending": "2016-10-21",
+        "utilization": 85.6,
+        "crack": 13.041999999999993
+      },
+      {
+        "week_ending": "2016-10-28",
+        "utilization": 85.2,
+        "crack": 12.898000000000005
+      },
+      {
+        "week_ending": "2016-11-04",
+        "utilization": 87.1,
+        "crack": 13.514000000000001
+      },
+      {
+        "week_ending": "2016-11-11",
+        "utilization": 89.2,
+        "crack": 10.409999999999997
+      },
+      {
+        "week_ending": "2016-11-18",
+        "utilization": 90.8,
+        "crack": 8.848000000000004
+      },
+      {
+        "week_ending": "2016-11-25",
+        "utilization": 89.8,
+        "crack": 11.354000000000005
+      },
+      {
+        "week_ending": "2016-12-02",
+        "utilization": 90.4,
+        "crack": 12.437999999999997
+      },
+      {
+        "week_ending": "2016-12-09",
+        "utilization": 90.5,
+        "crack": 12.338000000000003
+      },
+      {
+        "week_ending": "2016-12-16",
+        "utilization": 91.5,
+        "crack": 12.868000000000004
+      },
+      {
+        "week_ending": "2016-12-23",
+        "utilization": 91.0,
+        "crack": 15.389999999999995
+      },
+      {
+        "week_ending": "2016-12-30",
+        "utilization": 92.0,
+        "crack": 16.596000000000004
+      },
+      {
+        "week_ending": "2017-01-06",
+        "utilization": 93.6,
+        "crack": 15.945999999999998
+      },
+      {
+        "week_ending": "2017-01-13",
+        "utilization": 90.7,
+        "crack": 15.256
+      },
+      {
+        "week_ending": "2017-01-20",
+        "utilization": 88.3,
+        "crack": 14.330000000000004
+      },
+      {
+        "week_ending": "2017-01-27",
+        "utilization": 88.2,
+        "crack": 12.682000000000007
+      },
+      {
+        "week_ending": "2017-02-03",
+        "utilization": 87.7,
+        "crack": 12.693999999999997
+      },
+      {
+        "week_ending": "2017-02-10",
+        "utilization": 85.4,
+        "crack": 12.891999999999996
+      },
+      {
+        "week_ending": "2017-02-17",
+        "utilization": 84.3,
+        "crack": 11.502
+      },
+      {
+        "week_ending": "2017-02-24",
+        "utilization": 86.0,
+        "crack": 11.671999999999997
+      },
+      {
+        "week_ending": "2017-03-03",
+        "utilization": 85.9,
+        "crack": 11.455999999999998
+      },
+      {
+        "week_ending": "2017-03-10",
+        "utilization": 85.1,
+        "crack": 12.878000000000005
+      },
+      {
+        "week_ending": "2017-03-17",
+        "utilization": 87.4,
+        "crack": 14.326000000000002
+      },
+      {
+        "week_ending": "2017-03-24",
+        "utilization": 89.3,
+        "crack": 15.817999999999993
+      },
+      {
+        "week_ending": "2017-03-31",
+        "utilization": 90.8,
+        "crack": 16.631999999999987
+      },
+      {
+        "week_ending": "2017-04-07",
+        "utilization": 91.0,
+        "crack": 17.018
+      },
+      {
+        "week_ending": "2017-04-14",
+        "utilization": 92.9,
+        "crack": 16.334000000000003
+      },
+      {
+        "week_ending": "2017-04-21",
+        "utilization": 94.1,
+        "crack": 16.039999999999992
+      },
+      {
+        "week_ending": "2017-04-28",
+        "utilization": 93.3,
+        "crack": 14.776000000000002
+      },
+      {
+        "week_ending": "2017-05-05",
+        "utilization": 91.5,
+        "crack": 13.326000000000002
+      },
+      {
+        "week_ending": "2017-05-12",
+        "utilization": 93.4,
+        "crack": 14.588000000000003
+      },
+      {
+        "week_ending": "2017-05-19",
+        "utilization": 93.5,
+        "crack": 15.104000000000005
+      },
+      {
+        "week_ending": "2017-05-26",
+        "utilization": 95.0,
+        "crack": 15.645999999999995
+      },
+      {
+        "week_ending": "2017-06-02",
+        "utilization": 94.1,
+        "crack": 15.388000000000005
+      },
+      {
+        "week_ending": "2017-06-09",
+        "utilization": 94.4,
+        "crack": 14.022
+      },
+      {
+        "week_ending": "2017-06-16",
+        "utilization": 94.0,
+        "crack": 13.458000000000007
+      },
+      {
+        "week_ending": "2017-06-23",
+        "utilization": 92.5,
+        "crack": 14.75799999999999
+      },
+      {
+        "week_ending": "2017-06-30",
+        "utilization": 93.6,
+        "crack": 14.827999999999994
+      },
+      {
+        "week_ending": "2017-07-07",
+        "utilization": 94.5,
+        "crack": 16.248
+      },
+      {
+        "week_ending": "2017-07-14",
+        "utilization": 94.0,
+        "crack": 16.426000000000005
+      },
+      {
+        "week_ending": "2017-07-21",
+        "utilization": 94.3,
+        "crack": 17.26200000000001
+      },
+      {
+        "week_ending": "2017-07-28",
+        "utilization": 95.4,
+        "crack": 17.109999999999996
+      },
+      {
+        "week_ending": "2017-08-04",
+        "utilization": 96.3,
+        "crack": 18.673999999999996
+      },
+      {
+        "week_ending": "2017-08-11",
+        "utilization": 96.1,
+        "crack": 18.176000000000005
+      },
+      {
+        "week_ending": "2017-08-18",
+        "utilization": 95.4,
+        "crack": 18.112000000000005
+      },
+      {
+        "week_ending": "2017-08-25",
+        "utilization": 96.6,
+        "crack": 19.281999999999993
+      },
+      {
+        "week_ending": "2017-09-01",
+        "utilization": 79.7,
+        "crack": 29.325999999999993
+      },
+      {
+        "week_ending": "2017-09-08",
+        "utilization": 77.7,
+        "crack": 29.27399999999999
+      },
+      {
+        "week_ending": "2017-09-15",
+        "utilization": 83.2,
+        "crack": 23.884000000000004
+      },
+      {
+        "week_ending": "2017-09-22",
+        "utilization": 88.6,
+        "crack": 21.50400000000001
+      },
+      {
+        "week_ending": "2017-09-29",
+        "utilization": 88.1,
+        "crack": 20.161999999999995
+      },
+      {
+        "week_ending": "2017-10-06",
+        "utilization": 89.2,
+        "crack": 18.566000000000003
+      },
+      {
+        "week_ending": "2017-10-13",
+        "utilization": 84.5,
+        "crack": 18.530000000000012
+      },
+      {
+        "week_ending": "2017-10-20",
+        "utilization": 87.8,
+        "crack": 19.142000000000007
+      },
+      {
+        "week_ending": "2017-10-27",
+        "utilization": 88.1,
+        "crack": 20.486
+      },
+      {
+        "week_ending": "2017-11-03",
+        "utilization": 89.6,
+        "crack": 20.45
+      },
+      {
+        "week_ending": "2017-11-10",
+        "utilization": 91.0,
+        "crack": 20.398000000000007
+      },
+      {
+        "week_ending": "2017-11-17",
+        "utilization": 91.3,
+        "crack": 18.096000000000004
+      },
+      {
+        "week_ending": "2017-11-24",
+        "utilization": 92.6,
+        "crack": 16.772000000000002
+      },
+      {
+        "week_ending": "2017-12-01",
+        "utilization": 93.8,
+        "crack": 16.627999999999997
+      },
+      {
+        "week_ending": "2017-12-08",
+        "utilization": 93.4,
+        "crack": 15.782000000000002
+      },
+      {
+        "week_ending": "2017-12-15",
+        "utilization": 94.1,
+        "crack": 14.943999999999997
+      },
+      {
+        "week_ending": "2017-12-22",
+        "utilization": 95.7,
+        "crack": 15.756
+      },
+      {
+        "week_ending": "2017-12-29",
+        "utilization": 96.7,
+        "crack": 16.713999999999988
+      },
+      {
+        "week_ending": "2018-01-05",
+        "utilization": 95.3,
+        "crack": 15.654000000000005
+      },
+      {
+        "week_ending": "2018-01-12",
+        "utilization": 93.0,
+        "crack": 15.658000000000007
+      },
+      {
+        "week_ending": "2018-01-19",
+        "utilization": 90.9,
+        "crack": 16.170000000000005
+      },
+      {
+        "week_ending": "2018-01-26",
+        "utilization": 88.1,
+        "crack": 17.432
+      },
+      {
+        "week_ending": "2018-02-02",
+        "utilization": 92.5,
+        "crack": 16.355999999999995
+      },
+      {
+        "week_ending": "2018-02-09",
+        "utilization": 89.8,
+        "crack": 14.276000000000002
+      },
+      {
+        "week_ending": "2018-02-16",
+        "utilization": 88.1,
+        "crack": 12.870000000000005
+      },
+      {
+        "week_ending": "2018-02-23",
+        "utilization": 87.8,
+        "crack": 13.395999999999995
+      },
+      {
+        "week_ending": "2018-03-02",
+        "utilization": 88.0,
+        "crack": 13.599999999999994
+      },
+      {
+        "week_ending": "2018-03-09",
+        "utilization": 90.0,
+        "crack": 12.536000000000001
+      },
+      {
+        "week_ending": "2018-03-16",
+        "utilization": 91.7,
+        "crack": 14.179999999999998
+      },
+      {
+        "week_ending": "2018-03-23",
+        "utilization": 92.3,
+        "crack": 16.054000000000013
+      },
+      {
+        "week_ending": "2018-03-30",
+        "utilization": 93.0,
+        "crack": 16.25800000000001
+      },
+      {
+        "week_ending": "2018-04-06",
+        "utilization": 93.5,
+        "crack": 16.365999999999996
+      },
+      {
+        "week_ending": "2018-04-13",
+        "utilization": 92.4,
+        "crack": 17.195999999999998
+      },
+      {
+        "week_ending": "2018-04-20",
+        "utilization": 90.8,
+        "crack": 16.828000000000014
+      },
+      {
+        "week_ending": "2018-04-27",
+        "utilization": 91.1,
+        "crack": 18.091999999999995
+      },
+      {
+        "week_ending": "2018-05-04",
+        "utilization": 90.4,
+        "crack": 17.566000000000013
+      },
+      {
+        "week_ending": "2018-05-11",
+        "utilization": 91.1,
+        "crack": 17.933999999999987
+      },
+      {
+        "week_ending": "2018-05-18",
+        "utilization": 91.8,
+        "crack": 19.75600000000001
+      },
+      {
+        "week_ending": "2018-05-25",
+        "utilization": 93.9,
+        "crack": 20.076000000000004
+      },
+      {
+        "week_ending": "2018-06-01",
+        "utilization": 95.4,
+        "crack": 21.142000000000014
+      },
+      {
+        "week_ending": "2018-06-08",
+        "utilization": 95.7,
+        "crack": 20.694000000000006
+      },
+      {
+        "week_ending": "2018-06-15",
+        "utilization": 96.7,
+        "crack": 19.078000000000003
+      },
+      {
+        "week_ending": "2018-06-22",
+        "utilization": 97.5,
+        "crack": 17.442000000000007
+      },
+      {
+        "week_ending": "2018-06-29",
+        "utilization": 97.1,
+        "crack": 12.405999999999997
+      },
+      {
+        "week_ending": "2018-07-06",
+        "utilization": 96.7,
+        "crack": 13.475999999999999
+      },
+      {
+        "week_ending": "2018-07-13",
+        "utilization": 94.3,
+        "crack": 15.189999999999998
+      },
+      {
+        "week_ending": "2018-07-20",
+        "utilization": 93.8,
+        "crack": 15.049999999999992
+      },
+      {
+        "week_ending": "2018-07-27",
+        "utilization": 96.1,
+        "crack": 17.209999999999997
+      },
+      {
+        "week_ending": "2018-08-03",
+        "utilization": 96.6,
+        "crack": 17.536
+      },
+      {
+        "week_ending": "2018-08-10",
+        "utilization": 98.1,
+        "crack": 17.891999999999985
+      },
+      {
+        "week_ending": "2018-08-17",
+        "utilization": 98.1,
+        "crack": 18.494
+      },
+      {
+        "week_ending": "2018-08-24",
+        "utilization": 96.3,
+        "crack": 19.372000000000003
+      },
+      {
+        "week_ending": "2018-08-31",
+        "utilization": 96.6,
+        "crack": 21.354000000000013
+      },
+      {
+        "week_ending": "2018-09-07",
+        "utilization": 97.6,
+        "crack": 19.297999999999984
+      },
+      {
+        "week_ending": "2018-09-14",
+        "utilization": 95.4,
+        "crack": 17.951999999999998
+      },
+      {
+        "week_ending": "2018-09-21",
+        "utilization": 90.4,
+        "crack": 16.813999999999993
+      },
+      {
+        "week_ending": "2018-09-28",
+        "utilization": 90.4,
+        "crack": 18.117999999999984
+      },
+      {
+        "week_ending": "2018-10-05",
+        "utilization": 88.8,
+        "crack": 18.418000000000006
+      },
+      {
+        "week_ending": "2018-10-12",
+        "utilization": 88.8,
+        "crack": 16.709999999999997
+      },
+      {
+        "week_ending": "2018-10-19",
+        "utilization": 89.2,
+        "crack": 15.832000000000013
+      },
+      {
+        "week_ending": "2018-10-26",
+        "utilization": 89.4,
+        "crack": 14.945999999999989
+      },
+      {
+        "week_ending": "2018-11-02",
+        "utilization": 90.0,
+        "crack": 15.048000000000002
+      },
+      {
+        "week_ending": "2018-11-09",
+        "utilization": 90.1,
+        "crack": 14.463999999999999
+      },
+      {
+        "week_ending": "2018-11-16",
+        "utilization": 92.7,
+        "crack": 13.962000000000009
+      },
+      {
+        "week_ending": "2018-11-23",
+        "utilization": 95.6,
+        "crack": 13.722
+      },
+      {
+        "week_ending": "2018-11-30",
+        "utilization": 95.5,
+        "crack": 13.488
+      },
+      {
+        "week_ending": "2018-12-07",
+        "utilization": 95.1,
+        "crack": 12.610000000000005
+      },
+      {
+        "week_ending": "2018-12-14",
+        "utilization": 95.4,
+        "crack": 12.524000000000001
+      },
+      {
+        "week_ending": "2018-12-21",
+        "utilization": 95.1,
+        "crack": 12.911999999999997
+      },
+      {
+        "week_ending": "2018-12-28",
+        "utilization": 97.2,
+        "crack": 12.921999999999997
+      },
+      {
+        "week_ending": "2019-01-04",
+        "utilization": 96.1,
+        "crack": 11.701999999999998
+      },
+      {
+        "week_ending": "2019-01-11",
+        "utilization": 94.6,
+        "crack": 11.421999999999997
+      },
+      {
+        "week_ending": "2019-01-18",
+        "utilization": 92.9,
+        "crack": 12.046000000000001
+      },
+      {
+        "week_ending": "2019-01-25",
+        "utilization": 90.1,
+        "crack": 11.435999999999988
+      },
+      {
+        "week_ending": "2019-02-01",
+        "utilization": 90.7,
+        "crack": 10.265999999999991
+      },
+      {
+        "week_ending": "2019-02-08",
+        "utilization": 85.9,
+        "crack": 12.409999999999997
+      },
+      {
+        "week_ending": "2019-02-15",
+        "utilization": 85.9,
+        "crack": 14.453999999999999
+      },
+      {
+        "week_ending": "2019-02-22",
+        "utilization": 87.1,
+        "crack": 12.923999999999998
+      },
+      {
+        "week_ending": "2019-03-01",
+        "utilization": 87.5,
+        "crack": 12.718000000000009
+      },
+      {
+        "week_ending": "2019-03-08",
+        "utilization": 87.6,
+        "crack": 18.787999999999993
+      },
+      {
+        "week_ending": "2019-03-15",
+        "utilization": 88.9,
+        "crack": 19.876000000000005
+      },
+      {
+        "week_ending": "2019-03-22",
+        "utilization": 86.6,
+        "crack": 20.233999999999998
+      },
+      {
+        "week_ending": "2019-03-29",
+        "utilization": 86.4,
+        "crack": 21.276
+      },
+      {
+        "week_ending": "2019-04-05",
+        "utilization": 87.5,
+        "crack": 19.176000000000005
+      },
+      {
+        "week_ending": "2019-04-12",
+        "utilization": 87.7,
+        "crack": 20.389999999999997
+      },
+      {
+        "week_ending": "2019-04-19",
+        "utilization": 90.1,
+        "crack": 20.49400000000001
+      },
+      {
+        "week_ending": "2019-04-26",
+        "utilization": 89.2,
+        "crack": 21.296000000000003
+      },
+      {
+        "week_ending": "2019-05-03",
+        "utilization": 88.9,
+        "crack": 21.379999999999995
+      },
+      {
+        "week_ending": "2019-05-10",
+        "utilization": 90.5,
+        "crack": 18.843999999999994
+      },
+      {
+        "week_ending": "2019-05-17",
+        "utilization": 89.9,
+        "crack": 19.323999999999995
+      },
+      {
+        "week_ending": "2019-05-24",
+        "utilization": 91.2,
+        "crack": 19.276
+      },
+      {
+        "week_ending": "2019-05-31",
+        "utilization": 91.8,
+        "crack": 20.840000000000003
+      },
+      {
+        "week_ending": "2019-06-07",
+        "utilization": 93.2,
+        "crack": 18.695999999999998
+      },
+      {
+        "week_ending": "2019-06-14",
+        "utilization": 93.9,
+        "crack": 18.893999999999995
+      },
+      {
+        "week_ending": "2019-06-21",
+        "utilization": 94.2,
+        "crack": 18.161999999999995
+      },
+      {
+        "week_ending": "2019-06-28",
+        "utilization": 94.2,
+        "crack": 19.697999999999997
+      },
+      {
+        "week_ending": "2019-07-05",
+        "utilization": 94.7,
+        "crack": 20.715999999999998
+      },
+      {
+        "week_ending": "2019-07-12",
+        "utilization": 94.4,
+        "crack": 21.339999999999993
+      },
+      {
+        "week_ending": "2019-07-19",
+        "utilization": 93.1,
+        "crack": 20.26
+      },
+      {
+        "week_ending": "2019-07-26",
+        "utilization": 93.0,
+        "crack": 20.894000000000005
+      },
+      {
+        "week_ending": "2019-08-02",
+        "utilization": 96.4,
+        "crack": 20.464000000000016
+      },
+      {
+        "week_ending": "2019-08-09",
+        "utilization": 94.8,
+        "crack": 17.336000000000002
+      },
+      {
+        "week_ending": "2019-08-16",
+        "utilization": 95.9,
+        "crack": 15.040000000000001
+      },
+      {
+        "week_ending": "2019-08-23",
+        "utilization": 95.2,
+        "crack": 17.692000000000007
+      },
+      {
+        "week_ending": "2019-08-30",
+        "utilization": 94.8,
+        "crack": 19.088000000000005
+      },
+      {
+        "week_ending": "2019-09-06",
+        "utilization": 95.1,
+        "crack": 15.180000000000007
+      },
+      {
+        "week_ending": "2019-09-13",
+        "utilization": 91.2,
+        "crack": 16.05200000000001
+      },
+      {
+        "week_ending": "2019-09-20",
+        "utilization": 89.8,
+        "crack": 17.264
+      },
+      {
+        "week_ending": "2019-09-27",
+        "utilization": 86.4,
+        "crack": 17.930000000000007
+      },
+      {
+        "week_ending": "2019-10-04",
+        "utilization": 85.7,
+        "crack": 18.350000000000012
+      },
+      {
+        "week_ending": "2019-10-11",
+        "utilization": 83.1,
+        "crack": 19.152000000000005
+      },
+      {
+        "week_ending": "2019-10-18",
+        "utilization": 85.2,
+        "crack": 19.058000000000003
+      },
+      {
+        "week_ending": "2019-10-25",
+        "utilization": 87.7,
+        "crack": 17.795999999999992
+      },
+      {
+        "week_ending": "2019-11-01",
+        "utilization": 86.0,
+        "crack": 17.195999999999998
+      },
+      {
+        "week_ending": "2019-11-08",
+        "utilization": 87.8,
+        "crack": 15.172000000000006
+      },
+      {
+        "week_ending": "2019-11-15",
+        "utilization": 89.5,
+        "crack": 13.667999999999987
+      },
+      {
+        "week_ending": "2019-11-22",
+        "utilization": 89.3,
+        "crack": 13.996
+      },
+      {
+        "week_ending": "2019-11-29",
+        "utilization": 91.9,
+        "crack": 14.687999999999997
+      },
+      {
+        "week_ending": "2019-12-06",
+        "utilization": 90.6,
+        "crack": 11.771999999999991
+      },
+      {
+        "week_ending": "2019-12-13",
+        "utilization": 90.6,
+        "crack": 11.463999999999999
+      },
+      {
+        "week_ending": "2019-12-20",
+        "utilization": 93.3,
+        "crack": 11.601999999999995
+      },
+      {
+        "week_ending": "2019-12-27",
+        "utilization": 94.5,
+        "crack": 14.058000000000002
+      },
+      {
+        "week_ending": "2020-01-03",
+        "utilization": 93.0,
+        "crack": 13.075999999999993
+      },
+      {
+        "week_ending": "2020-01-10",
+        "utilization": 92.2,
+        "crack": 12.197999999999988
+      },
+      {
+        "week_ending": "2020-01-17",
+        "utilization": 90.5,
+        "crack": 12.144000000000005
+      },
+      {
+        "week_ending": "2020-01-24",
+        "utilization": 87.2,
+        "crack": 10.770000000000001
+      },
+      {
+        "week_ending": "2020-01-31",
+        "utilization": 87.4,
+        "crack": 10.915999999999997
+      },
+      {
+        "week_ending": "2020-02-07",
+        "utilization": 88.0,
+        "crack": 11.645999999999995
+      },
+      {
+        "week_ending": "2020-02-14",
+        "utilization": 89.4,
+        "crack": 13.01
+      },
+      {
+        "week_ending": "2020-02-21",
+        "utilization": 87.9,
+        "crack": 11.665999999999997
+      },
+      {
+        "week_ending": "2020-02-28",
+        "utilization": 86.9,
+        "crack": 11.084000000000003
+      },
+      {
+        "week_ending": "2020-03-06",
+        "utilization": 86.4,
+        "crack": 15.469999999999999
+      },
+      {
+        "week_ending": "2020-03-13",
+        "utilization": 86.4,
+        "crack": 11.528000000000006
+      },
+      {
+        "week_ending": "2020-03-20",
+        "utilization": 87.3,
+        "crack": 7.309999999999998
+      },
+      {
+        "week_ending": "2020-03-27",
+        "utilization": 82.3,
+        "crack": 6.291999999999997
+      },
+      {
+        "week_ending": "2020-04-03",
+        "utilization": 75.6,
+        "crack": 5.441999999999993
+      },
+      {
+        "week_ending": "2020-04-10",
+        "utilization": 69.1,
+        "crack": 4.2620000000000005
+      },
+      {
+        "week_ending": "2020-04-17",
+        "utilization": 67.6,
+        "crack": 8.902000000000001
+      },
+      {
+        "week_ending": "2020-04-24",
+        "utilization": 69.6,
+        "crack": 20.102
+      },
+      {
+        "week_ending": "2020-05-01",
+        "utilization": 70.5,
+        "crack": 9.083999999999996
+      },
+      {
+        "week_ending": "2020-05-08",
+        "utilization": 67.9,
+        "crack": 8.824000000000003
+      },
+      {
+        "week_ending": "2020-05-15",
+        "utilization": 69.4,
+        "crack": 7.2700000000000005
+      },
+      {
+        "week_ending": "2020-05-22",
+        "utilization": 71.3,
+        "crack": 5.2739999999999965
+      },
+      {
+        "week_ending": "2020-05-29",
+        "utilization": 71.8,
+        "crack": 3.484000000000004
+      },
+      {
+        "week_ending": "2020-06-05",
+        "utilization": 73.1,
+        "crack": 5.2819999999999965
+      },
+      {
+        "week_ending": "2020-06-12",
+        "utilization": 73.8,
+        "crack": 7.00000000000001
+      },
+      {
+        "week_ending": "2020-06-19",
+        "utilization": 74.6,
+        "crack": 9.305999999999992
+      },
+      {
+        "week_ending": "2020-06-26",
+        "utilization": 75.5,
+        "crack": 8.268
+      },
+      {
+        "week_ending": "2020-07-03",
+        "utilization": 77.5,
+        "crack": 8.351999999999995
+      },
+      {
+        "week_ending": "2020-07-10",
+        "utilization": 78.1,
+        "crack": 9.470000000000008
+      },
+      {
+        "week_ending": "2020-07-17",
+        "utilization": 77.9,
+        "crack": 7.911999999999996
+      },
+      {
+        "week_ending": "2020-07-24",
+        "utilization": 79.5,
+        "crack": 8.681999999999997
+      },
+      {
+        "week_ending": "2020-07-31",
+        "utilization": 79.6,
+        "crack": 8.26800000000001
+      },
+      {
+        "week_ending": "2020-08-07",
+        "utilization": 81.0,
+        "crack": 7.135999999999996
+      },
+      {
+        "week_ending": "2020-08-14",
+        "utilization": 80.9,
+        "crack": 7.452000000000003
+      },
+      {
+        "week_ending": "2020-08-21",
+        "utilization": 82.0,
+        "crack": 9.475999999999999
+      },
+      {
+        "week_ending": "2020-08-28",
+        "utilization": 76.7,
+        "crack": 12.691999999999998
+      },
+      {
+        "week_ending": "2020-09-04",
+        "utilization": 71.8,
+        "crack": 8.266
+      },
+      {
+        "week_ending": "2020-09-11",
+        "utilization": 75.8,
+        "crack": 7.909999999999997
+      },
+      {
+        "week_ending": "2020-09-18",
+        "utilization": 74.8,
+        "crack": 8.610000000000008
+      },
+      {
+        "week_ending": "2020-09-25",
+        "utilization": 75.8,
+        "crack": 8.463999999999999
+      },
+      {
+        "week_ending": "2020-10-02",
+        "utilization": 77.1,
+        "crack": 9.296000000000001
+      },
+      {
+        "week_ending": "2020-10-09",
+        "utilization": 75.1,
+        "crack": 9.832000000000003
+      },
+      {
+        "week_ending": "2020-10-16",
+        "utilization": 72.9,
+        "crack": 8.222000000000003
+      },
+      {
+        "week_ending": "2020-10-23",
+        "utilization": 74.6,
+        "crack": 6.778000000000001
+      },
+      {
+        "week_ending": "2020-10-30",
+        "utilization": 75.3,
+        "crack": 7.297999999999992
+      },
+      {
+        "week_ending": "2020-11-06",
+        "utilization": 74.5,
+        "crack": 7.439999999999998
+      },
+      {
+        "week_ending": "2020-11-13",
+        "utilization": 77.4,
+        "crack": 7.598000000000003
+      },
+      {
+        "week_ending": "2020-11-20",
+        "utilization": 78.7,
+        "crack": 7.367999999999995
+      },
+      {
+        "week_ending": "2020-11-27",
+        "utilization": 78.2,
+        "crack": 8.380000000000015
+      },
+      {
+        "week_ending": "2020-12-04",
+        "utilization": 79.9,
+        "crack": 7.368000000000005
+      },
+      {
+        "week_ending": "2020-12-11",
+        "utilization": 79.1,
+        "crack": 8.294000000000002
+      },
+      {
+        "week_ending": "2020-12-18",
+        "utilization": 78.0,
+        "crack": 9.346000000000004
+      },
+      {
+        "week_ending": "2020-12-25",
+        "utilization": 79.4,
+        "crack": 9.586000000000004
+      },
+      {
+        "week_ending": "2021-01-01",
+        "utilization": 80.7,
+        "crack": 10.246
+      },
+      {
+        "week_ending": "2021-01-08",
+        "utilization": 82.0,
+        "crack": 10.655999999999997
+      },
+      {
+        "week_ending": "2021-01-15",
+        "utilization": 82.5,
+        "crack": 11.342000000000004
+      },
+      {
+        "week_ending": "2021-01-22",
+        "utilization": 81.7,
+        "crack": 11.034
+      },
+      {
+        "week_ending": "2021-01-29",
+        "utilization": 82.3,
+        "crack": 12.173999999999998
+      },
+      {
+        "week_ending": "2021-02-05",
+        "utilization": 83.0,
+        "crack": 12.397999999999996
+      },
+      {
+        "week_ending": "2021-02-12",
+        "utilization": 83.1,
+        "crack": 10.830000000000004
+      },
+      {
+        "week_ending": "2021-02-19",
+        "utilization": 68.6,
+        "crack": 13.274000000000001
+      },
+      {
+        "week_ending": "2021-02-26",
+        "utilization": 56.0,
+        "crack": 14.0
+      },
+      {
+        "week_ending": "2021-03-05",
+        "utilization": 69.0,
+        "crack": 17.244
+      },
+      {
+        "week_ending": "2021-03-12",
+        "utilization": 76.1,
+        "crack": 18.238
+      },
+      {
+        "week_ending": "2021-03-19",
+        "utilization": 81.6,
+        "crack": 17.658000000000005
+      },
+      {
+        "week_ending": "2021-03-26",
+        "utilization": 83.9,
+        "crack": 17.189999999999987
+      },
+      {
+        "week_ending": "2021-04-02",
+        "utilization": 84.0,
+        "crack": 18.159999999999997
+      },
+      {
+        "week_ending": "2021-04-09",
+        "utilization": 85.0,
+        "crack": 19.022000000000002
+      },
+      {
+        "week_ending": "2021-04-16",
+        "utilization": 85.0,
+        "crack": 18.598000000000003
+      },
+      {
+        "week_ending": "2021-04-23",
+        "utilization": 85.4,
+        "crack": 17.885999999999996
+      },
+      {
+        "week_ending": "2021-04-30",
+        "utilization": 86.5,
+        "crack": 18.458
+      },
+      {
+        "week_ending": "2021-05-07",
+        "utilization": 86.1,
+        "crack": 19.446000000000016
+      },
+      {
+        "week_ending": "2021-05-14",
+        "utilization": 86.3,
+        "crack": 20.204000000000008
+      },
+      {
+        "week_ending": "2021-05-21",
+        "utilization": 87.0,
+        "crack": 19.917999999999996
+      },
+      {
+        "week_ending": "2021-05-28",
+        "utilization": 88.7,
+        "crack": 18.397999999999996
+      },
+      {
+        "week_ending": "2021-06-04",
+        "utilization": 91.3,
+        "crack": 18.55000000000001
+      },
+      {
+        "week_ending": "2021-06-11",
+        "utilization": 92.6,
+        "crack": 18.146000000000015
+      },
+      {
+        "week_ending": "2021-06-18",
+        "utilization": 92.2,
+        "crack": 15.152000000000006
+      },
+      {
+        "week_ending": "2021-06-25",
+        "utilization": 92.9,
+        "crack": 16.386000000000006
+      },
+      {
+        "week_ending": "2021-07-02",
+        "utilization": 92.2,
+        "crack": 16.328000000000014
+      },
+      {
+        "week_ending": "2021-07-09",
+        "utilization": 91.8,
+        "crack": 17.02000000000001
+      },
+      {
+        "week_ending": "2021-07-16",
+        "utilization": 91.4,
+        "crack": 17.94999999999999
+      },
+      {
+        "week_ending": "2021-07-23",
+        "utilization": 91.1,
+        "crack": 18.295999999999992
+      },
+      {
+        "week_ending": "2021-07-30",
+        "utilization": 91.3,
+        "crack": 20.293999999999983
+      },
+      {
+        "week_ending": "2021-08-06",
+        "utilization": 91.8,
+        "crack": 21.192000000000007
+      },
+      {
+        "week_ending": "2021-08-13",
+        "utilization": 92.2,
+        "crack": 22.180000000000007
+      },
+      {
+        "week_ending": "2021-08-20",
+        "utilization": 92.4,
+        "crack": 19.83200000000001
+      },
+      {
+        "week_ending": "2021-08-27",
+        "utilization": 91.3,
+        "crack": 24.96400000000001
+      },
+      {
+        "week_ending": "2021-09-03",
+        "utilization": 81.9,
+        "crack": 24.04799999999999
+      },
+      {
+        "week_ending": "2021-09-10",
+        "utilization": 82.1,
+        "crack": 21.488
+      },
+      {
+        "week_ending": "2021-09-17",
+        "utilization": 87.5,
+        "crack": 20.359999999999996
+      },
+      {
+        "week_ending": "2021-09-24",
+        "utilization": 88.1,
+        "crack": 18.147999999999985
+      },
+      {
+        "week_ending": "2021-10-01",
+        "utilization": 89.6,
+        "crack": 19.25999999999999
+      },
+      {
+        "week_ending": "2021-10-08",
+        "utilization": 86.7,
+        "crack": 20.899999999999995
+      },
+      {
+        "week_ending": "2021-10-15",
+        "utilization": 84.7,
+        "crack": 21.187999999999988
+      },
+      {
+        "week_ending": "2021-10-22",
+        "utilization": 85.1,
+        "crack": 20.82000000000001
+      },
+      {
+        "week_ending": "2021-10-29",
+        "utilization": 86.3,
+        "crack": 20.599999999999994
+      },
+      {
+        "week_ending": "2021-11-05",
+        "utilization": 86.7,
+        "crack": 18.365999999999985
+      },
+      {
+        "week_ending": "2021-11-12",
+        "utilization": 87.9,
+        "crack": 16.195999999999987
+      },
+      {
+        "week_ending": "2021-11-19",
+        "utilization": 88.6,
+        "crack": 16.56000000000002
+      },
+      {
+        "week_ending": "2021-11-26",
+        "utilization": 88.8,
+        "crack": 17.689999999999998
+      },
+      {
+        "week_ending": "2021-12-03",
+        "utilization": 89.8,
+        "crack": 18.03399999999998
+      },
+      {
+        "week_ending": "2021-12-10",
+        "utilization": 89.8,
+        "crack": 18.569999999999993
+      },
+      {
+        "week_ending": "2021-12-17",
+        "utilization": 89.6,
+        "crack": 18.056
+      },
+      {
+        "week_ending": "2021-12-24",
+        "utilization": 89.7,
+        "crack": 19.426000000000005
+      },
+      {
+        "week_ending": "2021-12-31",
+        "utilization": 89.8,
+        "crack": 19.024
+      },
+      {
+        "week_ending": "2022-01-07",
+        "utilization": 88.4,
+        "crack": 19.076000000000004
+      },
+      {
+        "week_ending": "2022-01-14",
+        "utilization": 88.1,
+        "crack": 20.036
+      },
+      {
+        "week_ending": "2022-01-21",
+        "utilization": 87.7,
+        "crack": 18.971999999999998
+      },
+      {
+        "week_ending": "2022-01-28",
+        "utilization": 86.7,
+        "crack": 20.356000000000012
+      },
+      {
+        "week_ending": "2022-02-04",
+        "utilization": 88.2,
+        "crack": 22.02200000000001
+      },
+      {
+        "week_ending": "2022-02-11",
+        "utilization": 85.3,
+        "crack": 23.923999999999996
+      },
+      {
+        "week_ending": "2022-02-18",
+        "utilization": 87.4,
+        "crack": 21.111999999999984
+      },
+      {
+        "week_ending": "2022-02-25",
+        "utilization": 87.7,
+        "crack": 20.44999999999999
+      },
+      {
+        "week_ending": "2022-03-04",
+        "utilization": 89.3,
+        "crack": 26.73200000000001
+      },
+      {
+        "week_ending": "2022-03-11",
+        "utilization": 90.4,
+        "crack": 31.103999999999985
+      },
+      {
+        "week_ending": "2022-03-18",
+        "utilization": 91.1,
+        "crack": 30.469999999999988
+      },
+      {
+        "week_ending": "2022-03-25",
+        "utilization": 92.1,
+        "crack": 34.948
+      },
+      {
+        "week_ending": "2022-04-01",
+        "utilization": 92.5,
+        "crack": 37.00599999999999
+      },
+      {
+        "week_ending": "2022-04-08",
+        "utilization": 90.0,
+        "crack": 35.820000000000014
+      },
+      {
+        "week_ending": "2022-04-15",
+        "utilization": 91.0,
+        "crack": 37.167999999999985
+      },
+      {
+        "week_ending": "2022-04-22",
+        "utilization": 90.3,
+        "crack": 40.641999999999996
+      },
+      {
+        "week_ending": "2022-04-29",
+        "utilization": 88.4,
+        "crack": 56.862
+      },
+      {
+        "week_ending": "2022-05-06",
+        "utilization": 90.0,
+        "crack": 53.89000000000001
+      },
+      {
+        "week_ending": "2022-05-13",
+        "utilization": 91.8,
+        "crack": 55.874
+      },
+      {
+        "week_ending": "2022-05-20",
+        "utilization": 93.2,
+        "crack": 44.43799999999997
+      },
+      {
+        "week_ending": "2022-05-27",
+        "utilization": 92.6,
+        "crack": 47.69
+      },
+      {
+        "week_ending": "2022-06-03",
+        "utilization": 94.2,
+        "crack": 57.69199999999997
+      },
+      {
+        "week_ending": "2022-06-10",
+        "utilization": 93.7,
+        "crack": 59.624
+      },
+      {
+        "week_ending": "2022-06-17",
+        "utilization": 94.0,
+        "crack": 56.734
+      },
+      {
+        "week_ending": "2022-06-24",
+        "utilization": 95.0,
+        "crack": 61.35200000000001
+      },
+      {
+        "week_ending": "2022-07-01",
+        "utilization": 94.5,
+        "crack": 55.01000000000001
+      },
+      {
+        "week_ending": "2022-07-08",
+        "utilization": 94.9,
+        "crack": 42.798
+      },
+      {
+        "week_ending": "2022-07-15",
+        "utilization": 93.7,
+        "crack": 42.34799999999999
+      },
+      {
+        "week_ending": "2022-07-22",
+        "utilization": 92.2,
+        "crack": 34.33000000000002
+      },
+      {
+        "week_ending": "2022-07-29",
+        "utilization": 91.0,
+        "crack": 43.20000000000001
+      },
+      {
+        "week_ending": "2022-08-05",
+        "utilization": 94.3,
+        "crack": 29.343999999999994
+      },
+      {
+        "week_ending": "2022-08-12",
+        "utilization": 93.5,
+        "crack": 30.383999999999975
+      },
+      {
+        "week_ending": "2022-08-19",
+        "utilization": 93.8,
+        "crack": 34.65200000000001
+      },
+      {
+        "week_ending": "2022-08-26",
+        "utilization": 92.7,
+        "crack": 39.174000000000014
+      },
+      {
+        "week_ending": "2022-09-02",
+        "utilization": 90.9,
+        "crack": 35.322
+      },
+      {
+        "week_ending": "2022-09-09",
+        "utilization": 91.5,
+        "crack": 33.612
+      },
+      {
+        "week_ending": "2022-09-16",
+        "utilization": 93.6,
+        "crack": 30.962000000000007
+      },
+      {
+        "week_ending": "2022-09-23",
+        "utilization": 90.6,
+        "crack": 35.07800000000001
+      },
+      {
+        "week_ending": "2022-09-30",
+        "utilization": 91.3,
+        "crack": 41.341999999999985
+      },
+      {
+        "week_ending": "2022-10-07",
+        "utilization": 89.9,
+        "crack": 45.017999999999994
+      },
+      {
+        "week_ending": "2022-10-14",
+        "utilization": 89.5,
+        "crack": 45.178
+      },
+      {
+        "week_ending": "2022-10-21",
+        "utilization": 88.9,
+        "crack": 43.24400000000001
+      },
+      {
+        "week_ending": "2022-10-28",
+        "utilization": 90.6,
+        "crack": 54.24400000000001
+      },
+      {
+        "week_ending": "2022-11-04",
+        "utilization": 92.1,
+        "crack": 42.039999999999985
+      },
+      {
+        "week_ending": "2022-11-11",
+        "utilization": 92.9,
+        "crack": 33.936
+      },
+      {
+        "week_ending": "2022-11-18",
+        "utilization": 93.9,
+        "crack": 28.358000000000004
+      },
+      {
+        "week_ending": "2022-11-25",
+        "utilization": 95.2,
+        "crack": 30.375999999999994
+      },
+      {
+        "week_ending": "2022-12-02",
+        "utilization": 95.5,
+        "crack": 23.652000000000005
+      },
+      {
+        "week_ending": "2022-12-09",
+        "utilization": 92.2,
+        "crack": 20.613999999999994
+      },
+      {
+        "week_ending": "2022-12-16",
+        "utilization": 90.9,
+        "crack": 23.74799999999999
+      },
+      {
+        "week_ending": "2022-12-23",
+        "utilization": 92.0,
+        "crack": 25.801999999999992
+      },
+      {
+        "week_ending": "2022-12-30",
+        "utilization": 79.6,
+        "crack": 35.83599999999999
+      },
+      {
+        "week_ending": "2023-01-06",
+        "utilization": 84.1,
+        "crack": 33.34799999999999
+      },
+      {
+        "week_ending": "2023-01-13",
+        "utilization": 85.3,
+        "crack": 35.348000000000006
+      },
+      {
+        "week_ending": "2023-01-20",
+        "utilization": 86.1,
+        "crack": 39.89199999999999
+      },
+      {
+        "week_ending": "2023-01-27",
+        "utilization": 85.7,
+        "crack": 42.04399999999998
+      },
+      {
+        "week_ending": "2023-02-03",
+        "utilization": 87.9,
+        "crack": 34.85999999999999
+      },
+      {
+        "week_ending": "2023-02-10",
+        "utilization": 86.5,
+        "crack": 31.535999999999984
+      },
+      {
+        "week_ending": "2023-02-17",
+        "utilization": 85.9,
+        "crack": 30.22799999999997
+      },
+      {
+        "week_ending": "2023-02-24",
+        "utilization": 85.8,
+        "crack": 26.164000000000005
+      },
+      {
+        "week_ending": "2023-03-03",
+        "utilization": 86.0,
+        "crack": 28.621999999999996
+      },
+      {
+        "week_ending": "2023-03-10",
+        "utilization": 88.2,
+        "crack": 32.407999999999994
+      },
+      {
+        "week_ending": "2023-03-17",
+        "utilization": 88.6,
+        "crack": 36.856
+      },
+      {
+        "week_ending": "2023-03-24",
+        "utilization": 90.3,
+        "crack": 37.895999999999994
+      },
+      {
+        "week_ending": "2023-03-31",
+        "utilization": 89.6,
+        "crack": 36.82399999999999
+      },
+      {
+        "week_ending": "2023-04-07",
+        "utilization": 89.3,
+        "crack": 32.472
+      },
+      {
+        "week_ending": "2023-04-14",
+        "utilization": 91.0,
+        "crack": 32.44
+      },
+      {
+        "week_ending": "2023-04-21",
+        "utilization": 91.3,
+        "crack": 27.054000000000002
+      },
+      {
+        "week_ending": "2023-04-28",
+        "utilization": 90.7,
+        "crack": 24.938000000000006
+      },
+      {
+        "week_ending": "2023-05-05",
+        "utilization": 91.0,
+        "crack": 25.384000000000004
+      },
+      {
+        "week_ending": "2023-05-12",
+        "utilization": 92.0,
+        "crack": 27.76199999999999
+      },
+      {
+        "week_ending": "2023-05-19",
+        "utilization": 91.7,
+        "crack": 29.516000000000002
+      },
+      {
+        "week_ending": "2023-05-26",
+        "utilization": 93.1,
+        "crack": 32.68799999999999
+      },
+      {
+        "week_ending": "2023-06-02",
+        "utilization": 95.8,
+        "crack": 30.151999999999997
+      },
+      {
+        "week_ending": "2023-06-09",
+        "utilization": 93.7,
+        "crack": 30.75200000000001
+      },
+      {
+        "week_ending": "2023-06-16",
+        "utilization": 93.1,
+        "crack": 32.31800000000002
+      },
+      {
+        "week_ending": "2023-06-23",
+        "utilization": 92.2,
+        "crack": 30.852000000000004
+      },
+      {
+        "week_ending": "2023-06-30",
+        "utilization": 91.1,
+        "crack": 29.76000000000001
+      },
+      {
+        "week_ending": "2023-07-07",
+        "utilization": 93.7,
+        "crack": 30.214
+      },
+      {
+        "week_ending": "2023-07-14",
+        "utilization": 94.3,
+        "crack": 31.885999999999985
+      },
+      {
+        "week_ending": "2023-07-21",
+        "utilization": 93.4,
+        "crack": 35.11600000000001
+      },
+      {
+        "week_ending": "2023-07-28",
+        "utilization": 92.7,
+        "crack": 41.09799999999998
+      },
+      {
+        "week_ending": "2023-08-04",
+        "utilization": 93.8,
+        "crack": 40.12
+      },
+      {
+        "week_ending": "2023-08-11",
+        "utilization": 94.7,
+        "crack": 41.714
+      },
+      {
+        "week_ending": "2023-08-18",
+        "utilization": 94.5,
+        "crack": 42.60599999999997
+      },
+      {
+        "week_ending": "2023-08-25",
+        "utilization": 93.3,
+        "crack": 46.828
+      },
+      {
+        "week_ending": "2023-09-01",
+        "utilization": 93.1,
+        "crack": 40.01400000000001
+      },
+      {
+        "week_ending": "2023-09-08",
+        "utilization": 93.7,
+        "crack": 35.75
+      },
+      {
+        "week_ending": "2023-09-15",
+        "utilization": 91.9,
+        "crack": 38.931999999999995
+      },
+      {
+        "week_ending": "2023-09-22",
+        "utilization": 89.5,
+        "crack": 35.44
+      },
+      {
+        "week_ending": "2023-09-29",
+        "utilization": 87.3,
+        "crack": 31.367999999999995
+      },
+      {
+        "week_ending": "2023-10-06",
+        "utilization": 85.7,
+        "crack": 24.091999999999985
+      },
+      {
+        "week_ending": "2023-10-13",
+        "utilization": 86.1,
+        "crack": 20.865999999999996
+      },
+      {
+        "week_ending": "2023-10-20",
+        "utilization": 85.6,
+        "crack": 20.97399999999999
+      },
+      {
+        "week_ending": "2023-10-27",
+        "utilization": 85.4,
+        "crack": 19.366000000000003
+      },
+      {
+        "week_ending": "2023-11-03",
+        "utilization": 85.2,
+        "crack": 18.096000000000004
+      },
+      {
+        "week_ending": "2023-11-10",
+        "utilization": 86.1,
+        "crack": 17.867999999999995
+      },
+      {
+        "week_ending": "2023-11-17",
+        "utilization": 87.0,
+        "crack": 16.903999999999996
+      },
+      {
+        "week_ending": "2023-11-24",
+        "utilization": 89.8,
+        "crack": 18.585999999999995
+      },
+      {
+        "week_ending": "2023-12-01",
+        "utilization": 90.5,
+        "crack": 19.192000000000007
+      },
+      {
+        "week_ending": "2023-12-08",
+        "utilization": 90.2,
+        "crack": 15.291999999999993
+      },
+      {
+        "week_ending": "2023-12-15",
+        "utilization": 92.4,
+        "crack": 15.205999999999998
+      },
+      {
+        "week_ending": "2023-12-22",
+        "utilization": 93.3,
+        "crack": 21.718
+      },
+      {
+        "week_ending": "2023-12-29",
+        "utilization": 93.5,
+        "crack": 20.714
+      },
+      {
+        "week_ending": "2024-01-05",
+        "utilization": 92.9,
+        "crack": 20.28800000000001
+      },
+      {
+        "week_ending": "2024-01-12",
+        "utilization": 92.6,
+        "crack": 21.252
+      },
+      {
+        "week_ending": "2024-01-19",
+        "utilization": 85.5,
+        "crack": 22.176000000000005
+      },
+      {
+        "week_ending": "2024-01-26",
+        "utilization": 82.9,
+        "crack": 22.48
+      },
+      {
+        "week_ending": "2024-02-02",
+        "utilization": 82.4,
+        "crack": 23.97
+      },
+      {
+        "week_ending": "2024-02-09",
+        "utilization": 80.6,
+        "crack": 27.864000000000015
+      },
+      {
+        "week_ending": "2024-02-16",
+        "utilization": 80.6,
+        "crack": 27.137999999999995
+      },
+      {
+        "week_ending": "2024-02-23",
+        "utilization": 81.5,
+        "crack": 23.75599999999999
+      },
+      {
+        "week_ending": "2024-03-01",
+        "utilization": 84.9,
+        "crack": 24.313999999999982
+      },
+      {
+        "week_ending": "2024-03-08",
+        "utilization": 86.8,
+        "crack": 24.125999999999987
+      },
+      {
+        "week_ending": "2024-03-15",
+        "utilization": 87.8,
+        "crack": 28.714
+      },
+      {
+        "week_ending": "2024-03-22",
+        "utilization": 88.7,
+        "crack": 27.824000000000012
+      },
+      {
+        "week_ending": "2024-03-29",
+        "utilization": 88.6,
+        "crack": 24.468
+      },
+      {
+        "week_ending": "2024-04-05",
+        "utilization": 88.3,
+        "crack": 23.53600000000002
+      },
+      {
+        "week_ending": "2024-04-12",
+        "utilization": 88.1,
+        "crack": 23.974000000000007
+      },
+      {
+        "week_ending": "2024-04-19",
+        "utilization": 88.5,
+        "crack": 23.135999999999996
+      },
+      {
+        "week_ending": "2024-04-26",
+        "utilization": 87.5,
+        "crack": 22.382000000000005
+      },
+      {
+        "week_ending": "2024-05-03",
+        "utilization": 88.5,
+        "crack": 21.608000000000004
+      },
+      {
+        "week_ending": "2024-05-10",
+        "utilization": 90.4,
+        "crack": 20.55399999999999
+      },
+      {
+        "week_ending": "2024-05-17",
+        "utilization": 91.7,
+        "crack": 19.811999999999994
+      },
+      {
+        "week_ending": "2024-05-24",
+        "utilization": 94.3,
+        "crack": 20.726
+      },
+      {
+        "week_ending": "2024-05-31",
+        "utilization": 95.4,
+        "crack": 17.48599999999999
+      },
+      {
+        "week_ending": "2024-06-07",
+        "utilization": 95.0,
+        "crack": 18.046000000000003
+      },
+      {
+        "week_ending": "2024-06-14",
+        "utilization": 93.5,
+        "crack": 16.870000000000005
+      },
+      {
+        "week_ending": "2024-06-21",
+        "utilization": 92.2,
+        "crack": 16.468
+      },
+      {
+        "week_ending": "2024-06-28",
+        "utilization": 93.5,
+        "crack": 17.836000000000002
+      },
+      {
+        "week_ending": "2024-07-05",
+        "utilization": 95.4,
+        "crack": 19.578000000000014
+      },
+      {
+        "week_ending": "2024-07-12",
+        "utilization": 93.7,
+        "crack": 17.584000000000003
+      },
+      {
+        "week_ending": "2024-07-19",
+        "utilization": 91.6,
+        "crack": 16.419999999999998
+      },
+      {
+        "week_ending": "2024-07-26",
+        "utilization": 90.1,
+        "crack": 19.524
+      },
+      {
+        "week_ending": "2024-08-02",
+        "utilization": 90.5,
+        "crack": 20.189999999999998
+      },
+      {
+        "week_ending": "2024-08-09",
+        "utilization": 91.5,
+        "crack": 20.858000000000004
+      },
+      {
+        "week_ending": "2024-08-16",
+        "utilization": 92.3,
+        "crack": 17.50200000000001
+      },
+      {
+        "week_ending": "2024-08-23",
+        "utilization": 93.3,
+        "crack": 20.197999999999997
+      },
+      {
+        "week_ending": "2024-08-30",
+        "utilization": 93.3,
+        "crack": 17.02
+      },
+      {
+        "week_ending": "2024-09-06",
+        "utilization": 92.8,
+        "crack": 13.853999999999994
+      },
+      {
+        "week_ending": "2024-09-13",
+        "utilization": 92.1,
+        "crack": 13.892000000000005
+      },
+      {
+        "week_ending": "2024-09-20",
+        "utilization": 90.9,
+        "crack": 13.315999999999994
+      },
+      {
+        "week_ending": "2024-09-27",
+        "utilization": 87.6,
+        "crack": 15.361999999999995
+      },
+      {
+        "week_ending": "2024-10-04",
+        "utilization": 86.7,
+        "crack": 15.613999999999995
+      },
+      {
+        "week_ending": "2024-10-11",
+        "utilization": 87.7,
+        "crack": 15.911999999999997
+      },
+      {
+        "week_ending": "2024-10-18",
+        "utilization": 89.5,
+        "crack": 15.667999999999987
+      },
+      {
+        "week_ending": "2024-10-25",
+        "utilization": 89.1,
+        "crack": 13.348000000000004
+      },
+      {
+        "week_ending": "2024-11-01",
+        "utilization": 90.5,
+        "crack": 14.470000000000008
+      },
+      {
+        "week_ending": "2024-11-08",
+        "utilization": 91.4,
+        "crack": 14.657999999999996
+      },
+      {
+        "week_ending": "2024-11-15",
+        "utilization": 90.2,
+        "crack": 14.626000000000005
+      },
+      {
+        "week_ending": "2024-11-22",
+        "utilization": 90.5,
+        "crack": 15.640000000000006
+      },
+      {
+        "week_ending": "2024-11-29",
+        "utilization": 93.3,
+        "crack": 14.472
+      },
+      {
+        "week_ending": "2024-12-06",
+        "utilization": 92.4,
+        "crack": 13.21999999999999
+      },
+      {
+        "week_ending": "2024-12-13",
+        "utilization": 91.8,
+        "crack": 13.946000000000007
+      },
+      {
+        "week_ending": "2024-12-20",
+        "utilization": 92.5,
+        "crack": 13.623999999999986
+      },
+      {
+        "week_ending": "2024-12-27",
+        "utilization": 92.7,
+        "crack": 15.099999999999985
+      },
+      {
+        "week_ending": "2025-01-03",
+        "utilization": 93.3,
+        "crack": 15.526000000000002
+      },
+      {
+        "week_ending": "2025-01-10",
+        "utilization": 91.7,
+        "crack": 14.851999999999995
+      },
+      {
+        "week_ending": "2025-01-17",
+        "utilization": 85.9,
+        "crack": 15.905999999999997
+      },
+      {
+        "week_ending": "2025-01-24",
+        "utilization": 83.5,
+        "crack": 16.432
+      },
+      {
+        "week_ending": "2025-01-31",
+        "utilization": 84.5,
+        "crack": 17.536
+      },
+      {
+        "week_ending": "2025-02-07",
+        "utilization": 85.0,
+        "crack": 19.664000000000005
+      },
+      {
+        "week_ending": "2025-02-14",
+        "utilization": 84.9,
+        "crack": 20.174000000000017
+      },
+      {
+        "week_ending": "2025-02-21",
+        "utilization": 86.5,
+        "crack": 20.244000000000018
+      },
+      {
+        "week_ending": "2025-02-28",
+        "utilization": 85.9,
+        "crack": 18.27
+      },
+      {
+        "week_ending": "2025-03-07",
+        "utilization": 86.5,
+        "crack": 18.090000000000014
+      },
+      {
+        "week_ending": "2025-03-14",
+        "utilization": 86.9,
+        "crack": 18.659999999999986
+      },
+      {
+        "week_ending": "2025-03-21",
+        "utilization": 87.0,
+        "crack": 20.954000000000008
+      },
+      {
+        "week_ending": "2025-03-28",
+        "utilization": 86.0,
+        "crack": 20.685999999999996
+      },
+      {
+        "week_ending": "2025-04-04",
+        "utilization": 86.7,
+        "crack": 21.74199999999999
+      },
+      {
+        "week_ending": "2025-04-11",
+        "utilization": 86.3,
+        "crack": 20.519999999999992
+      },
+      {
+        "week_ending": "2025-04-18",
+        "utilization": 88.1,
+        "crack": 20.324
+      },
+      {
+        "week_ending": "2025-04-25",
+        "utilization": 88.6,
+        "crack": 21.822000000000013
+      },
+      {
+        "week_ending": "2025-05-02",
+        "utilization": 89.0,
+        "crack": 22.086000000000002
+      },
+      {
+        "week_ending": "2025-05-09",
+        "utilization": 90.2,
+        "crack": 23.049999999999994
+      },
+      {
+        "week_ending": "2025-05-16",
+        "utilization": 90.7,
+        "crack": 23.224000000000007
+      },
+      {
+        "week_ending": "2025-05-23",
+        "utilization": 90.2,
+        "crack": 24.183999999999997
+      },
+      {
+        "week_ending": "2025-05-30",
+        "utilization": 93.4,
+        "crack": 21.48
+      },
+      {
+        "week_ending": "2025-06-06",
+        "utilization": 94.3,
+        "crack": 20.262
+      },
+      {
+        "week_ending": "2025-06-13",
+        "utilization": 93.2,
+        "crack": 19.99000000000001
+      },
+      {
+        "week_ending": "2025-06-20",
+        "utilization": 94.7,
+        "crack": 20.988
+      },
+      {
+        "week_ending": "2025-06-27",
+        "utilization": 94.9,
+        "crack": 21.671999999999997
+      },
+      {
+        "week_ending": "2025-07-04",
+        "utilization": 94.7,
+        "crack": 22.617999999999995
+      },
+      {
+        "week_ending": "2025-07-11",
+        "utilization": 93.9,
+        "crack": 23.558000000000003
+      },
+      {
+        "week_ending": "2025-07-18",
+        "utilization": 95.5,
+        "crack": 23.644000000000005
+      },
+      {
+        "week_ending": "2025-07-25",
+        "utilization": 95.4,
+        "crack": 24.75800000000002
+      },
+      {
+        "week_ending": "2025-08-01",
+        "utilization": 96.9,
+        "crack": 22.176000000000005
+      },
+      {
+        "week_ending": "2025-08-08",
+        "utilization": 96.4,
+        "crack": 22.226
+      },
+      {
+        "week_ending": "2025-08-15",
+        "utilization": 96.6,
+        "crack": 23.860000000000003
+      },
+      {
+        "week_ending": "2025-08-22",
+        "utilization": 94.6,
+        "crack": 26.593999999999994
+      },
+      {
+        "week_ending": "2025-08-29",
+        "utilization": 94.3,
+        "crack": 25.891999999999996
+      },
+      {
+        "week_ending": "2025-09-05",
+        "utilization": 94.9,
+        "crack": 27.917999999999996
+      },
+      {
+        "week_ending": "2025-09-12",
+        "utilization": 93.3,
+        "crack": 26.189999999999998
+      },
+      {
+        "week_ending": "2025-09-19",
+        "utilization": 93.0,
+        "crack": 26.880000000000013
+      },
+      {
+        "week_ending": "2025-09-26",
+        "utilization": 91.4,
+        "crack": 25.805999999999983
+      },
+      {
+        "week_ending": "2025-10-03",
+        "utilization": 92.4,
+        "crack": 24.055999999999994
+      },
+      {
+        "week_ending": "2025-10-10",
+        "utilization": 85.7,
+        "crack": 24.22399999999999
+      },
+      {
+        "week_ending": "2025-10-17",
+        "utilization": 88.6,
+        "crack": 24.248000000000008
+      },
+      {
+        "week_ending": "2025-10-24",
+        "utilization": 86.6,
+        "crack": 23.631999999999994
+      },
+      {
+        "week_ending": "2025-10-31",
+        "utilization": 86.0,
+        "crack": 23.909999999999997
+      },
+      {
+        "week_ending": "2025-11-07",
+        "utilization": 89.4,
+        "crack": 27.51200000000001
+      },
+      {
+        "week_ending": "2025-11-14",
+        "utilization": 90.0,
+        "crack": 29.146000000000004
+      },
+      {
+        "week_ending": "2025-11-21",
+        "utilization": 92.3,
+        "crack": 29.008
+      },
+      {
+        "week_ending": "2025-11-28",
+        "utilization": 94.1,
+        "crack": 23.504
+      },
+      {
+        "week_ending": "2025-12-05",
+        "utilization": 94.5,
+        "crack": 22.419999999999998
+      },
+      {
+        "week_ending": "2025-12-12",
+        "utilization": 94.8,
+        "crack": 20.99600000000001
+      },
+      {
+        "week_ending": "2025-12-19",
+        "utilization": 94.6,
+        "crack": 18.852000000000015
+      },
+      {
+        "week_ending": "2025-12-26",
+        "utilization": 94.7,
+        "crack": 18.99
+      }
+    ],
+    "annual_tsr": [
+      {
+        "company": "valero",
+        "year": 2016,
+        "tsr": 0.007800000000000029,
+        "tsr_low": 0.007699615019249206,
+        "tsr_high": 0.007900395019750928,
+        "sp500": 0.11959999999999993,
+        "excess": -0.1117999999999999,
+        "accession": "0001035002-21-000051"
+      },
+      {
+        "company": "valero",
+        "year": 2017,
+        "tsr": 0.3998809287557057,
+        "tsr_low": 0.3997618693257927,
+        "tsr_high": 0.3999999999999999,
+        "sp500": 0.21829224723115415,
+        "excess": 0.18158868152455154,
+        "accession": "0001035002-21-000051"
+      },
+      {
+        "company": "valero",
+        "year": 2018,
+        "tsr": -0.1572157641054721,
+        "tsr_low": -0.15728107169436867,
+        "tsr_high": -0.15715045188729404,
+        "sp500": -0.0438416422287391,
+        "excess": -0.11337412187673301,
+        "accession": "0001035002-21-000051"
+      },
+      {
+        "company": "valero",
+        "year": 2019,
+        "tsr": 0.3036164844407063,
+        "tsr_low": 0.3035196165005678,
+        "tsr_high": 0.303713360528197,
+        "sp500": 0.31490568931145546,
+        "excess": -0.011289204870749137,
+        "accession": "0001035002-21-000051"
+      },
+      {
+        "company": "valero",
+        "year": 2020,
+        "tsr": -0.3560000000000001,
+        "tsr_low": -0.35605303054740167,
+        "tsr_high": -0.3559469660311624,
+        "sp500": 0.18397574202577394,
+        "excess": -0.539975742025774,
+        "accession": "0001035002-21-000051"
+      },
+      {
+        "company": "valero",
+        "year": 2021,
+        "tsr": 0.4033000000000002,
+        "tsr_low": 0.4031798410079499,
+        "tsr_high": 0.40342017100855054,
+        "sp500": 0.28710000000000013,
+        "excess": 0.11620000000000008,
+        "accession": "0001628280-26-011499"
+      },
+      {
+        "company": "valero",
+        "year": 2022,
+        "tsr": 0.7502315969500462,
+        "tsr_low": 0.7501336088645028,
+        "tsr_high": 0.7503295920185282,
+        "sp500": -0.1811048092611297,
+        "excess": 0.9313364062111759,
+        "accession": "0001628280-26-011499"
+      },
+      {
+        "company": "valero",
+        "year": 2023,
+        "tsr": 0.05875167949187743,
+        "tsr_low": 0.05870976935447758,
+        "tsr_high": 0.05879359133568118,
+        "sp500": 0.26280834914610995,
+        "excess": -0.20405666965423253,
+        "accession": "0001628280-26-011499"
+      },
+      {
+        "company": "valero",
+        "year": 2024,
+        "tsr": -0.029149361636671367,
+        "tsr_low": -0.02918725605183714,
+        "tsr_high": -0.029111465764224076,
+        "sp500": 0.2501878287002255,
+        "excess": -0.27933719033689686,
+        "accession": "0001628280-26-011499"
+      },
+      {
+        "company": "valero",
+        "year": 2025,
+        "tsr": 0.37055375108928135,
+        "tsr_low": 0.3705068029231775,
+        "tsr_high": 0.37060070111505006,
+        "sp500": 0.17884615384615388,
+        "excess": 0.19170759724312747,
+        "accession": "0001628280-26-011499"
+      },
+      {
+        "company": "pbf",
+        "year": 2016,
+        "tsr": -0.20550000000000002,
+        "tsr_low": -0.20558972051397417,
+        "tsr_high": -0.20541027051352578,
+        "sp500": 0.11959999999999993,
+        "excess": -0.32509999999999994,
+        "accession": "0001534504-21-000008"
+      },
+      {
+        "company": "pbf",
+        "year": 2017,
+        "tsr": 0.33555695405915675,
+        "tsr_low": 0.33540998049210247,
+        "tsr_high": 0.33570394612625076,
+        "sp500": 0.21829224723115415,
+        "excess": 0.11726470682800261,
+        "accession": "0001534504-21-000008"
+      },
+      {
+        "company": "pbf",
+        "year": 2018,
+        "tsr": -0.04938271604938271,
+        "tsr_low": -0.049474626584365855,
+        "tsr_high": -0.049290796852174745,
+        "sp500": -0.0438416422287391,
+        "excess": -0.005541073820643616,
+        "accession": "0001534504-21-000008"
+      },
+      {
+        "company": "pbf",
+        "year": 2019,
+        "tsr": 0.0016853375632002177,
+        "tsr_low": 0.0015861214374226495,
+        "tsr_high": 0.001784563525504268,
+        "sp500": 0.31490568931145546,
+        "excess": -0.31322035174825524,
+        "accession": "0001534504-21-000008"
+      },
+      {
+        "company": "pbf",
+        "year": 2020,
+        "tsr": -0.7709817893903405,
+        "tsr_low": -0.7710426047800485,
+        "tsr_high": -0.7709209679813926,
+        "sp500": 0.18397574202577394,
+        "excess": -0.9549575314161144,
+        "accession": "0001534504-21-000008"
+      },
+      {
+        "company": "pbf",
+        "year": 2021,
+        "tsr": 0.8268,
+        "tsr_low": 0.8266586670666469,
+        "tsr_high": 0.8269413470673532,
+        "sp500": 0.28710000000000013,
+        "excess": 0.5396999999999998,
+        "accession": "0001534504-26-000010"
+      },
+      {
+        "company": "pbf",
+        "year": 2022,
+        "tsr": 2.1575979855485,
+        "tsr_low": 2.1574841941046063,
+        "tsr_high": 2.1577117832215684,
+        "sp500": -0.1811048092611297,
+        "excess": 2.3387027948096297,
+        "accession": "0001534504-26-000010"
+      },
+      {
+        "company": "pbf",
+        "year": 2023,
+        "tsr": 0.09970008494703819,
+        "tsr_low": 0.0996818847677412,
+        "tsr_high": 0.09971828544185835,
+        "sp500": 0.26280834914610995,
+        "excess": -0.16310826419907176,
+        "accession": "0001534504-26-000010"
+      },
+      {
+        "company": "pbf",
+        "year": 2024,
+        "tsr": -0.37989091023741217,
+        "tsr_low": -0.37990368017403775,
+        "tsr_high": -0.3798781400994743,
+        "sp500": 0.2501878287002255,
+        "excess": -0.6300787389376377,
+        "accession": "0001534504-26-000010"
+      },
+      {
+        "company": "pbf",
+        "year": 2025,
+        "tsr": 0.06741915802318488,
+        "tsr_low": 0.06739287938682903,
+        "tsr_high": 0.06744543732760477,
+        "sp500": 0.17884615384615388,
+        "excess": -0.111426995822969,
+        "accession": "0001534504-26-000010"
+      }
+    ]
+  },
+  "run_id": "us_refining_investment_2016_2025-20261030T234301Z-c403687f",
+  "generated_at": "2026-10-30T23:43:02+00:00",
+  "result_hash": "b567506fdfa42785c5999bd990d3c74b272a70b483feb05279c542a90f9985ea"
+}
