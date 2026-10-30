@@ -10,7 +10,7 @@
 
 机器核对（claim_checks）与人工复核（review_status）分开记录：模型提取的证据为 candidate，
 confirmed 只能由人工复核给出并写明复核人与日期。映射与关系有自己的人工复核记录（未写为 candidate）：
-证据确认的是摘录或数值，不等于确认了业务归属或关系。状态：对象自身有错误时为 invalid；
+证据确认的是摘录或数值，不等于确认了业务归属或关系。状态：对象自身有错误时为 invalid（引用的任一证据机器核对失败也算）；
 人工否定或撤回的为 rejected / retracted；对象经人工确认、且引用的每条证据都经人工确认并机器核对通过时为 confirmed；
 其余为 candidate。对象已确认而证据未全部确认时报错，不让确认越过证据。
 本地缺少原文或分部事实、证据缺数值或单位时，相应项目记为未核对（warning），不冒充通过。
@@ -356,7 +356,7 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
 
     def supported(kind: str, item: dict[str, Any], owners: set[int | None], errors_before: int,
                   excluded: set[str] = frozenset()) -> None:
-        """证据须存在、未被否定或撤回、来自相关公司的申报、机器核对未失败；不满足的证据不计入。
+        """证据须存在、未被否定或撤回、来自相关公司的申报、机器核对未失败；不满足的证据不计入，并记为对象自身的错误。
 
         状态：该对象自身有任何错误为 invalid；人工否定或撤回的取其复核状态；对象经人工确认且引用的每条证据
         都人工确认、机器核对通过时为 confirmed，其余为 candidate。确认数值或摘录本身不会让对象变为 confirmed。
@@ -376,8 +376,12 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
             if owner is not None and owner not in owners:
                 rep.errors.append(f"{kind} {item['id']} 的证据 {cid} 来自 CIK {owner} 的申报，不属于相关公司")
                 continue
-            if rep.claim_checks.get(cid) == "failed" or cid in excluded:
-                continue  # 机器核对失败或调用方判定不适用：错误已另行报告，不计入
+            if rep.claim_checks.get(cid) == "failed":
+                # 证据的错误记在证据上；引用它的对象也须为 invalid，不能靠其余证据显示为 confirmed
+                rep.errors.append(f"{kind} {item['id']} 引用的证据 {cid} 机器核对失败")
+                continue
+            if cid in excluded:
+                continue  # 调用方判定不适用（如分部别名不符），已作为该对象的错误报告
             usable += 1
             if not (c["review_status"] == "confirmed" and rep.claim_checks.get(cid) == "verified"):
                 unconfirmed.append(cid)
