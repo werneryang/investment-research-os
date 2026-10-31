@@ -58,7 +58,7 @@ CHECK_NOTES = Labels({
 # Chart.js 随站点托管（site/assets/vendor，来源与校验值见其中 README），不依赖外部 CDN
 CHART_JS = "assets/vendor/chart.umd.min.js"
 
-NAV = (("index.html", ("寻找研究", "Find research")), ("map.html", ("研究能力地图", "Capability map")),
+NAV = (("index.html", ("研究", "Research")), ("map.html", ("研究能力地图", "Capability map")),
        ("sources.html", ("数据资源目录", "Data sources")), ("methods.html", ("数据、方法与状态", "Data, methods & status")))
 
 

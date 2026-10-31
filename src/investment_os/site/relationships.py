@@ -121,7 +121,7 @@ def relationship_view(index, studies=None, prefix='', initial_entity='', embedde
     for record in studies or []:
         ids = list(dict.fromkeys(eid for r in record['routes'] for eid in r.get('entity_ids', [])))
         if not ids or (embedded and initial_entity not in ids): continue
-        link = f'<a href="{prefix}index.html?entity={e(initial_entity)}#research-results">{te(record["title"])}</a>' if embedded else te(record['title'])
+        link = f'<a href="{prefix}research.html?entity={e(initial_entity)}#research-results">{te(record["title"])}</a>' if embedded else te(record['title'])
         if record['published']:
             link = f'<a href="{prefix}studies/{e(record["id"])}/">{te(record["title"])}</a>'
         related.append(f'<li data-related="{attrs({"entities": ids})}">{link} · {L("已有公开结果", "Published results") if record["published"] else L("尚未发布", "Not published")}</li>')

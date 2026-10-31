@@ -2,7 +2,8 @@
 
 网站只读取已有的结构化记录，不重新计算研究结果。各页面的分工：
 
-- 系统研究什么、从哪里进入：首页由同一份对象 × 问题目录生成双向查找入口
+- 系统研究什么、从哪里进入：首页列出研究对象及其子类；对象页（browse/<object>/）按子类与研究问题
+  列出研究；全部研究页（research.html）提供对象 × 问题的组合筛选。三者读取同一份登记的对应关系
 - 研究发现了什么：研究页（studies/<id>/）的关键发现与图表
 - 这些发现有多可靠：研究页的证据面板与数据覆盖、数据与方法页
 - 系统能研究什么：研究能力地图（map.html）；系统状态放在页脚与 methods.html#status
@@ -10,7 +11,9 @@
 
 输出：
 
-    index.html                      研究总览
+    index.html                      首页：研究对象与子类
+    browse/<object>/index.html      对象页：按子类与研究问题列出研究
+    research.html                   全部研究与组合筛选
     studies/<study_id>/index.html   研究页（最新运行；地址不变）
     runs/<run_id>/                  每次运行：完整报告、图表、chart.json（交互图表数据）、manifest.json、result.json
     latest/<study_id>/report.html   最新完整报告的稳定地址
@@ -43,7 +46,7 @@ from ..registry import Registry
 from .capability import capability_page, summary
 from .collect import collect_runs, datasets, fundamentals_datasets, ordered_studies
 from .common import repo_url
-from . import discovery
+from . import browse, discovery
 from .references import reference_page_part, company_reference_part
 from .entities import build_index
 from .i18n import LANGS, load_phrases, use
@@ -217,7 +220,12 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
                 (page_dir / "index.html").write_text(
                     study_page(study_id, shown[study_id], archived, registry, content, build, company_reference_part(latest[study_id]["result"], company_references, discovery_model["studies"])), encoding="utf-8")
             frequency = {k: d["frequency"] for k, d in ds_by_id.items()}
-            (base / "index.html").write_text(discovery.page(content, discovery_model, latest, build, frequency), encoding="utf-8")
+            (base / "index.html").write_text(browse.home_page(content, discovery_model, latest, build), encoding="utf-8")
+            (base / "research.html").write_text(discovery.page(content, discovery_model, latest, build, frequency), encoding="utf-8")
+            for obj in content["classification"]["objects"]:
+                (base / "browse" / obj).mkdir(parents=True)
+                (base / "browse" / obj / "index.html").write_text(
+                    browse.object_page(content, discovery_model, latest, build, obj, frequency), encoding="utf-8")
             (base / "map.html").write_text(capability_page(content, registry, ds_by_id, latest, build, discovery_model), encoding="utf-8")
             (base / "sources.html").write_text(sources_page(content, registry, ds_by_id, build, reference_page_part(root, company_references, discovery_model["studies"])), encoding="utf-8")
             (base / "methods.html").write_text(

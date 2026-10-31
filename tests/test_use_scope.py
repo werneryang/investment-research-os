@@ -48,8 +48,8 @@ def test_partial_scope_is_recorded_frozen_and_shown(loaded):
     build_site(loaded, loaded / "_site")
     study = (loaded / "_site" / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")
     assert "用途已验证 · 部分在范围内" in study and "2024-01-04 至 2024-01-05" in study
-    home = (loaded / "_site" / "index.html").read_text(encoding="utf-8")
-    # 首页按运行时冻结的核验范围提示；缺口只在最新尾端，为低权重提示
+    home = (loaded / "_site" / "research.html").read_text(encoding="utf-8")
+    # 研究目录按运行时冻结的核验范围提示；缺口只在最新尾端，为低权重提示
     assert "用途核验未覆盖最新数据：ust_par_yield_curve（2024-01-04 至 2024-01-05）" in home
 
 
