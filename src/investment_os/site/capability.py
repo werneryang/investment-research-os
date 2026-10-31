@@ -158,7 +158,7 @@ def _direction_row(direction: dict[str, Any], st: dict[str, Any]) -> str:
     elif st["runs"]:
         ok = all(r["status"] == "success" for r in st["runs"])
         validation = (f"{chip('skipped', L('未登记用途核验', 'No use verification registered'))}<div class='small muted'>"
-                      + (L("每次运行的数据与计算检查通过", "Each run's data and calculation checks passed") if ok
+                      + (L("各次运行均已完成", "All runs completed") if ok
                          else L("最近运行有受限结论", "The latest run has limited conclusions"))
                       + L("；尚未在来源登记中记录用途核验", "; no use verification recorded in the source registry yet")
                       + "</div>")

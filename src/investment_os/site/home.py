@@ -46,16 +46,60 @@ def _overview(branches: list[dict[str, Any]]) -> str:
     return f'<ol class="branch-grid">{"".join(tiles)}</ol>'
 
 
+# 首页点名的检查；其余研究专属检查只计数，名称与细节见研究页证据面板
+CHECK_NAMES = {"raw_spot_check": ("原始快照抽查", "raw snapshot spot check"),
+               "cross_check": ("同源检查", "same-source check"),
+               "reproduce": ("固定输入重算", "pinned-input recomputation")}
+
+
+def _checks(item: dict[str, Any]) -> dict[str, list[str]]:
+    """各项检查按通过、未通过、部分、未执行归类。跳过、状态不明或没有记录的检查算未执行，不算通过。"""
+    ver, out = item["verification"], {"pass": [], "fail": [], "partial": [], "skipped": []}
+    for key, v in item["result"]["validation"].items():
+        if isinstance(v, dict) and "status" in v:
+            out[v["status"] if v["status"] in ("pass", "fail") else "skipped"].append(key)
+    if not ver:
+        out["skipped"].append("reproduce")
+    elif not ver["reproduced"]:
+        out["fail"].append("reproduce")
+    else:
+        out["partial" if ver.get("scope") == "partial" else "pass"].append("reproduce")
+    return out
+
+
+def _check_names(keys: list[str]) -> str:
+    named = [L(*CHECK_NAMES[k]) for k in keys if k in CHECK_NAMES]
+    rest = len(keys) - len(named)
+    if rest:
+        named.append(L(f"另 {rest} 项检查", f"{rest} other check(s)") if named else L(f"{rest} 项检查", f"{rest} check(s)"))
+    return L("、", ", ").join(named)
+
+
+def _check_note(item: dict[str, Any]) -> str:
+    """检查状态的客观陈述：只说已执行的检查通过，同时写明部分执行与未执行的检查。"""
+    c = _checks(item)
+    parts = [L(f"已执行的 {len(c['pass'])} 项检查通过", f"{len(c['pass'])} executed check(s) passed")
+             if c["pass"] else L("暂无通过的检查", "No checks passed yet")]
+    if c["partial"]:
+        parts.append(L("部分执行：", "partly run: ") + _check_names(c["partial"]))
+    if c["skipped"]:
+        parts.append(L("未执行：", "not run: ") + _check_names(c["skipped"]))
+    return L("；", "; ").join(parts)
+
+
 def _caveats(item: dict[str, Any]) -> list[str]:
     """需要注意的例外；全部正常时首页不展开证据细节。"""
-    r, ver, val = item["result"], item["verification"], item["result"]["validation"]
+    r = item["result"]
     out = []
-    spot, cross = val.get("raw_spot_check") or {}, val.get("cross_check") or {}
-    if spot.get("checked") and spot.get("status") != "pass":
+    failed = _checks(item)["fail"]
+    if "raw_spot_check" in failed:
         out.append(L("原始快照抽查有不一致", "raw snapshot spot check found mismatches"))
-    if cross.get("matched") and cross.get("status") != "pass":
+    if "cross_check" in failed:
         out.append(L("同源检查有差异", "same-source check found differences"))
-    if ver and not ver["reproduced"]:
+    other = [k for k in failed if k not in CHECK_NAMES]
+    if other:
+        out.append(L(f"{len(other)} 项数据检查未通过", f"{len(other)} data check(s) failed"))
+    if "reproduce" in failed:
         out.append(L("固定输入重算不一致", "pinned-input recomputation differs"))
     for inp in item["manifest"].get("inputs", []):
         status = (inp.get("use_scope") or {}).get("status")
@@ -83,8 +127,9 @@ def _study_row(study_id: str, item: dict[str, Any], meta: dict[str, Any], focus:
     kind = RESULT_TYPE_LABEL.get(r["result_type"], r["result_type"])
     label = (L("研究焦点 · ", "Focus · ") if focus else "") + f'{te(meta.get("label", L("研究", "Study")))} · {e(kind)}'
     caveats = _caveats(item)
-    note = (f'<p class="small warn">{L("注意：", "Note: ")}{e(L("；", "; ").join(caveats))}</p>' if caveats
-            else f'<p class="small muted">{L("数据与计算检查通过", "Data and calculation checks passed")}</p>')
+    # 没有警告不等于检查通过：检查状态单独陈述，未执行的检查不能显示成通过
+    note = ((f'<p class="small warn">{L("注意：", "Note: ")}{e(L("；", "; ").join(caveats))}</p>' if caveats else "")
+            + f'<p class="small muted">{e(_check_note(item))}</p>')
     return (f'<li class="study-row{" focus" if focus else ""}"><div><p class="eyebrow">{label}</p>'
             f'<a class="study-title" href="studies/{e(study_id)}/">{te(r["title"])}</a>'
             f'<p class="small">{first}</p>'
