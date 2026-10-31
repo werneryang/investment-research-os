@@ -159,6 +159,7 @@ uv run pytest
 - [芯片模块 P0](docs/study-chips.md)：分类、活动清单、分部事实、L3/L4 证据与研究单元盘点。
 - [产业链研究完善方案](docs/supply-chain-research-design.md)：行业分类 → 细分业务 → 公司业务与财务 → 产业关系；包含免费数据门槛、行业模型适配、炼油与芯片对照及验收标准（**炼油段与投资对照已实现，芯片完成 P0 与 P3b，其余规划中**）。
 - [当前架构与实施路线](docs/architecture.md)：设计基线（V0.3）
+- [研究分类映射](docs/research-classification.md)：按研究对象 × 研究问题查找研究的分类原则、词表与现有研究映射（讨论草稿，尚未采用）
 - [实现说明](docs/implementation.md)：代码结构、契约落地方式、如何扩展、已知限制
 - [研究设计：美国主要资产的长期回报与风险](docs/study-long-run-assets.md)：1928 年以来七类资产的名义与实际回报、风险与相关性（已实现）
 - [美国行业的经济、盈利与股票回报](docs/study-industries.md)：12/49 行业、历史 SIC 财报专题、估值与指引案例（已实现范围及明确的数据边界）
