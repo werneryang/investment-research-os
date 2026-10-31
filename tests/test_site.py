@@ -75,6 +75,7 @@ def test_build_site_from_runs(loaded):
     assert "studies/ust_curve_test/#history" in (site / "history" / "ust_curve_test.html").read_text()
 
     cap = (site / "map.html").read_text(encoding="utf-8")
+    assert "尚无研究（数据已接入）" not in cap
     assert "<h2>数据来源分组</h2>" in cap and "美国国债期限结构" in cap and "规划，未开始" in cap
     assert "<tr class='branch' id='markets_assets'>" in cap and "工具结构" in cap
     assert "研究模块渐进扩展 <span class=\"chip chip-partial\">部分完成</span>" in cap  # P3 已有两类研究
