@@ -226,7 +226,7 @@ def browser(content, model, latest, build, frequency=None):
 <p class="reference-filter-note" hidden>{L('成果类型、市场、频率与日期只筛选研究；参照资料与规划仍按对象、问题及关键词列出。','Result type, market, frequency and date filters apply only to studies; references and plans still match the object, question and search.')}</p>
 <p class="empty-state" hidden>{L('当前无已发布的匹配研究。未登记的对象与问题组合尚未评估；已有数据或规划见下方。','No published studies match. Unregistered object–question combinations have not been assessed; see data and plans below.')}</p>
 {''.join(groups)}</section>
-<section><details class="data-plans"><summary>{L('数据与规划','Data and plans')}</summary><ul class="capability-list">{''.join(caps)}</ul>
+<section id="data-plans"><details class="data-plans"><summary>{L('数据与规划','Data and plans')}</summary><ul class="capability-list">{''.join(caps)}</ul>
 <p class="small muted">{L('信号与预测检验有通用规划，尚未分配到具体对象；不代表所有对象均已规划。','Signal and forecast testing has a general plan, not yet assigned to individual objects.')}</p></details></section>
 <section class="reference-entry"><h2>{L('数据与参照','Data and references')}</h2>
 <p>{L('来源、行业分类、业务定义与候选关系分别标注证据状态，不计入研究数。','Sources, classifications, business definitions and candidate relationships retain separate evidence statuses and are not counted as studies.')}</p>
@@ -234,7 +234,8 @@ def browser(content, model, latest, build, frequency=None):
 <a href="sources.html#references">{L('查看分类与产业关系资料','Browse classifications and business relationships')}</a> · <a href="sources.html">{L('数据来源目录','Data source catalog')}</a></section></div>'''
 
 
-def page(content, model, latest, build, frequency=None, capability=False):
-    title=L('研究能力地图','Research capability map') if capability else L('寻找研究','Find research')
-    body=f'<header class="hero"><div class="wrap"><h1>{title}</h1><p class="tagline">{L("从研究对象或问题出发，找到结果、依据与边界。","Start with an object or a question. Find results, evidence and limits.")}</p></div></header><main class="wrap">'+browser(content,model,latest,build,frequency)+'</main>'
-    return shell(title+' · Investment Research OS',body,build,page='map.html' if capability else 'index.html',active='map.html' if capability else 'index.html')
+def page(content, model, latest, build, frequency=None):
+    """全部研究与组合筛选（research.html）；首页与对象页见 browse.py。"""
+    title=L('全部研究与筛选','All research and filters')
+    body=f'<header class="hero"><div class="wrap"><nav class="crumbs small"><a href="index.html">{L("首页","Home")}</a> › {title}</nav><h1>{title}</h1><p class="tagline">{L("按对象、问题、公司与日期组合筛选，找到结果、依据与边界。","Combine object, question, company and date filters to find results, evidence and limits.")}</p></div></header><main class="wrap">'+browser(content,model,latest,build,frequency)+'</main>'
+    return shell(title+' · Investment Research OS',body,build,page='research.html',active='index.html')

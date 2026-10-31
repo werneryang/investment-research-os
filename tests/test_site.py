@@ -46,7 +46,12 @@ def test_build_site_from_runs(loaded):
 
     index = build_site(loaded, loaded / "_site")
     site = loaded / "_site"
-    page = index.read_text(encoding="utf-8")
+    home = index.read_text(encoding="utf-8")
+    # 首页只列对象与子类；没有登记分类的研究经全部研究页进入，组合筛选也在那里
+    assert 'href="research.html#object-unclassified">1 项研究尚未分类' in home
+    assert 'action="research.html"' in home and "系统状态" in home
+    assert (site / "browse" / "assets" / "index.html").exists() and (site / "en" / "browse" / "macro" / "index.html").exists()
+    page = (site / "research.html").read_text(encoding="utf-8")
     assert '<h2>按对象找</h2>' in page and '<h2>按问题找</h2>' in page
     assert page.count('data-filter="object"') == 7 and page.count('data-filter="question"') == 10
     assert '尚未分类' in page and '研究目录' in page
@@ -126,8 +131,8 @@ def test_spread_display_labels():
 
 def test_site_without_runs(project):
     shutil.copytree(PROJECT_ROOT / "site", project / "site")
-    page = build_site(project, project / "_site").read_text(encoding="utf-8")
-    assert "尚未发布" in page
+    build_site(project, project / "_site")
+    assert "尚未发布" in (project / "_site" / "research.html").read_text(encoding="utf-8")
     assert (project / "_site" / "map.html").exists() and (project / "_site" / "methods.html").exists()
 
 
@@ -162,7 +167,8 @@ def test_site_rebuilds_owned_output_but_preserves_extra_files(project):
     build_site(project, out)
     (out / "index.html").write_text("old generated page")
     build_site(project, out)
-    assert "尚未发布" in (out / "index.html").read_text()
+    assert "old generated page" not in (out / "index.html").read_text()
+    assert "尚未发布" in (out / "research.html").read_text()
     sentinel = out / "unrelated.txt"
     sentinel.write_text("keep me")
     with pytest.raises(ValueError, match="未登记"):
@@ -225,7 +231,9 @@ def test_home_uses_paired_routes_and_stable_targets(loaded):
     shutil.copytree(PROJECT_ROOT / 'site', loaded / 'site')
     _register_test_routes(loaded)
     run_study(loaded, write_study(loaded))
-    page = build_site(loaded, loaded / '_site').read_text()
+    home = build_site(loaded, loaded / '_site').read_text()
+    assert 'href="browse/assets/#rates"' in home
+    page = (loaded / '_site/research.html').read_text()
     assert 'href="studies/ust_curve_test/#curve"' in page
     summary = json.loads((loaded / '_site/summary.json').read_text())
     record = next(r for r in summary['classification']['studies'] if r['id'] == 'ust_curve_test')
@@ -311,8 +319,14 @@ def test_home_lists_each_study_once(loaded):
     shutil.copytree(PROJECT_ROOT / 'site', loaded / 'site')
     _register_test_routes(loaded, multiple=True)
     run_study(loaded, write_study(loaded))
-    page = build_site(loaded, loaded / '_site').read_text()
+    build_site(loaded, loaded / '_site')
+    page = (loaded / '_site/research.html').read_text()
     assert page.count('<h3><a href="studies/ust_curve_test/">') == 1
+    # 对象页：主归属处列一次；次要入口所在对象只给「另见」链接
+    rates = (loaded / '_site/browse/assets/index.html').read_text()
+    assert rates.count('href="../../studies/ust_curve_test/"') == 1
+    macro = (loaded / '_site/browse/macro/index.html').read_text()
+    assert '另见' in macro and 'href="../../studies/ust_curve_test/"' not in macro and 'studies/ust_curve_test/#' in macro
     summary = json.loads((loaded / '_site/summary.json').read_text())
     records = [r for r in summary['classification']['studies'] if r['id'] == 'ust_curve_test']
     assert len(records) == 1 and len(records[0]['routes']) == 2
@@ -390,7 +404,7 @@ def test_english_pages_mirror_chinese_pages(loaded):
     assert '<html lang="zh-CN">' in zh_home and '<html lang="en">' in en_home
     assert '<a class="lang-switch" href="en/index.html" hreflang="en"' in zh_home
     assert '<a class="lang-switch" href="../index.html" hreflang="zh-CN"' in en_home
-    assert 'href="../assets/style.css' in en_home and "Browse by object" in en_home
+    assert 'href="../assets/style.css' in en_home and "Advanced filters" in en_home
     # 选过英文的读者打开中文地址时转到英文页面；?lang=zh 可以强制中文
     assert 'localStorage.getItem("lang")==="en"' in zh_home and "localStorage" not in en_home.split("</head>")[0]
 
