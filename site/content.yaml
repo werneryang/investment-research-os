@@ -815,6 +815,9 @@ studies:
         zh: 研究声明的样本与期间
         en: Declared sample and period
       primary: false
+    entity_ids:
+    - co_nvidia
+    - co_micron
   company_alphabet:
     routes:
     - object: company
@@ -1095,6 +1098,22 @@ studies:
         zh: 研究声明的样本与期间
         en: Declared sample and period
       primary: false
+    entity_ids:
+    - cik_320193
+    - cik_789019
+    - co_nvidia
+    - cik_1018724
+    - cik_1652044
+    - cik_1318605
+    - cik_19617
+    - cik_1067983
+    - cik_34088
+    - cik_200406
+    - cik_80424
+    - cik_21344
+    - cik_104169
+    - cik_909832
+    - cik_320187
   company_tesla:
     routes:
     - object: company
@@ -1377,8 +1396,8 @@ classification:
           zh: 分类与业务构成
           en: Business composition
         relationships:
-          zh: 上下游与客户、供应关系
-          en: Supply and customer relationships
+          zh: 产业与公司关系
+          en: Industry and company relationships
         concentration:
           zh: 集中度与样本构成
           en: Concentration and sample composition
@@ -1560,18 +1579,25 @@ classification:
     topic: relationships
     href: sources.html#business-relations
     scope:
-      zh: 芯片产业的 17 条候选公司关系；不是已确认的上下游研究。
-      en: 17 candidate company relationships in chips; not confirmed supply-chain
-        research.
+      zh: 已登记的芯片公司直接关系及证据；不是完整或已确认的产业链研究。
+      en: Registered direct chip-company relationships and evidence; not a complete or confirmed supply-chain study.
   - object: company
     subject: issuer
     question: structure
     topic: composition
     href: sources.html#business-mappings
     scope:
-      zh: NVIDIA、Micron 的 7 条分部与业务部分映射；有效期未知，不能分摊收入。
-      en: 7 partial segment-to-business mappings for NVIDIA and Micron; validity unknown,
-        no revenue allocation.
+      zh: 已登记的公司分部与业务映射及适用范围；不能用于收入分摊。
+      en: Registered segment-to-business mappings and their scope; not for revenue allocation.
+  - object: company
+    subject: issuer
+    question: structure
+    topic: relationships
+    href: sources.html#business-relations
+    scope:
+      zh: 按公司查看登记的直接关系及逐条证据；不代表完整产业链。
+      en: Registered direct relationships and evidence by company; not a complete
+        supply chain.
 data_groups:
 - id: macro_policy
   name: 宏观与政策
@@ -1816,3 +1842,86 @@ data_groups:
     name: 信号与预测检验
     planned: true
     needs: 需要时点数据（ALFRED 或持续积累的本地快照），以及预设基准、样本外评估与预登记
+entity_aliases:
+  co_nvidia:
+  - NVIDIA
+  - NVDA
+  - 英伟达
+  co_micron:
+  - Micron
+  - MU
+  - 美光
+  co_tsmc:
+  - TSMC
+  - 台积电
+  co_samsung:
+  - Samsung
+  - 三星
+  co_sk_hynix:
+  - SK hynix
+  - 海力士
+  - SK 海力士
+  co_hon_hai:
+  - Hon Hai
+  - 鸿海
+  - 富士康
+  co_wistron:
+  - Wistron
+  - 纬创
+  co_fabrinet:
+  - Fabrinet
+  co_kioxia:
+  - Kioxia
+  - 铠侠
+  co_sandisk:
+  - Sandisk
+  - 闪迪
+  co_cxmt:
+  - CXMT
+  - 长鑫存储
+  co_ymtc:
+  - YMTC
+  - 长江存储
+  cik_320193:
+  - Apple
+  - 苹果
+  cik_789019:
+  - Microsoft
+  - 微软
+  cik_1018724:
+  - Amazon
+  - 亚马逊
+  cik_1652044:
+  - Alphabet
+  - Google
+  - 谷歌
+  cik_1318605:
+  - Tesla
+  - 特斯拉
+  cik_19617:
+  - JPMorgan
+  - 摩根大通
+  cik_1067983:
+  - Berkshire
+  - 伯克希尔
+  cik_34088:
+  - Exxon
+  - 埃克森美孚
+  cik_200406:
+  - Johnson & Johnson
+  - 强生
+  cik_80424:
+  - Procter & Gamble
+  - 宝洁
+  cik_21344:
+  - Coca-Cola
+  - 可口可乐
+  cik_104169:
+  - Walmart
+  - 沃尔玛
+  cik_909832:
+  - Costco
+  - 好市多
+  cik_320187:
+  - Nike
+  - 耐克

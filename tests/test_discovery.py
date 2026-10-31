@@ -8,7 +8,7 @@ import yaml
 
 from investment_os.site.discovery import catalog, validate, verify_targets
 from investment_os.site.targets import available
-from investment_os.site.references import company_reference_index, company_reference_part, reference_page_part
+from investment_os.site.references import company_reference_part, reference_page_part
 from .conftest import PROJECT_ROOT
 
 
@@ -95,17 +95,17 @@ def test_content_targets_require_public_file_and_unique_id(tmp_path):
 
 
 def test_references_keep_candidates_and_stale_reviews_separate(monkeypatch):
-    import investment_os.site.references as refs
+    import investment_os.site.entities as refs
     html=reference_page_part(PROJECT_ROOT)
-    assert '候选公司关系' in html and '不能用于收入分摊' in html and '人工状态' in html
+    assert '直接公司关系（含候选）' in html and '不能用于收入分摊' in html and '人工状态' in html
     assert '技术复核记录：pass' in html
     monkeypatch.setattr(refs,'fingerprint',lambda *args:'changed')
     stale=reference_page_part(PROJECT_ROOT)
     assert '复核记录已失效' in stale and '技术复核记录：pass' not in stale
-    index=company_reference_index(PROJECT_ROOT)
-    assert index['1045810'] and '320193' not in index
+    index=refs.build_index(PROJECT_ROOT, {}, {})
+    assert index['by_cik']['1045810']=='co_nvidia' and index['by_cik']['320193']=='cik_320193'
     assert '尚未收录' in company_reference_part({'branch':'company','results':{'companies':[{'cik':320193}]}},index)
-    assert 'sources.html#ref-' in company_reference_part({'branch':'company','results':{'companies':[{'cik':1045810}]}},index)
+    assert 'sources.html?entity=co_nvidia#relationships' in company_reference_part({'branch':'company','results':{'companies':[{'cik':1045810}]}},index)
     assert company_reference_part({'branch':'company','results':{'companies':[{},{}]}},index)==''
 
 

@@ -44,7 +44,8 @@ from .capability import capability_page, summary
 from .collect import collect_runs, datasets, fundamentals_datasets, ordered_studies
 from .common import repo_url
 from . import discovery
-from .references import reference_page_part, company_reference_index, company_reference_part
+from .references import reference_page_part, company_reference_part
+from .entities import build_index
 from .i18n import LANGS, load_phrases, use
 from .methods import methods_page
 from .renderers import get_renderer
@@ -200,8 +201,8 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
         (out / "history" / f"{study_id}.html").write_text(
             redirect(f"../studies/{study_id}/#history"), encoding="utf-8")
 
-    company_references = company_reference_index(root)
-    discovery_model = discovery.catalog(content, latest, definitions, ds_by_id, bool(company_references))
+    company_references = build_index(root, content, definitions)
+    discovery_model = discovery.catalog(content, latest, definitions, ds_by_id, bool(company_references['activities']), company_references)
     calendar_checks = _calendar_checks(root, registry)
     cap = summary(content, registry, ds_by_id, latest)
     # 中文页面在根目录，英文页面在 en/；英文页面上没有译文的原文记入 untranslated
@@ -214,11 +215,11 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
                 page_dir = base / "studies" / study_id
                 page_dir.mkdir(parents=True)
                 (page_dir / "index.html").write_text(
-                    study_page(study_id, shown[study_id], archived, registry, content, build, company_reference_part(latest[study_id]["result"], company_references)), encoding="utf-8")
+                    study_page(study_id, shown[study_id], archived, registry, content, build, company_reference_part(latest[study_id]["result"], company_references, discovery_model["studies"])), encoding="utf-8")
             frequency = {k: d["frequency"] for k, d in ds_by_id.items()}
             (base / "index.html").write_text(discovery.page(content, discovery_model, latest, build, frequency), encoding="utf-8")
             (base / "map.html").write_text(capability_page(content, registry, ds_by_id, latest, build, discovery_model), encoding="utf-8")
-            (base / "sources.html").write_text(sources_page(content, registry, ds_by_id, build, reference_page_part(root)), encoding="utf-8")
+            (base / "sources.html").write_text(sources_page(content, registry, ds_by_id, build, reference_page_part(root, company_references, discovery_model["studies"])), encoding="utf-8")
             (base / "methods.html").write_text(
                 methods_page(content, registry, ds_rows, latest, build, calendar_checks), encoding="utf-8")
             discovery.verify_targets(base, out, [*discovery_model["studies"], *discovery_model["references"]])
@@ -228,6 +229,7 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
         "build": build,
         "capability": cap,
         "classification": discovery_model,
+        "subject_index": company_references,
         # 英文页面上仍显示中文原文的文字（需要在 site/en.yaml 补译文）
         "untranslated": sorted(untranslated),
         "calendar_checks": calendar_checks,

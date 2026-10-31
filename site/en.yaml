@@ -529,6 +529,39 @@ phrases:
   部分在核验范围内: partly within the verified range
   Phillips 66、Marathon Petroleum、HF Sinclair、Delek US、CVR Energy: Phillips 66, Marathon Petroleum, HF Sinclair, Delek US, CVR Energy
 
+  # Subject navigation and relationship evidence
+  NVIDIA 2026 财年直接客户之一（占总营收 22%）: NVIDIA FY2026 anonymous direct customer 1 (22% of total revenue)
+  NVIDIA 2026 财年另一直接客户（占总营收 14%）: NVIDIA FY2026 anonymous direct customer 2 (14% of total revenue)
+  Micron 2025 财年前十大客户（合计，未逐一披露）: Micron FY2025 top ten customers (combined, not individually disclosed)
+  芯片设计（无晶圆厂）: Fabless chip design
+  集成器件制造（IDM，逻辑与模拟）: Integrated device manufacturing (logic and analog)
+  存储芯片制造: Memory chip manufacturing
+  晶圆代工: Wafer foundry
+  芯片封装（含先进封装）: Chip packaging (including advanced packaging)
+  芯片测试: Chip testing
+  半导体设备: Semiconductor equipment
+  半导体材料: Semiconductor materials
+  EDA 软件与芯片 IP 授权: EDA software and chip IP licensing
+  半导体晶圆: Semiconductor wafers
+  存储芯片（原文未区分 HBM 或其他类型）: Memory chips (the source does not distinguish HBM from other types)
+  最终产品的组装、测试与封装: Assembly, testing and packaging of final products
+  原文为 assembly, testing and packaging of our final products，未说明是芯片封装测试还是板卡与系统组装: The source says “assembly, testing and packaging
+    of our final products” without distinguishing chip packaging/testing from board or system assembly.
+  同上，原文未说明组装对象: The cited passage does not identify the products being assembled.
+  原文只说主要归属 Compute & Networking 分部，该分部含芯片以外的系统、软件与服务: The source only says primarily attributable to Compute & Networking, which
+    also includes systems, software and services beyond chips.
+  主要为 Compute & Networking 分部产品: Primarily Compute & Networking segment products
+  对该客户的销售: Sales to this customer
+  总营收: Total revenue
+  对前十大客户的销售: Sales to the top ten customers
+  存储产品: Memory and storage products
+  半导体存储与存储产品: Semiconductor memory and storage products
+  原文只给出「超过一半」，不写成精确值: The source discloses only “more than half”; this is not an exact value.
+  只有 NVIDIA 一方披露；Micron 的 10-K 没有点名 NVIDIA，不能据此推出 Micron 的客户集中度或采购份额: Disclosed by NVIDIA only; Micron’s 10-K does not name
+    NVIDIA. This does not establish Micron’s customer concentration or procurement shares.
+  存储芯片生产与销售: Memory chip production and sales
+  半导体设备制造: Semiconductor equipment manufacturing
+
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'
