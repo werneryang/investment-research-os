@@ -202,7 +202,7 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
             redirect(f"../studies/{study_id}/#history"), encoding="utf-8")
 
     company_references = build_index(root, content, definitions)
-    discovery_model = discovery.catalog(content, latest, definitions, ds_by_id, bool(company_references['activities']), company_references)
+    discovery_model = discovery.catalog(content, latest, definitions, ds_by_id, any(company_references[k] for k in ('activities', 'mappings', 'relations')), company_references)
     calendar_checks = _calendar_checks(root, registry)
     cap = summary(content, registry, ds_by_id, latest)
     # 中文页面在根目录，英文页面在 en/；英文页面上没有译文的原文记入 untranslated
