@@ -226,9 +226,9 @@ def test_home_places_studies_in_their_branch(loaded):
     card = page[page.index('id="markets_assets"'):]
     card = card[:card.index("</article>")]
     assert 'href="studies/ust_curve_test/"' in card
-    # 分支写明具体覆盖，不用一个「已有研究」概括整个分支；只有数据的方向合并为一行
-    assert "6 个方向：1 个已有研究，5 个只有数据" in card and "规划中" not in card
-    assert "5 个方向已有数据、尚无研究" in card
+    # 分支写明具体覆盖，不用一个「已有研究」概括整个分支；尚无研究的方向合并为一行，已登记未取得的不算已有数据
+    assert "6 个方向：1 个已有研究，1 个只有数据，4 个数据已登记、未取得" in card and "规划中" not in card
+    assert "1 个方向已有数据、尚无研究" in card and "4 个方向的数据已登记、本次构建未取得" in card
     assert "未归入研究方向的研究" not in page
     # 目录遵循研究框架顺序，与顶部总览一致
     assert page.index('id="macro_policy"') < page.index('id="markets_assets"')
@@ -244,28 +244,83 @@ def _scope(status, uncovered, verified):
 
 
 def test_notices_separate_failures_gaps_and_boundaries():
-    """先拆事实再定级别：检查失败为 fail，前段或中段的核验缺口为 warn，只缺最新尾端与研究边界为 info。"""
+    """先拆事实再定级别：检查失败为 fail，前段或中段的核验缺口为 warn，维护周期内的尾端与研究边界为 info。"""
     from investment_os.site.catalog import notices
     ok = _item({"raw_spot_check": {"checked": 12, "status": "pass"}}, {"reproduced": True})
     assert notices(ok) == []
     tail = {"dataset_id": "ust", "use_scope": _scope("partial", [["2026-10-23", "2026-10-30"]], [["1990-01-02", "2026-10-22"]])}
     head = {"dataset_id": "cpi", "use_scope": _scope("partial", [["1928-01-01", "1947-11-30"]], [["1947-12-01", None]])}
     head2 = {"dataset_id": "dtb3", "use_scope": _scope("partial", [["1928-01-01", "1947-11-30"]], [["1947-12-01", None]])}
-    bad = _item({"ratio_check": {"status": "fail"}}, {"reproduced": False}, [tail, head, head2], ["x"])
-    assert [(n.level, n.text) for n in notices(bad)] == [
+    bad = _item({"ratio_check": {"status": "fail"}}, {"reproduced": False}, [tail, head, head2],
+                [{"item": "因果关系", "reason": "事后描述", "kind": "scope"}])
+    daily = {"ust": "daily", "cpi": "monthly", "dtb3": "daily"}
+    assert [(n.level, n.text) for n in notices(bad, daily)] == [
         ("fail", "1 项数据检查未通过"), ("fail", "固定输入重算不一致"),
         ("info", "用途核验未覆盖最新数据：ust（2026-10-23 至 2026-10-30）"),
         ("warn", "用途核验未覆盖部分研究期间：cpi、dtb3（1928-01-01 至 1947-11-30）"),
-        ("info", "1 项结论因数据不足未输出")]
-    assert [n.brief for n in notices(bad)][2:4] == ["1 项输入的用途核验未覆盖最新数据", "2 项输入的用途核验未覆盖部分研究期间"]
+        ("info", "1 项问题不在本研究回答范围内")]
+    assert [n.brief for n in notices(bad, daily)][2:4] == ["1 项输入的用途核验未覆盖最新数据", "2 项输入的用途核验未覆盖部分研究期间"]
     # 数据截止日之后的期间不影响结果，不提示
     after = {"dataset_id": "ff3", "use_scope": _scope("partial", [["2026-01-01", "2026-10-30"]], [["1926-07-01", "2025-12-31"]])}
     assert notices(_item(ver={"reproduced": True}, inputs=[after], cutoff="2025-12-31")) == []
     # 月份截止日按月末比较
     month = {"dataset_id": "ff3", "use_scope": _scope("partial", [["2026-08-15", "2026-10-30"]], [["1926-07-01", "2026-08-14"]])}
-    assert [n.level for n in notices(_item(ver={"reproduced": True}, inputs=[month], cutoff="2026-08"))] == ["info"]
+    assert [n.level for n in notices(_item(ver={"reproduced": True}, inputs=[month], cutoff="2026-08"), {"ff3": "monthly"})] == ["info"]
     out = {"dataset_id": "x", "use_scope": _scope("out_of_scope", [["2001-01-01", "2002-01-01"]], [["2010-01-01", None]])}
     assert [n.level for n in notices(_item(ver={"reproduced": True}, inputs=[out]))] == ["warn"]
+
+
+def test_tail_gap_is_routine_only_within_the_maintenance_cycle():
+    """只缺尾端的核验，滞后在维护周期内才降为 info；滞后多年或频率不明都保留 warn。"""
+    from investment_os.site.catalog import notices
+    years = {"dataset_id": "ust", "use_scope": _scope("partial", [["2021-01-01", "2026-10-22"]], [["1990-01-02", "2020-12-31"]])}
+    item = _item(ver={"reproduced": True}, inputs=[years], cutoff="2026-10-22")
+    assert [(n.level, n.brief) for n in notices(item, {"ust": "daily"})] == [("warn", "1 项输入的用途核验滞后超过维护周期")]
+    tail = {"dataset_id": "ust", "use_scope": _scope("partial", [["2026-10-23", "2026-10-30"]], [["1990-01-02", "2026-10-22"]])}
+    item = _item(ver={"reproduced": True}, inputs=[tail])
+    assert [n.level for n in notices(item, {"ust": "daily"})] == ["info"]
+    assert [n.level for n in notices(item)] == ["warn"]  # 频率不明，不能确认是例行滞后
+
+
+def test_withheld_conclusions_are_graded_by_their_recorded_reason():
+    """数据或输入不足而未输出的结论为 warn 并列出；研究不回答的问题为 info；旧结果没有分类时不推断原因。"""
+    from investment_os.site.catalog import notices
+    item = _item(ver={"reproduced": True}, unsupported=[
+        {"item": "完整期间结论", "reason": "40 周缺少至少一个数值", "kind": "data"},
+        {"item": "因果关系", "reason": "事后描述", "kind": "scope"}])
+    assert [(n.level, n.text, n.brief) for n in notices(item)] == [
+        ("warn", "因数据或输入不足未输出：完整期间结论", "1 项结论因数据或输入不足未输出"),
+        ("info", "1 项问题不在本研究回答范围内", "1 项问题不在本研究回答范围内")]
+    old = _item(ver={"reproduced": True}, unsupported=[{"item": "x", "reason": "y"}])
+    assert [(n.level, n.text) for n in notices(old)] == [("info", "1 项结论未输出，原因见研究页")]
+
+
+def test_collection_entry_surfaces_member_limits():
+    """集合折叠后，成员的失败与限制仍在入口计数，并在展开的表格逐行列出。"""
+    from investment_os.site.catalog import CollectionView, Notice, StudyView
+    from investment_os.site.home import _collection_row
+
+    def view(sid, notices):
+        return StudyView(sid, sid, "e", "f", "2025", "complete", "u", notices, "c")
+
+    lead = view("lead", [])
+    gap = view("m1", [Notice("warn", "用途核验未覆盖部分研究期间：x（…）", "1 项输入的用途核验未覆盖部分研究期间")])
+    broken = view("m2", [Notice("fail", "固定输入重算不一致"), Notice("warn", "w")])
+    c = CollectionView("c", "C", lead, [(gap, {"branch": "none"}), (broken, {"branch": "none"}), (view("m3", []), {"branch": "none"})])
+    assert [(n.level, n.text) for n in c.notices] == [
+        ("fail", "1 项成员研究的检查未通过"), ("warn", "1 项成员研究有覆盖或数据限制，见逐项表格")]
+    html = _collection_row(c, False)
+    assert "1 项输入的用途核验未覆盖部分研究期间" in html and "固定输入重算不一致" in html
+
+
+def test_registered_data_is_not_presented_as_available():
+    """数据已登记但本次构建未取得的方向，不写成「已有数据」。"""
+    from investment_os.site.home import _branch_card, _coverage
+    b = {"id": "x", "name": "X", "category": "data_only", "directions": [
+        ({"name": "甲"}, {"category": "data_only"}), ({"name": "乙"}, {"category": "registered"})]}
+    assert _coverage(b) == "2 个方向：1 个只有数据，1 个数据已登记、未取得"
+    card = _branch_card(b, None)
+    assert "1 个方向已有数据、尚无研究：甲。" in card and "1 个方向的数据已登记、本次构建未取得：乙。" in card
 
 
 def test_check_note_does_not_turn_missing_checks_into_pass():

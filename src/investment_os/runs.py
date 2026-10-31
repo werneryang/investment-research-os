@@ -397,6 +397,8 @@ def verify_run(root: Path, run_id: str) -> dict[str, Any]:
     original = json.loads((run_dir / "result.json").read_text(encoding="utf-8"))
     # 原运行没有记录解释（旧版本）时，复现也不补写，保持原结果结构
     result, _ = execute(root, study, frozen=frozen, interpret_findings="interpretation" in original)
+    if not any("kind" in u for u in original.get("unsupported", [])):  # 旧结果的未输出结论没有分类，复现也不补写
+        result.unsupported = [{k: v for k, v in u.items() if k != "kind"} for u in result.unsupported]
     new_hash = result_hash(result)
     current_code = code_version(root)
     record = {

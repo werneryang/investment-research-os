@@ -321,9 +321,9 @@ def run(study, inputs, registry):
     if failures:
         raise ValueError("; ".join(failures))
     unsupported = [
-        {"item": "精确的行业盈利—估值回报分解", "reason": "缺少对应各期 CRSP 成分、权重、价格与公司行动；BE/ME 只作估值背景"},
-        {"item": "历史一致预期与公告日超额回报", "reason": "只有选定管理层指引案例和月度收益；不能替代分析师一致预期或日度事件研究"},
-        {"item": "因果关系", "reason": "因子暴露、同步和领先滞后相关均为事后描述；宏观数据为当前修订版本"},
+        {"item": "精确的行业盈利—估值回报分解", "kind": "scope", "reason": "缺少对应各期 CRSP 成分、权重、价格与公司行动；BE/ME 只作估值背景"},
+        {"item": "历史一致预期与公告日超额回报", "kind": "scope", "reason": "只有选定管理层指引案例和月度收益；不能替代分析师一致预期或日度事件研究"},
+        {"item": "因果关系", "kind": "scope", "reason": "因子暴露、同步和领先滞后相关均为事后描述；宏观数据为当前修订版本"},
     ]
     tables = {"regressions": regressions, "rolling": rolling, "rolling_exposure": rolling_exposure,
               "correlations": corr, "wealth": wealth, "lag_correlations": lagged,

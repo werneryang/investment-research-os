@@ -141,7 +141,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
                 "failures": [{"date": t.date().isoformat(), "residual_bp": float(v)} for t, v in bad.head(20).items()]}
     unsupported: list[dict[str, str]] = []
     if identity["status"] == "fail":
-        unsupported.append({"item": "长端分解（实际收益率与盈亏平衡通胀的贡献）",
+        unsupported.append({"item": "长端分解（实际收益率与盈亏平衡通胀的贡献）", "kind": "data",
                             "reason": f"恒等式残差超过 {tol:g} bp：名义收益率与 TIPS、盈亏平衡通胀的口径不一致"})
 
     validation: dict[str, Any] = {"identity_check": identity}

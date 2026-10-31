@@ -233,7 +233,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
     year_complete = {y: not any(w.startswith(str(y)) for w in missing_weeks) for y in years}
     incomplete_years = [str(y) for y, ok in year_complete.items() if not ok]
     if missing_weeks:
-        unsupported.append({"item": "缺周年份的年度汇总", "reason": f"{len(missing_weeks)} 周缺少至少一个数值（不插值），"
+        unsupported.append({"item": "缺周年份的年度汇总", "kind": "data", "reason": f"{len(missing_weeks)} 周缺少至少一个数值（不插值），"
                             f"涉及 {'、'.join(incomplete_years)} 年：" + "、".join(missing_weeks[:8])
                             + ("等" if len(missing_weeks) > 8 else "")})
 
@@ -301,7 +301,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
         tsr_units[cid] = unit
         units.append(unit)
         if not unit.computable:
-            unsupported.append({"item": f"{co['name']} 年度总收益", "reason": f"输入能力为 {unit.grade}："
+            unsupported.append({"item": f"{co['name']} 年度总收益", "kind": "data", "reason": f"输入能力为 {unit.grade}："
                                 + "；".join(unit.reasons)})
             continue
         r = returns[cid]
@@ -321,7 +321,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
                       depends_on=[relation_unit, unit])
         units.append(comp)
         if not comp.computable:
-            unsupported.append({"item": f"{co['name']} 与价差、利用率的对照", "reason": f"输入能力为 {comp.grade}："
+            unsupported.append({"item": f"{co['name']} 与价差、利用率的对照", "kind": "data", "reason": f"输入能力为 {comp.grade}："
                                 + "；".join(comp.reasons)})
             continue
         ys = [b for b in by_year if b["complete"]]

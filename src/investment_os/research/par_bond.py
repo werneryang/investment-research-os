@@ -92,7 +92,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
         try:
             bonds._periods(years, freq)
         except ValueError as exc:
-            unsupported.append({"item": f"期限 {tenor}", "reason": str(exc)})
+            unsupported.append({"item": f"期限 {tenor}", "kind": "scope", "reason": str(exc)})
             continue
         bonds_out[tenor] = {
             "years": years, "yield": y, "yield_pct": y * 100, "coupon_pct": y * 100,
@@ -107,7 +107,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
             try:
                 rows.append(bonds.scenario(y, y, years, s, freq))
             except ValueError as exc:
-                unsupported.append({"item": f"期限 {tenor} 冲击 {s:+.0f} bp", "reason": str(exc)})
+                unsupported.append({"item": f"期限 {tenor} 冲击 {s:+.0f} bp", "kind": "scope", "reason": str(exc)})
         scenarios[tenor] = rows
 
     worst = {t: max(rows, key=lambda r: abs(r["duration_convexity_error_pp"])) for t, rows in scenarios.items() if rows}

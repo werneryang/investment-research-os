@@ -42,6 +42,8 @@ class ResearchResult:
     inputs: list[dict[str, Any]]
     results: dict[str, Any]
     coverage: dict[str, Any]
+    # 未输出的结论：item、reason 与 kind（data 数据或输入不足，影响对已有结果的理解；scope 研究设计不回答、
+    # 方法或情景不适用）；旧结果没有 kind
     unsupported: list[dict[str, str]] = field(default_factory=list)
     limitations: list[str] = field(default_factory=list)
     validation: dict[str, Any] = field(default_factory=dict)

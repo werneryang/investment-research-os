@@ -112,7 +112,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
             inflation = {"years": int(len(i)), "mean": float(i.mean()), "geometric": _geo(i),
                          "max": float(i.max()), "max_year": int(i.idxmax())}
         else:
-            unsupported.append({"item": "实际回报", "reason": "研究范围内没有可用的 CPI 年通胀"})
+            unsupported.append({"item": "实际回报", "kind": "data", "reason": "研究范围内没有可用的 CPI 年通胀"})
 
     erp: dict[str, Any] = {}
     if "SP500" in assets:

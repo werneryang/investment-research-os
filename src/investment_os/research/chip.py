@@ -243,7 +243,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
         feas[uid] = f
         tables[uid] = rows
         if u["grade"] not in ("A", "B"):
-            unsupported.append({"item": f"研究单元 {uid}", "reason": f"输入能力为 {u['grade']}：" + "；".join(u["reasons"])})
+            unsupported.append({"item": f"研究单元 {uid}", "kind": "data", "reason": f"输入能力为 {u['grade']}：" + "；".join(u["reasons"])})
             continue
         for name, items in u["checks"].items():
             if not items:

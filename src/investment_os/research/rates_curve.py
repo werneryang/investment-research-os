@@ -224,7 +224,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
         if share >= min_cov:
             supported.add(code)
         else:
-            unsupported.append({"item": f"期限 {code}",
+            unsupported.append({"item": f"期限 {code}", "kind": "data",
                                 "reason": f"有效观测占比 {share:.1%} 低于要求 {min_cov:.0%}"})
     coverage["tenors"] = tenor_cov
     coverage["tenor_denominator"] = "due_days" if coverage["due_days"] else "observed_days"
@@ -248,7 +248,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
         limitations.append(
             f"研究期间 {start.date()} 至 {end.date()} 覆盖不足（{coverage['incomplete_reason']}；"
             f"实际覆盖 {covered}）。只保留首尾有效观测的对比，均值、极值与倒挂天数等期间统计不输出")
-        unsupported.append({"item": "期间统计（均值、极值、倒挂天数）",
+        unsupported.append({"item": "期间统计（均值、极值、倒挂天数）", "kind": "data",
                             "reason": coverage["incomplete_reason"]})
     elif not complete_state:
         limitations.append(
@@ -278,7 +278,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
         s, l = parse_tenor(short).code, parse_tenor(long).code
         name = f"{s}-{l}"
         if not {s, l} <= supported:
-            unsupported.append({"item": f"利差 {name}", "reason": "所需期限覆盖不足"})
+            unsupported.append({"item": f"利差 {name}", "kind": "data", "reason": "所需期限覆盖不足"})
             continue
         series = spread_bp(curve, s, l)  # 两端同一天都有值才有利差
         spread_series[name] = series
@@ -294,7 +294,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
             spread_series[f"curvature {name}"] = series
             curvature[name] = summarize(series, "bp", "curvature", name)
         else:
-            unsupported.append({"item": f"曲率 {name}", "reason": "所需期限覆盖不足"})
+            unsupported.append({"item": f"曲率 {name}", "kind": "data", "reason": "所需期限覆盖不足"})
 
     coverage["metrics"] = metrics
     n_days = coverage["curve_days"]

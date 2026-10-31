@@ -15,11 +15,11 @@ from .conftest import PROJECT_ROOT, TREASURY_2024, treasury_connector
 from .test_study_e2e import STUDY, load_result, write_study
 
 
-def _strip_interpretation(project, run_id):
-    """模拟旧运行：结果里没有解释，清单的结果校验值按旧结构重算。"""
+def _strip_interpretation(project, run_id, strip=lambda r: r.pop("interpretation")):
+    """模拟旧运行：结果里没有解释（或其他后加的字段），清单的结果校验值按旧结构重算。"""
     path = project / "runs" / run_id
     result = json.loads((path / "result.json").read_text(encoding="utf-8"))
-    result.pop("interpretation")
+    strip(result)
     (path / "result.json").write_text(json.dumps(result, ensure_ascii=False), encoding="utf-8")
     manifest = json.loads((path / "manifest.json").read_text(encoding="utf-8"))
     body = {k: v for k, v in result.items() if k not in ("run_id", "generated_at", "result_hash")}
@@ -93,3 +93,12 @@ def test_change_log_lists_what_differed_between_runs(loaded):
     assert "不推断变化的原因" in page
     # 两次运行的代码与规则相同，不应列出代码或规则差异
     assert "代码或配置" not in page and "解释规则 rates_curve" not in page
+
+
+def test_verify_keeps_unclassified_withheld_conclusions_of_old_runs(loaded):
+    """旧运行的未输出结论没有 kind：复现不补写分类，否则同样的数据与计算会被判为不一致。"""
+    path = write_study(loaded, method={**STUDY["method"], "key_tenors": ["2Y", "10Y", "6W"]})
+    m = run_study(loaded, path)
+    assert {u["kind"] for u in load_result(loaded, m)["unsupported"]} == {"data"}
+    _strip_interpretation(loaded, m["run_id"], lambda r: [u.pop("kind") for u in r["unsupported"]])
+    assert verify_run(loaded, m["run_id"])["reproduced"] is True
