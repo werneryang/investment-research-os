@@ -6,7 +6,7 @@
 
 `site/content.yaml` 的 `classification.objects` 与 `classification.questions` 是双语词表；`studies.<id>.routes` 保存配对入口。每条包含 `object`、`subject`、`question`、`topic`、`target` 和双语 `scope`，恰有一条 `primary: true`。默认目录按主对象组织，筛选在同一条入口内匹配全部条件，再按研究 ID 去重。公司集合 `collections` 只控制展示，不改变研究归属。
 
-`classification.capabilities` 登记具体范围的数据能力与规划，`classification.references` 登记参照入口。未登记组合不自动生成规划或缺口原因。用户主动查询时解释无已发布匹配研究及未评估状态。数据存在不等于该用途已核验。
+`classification.capabilities` 登记具体范围的数据能力与规划，`classification.references` 按资料登记稳定 ID、原记录范围与多个成对入口；新增公开记录必须有导航归属，同一资料不按入口重复计数。未登记组合不自动生成规划或缺口原因。用户主动查询时解释无已发布匹配研究及未评估状态。数据存在不等于该用途已核验。
 
 `discovery.py` 生成首页、能力地图共享的目录和 `summary.json`；`targets.py` 核对当前结果是否含对应内容，构建再核对公开文件及稳定章节 ID。研究页地址不变。成果类型、期间、市场、截止日及检查状态读研究定义与运行记录，不在网站配置重复维护。
 
@@ -123,3 +123,5 @@ flowchart LR
 URL 使用稳定 `entity` / `compare` ID，并支持业务 `activity`、关系类型 `relation_type`、技术状态 `review` 和 `evidence_before`。日期只限定所有所引证据的申报日期；缺日期的记录不通过日期筛选，不据此声称关系有效或当时可交易。技术状态还检查所引证据是否失效、失败、否定或撤回。人审与技术复核分开显示。
 
 对照只比较当前筛选下的记录覆盖，零条不是现实中没有关系；共享边只列一次。表、对照、示意读取同一批直接记录，不传递推导、不推算份额。网页无脚本仍保留全部静态记录、证据和稳定锚点；脚本筛选不改变原始记录。
+
+覆盖验收见 [分类映射 §5](research-classification.md#5-查找任务与覆盖检查)：独立查找任务核对研究、数据规划与参照路径，并用生产筛选函数遍历全部 702 个对象子类与问题子类组合；构建同时反查参照记录是否漏接。

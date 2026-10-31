@@ -170,7 +170,7 @@ def shell(title: str, body: str, build: dict[str, Any], *, page: str, active: st
     # 资源地址带内容校验值：样式或脚本改动后地址随之变化，访客不会用到浏览器缓存的旧文件
     v = build.get("asset_version", "")
     q = f"?v={v}" if v else ""
-    scripts = f'<script defer src="{up}assets/charts.js{q}"></script><script defer src="{up}assets/subjects.js{q}"></script><script defer src="{up}assets/discovery.js{q}"></script><script defer src="{up}assets/relationships.js{q}"></script>'
+    scripts = f'<script defer src="{up}assets/charts.js{q}"></script><script defer src="{up}assets/subjects.js{q}"></script><script defer src="{up}assets/discovery-query.js{q}"></script><script defer src="{up}assets/discovery.js{q}"></script><script defer src="{up}assets/relationships.js{q}"></script>'
     if charts:
         scripts = f'<script defer src="{up}{CHART_JS}{q}"></script>\n' + scripts
     current = ' aria-current="page"'

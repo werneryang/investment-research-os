@@ -1573,31 +1573,99 @@ classification:
     datasets: []
     planned: true
   references:
-  - object: industry
-    subject: chips
-    question: structure
-    topic: relationships
-    href: sources.html#business-relations
-    scope:
-      zh: 已登记的芯片公司直接关系及证据；不是完整或已确认的产业链研究。
-      en: Registered direct chip-company relationships and evidence; not a complete or confirmed supply-chain study.
-  - object: company
-    subject: issuer
-    question: structure
-    topic: composition
+  - id: chip-business-definitions
+    title:
+      zh: 芯片细分业务定义与候选行业分类对应
+      en: Chip business definitions and candidate industry mappings
+    source: activities
+    records:
+    - act_chip_design
+    - act_idm_manufacturing
+    - act_wafer_foundry
+    - act_memory_production
+    - act_packaging
+    - act_test
+    - act_semi_equipment
+    - act_eda_ip
+    href: sources.html#business-activities
+    routes:
+    - object: industry
+      subject: chips
+      question: structure
+      topic: composition
+      scope:
+        zh: 已登记的细分业务定义、包含与不包含范围及候选 NAICS 对应；不是完整行业分类或研究结论。
+        en: Registered business definitions, inclusions, exclusions and candidate NAICS mappings; not a complete industry classification
+          or study.
+  - id: company-business-mappings
+    title:
+      zh: 公司分部与细分业务映射
+      en: Company segment-to-business mappings
+    source: mappings
+    records:
+    - lnk_nvda_cn_design
+    - lnk_nvda_gr_design
+    - lnk_mu_cmbu_memory
+    - lnk_mu_cdbu_memory
+    - lnk_mu_mcbu_memory
+    - lnk_mu_aebu_memory
+    - lnk_mu_cnbu_memory
     href: sources.html#business-mappings
-    scope:
-      zh: 已登记的公司分部与业务映射及适用范围；不能用于收入分摊。
-      en: Registered segment-to-business mappings and their scope; not for revenue allocation.
-  - object: company
-    subject: issuer
-    question: structure
-    topic: relationships
+    routes:
+    - object: company
+      subject: issuer
+      question: structure
+      topic: composition
+      scope:
+        zh: 已登记的公司分部与业务映射及适用范围；不能用于收入分摊。
+        en: Registered segment-to-business mappings and their scope; not for revenue allocation.
+    - object: industry
+      subject: chips
+      question: structure
+      topic: composition
+      scope:
+        zh: 当前仅 NVIDIA 与 Micron 的部分分部映射；有效期未知，不能用于收入分摊，也不覆盖全部芯片公司。
+        en: Currently partial NVIDIA and Micron segment mappings only; validity unknown, no revenue allocation, and not all
+          chip companies.
+  - id: company-direct-relations
+    title:
+      zh: 公司直接关系与证据
+      en: Direct company relationships and evidence
+    source: relations
+    records:
+    - rel_tsmc_nvda_foundry
+    - rel_samsung_nvda_foundry
+    - rel_skhynix_nvda_memory
+    - rel_micron_nvda_memory
+    - rel_samsung_nvda_memory
+    - rel_honhai_nvda_atp
+    - rel_wistron_nvda_atp
+    - rel_fabrinet_nvda_atp
+    - rel_nvda_direct_1
+    - rel_nvda_direct_2
+    - rel_mu_top10
+    - cmp_micron_samsung
+    - cmp_micron_skhynix
+    - cmp_kioxia_micron
+    - cmp_micron_sandisk
+    - cmp_cxmt_micron
+    - cmp_micron_ymtc
     href: sources.html#business-relations
-    scope:
-      zh: 按公司查看登记的直接关系及逐条证据；不代表完整产业链。
-      en: Registered direct relationships and evidence by company; not a complete
-        supply chain.
+    routes:
+    - object: industry
+      subject: chips
+      question: structure
+      topic: relationships
+      scope:
+        zh: 已登记的芯片公司直接关系及证据；不是完整或已确认的产业链研究。
+        en: Registered direct chip-company relationships and evidence; not a complete or confirmed supply-chain study.
+    - object: company
+      subject: issuer
+      question: structure
+      topic: relationships
+      scope:
+        zh: 按公司查看登记的直接关系及逐条证据；不代表完整产业链。
+        en: Registered direct relationships and evidence by company; not a complete supply chain.
 data_groups:
 - id: macro_policy
   name: 宏观与政策

@@ -19,7 +19,7 @@ def reference_page_part(root: Path, index=None, studies=None) -> str:
 <p>{L('参照记录不是研究结论。下面核对技术复核记录与当前登记内容的指纹，不在网站构建时重新核对原始申报或分部数值；技术记录不等于人工确认。','Reference records are not research conclusions. This build checks review fingerprints against registered content; it does not recheck original filings or segment values. Technical records are not human confirmation.')}</p>
 <p>{L('业务映射不能用于收入分摊。逐条查看对应范围、有效期与复核状态；关系登记不证明采购份额、独家关系或完整历史。','Business mappings do not allocate revenue. Check each record’s scope, validity and review status; registered relationships do not establish procurement shares, exclusivity or full history.')}</p>
 <p><a href="https://www.census.gov/naics/">{L('NAICS 官方分类入口','Official NAICS classification')}</a> · {L('本地完整分类表不随网站再分发；以下活动对应不是官方认定。','The full local classification table is not redistributed; the activity mappings below are not official determinations.')}</p>
-<details><summary>{L('细分业务定义','Business activity definitions')} · {len(index['activities'])}</summary><ul>{activities}</ul></details>
+<details id="business-activities"><summary>{L('细分业务定义','Business activity definitions')} · {len(index['activities'])}</summary><ul>{activities}</ul></details>
 {relationship_view(index, studies)}
 </section>'''
 

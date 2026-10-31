@@ -9,6 +9,7 @@ from .i18n import L, is_en, te, tx
 from .catalog import study_view
 from .renderers import get_renderer
 from .targets import PATHS, REPORT_TARGETS, available
+from .navigation_coverage import REFERENCE_SOURCES, reference_catalog, coverage_report
 
 
 def label(value: dict[str, str]) -> str:
@@ -37,8 +38,24 @@ def validate(content: dict[str, Any]) -> None:
             if key in seen:
                 raise ValueError(f'{sid}: duplicate route')
             seen.add(key)
-    for r in [*tax.get('capabilities', []), *tax.get('references', [])]:
+    for r in tax.get('capabilities', []):
         route(r)
+    reference_ids = set()
+    for material in tax.get('references', []):
+        if (not material.get('id') or material['id'] in reference_ids
+                or material.get('source') not in REFERENCE_SOURCES
+                or not material.get('records') or not material.get('routes')
+                or not all(material.get('title', {}).get(k) for k in ('zh', 'en'))):
+            raise ValueError('Invalid reference material')
+        reference_ids.add(material['id'])
+        if not material.get('href', '').startswith('sources.html#'):
+            raise ValueError('Reference material needs a stable sources section')
+        seen = set()
+        for r in material['routes']:
+            route(r)
+            key = tuple(r[k] for k in ('object','subject','question','topic'))
+            if key in seen: raise ValueError('Duplicate reference route')
+            seen.add(key)
     members = set()
     for c in content.get('collections', {}).values():
         for sid in [c['lead'], *c['members']]:
@@ -74,17 +91,12 @@ def catalog(content, latest, definitions, datasets, references_available=False, 
         state = 'planned' if route.get('planned') else ('data' if any(datasets[d].get('version_id') for d in ids) else 'registered')
         fetched=[d for d in ids if datasets[d].get('version_id')]
         capabilities.append({'fetched':fetched,'datasets':ids,'id':f'cap-{i}','routes':[route],'state':state,'kind':'capability'})
-    references=[{'id':f'reference-{i}', 'routes':[{**r, 'available':True, 'report':False}], 'kind':'reference'} for i,r in enumerate(content['classification'].get('references', []))] if references_available else []
+    references = reference_catalog(content, subject_index) if references_available and subject_index is not None else []
     subjects = (subject_index or {}).get('entities', {})
-    for rec in references:
-        route = rec['routes'][0]
-        if route['topic'] == 'relationships':
-            ids = [eid for row in (subject_index or {}).get('relations', {}).values() for eid in row['endpoints']]
-        else:
-            ids = [row['owner'] for row in (subject_index or {}).get('mappings', {}).values()]
-        route['entity_ids'] = sorted(set(ids))
-    return {'studies':records,'capabilities':capabilities,'references':references,
-            'entities': {k: {'name':v['name'], 'aliases':v['aliases'], 'type':v['type']} for k,v in subjects.items() if v['type'] != 'segment'}}
+    model = {'studies':records, 'capabilities':capabilities, 'references':references,
+             'entities': {k: {'name':v['name'], 'aliases':v['aliases'], 'type':v['type']} for k,v in subjects.items() if v['type'] != 'segment'}}
+    model['coverage'] = coverage_report(model)
+    return model
 
 
 class _IDs(HTMLParser):
@@ -199,8 +211,8 @@ def browser(content, model, latest, build, frequency=None):
         caps.append(f'<li class="capability-record" data-record="{_attrs(rec)}"><strong>{e(_route_text(r,tax))}</strong> · {states[rec["state"]]} · {progress}<p>{e(label(r["scope"]))}</p></li>')
     refs=[]
     for rec in model['references']:
-        r=rec['routes'][0]
-        refs.append(f'<li class="reference-record" data-record="{_attrs(rec)}"><a href="{e(r["href"])}">{e(_route_text(r,tax))}</a><p>{e(label(r["scope"]))}</p></li>')
+        routes = ''.join(f'<li data-route="{_attrs(r)}"><a href="{e(r["href"])}">{e(_route_text(r,tax))}</a><small>{e(label(r["scope"]))}</small></li>' for r in rec['routes'])
+        refs.append(f'<li class="reference-record" data-record="{_attrs(rec)}"><strong>{e(label(rec["title"]))}</strong> · {rec["record_count"]} {L("条登记记录","registered records")}<ul class="route-links">{routes}</ul></li>')
     # Localized query vocabulary; values remain stable IDs across languages.
     vocab={axis:{k:{'name':label(v['name']),'children':{x:label(y) for x,y in v['children'].items()}} for k,v in tax[axis].items()} for axis in ('objects','questions')}
     vocab['entities'] = {k: {**v, 'name':tx(v['name'])} for k,v in model.get('entities', {}).items()}
@@ -211,6 +223,7 @@ def browser(content, model, latest, build, frequency=None):
 <noscript><p>{L('下方目录可直接展开阅读；启用 JavaScript 后可组合筛选。','The catalog below is readable without JavaScript; enable it for combined filters.')}</p></noscript>
 <p class="subject-reference" hidden></p>
 <section id="research-results"><h2>{L('研究目录','Study catalog')}</h2><p class="query-status" role="status" aria-live="polite"></p>
+<p class="reference-filter-note" hidden>{L('成果类型、市场、频率与日期只筛选研究；参照资料与规划仍按对象、问题及关键词列出。','Result type, market, frequency and date filters apply only to studies; references and plans still match the object, question and search.')}</p>
 <p class="empty-state" hidden>{L('当前无已发布的匹配研究。未登记的对象与问题组合尚未评估；已有数据或规划见下方。','No published studies match. Unregistered object–question combinations have not been assessed; see data and plans below.')}</p>
 {''.join(groups)}</section>
 <section><details class="data-plans"><summary>{L('数据与规划','Data and plans')}</summary><ul class="capability-list">{''.join(caps)}</ul>

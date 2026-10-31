@@ -64,8 +64,8 @@ def test_route_bindings_do_not_create_company_valuation(index,inputs):
         for route in study['routes']:
             if 'co_nvidia' in route['entity_ids']:
                 assert route['question']!='valuation'
-    company=next(r['routes'][0] for r in model['references'] if r['routes'][0]['object']=='company' and r['routes'][0]['topic']=='relationships')
-    industry=next(r['routes'][0] for r in model['references'] if r['routes'][0]['object']=='industry')
+    company=next(r for material in model['references'] for r in material['routes'] if r['object']=='company' and r['topic']=='relationships')
+    industry=next(r for material in model['references'] for r in material['routes'] if r['object']=='industry' and r['topic']=='relationships')
     assert company['entity_ids']==industry['entity_ids']
     assert 'co_tsmc' in company['entity_ids']
     assert all(not s['published'] for s in model['studies'])
