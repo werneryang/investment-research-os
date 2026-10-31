@@ -13,6 +13,7 @@
   if (location.hash) revealTarget();
   const host = document.querySelector('.discovery'); if (!host) return;
   const form = host.querySelector('form'), en = document.documentElement.lang.startsWith('en');
+  const S=window.IROSSubjects;
   const vocab = JSON.parse(host.dataset.vocabulary);
   const records = [...host.querySelectorAll('[data-record]')].map(el => ({el, data:JSON.parse(el.dataset.record)}));
   const fields = [...form.elements].filter(el => el.name);
@@ -26,9 +27,9 @@
     options('subject', vocab.objects[val('object')]?.children || {});
     options('topic', vocab.questions[val('question')]?.children || {});
   }
-  const routeMatch = r => ['object','subject','question','topic'].every(k=>!val(k)||r[k]===val(k));
+  const routeMatch = r => ['object','subject','question','topic'].every(k=>!val(k)||r[k]===val(k))&&(!val('entity')||(r.entity_ids||[]).includes(val('entity')));
   const endDate = x => x.length===4?x+'-12-31':x.length===7?x+'-31':x;
-  function update(save=true) {
+  function update(save=true, mode='push') {
     let published=0, missing=0, capabilities=0, references=0;
     const query = val('search').trim().toLowerCase();
     const synonyms = {'pe':['valuation','multiples'],'p/e':['valuation','multiples'],'市盈率':['valuation','multiples'],'估值':['valuation'],'valuation':['valuation'],'相关性':['returns','correlation'],'correlation':['returns','correlation']};
@@ -36,8 +37,9 @@
     const queryRoute = r => !alias || (r.question===alias[0]&&(!alias[1]||r.topic===alias[1]));
     for (const {el,data} of records) {
       const matched=data.routes.filter(r=>routeMatch(r)&&queryRoute(r));
-      let show = (!data.routes.length ? !val('object')&&!val('question')&&!val('subject')&&!val('topic') : matched.length>0);
-      const text = (data.title||'')+' '+matched.map(r=>[vocab.objects[r.object].name,vocab.objects[r.object].children[r.subject],vocab.questions[r.question].name,vocab.questions[r.question].children[r.topic],r.scope[en?'en':'zh']].join(' ')).join(' ');
+      let show = (!data.routes.length ? !val('object')&&!val('question')&&!val('subject')&&!val('topic')&&!val('entity') : matched.length>0);
+      const subjectText=matched.flatMap(r=>r.entity_ids||[]).flatMap(id=>[vocab.entities[id]?.name,...(vocab.entities[id]?.aliases||[])]).join(' ');
+      const text = subjectText+' '+(data.title||'')+' '+matched.map(r=>[vocab.objects[r.object].name,vocab.objects[r.object].children[r.subject],vocab.questions[r.question].name,vocab.questions[r.question].children[r.topic],r.scope[en?'en':'zh']].join(' ')).join(' ');
       show &&= !(val('start') && val('end') && val('start')>val('end'));
       show &&= !query || (alias ? matched.some(r=>r.question===alias[0]&&(!alias[1]||r.topic===alias[1])) : text.toLowerCase().includes(query));
       if(data.kind==='study') {
@@ -69,22 +71,35 @@
     });
     host.querySelector('.empty-state').hidden=published>0;
     host.querySelector('.query-status').textContent=en?`${published} studies with matching results · ${missing} unavailable or unpublished · ${capabilities} data/planning entries · ${references} reference entries`:`${published} 项研究有匹配结果 · ${missing} 项内容缺失或未发布 · ${capabilities} 项数据或规划 · ${references} 项参照`;
-    if(save){const q=new URLSearchParams();if(new URLSearchParams(location.search).get('lang')==='zh')q.set('lang','zh');fields.forEach(x=>{if(x.value)q.set(x.name,x.value)});const url=new URL(location);url.search=q.toString();history.replaceState(null,'',url);}
+    const subject=val('entity'), entry=host.querySelector('.subject-reference');
+    entry.hidden=!subject;entry.replaceChildren();
+    if(subject){
+      const a=document.createElement('a');a.href='sources.html?entity='+encodeURIComponent(subject)+'#relationships';
+      a.textContent=(vocab.entities[subject]?.name||subject)+(en?' · View registered business activities and direct relationships':' · 查看已登记业务与直接关系');entry.append(a);
+      entry.append(document.createTextNode(en?' (reference view; does not imply a matching study or valuation)':'（参照资料入口，不代表存在匹配研究或估值结果）'));
+    }
+    for(const {el,data} of records.filter(x=>x.data.kind==='reference')) {
+      const a=el.querySelector('a'), url=new URL(data.routes[0].href,location.href);
+      if(subject)url.searchParams.set('entity',subject);a.href=url.href;
+    }
+    S.suggest(form.querySelector('.entity-suggestions'),vocab.entities,query,id=>{
+      form.elements.entity.value=id;form.elements.search.value='';update();
+    },en);
+    if(save)S.save(fields,mode);
+
   }
-  const params=new URLSearchParams(location.search);
-  for(const key of ['object','question'])form.elements.namedItem(key).value=params.get(key)||'';
-  children();fields.forEach(f=>{if(params.has(f.name))f.value=params.get(f.name)});
-  form.hidden=false;
-  if(['result_type','market','frequency','start','end','cutoff'].some(val))form.querySelector('.advanced-filters').open=true;
-  update(false);
+  function restore() {
+    const params=new URLSearchParams(location.search);
+    for(const key of ['object','question'])S.setField(form.elements.namedItem(key),params.get(key)||'',en);
+    children();fields.forEach(f=>S.setField(f,params.get(f.name)||'',en));update(false);
+    if(['result_type','market','frequency','start','end','cutoff'].some(val))form.querySelector('.advanced-filters').open=true;
+  }
+  form.hidden=false;restore();window.addEventListener('popstate',restore);
   form.addEventListener('submit',event=>event.preventDefault());
-  form.addEventListener('input',event=>{if(['object','question'].includes(event.target.name))children();update();});
-  form.addEventListener('reset',()=>setTimeout(()=>{children();update();},0));
+  form.addEventListener('input',event=>{if(event.target.type==='search')update(true,'replace');});
+  form.addEventListener('change',event=>{if(['object','question'].includes(event.target.name))children();update();});
+  form.addEventListener('reset',event=>{event.preventDefault();fields.forEach(f=>f.value='');children();update();});
   host.querySelectorAll('[data-filter]').forEach(a=>a.addEventListener('click',event=>{
     event.preventDefault();form.elements.namedItem(a.dataset.filter).value=a.dataset.value;children();update();form.scrollIntoView({block:'start',behavior:'smooth'});
-  }));
-  // Language switches retain the query; object and question IDs are language independent.
-  document.querySelectorAll('.lang-switch').forEach(a=>a.addEventListener('click',()=>{
-    const url=new URL(a.href);const q=new URLSearchParams(location.search);if(a.dataset.lang==='zh')q.set('lang','zh');url.search=q.toString();a.href=url;
   }));
 })();

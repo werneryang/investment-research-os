@@ -5,7 +5,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 from .common import e, shell, RESULT_TYPE_LABEL
-from .i18n import L, is_en, te
+from .i18n import L, is_en, te, tx
 from .catalog import study_view
 from .renderers import get_renderer
 from .targets import PATHS, REPORT_TARGETS, available
@@ -47,7 +47,7 @@ def validate(content: dict[str, Any]) -> None:
             members.add(sid)
 
 
-def catalog(content, latest, definitions, datasets, references_available=False):
+def catalog(content, latest, definitions, datasets, references_available=False, subject_index=None):
     """Locale-neutral data. A planned route never proves an output is present."""
     records = []
     for sid in dict.fromkeys([*content.get('study_order', []), *content['studies'], *latest, *definitions]):
@@ -60,7 +60,7 @@ def catalog(content, latest, definitions, datasets, references_available=False):
             live = bool(item) and available(item['result'], route['target'], route['subject'])
             report = route['target'] in REPORT_TARGETS
             href = (f"runs/{item['manifest']['run_id']}/report.html" if report else f"studies/{sid}/#{route['target']}") if live else None
-            rr.append({**route, 'available':live, 'report':report, 'href':href})
+            rr.append({**route, 'available':live, 'report':report, 'href':href, 'entity_ids':route.get('entity_ids', (subject_index or {}).get('study_entities', {}).get(sid, []))})
         records.append({'id':sid,'title':spec.get('title',sid),'routes':rr,
                         'published':bool(item),'result_type':spec.get('result_type',''),
                         'scope':spec.get('scope',{}),'cutoff':spec.get('data_cutoff',''),
@@ -75,7 +75,16 @@ def catalog(content, latest, definitions, datasets, references_available=False):
         fetched=[d for d in ids if datasets[d].get('version_id')]
         capabilities.append({'fetched':fetched,'datasets':ids,'id':f'cap-{i}','routes':[route],'state':state,'kind':'capability'})
     references=[{'id':f'reference-{i}', 'routes':[{**r, 'available':True, 'report':False}], 'kind':'reference'} for i,r in enumerate(content['classification'].get('references', []))] if references_available else []
-    return {'studies':records,'capabilities':capabilities,'references':references}
+    subjects = (subject_index or {}).get('entities', {})
+    for rec in references:
+        route = rec['routes'][0]
+        if route['topic'] == 'relationships':
+            ids = [eid for row in (subject_index or {}).get('relations', {}).values() for eid in row['endpoints']]
+        else:
+            ids = [row['owner'] for row in (subject_index or {}).get('mappings', {}).values()]
+        route['entity_ids'] = sorted(set(ids))
+    return {'studies':records,'capabilities':capabilities,'references':references,
+            'entities': {k: {'name':v['name'], 'aliases':v['aliases'], 'type':v['type']} for k,v in subjects.items() if v['type'] != 'segment'}}
 
 
 class _IDs(HTMLParser):
@@ -120,6 +129,7 @@ def browser(content, model, latest, build, frequency=None):
     controls+=select('subject',L('对象子类','Object subtype'),[])
     controls+=select('question',L('研究问题','Research question'),[(k,label(v['name'])) for k,v in tax['questions'].items()])
     controls+=select('topic',L('问题子类','Question subtype'),[])
+    controls+=select('entity', L('具体公司 / 主体', 'Company / subject'), [(k, tx(v['name'])) for k,v in model.get('entities', {}).items()])
     basic=controls
     controls=''
     controls+=select('result_type',L('成果类型','Result type'),[(k,RESULT_TYPE_LABEL.get(k,k)) for k in sorted({x['result_type'] for x in model['studies'] if x['result_type']})])
@@ -127,7 +137,7 @@ def browser(content, model, latest, build, frequency=None):
     controls+=select('frequency',L('频率','Frequency'),[(k,k) for k in sorted({x['scope'].get('frequency','') for x in model['studies']} - {''})])
     for key,title,typ in [('search',L('搜索标题、问题与范围','Search titles, questions and scope'),'search'),('start',L('期间开始（含重叠）','Period from (overlap)'),'date'),('end',L('期间结束','Period to'),'date'),('cutoff',L('数据截止不早于','Data cutoff since'),'date')]:
         field=f'<label>{title}<input name="{key}" type="{typ}"></label>'
-        if key=='search': basic+=field
+        if key=='search': basic+=field+'<div class="entity-suggestions" role="status" aria-live="polite"></div>'
         else: controls+=field
     quick=''
     for key,heading in [('object',L('按对象找','Browse by object')),('question',L('按问题找','Browse by question'))]:
@@ -193,11 +203,13 @@ def browser(content, model, latest, build, frequency=None):
         refs.append(f'<li class="reference-record" data-record="{_attrs(rec)}"><a href="{e(r["href"])}">{e(_route_text(r,tax))}</a><p>{e(label(r["scope"]))}</p></li>')
     # Localized query vocabulary; values remain stable IDs across languages.
     vocab={axis:{k:{'name':label(v['name']),'children':{x:label(y) for x,y in v['children'].items()}} for k,v in tax[axis].items()} for axis in ('objects','questions')}
+    vocab['entities'] = {k: {**v, 'name':tx(v['name'])} for k,v in model.get('entities', {}).items()}
     config=e(json.dumps(vocab,ensure_ascii=False))
     return f'''<div class="discovery" data-vocabulary="{config}">
 <div class="browse-paths">{quick}</div>
 <form class="research-filters" hidden>{basic}<button type="reset">{L('重置','Reset')}</button><details class="advanced-filters"><summary>{L('更多筛选：成果类型、市场与日期','More filters: result type, market and dates')}</summary><div>{controls}</div></details></form>
 <noscript><p>{L('下方目录可直接展开阅读；启用 JavaScript 后可组合筛选。','The catalog below is readable without JavaScript; enable it for combined filters.')}</p></noscript>
+<p class="subject-reference" hidden></p>
 <section id="research-results"><h2>{L('研究目录','Study catalog')}</h2><p class="query-status" role="status" aria-live="polite"></p>
 <p class="empty-state" hidden>{L('当前无已发布的匹配研究。未登记的对象与问题组合尚未评估；已有数据或规划见下方。','No published studies match. Unregistered object–question combinations have not been assessed; see data and plans below.')}</p>
 {''.join(groups)}</section>

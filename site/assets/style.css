@@ -211,3 +211,37 @@ text-decoration:none;white-space:nowrap}
 .advanced-filters > div { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; padding-top:1rem; }
 .research-filters button { align-self:end; min-height:2.7rem; }
 @media(max-width:700px) { .advanced-filters > div { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+/* Subject discovery and reusable reference views. */
+.entity-suggestions { grid-column:1/-1; display:flex; flex-wrap:wrap; gap:.5rem; }
+.entity-suggestions:empty { display:none; }
+.entity-suggestions button { text-align:left; }
+.subject-reference { padding:1rem; border-left:3px solid var(--accent,#246c65); background:var(--panel,#f4f7f7); }
+.relationship-controls { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:.8rem; margin:1rem 0; }
+.relationship-controls label { display:flex; flex-direction:column; gap:.3rem; font-size:.9rem; }
+.relationship-controls select,.relationship-controls input { width:100%; min-width:0; padding:.55rem; border:1px solid #cbd5d4; border-radius:5px; background:var(--bg); color:var(--fg); }
+.relationship-view { min-width:0; margin:1.6rem 0; }
+.relationship-view > details { margin:.8rem 0; padding:.8rem; border:1px solid #d6dfde; border-radius:6px; }
+.relationship-view li[data-mapping] { padding:.7rem 0; border-bottom:1px solid #dde4e2; }
+.relationship-view small { display:block; margin:.35rem 0; }
+.relationship-table { min-width:880px; table-layout:fixed; width:100%; }
+.relationship-table th:nth-child(1) { width:22%; }
+.relationship-table th:nth-child(2) { width:31%; }
+.relationship-table th:nth-child(3) { width:19%; }
+.relationship-table th:nth-child(4) { width:28%; }
+.relationship-table td { vertical-align:top; overflow-wrap:anywhere; }
+.relationship-table p { margin:.4rem 0; }
+.relationship-evidence { margin:.6rem 0; font-size:.85rem; }
+.relationship-evidence ol { padding-left:1.2rem; }
+.relationship-evidence blockquote { margin:.6rem 0; padding:.5rem; border-left:2px solid #a6bcb7; }
+.relative-role { font-weight:600; }
+.relationship-comparison { overflow-x:auto; }
+.relationship-comparison th,.relationship-comparison td { min-width:100px; }
+.diagram-content { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); gap:.7rem; }
+.relationship-edge { padding:1rem; border:1px dashed #96aaa5; border-radius:6px; overflow-wrap:anywhere; }
+.relationship-edge > a:last-child { display:block; margin-top:.5rem; font-size:.85rem; }
+.relationship-status { overflow-wrap:anywhere; }
+[hidden] { display:none !important; }
+
+.relationship-table th { white-space:normal; }
+.relationship-controls button { font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--line); border-radius:4px; padding:.55rem; cursor:pointer; }
