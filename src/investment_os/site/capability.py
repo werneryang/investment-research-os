@@ -125,7 +125,7 @@ def _direction_row(direction: dict[str, Any], st: dict[str, Any]) -> str:
     name = (f"<strong>{te(direction['name'])}</strong> {tags}"
             f"<div class='small muted'>{te(direction.get('summary', ''))}</div>{scope}")
     if st["category"] == "planned":
-        return (f"<tr class='planned'><td>{name}</td><td colspan='3'>"
+        return (f"<tr class='planned'><td>{name}</td><td>"
                 f"{chip('planned', L('规划，未开始', 'Planned, not started'))} "
                 f"<span class='small muted'>{te(direction.get('needs', ''))}</span></td></tr>")
     data = "".join(
@@ -133,36 +133,7 @@ def _direction_row(direction: dict[str, Any], st: dict[str, Any]) -> str:
         f"<code class='small'>{e(d['id'])}</code>"
         f"{'' if d['has_data'] else ' <span class=small>' + L('（', '(') + not_fetched_label(d.get('skip_reason'), short=True) + L('）', ')') + '</span>'}</div>"
         for d in st["datasets"]) or f'<span class="muted">{L("待接入", "Not connected yet")}</span>'
-    if st["runs"]:
-        types = branch_result_types()
-        analysis = "".join(
-            f"<div>{chip(r['status'], STATUS_LABEL.get(r['status'], r['status']))} <code class='small'>{e(r['study_id'])}</code>"
-            f"<div class='small muted'>{L('分支 ', 'Branch ')}{e(r['branch'])}{L('：支持 ', ': supports ')}"
-            f"{e(L('、', ', ').join(RESULT_TYPE_LABEL[t.value] for t in types.get(r['branch'], ())))}</div></div>"
-            for r in st["runs"])
-    else:
-        analysis = ('<span class="muted">' + (L("尚无研究（数据已接入）", "No studies yet (data connected)")
-                                              if st["category"] == "data_only" else
-                                              L("尚无研究；数据已登记，本次构建未取得",
-                                                "No studies yet; data registered but not fetched in this build"))
-                    + "</span>")
-    if st["validated"]:
-        validation = "".join(_validated_entry(ds, u, rec, cov) for ds, u, rec, cov in st["validated"])
-        if st["unvalidated"]:
-            ids = e(L("、", ", ").join(st["unvalidated"]))
-            validation += ("<div class='small muted'>" + L(f"未登记用途核验：{ids}（只用于交叉检查或尚未核验）",
-                                                           f"No use verification registered: {ids} (cross-check only "
-                                                           "or not yet verified)") + "</div>")
-    elif st["runs"]:
-        ok = all(r["status"] == "success" for r in st["runs"])
-        validation = (f"{chip('skipped', L('未登记用途核验', 'No use verification registered'))}<div class='small muted'>"
-                      + (L("各次运行均已完成", "All runs completed") if ok
-                         else L("最近运行有受限结论", "The latest run has limited conclusions"))
-                      + L("；尚未在来源登记中记录用途核验", "; no use verification recorded in the source registry yet")
-                      + "</div>")
-    else:
-        validation = '<span class="muted">—</span>'
-    return f"<tr><td>{name}</td><td>{data}</td><td>{analysis}</td><td>{validation}</td></tr>"
+    return f"<tr><td>{name}</td><td>{data}</td></tr>"
 
 
 def _validated_entry(ds: str, use: Use, rec: Any, coverage: list[tuple[str, dict[str, Any]]]) -> str:
@@ -213,7 +184,7 @@ def _modules(content: dict[str, Any]) -> str:
 
 
 def _branch_rows(branch: dict[str, Any]) -> str:
-    head = (f"<tr class='branch' id='{e(branch['id'])}'><th colspan='4'>{te(branch['name'])} "
+    head = (f"<tr class='branch' id='{e(branch['id'])}'><th colspan='2'>{te(branch['name'])} "
             f"{category_chip(branch['category'])}<div class='small muted'>{te(branch.get('question', ''))}</div></th></tr>")
     return head + "".join(_direction_row(d, st) for d, st in branch["directions"])
 
@@ -223,8 +194,8 @@ def capability_page(content: dict[str, Any], registry: Registry, datasets: dict[
     from .discovery import browser
     discovery_html = browser(content, discovery_model, latest, build, {k: v["frequency"] for k,v in datasets.items()}) if discovery_model else ""
     rows = "".join(_branch_rows(b) for b in framework(content, registry, datasets, latest))
-    head = L("<th>研究方向</th><th>数据能力</th><th>分析能力（工程）</th><th>研究验证</th>",
-             "<th>Research direction</th><th>Data</th><th>Analysis (engineering)</th><th>Research verification</th>")
+    head = L("<th>数据用途分组</th><th>数据接入状态</th>",
+             "<th>Data use group</th><th>Data access status</th>")
     body = f"""
 <header class="top"><div class="wrap"><h1>{L("研究能力地图", "Research capability map")}</h1>
 <p class="tagline">{L("系统现在能研究什么、证据成熟到什么程度、下一步研究什么。",
