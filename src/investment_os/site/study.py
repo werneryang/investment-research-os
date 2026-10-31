@@ -254,13 +254,17 @@ FRED cross-check) are not recomputed and are marked as partial reproduction. Ful
 
 
 def study_page(study_id: str, runs: list[dict[str, Any]], archived: dict[str, Any] | None,
-               registry: Registry, content: dict[str, Any], build: dict[str, Any]) -> str:
+               registry: Registry, content: dict[str, Any], build: dict[str, Any], references: str = "") -> str:
     latest = runs[0]
     m, r = latest["manifest"], latest["result"]
     up = root(2)
     run_href = f"{up}runs/{m['run_id']}"
     meta = content.get("studies", {}).get(study_id, {})
     renderer = get_renderer(r["branch"])
+    target = {"rates_curve": "curve", "curve_attribution": "attribution", "par_bond_scenarios": "bond-scenarios"}.get(r["branch"])
+    stats = renderer.key_stats(r)
+    if target:
+        stats = f'<div id="{target}">{stats}</div>'
     period = L(f"研究期间 {e(r['scope'].get('start'))} 至 {e(r['scope'].get('end'))} · 数据截止 {e(r['data_cutoff'])}",
                f"Study period {e(r['scope'].get('start'))} to {e(r['scope'].get('end'))} · data cutoff {e(r['data_cutoff'])}")
     body = f"""
@@ -271,14 +275,15 @@ def study_page(study_id: str, runs: list[dict[str, Any]], archived: dict[str, An
   · {chip(m['status'], L('本次运行 · ', 'This run · ') + STATUS_LABEL.get(m['status'], m['status']))}</p>
 </div></header>
 <main class="wrap">
-<section><h2>{L("研究问题", "Research question")}</h2><p class="lead">{te(r['question'])}</p></section>
-<section><h2>{L("关键发现", "Key findings")}</h2>{findings_list(localized_findings(latest))}{interpretation_note(latest.get('interpretation'), r['branch'])}{renderer.key_stats(r)}</section>
-<section><h2>{L("可视化证据", "Visual evidence")}</h2>
+<section id="question"><h2>{L("研究问题", "Research question")}</h2><p class="lead">{te(r['question'])}</p></section>
+<section id="findings"><h2>{L("关键发现", "Key findings")}</h2>{findings_list(localized_findings(latest))}{interpretation_note(latest.get('interpretation'), r['branch'])}{stats}</section>
+<section id="visuals"><h2>{L("可视化证据", "Visual evidence")}</h2>
   {"" if renderer.inline_visuals else chart_panel(run_href, latest.get("figures", []), renderer.figures, renderer.chart_data(r) is not None)}
   <h3 class="sub">{e(renderer.coverage_title)}</h3>{renderer.coverage_section(r)}
 </section>
-<section><h2>{L("方法", "Method")}</h2>{_method(r, renderer)}</section>
-<section><h2>{L("证据与限制", "Evidence and limitations")}</h2>
+{references}
+<section id="method"><h2>{L("方法", "Method")}</h2>{_method(r, renderer)}</section>
+<section id="evidence"><h2>{L("证据与限制", "Evidence and limitations")}</h2>
   <div class="checks">{check_chips(r, latest['verification'])}</div>
   {evidence_panel(latest, registry, run_href)}</section>
 <section id="history"><h2>{L("历史与复现", "History and reproduction")}</h2>{_history(study_id, runs, archived, build.get('repo_url'), up, renderer)}</section>

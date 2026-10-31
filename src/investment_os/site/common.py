@@ -58,7 +58,7 @@ CHECK_NOTES = Labels({
 # Chart.js 随站点托管（site/assets/vendor，来源与校验值见其中 README），不依赖外部 CDN
 CHART_JS = "assets/vendor/chart.umd.min.js"
 
-NAV = (("index.html", ("研究总览", "Overview")), ("map.html", ("研究能力地图", "Capability map")),
+NAV = (("index.html", ("寻找研究", "Find research")), ("map.html", ("研究能力地图", "Capability map")),
        ("sources.html", ("数据资源目录", "Data sources")), ("methods.html", ("数据、方法与状态", "Data, methods & status")))
 
 
@@ -170,7 +170,7 @@ def shell(title: str, body: str, build: dict[str, Any], *, page: str, active: st
     # 资源地址带内容校验值：样式或脚本改动后地址随之变化，访客不会用到浏览器缓存的旧文件
     v = build.get("asset_version", "")
     q = f"?v={v}" if v else ""
-    scripts = f'<script defer src="{up}assets/charts.js{q}"></script>'
+    scripts = f'<script defer src="{up}assets/charts.js{q}"></script><script defer src="{up}assets/discovery.js{q}"></script>'
     if charts:
         scripts = f'<script defer src="{up}{CHART_JS}{q}"></script>\n' + scripts
     current = ' aria-current="page"'
@@ -188,7 +188,7 @@ def shell(title: str, body: str, build: dict[str, Any], *, page: str, active: st
     # 记住读者选择的语言：在中文页面上选过英文的读者，下次打开中文地址时转到对应的英文页面
     remember = ("" if is_en() else
                 f'<script>try{{if(localStorage.getItem("lang")==="en"&&!/[?&]lang=zh/.test(location.search))'
-                f'location.replace("{en_href}"+location.hash)}}catch(e){{}}</script>')
+                f'location.replace("{en_href}"+location.search+location.hash)}}catch(e){{}}</script>')
     repo = build.get("repo_url")
     wf = f"{repo}/actions/workflows/pages.yml" if repo else None
     badge = (f' <a href="{e(wf)}" title="{L("最近一次自动更新的实时状态", "Live status of the latest automatic update")}">'

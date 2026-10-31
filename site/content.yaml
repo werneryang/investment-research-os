@@ -1,292 +1,1818 @@
-# 项目网站的说明性内容（建设进度、模块地图、可靠性机制）。
-# 研究结果、数据与核验状态不写在这里，由 `iros site` 从运行记录与登记中生成。
-
 title: Investment Research OS
 tagline: 基于公开免费数据、可追溯、可复现的市场研究
-
-# 研究的显示顺序：首页目录中同一方向内按此排列，未列出的按 id 排在后面
-study_order: [us_industry_dossier, us_industry_12, us_industry_49, ust_curve_last_year, ust_curve_attribution_last_year, us_asset_history_last_25y, ust_par_bond_rate_risk,
-              ust_curve_2024, ust_curve_attribution_2024, us_asset_history, us_refining_investment_2016_2025, us_refining_utilization_2025,
-              us_refining_throughput_scenarios_2025]
-
-# 首页「研究焦点」：显式选择，与目录顺序分开；最多 4 项，检查失败的研究不显示
-featured: [us_industry_dossier, ust_curve_last_year, us_asset_history_last_25y, company_sample]
-
-# 研究集合：同一主方向下的一组同类研究在首页收成一个入口，由 lead 代表；成员仍各有研究页
+study_order:
+- us_industry_dossier
+- us_industry_12
+- us_industry_49
+- ust_curve_last_year
+- ust_curve_attribution_last_year
+- us_asset_history_last_25y
+- ust_par_bond_rate_risk
+- ust_curve_2024
+- ust_curve_attribution_2024
+- us_asset_history
+- us_refining_investment_2016_2025
+- us_refining_utilization_2025
+- us_refining_throughput_scenarios_2025
 collections:
   company_filings:
     name: 公司年度财报
     lead: company_sample
-    members: [company_apple, company_microsoft, company_nvidia, company_amazon, company_alphabet, company_tesla, company_jpmorgan,
-              company_berkshire, company_exxon, company_johnson-johnson, company_procter-gamble, company_coca-cola, company_walmart,
-              company_costco, company_nike]
-
-# label：首页条目的类型标签；primary_direction（可选）：研究属于多个方向时，首页列出完整条目的方向，
-# 默认是框架顺序中第一个列出该研究的方向
+    members:
+    - company_apple
+    - company_microsoft
+    - company_nvidia
+    - company_amazon
+    - company_alphabet
+    - company_tesla
+    - company_jpmorgan
+    - company_berkshire
+    - company_exxon
+    - company_johnson-johnson
+    - company_procter-gamble
+    - company_coca-cola
+    - company_walmart
+    - company_costco
+    - company_nike
 studies:
-  us_industry_dossier: {label: 四层行业专题}
-  us_industry_12: {label: 12 行业总览}
-  us_industry_49: {label: 49 行业细分}
-  ust_curve_last_year: {label: 滚动研究}
-  ust_par_bond_rate_risk: {label: 情景研究}
-  ust_curve_2024: {label: 历史案例}
-  ust_curve_attribution_last_year: {label: 分解研究}
-  ust_curve_attribution_2024: {label: 分解案例}
-  us_asset_history: {label: 长期统计}
-  us_asset_history_last_25y: {label: 滚动统计}
-  us_refining_investment_2016_2025: {label: 炼油投资对照}
-  us_refining_utilization_2025: {label: 炼油统计}
-  us_refining_throughput_scenarios_2025: {label: 炼油情景}
-
-# 研究框架（docs/research-map.md）：研究分支为主轴（架构 §4），分支下是研究方向。
-# 方向的数据、分析与验证状态由登记和运行记录自动得出，分支状态取其方向中最好的一项；
-# 只有 planned: true 的方向在这里人工维护，并写明还缺什么（needs）。
-# risk 是风险来源标签（架构 §4）：equity rates credit inflation fx commodity liquidity instrument。
-# 成果类型读研究定义的 result_type，不在这里重复。
-branches:
-  - id: macro_policy
-    name: 宏观与政策
-    question: 增长、通胀、信用、流动性和政策如何变化？
-    directions:
-      - id: us_inflation_macro
-        name: 通胀
-        summary: CPI、盈亏平衡通胀率与 TIPS 实际收益率；时点研究需要 ALFRED 历史版本
-        risk: [inflation]
-        datasets: [fred_cpiaucsl, fred_t10yie, fred_dfii10, alfred_cpiaucsl]
-        studies: []
-        can_answer: []
-        cannot_answer:
-          - 盈亏平衡通胀率与 TIPS 收益率当时公布的数值（只有当前修订版本；CPI 的历史版本已由 ALFRED 接入）
-          - 市场的通胀预期本身（盈亏平衡通胀率含通胀风险溢价与流动性溢价）
-      - id: policy_liquidity
-        name: 政策利率与流动性
-        summary: 联邦基金有效利率、SOFR、3 个月国库券利率与美联储资产负债表规模
-        risk: [rates, liquidity]
-        datasets: [fred_dff, fred_sofr, fred_dtb3, fred_walcl]
-        studies: []
-        can_answer: []
-        cannot_answer:
-          - 市场对未来政策利率的预期（需要期货或调查数据）
-      - id: growth_labor
-        name: 增长与就业
-        summary: 名义 GDP、失业率与非农就业人数：当前修订版本，以及 ALFRED 的全部历史版本（当时公布的数值）
-        datasets: [fred_gdp, fred_unrate, fred_payems, alfred_gdp, alfred_unrate, alfred_payems]
-        studies: []
-        can_answer: []
-        cannot_answer:
-          - 实际 GDP 与产出缺口（只接入了名义 GDP）
-          - 增长预期（SPF、GDPNow 等调查与模型估计尚未接入，须与观测值分开登记）
-
-  - id: markets_assets
-    name: 市场与大类资产
-    question: 不同资产的收益、估值和风险如何比较？
-    directions:
-      - id: us_treasury_curve
-        name: 美国国债期限结构
-        summary: 名义票面收益率曲线的水平、斜率、曲率与倒挂，以及变化在实际利率、通胀补偿与政策利率之间的会计分解
-        risk: [rates]
-        datasets: [ust_par_yield_curve, fred_dgs10, fred_dfii10, fred_t10yie, fred_dff]
-        studies: [ust_curve_last_year, ust_curve_2024, ust_curve_attribution_last_year, ust_curve_attribution_2024]
-        can_answer:
-          - 指定期间内各期限收益率、利差与曲率如何变化
-          - 期间内倒挂持续了多少天、何时由倒挂转为正斜率
-          - 10 年期与 2 年期的变化各有多少来自实际利率、通胀补偿、已实施的政策利率与对未来政策路径的定价
-        cannot_answer:
-          - 持有国债或债券基金的回报（票面收益率不是持有期回报）
-          - 曲线变化的因果原因（会计分解只拆出实际利率、通胀补偿与政策利率各自的变化，不能区分期限溢价与政策预期）
-          - 未来曲线走势（需要预测模型与样本外验证）
-      - id: rates_duration_risk
-        name: 债券利率敏感性
-        summary: 假设平价债券的久期、凸性、DV01 与收益率冲击情景
-        risk: [rates]
-        datasets: [ust_par_yield_curve]
-        studies: [ust_par_bond_rate_risk]
-        can_answer:
-          - 以最近票面收益率构造的假设平价债券，收益率平移若干 bp 时价格变化多少
-          - 久期、久期 + 凸性近似相对完整重新定价的误差有多大、随期限如何变化
-        cannot_answer:
-          - 某只真实国债或债券基金（如 TLT）的风险与回报（需要真实现金流、价格或总收益数据）
-          - 非平移的曲线形变（需要零息曲线与关键利率久期）
-          - 冲击发生的概率或未来利率走势（需要预测模型与样本外验证）
-      - id: equity_risk
-        name: 股票
-        summary: 美国股票市场与 Fama/French 因子的月度收益，以及标普综合指数 1871 年起的价格、股息、盈利与 CAPE 估值
-        risk: [equity]
-        datasets: [french_ff3, french_ff5, french_mom, damodaran_histret, shiller_price, shiller_fundamentals, shiller_cape, shiller_real]
-        studies: [us_asset_history, us_asset_history_last_25y]
-        can_answer: []
-        cannot_answer:
-          - 个股或具体指数基金的回报（只有组合层面的因子收益）
-          - 行业或个股层面的估值（只有标普综合指数整体的 CAPE 与市盈率）
-          - 美国以外的股票市场
-      - id: credit_premium
-        name: 信用
-        summary: 穆迪 Baa、Aaa 公司债收益率相对 10 年期国债的利差（日度），以及由收益率推算的 Baa 公司债年度回报
-        risk: [credit]
-        datasets: [fred_baa10y, fred_aaa10y, damodaran_histret]
-        studies: [us_asset_history, us_asset_history_last_25y]
-        can_answer: []
-        cannot_answer:
-          - 期权调整利差与高收益债利差（只有穆迪收益率利差）
-          - 公司债指数的实际持有回报（Damodaran 的 Baa 回报由收益率推算）
-      - id: vol_premium
-        name: 波动率
-        summary: Cboe VIX 波动率指数（标普 500 期权隐含的 30 天波动率，日度）
-        risk: [instrument]
-        datasets: [fred_vixcls]
-        studies: []
-        can_answer: []
-        cannot_answer:
-          - 隐含波动率相对已实现波动率的溢价（需要股票日度收益，尚未接入）
-          - 期权定价与波动率曲面（完整历史期权链列为能力缺口）
-      - id: global_assets
-        name: 跨市场比较
-        summary: 发达、欧洲、日本、亚太、北美与新兴市场的股票因子月度收益（美元计价，1990 年起），以及主要汇率与美元广义指数
-        risk: [fx, equity]
-        datasets: [french_developed3, french_developed_ex_us3, french_europe3, french_japan3, french_asia_pacific_ex_japan3, french_north_america3, french_emerging5, fred_dexuseu, fred_dexjpus, fred_dexchus, fred_dexusuk, fred_dtwexbgs]
-        studies: []
-        can_answer: []
-        cannot_answer:
-          - 以当地货币计的回报（French 国际因子只有美元计价）
-          - 各国国债与宏观数据（世界银行、IMF、BIS、OECD 尚未接入）
-          - 中国 A 股（交易所与社区工具尚未接入）
-
-  - id: sectors_regions
-    name: 地区与行业
-    question: 结构、周期、集中度和相对表现有何差异？
-    directions:
-      - id: sector_structure
-        name: 行业与地区结构
-        summary: 美国 12 与 49 行业的收益风险、因子暴露，经济、历史公司财报、估值和指引专题，以及炼油产业链的处理量、裂解价差与公司总收益
-        risk: [equity]
-        datasets: [french_ind12_vw, french_ind49_vw, french_ind12_ew, french_ind12_firms, french_ind12_bm, fred_rvam, fred_rvama, fred_rvar, fred_rvaw, fred_rvai, industry_sec_facts, industry_valuation, industry_guidance,
-                   eia_refinery_gross_inputs, eia_refinery_operable_capacity, eia_refinery_utilization, eia_spot_wti_cushing,
-                   eia_spot_gasoline_gulf, eia_spot_ulsd_gulf, sec_tsr_valero, sec_tsr_pbf]
-        studies: [us_industry_dossier, us_industry_12, us_industry_49, us_refining_investment_2016_2025, us_refining_utilization_2025,
-                  us_refining_throughput_scenarios_2025]
-        can_answer:
-          - 哪些行业的历史回报伴随更高风险或风格暴露
-          - 选定行业的实体经济、历史申报样本盈利和管理层指引如何变化
-          - 美国炼厂利用率与裂解价差的历史关系，以及独立炼油公司总收益与二者的描述性对照
-        cannot_answer:
-          - 精确的行业盈利—估值回报分解、历史成分权重和全市场一致预期
-          - 美国以外的地区与行业
-
-  - id: securities_funds
-    name: 证券与基金
-    question: 财务、估值、费用、持仓及工具结构有何特点？
-    directions:
-      - id: company_filings
-        name: 公司财报
-        summary: 15 家验证公司的核心指标与时点视图，以及能源、批零、半导体软件的历史 SIC 年度专题样本
-        risk: [equity]
-        datasets: [edgar_fsds, edgar_companyfacts, company_sec_facts, industry_sec_facts, industry_guidance]
-        studies: [company_sample, company_apple, company_microsoft, company_nvidia, company_amazon, company_alphabet, company_tesla, company_jpmorgan, company_berkshire, company_exxon, company_johnson-johnson, company_procter-gamble, company_coca-cola, company_walmart, company_costco, company_nike, us_industry_dossier]
-        can_answer:
-          - 选定历史申报样本的营收、利润率、现金流与资本配置
-        cannot_answer:
-          - 全部上市普通股的同口径盈利（专题 SEC 申报样本不等于股票成分）
-          - 季度数据（E3 尚未开始）
-          - 部分公司的个别指标（如银行的资本开支），见 EDGAR 设计说明的缺口列表
-      - id: fund_costs
-        name: 基金费用与持仓
-        risk: [instrument]
-        planned: true
-        needs: 需要逐家核验基金发行方的费用、净值与持仓资料；净值不替代成交价
-      - id: real_bonds
-        name: 真实债券与债券基金
-        risk: [rates]
-        planned: true
-        needs: 需要真实现金流、价格或总收益数据，才能与假设平价债券对比
-
-  - id: portfolio_scenarios
-    name: 组合与情景
-    question: 资产如何共同影响风险，假设变化会造成什么结果？
-    directions:
-      - id: portfolio
-        name: 模拟组合风险
-        summary: 股票、国库券、国债、公司债、房地产与黄金的年度回报（1928 年起），以及股票市场与无风险利率的月度收益；只做模拟组合，不需要真实账户
-        datasets: [damodaran_histret, french_ff3]
-        studies: [us_asset_history, us_asset_history_last_25y]
-        can_answer: []
-        cannot_answer:
-          - 月度或日度的多资产组合风险（债券等只有年度回报）
-          - 交易成本、税负与真实账户的执行
-
-  - id: forecast_strategy
-    name: 预测与策略实验
-    question: 某种信号是否改善预测或模拟表现？
-    directions:
-      - id: signal_tests
-        name: 信号与预测检验
-        planned: true
-        needs: 需要时点数据（ALFRED 或持续积累的本地快照），以及预设基准、样本外评估与预登记
-
+  us_industry_dossier:
+    label: 四层行业专题
+    routes:
+    - object: industry
+      subject: portfolios
+      question: fundamentals
+      topic: financials
+      target: industry-financials
+      scope:
+        zh: SEC 历史 SIC 申报样本的财务汇总；不是 French 股票成分或全行业财务。
+        en: Financial aggregates of historical SEC SIC filing samples; not French
+          constituents or whole-industry financials.
+      primary: true
+    - object: industry
+      subject: portfolios
+      question: returns
+      topic: history
+      target: industry-market
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: returns
+      topic: risk
+      target: industry-market
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: returns
+      topic: stress
+      target: industry-stress
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: exposure
+      topic: factors
+      target: industry-factors
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: exposure
+      topic: regimes
+      target: industry-regimes
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: exposure
+      topic: lags
+      target: industry-lags
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: valuation
+      topic: background
+      target: industry-background
+      scope:
+        zh: French 行业组合的 BE/ME 背景指标；不是行业市盈率或年末估值。
+        en: French industry-portfolio BE/ME background; not industry P/E or year-end
+          valuation.
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: fundamentals
+      topic: output
+      target: industry-economy
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: valuation
+      topic: multiples
+      target: industry-valuation
+      scope:
+        zh: Damodaran 独立行业快照，不是 French 行业指数估值
+        en: Independent Damodaran snapshots, not French index valuations
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: fundamentals
+      topic: guidance
+      target: industry-guidance
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: industry-financials
+      scope:
+        zh: SEC 历史 SIC 申报样本的财务汇总；不是 French 股票成分或全行业财务。
+        en: Financial aggregates of historical SEC SIC filing samples; not French
+          constituents or whole-industry financials.
+      primary: false
+  us_industry_12:
+    label: 12 行业总览
+    routes:
+    - object: industry
+      subject: portfolios
+      question: returns
+      topic: history
+      target: industry-market
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: industry
+      subject: portfolios
+      question: returns
+      topic: risk
+      target: industry-market
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: returns
+      topic: stress
+      target: industry-stress
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: exposure
+      topic: factors
+      target: industry-factors
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: exposure
+      topic: regimes
+      target: industry-regimes
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: exposure
+      topic: lags
+      target: industry-lags
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: valuation
+      topic: background
+      target: industry-background
+      scope:
+        zh: French 行业组合的 BE/ME 背景指标；不是行业市盈率或年末估值。
+        en: French industry-portfolio BE/ME background; not industry P/E or year-end
+          valuation.
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: fundamentals
+      topic: output
+      target: industry-economy
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  us_industry_49:
+    label: 49 行业细分
+    routes:
+    - object: industry
+      subject: portfolios
+      question: returns
+      topic: history
+      target: industry-market
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: industry
+      subject: portfolios
+      question: returns
+      topic: risk
+      target: industry-market
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: returns
+      topic: stress
+      target: industry-stress
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: exposure
+      topic: factors
+      target: industry-factors
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: exposure
+      topic: regimes
+      target: industry-regimes
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: exposure
+      topic: lags
+      target: industry-lags
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: valuation
+      topic: background
+      target: industry-background
+      scope:
+        zh: French 行业组合的 BE/ME 背景指标；不是行业市盈率或年末估值。
+        en: French industry-portfolio BE/ME background; not industry P/E or year-end
+          valuation.
+      primary: false
+    - object: industry
+      subject: portfolios
+      question: fundamentals
+      topic: output
+      target: industry-economy
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  ust_curve_last_year:
+    label: 滚动研究
+    routes:
+    - object: assets
+      subject: rates
+      question: prices
+      topic: curve
+      target: curve
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+  ust_par_bond_rate_risk:
+    label: 情景研究
+    routes:
+    - object: assets
+      subject: rates
+      question: scenario
+      topic: rates
+      target: bond-scenarios
+      scope:
+        zh: 假设平价债券；不是实际证券
+        en: Hypothetical par bonds, not actual securities
+      primary: true
+  ust_curve_2024:
+    label: 历史案例
+    routes:
+    - object: assets
+      subject: rates
+      question: prices
+      topic: curve
+      target: curve
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+  ust_curve_attribution_last_year:
+    label: 分解研究
+    routes:
+    - object: assets
+      subject: rates
+      question: attribution
+      topic: accounting
+      target: attribution
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+  ust_curve_attribution_2024:
+    label: 分解案例
+    routes:
+    - object: assets
+      subject: rates
+      question: attribution
+      topic: accounting
+      target: attribution
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+  us_asset_history:
+    label: 长期统计
+    routes:
+    - object: assets
+      subject: multi
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: assets
+      subject: multi
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: multi
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: multi
+      question: returns
+      topic: excess
+      target: asset-excess
+      scope: &id001
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: equity
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: equity
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: equity
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: rates
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: rates
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: rates
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: credit
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: credit
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: credit
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: property
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: property
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: property
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: commodities
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: commodities
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: commodities
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: equity
+      question: returns
+      topic: excess
+      target: asset-excess
+      scope: *id001
+      primary: false
+  us_asset_history_last_25y:
+    label: 滚动统计
+    routes:
+    - object: assets
+      subject: multi
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: assets
+      subject: multi
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: multi
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: multi
+      question: returns
+      topic: excess
+      target: asset-excess
+      scope: &id002
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: equity
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: equity
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: equity
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: rates
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: rates
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: rates
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: credit
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: credit
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: credit
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: property
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: property
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: property
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: commodities
+      question: returns
+      topic: history
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: commodities
+      question: returns
+      topic: risk
+      target: asset-returns
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: commodities
+      question: returns
+      topic: correlation
+      target: asset-correlations
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: assets
+      subject: equity
+      question: returns
+      topic: excess
+      target: asset-excess
+      scope: *id002
+      primary: false
+  us_refining_investment_2016_2025:
+    label: 炼油投资对照
+    routes:
+    - object: industry
+      subject: refining
+      question: exposure
+      topic: association
+      target: refining-association
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: industry
+      subject: refining
+      question: prices
+      topic: spread
+      target: refining-spread
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+    - object: security
+      subject: stock
+      question: returns
+      topic: excess
+      target: refining-tsr
+      scope:
+        zh: 仅 Valero、PBF；日历年股东总收益
+        en: Valero and PBF only; calendar-year TSR
+      primary: false
+  us_refining_utilization_2025:
+    label: 炼油统计
+    routes:
+    - object: industry
+      subject: refining
+      question: fundamentals
+      topic: capacity
+      target: refining-statistics
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: industry
+      subject: refining
+      question: data
+      topic: coverage
+      target: evidence
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  us_refining_throughput_scenarios_2025:
+    label: 炼油情景
+    routes:
+    - object: industry
+      subject: refining
+      question: scenario
+      topic: capacity
+      target: refining-scenarios
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+  chip_operations_p3b:
+    routes:
+    - object: industry
+      subject: chips
+      question: fundamentals
+      topic: segments
+      target: chip-segments
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: segments
+      target: chip-segments
+      scope:
+        zh: 仅 NVIDIA 与 Micron 的披露分部
+        en: NVIDIA and Micron disclosed segments only
+      primary: false
+    - object: industry
+      subject: chips
+      question: data
+      topic: feasibility
+      target: chip-feasibility
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_alphabet:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_amazon:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_apple:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_berkshire:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_coca-cola:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_costco:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_exxon:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_johnson-johnson:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_jpmorgan:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_microsoft:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_nike:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_nvidia:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_procter-gamble:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_sample:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-overview
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_tesla:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
+  company_walmart:
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: company-annual
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: company-comparability
+      scope:
+        zh: 研究声明的样本与期间
+        en: Declared sample and period
+      primary: false
 phases:
-  - id: P0
-    name: 总体架构
-    status: done
-    summary: 目标、范围、模块契约、资源地图与可靠性规则（架构 V0.3）
-  - id: P1
-    name: 公共契约与资源核验
-    status: partial
-    summary: 首个案例所需的来源登记、时间与质量契约、成果与运行规范已实现；其他市场与对象待扩展
-  - id: P2
-    name: 小规模贯通验证
-    status: done
-    summary: 美国国债收益率曲线案例：取得 → 快照 → 标准化 → 分析 → 报告 → 复现，含异常反例测试
-  - id: P3
-    name: 研究模块渐进扩展
-    status: partial
-    summary: >-
-      市场与大类资产分支已有两个研究方向：美国国债期限结构（描述性研究）与债券利率敏感性（假设平价债券情景）；
-      宏观与政策分支已接入通胀、政策利率与就业序列（只有数据，尚无研究），本机每个工作日定时保存快照。研究页按实现分支注册展示组件。解释、预测与组合研究，
-      以及地区与行业、证券与基金分支尚未开始
-  - id: P4
-    name: 高级研究或可选应用
-    status: planned
-    summary: 复杂预测、策略模拟、新市场或个人账户等应用，按需启用
-
+- id: P0
+  name: 总体架构
+  status: done
+  summary: 目标、范围、模块契约、资源地图与可靠性规则（架构 V0.3）
+- id: P1
+  name: 公共契约与资源核验
+  status: partial
+  summary: 首个案例所需的来源登记、时间与质量契约、成果与运行规范已实现；其他市场与对象待扩展
+- id: P2
+  name: 小规模贯通验证
+  status: done
+  summary: 美国国债收益率曲线案例：取得 → 快照 → 标准化 → 分析 → 报告 → 复现，含异常反例测试
+- id: P3
+  name: 研究模块渐进扩展
+  status: partial
+  summary: 市场与大类资产分支已有两个研究方向：美国国债期限结构（描述性研究）与债券利率敏感性（假设平价债券情景）； 宏观与政策分支已接入通胀、政策利率与就业序列（只有数据，尚无研究），本机每个工作日定时保存快照。研究页按实现分支注册展示组件。解释、预测与组合研究，
+    以及地区与行业、证券与基金分支尚未开始
+- id: P4
+  name: 高级研究或可选应用
+  status: planned
+  summary: 复杂预测、策略模拟、新市场或个人账户等应用，按需启用
 modules:
-  - id: Q
-    name: 研究定义
-    code: registry.py · config/studies
-    role: 问题、范围、方法与用途
-  - id: D
-    name: 资源接入
-    code: connectors/
-    role: Treasury、FRED、ALFRED、人工导入
-  - id: S
-    name: 数据与版本
-    code: data/
-    role: 原始快照、标准化版本、时间契约、时点视图
-  - id: A
-    name: 公共分析
-    code: analytics/
-    role: 利率曲线、收益、风险
-  - id: M
-    name: 研究分支
-    code: research/
-    role: 描述、解释、预测、模拟成果
-  - id: O
-    name: 成果与档案
-    code: reporting/ · runs.py
-    role: 报告、图表、运行清单
-  - id: V
-    name: 质量与验证
-    code: quality/ · validation/
-    role: 缺失与隔离、交叉核验、快照抽查、复现
-
+- id: Q
+  name: 研究定义
+  code: registry.py · config/studies
+  role: 问题、范围、方法与用途
+- id: D
+  name: 资源接入
+  code: connectors/
+  role: Treasury、FRED、ALFRED、人工导入
+- id: S
+  name: 数据与版本
+  code: data/
+  role: 原始快照、标准化版本、时间契约、时点视图
+- id: A
+  name: 公共分析
+  code: analytics/
+  role: 利率曲线、收益、风险
+- id: M
+  name: 研究分支
+  code: research/
+  role: 描述、解释、预测、模拟成果
+- id: O
+  name: 成果与档案
+  code: reporting/ · runs.py
+  role: 报告、图表、运行清单
+- id: V
+  name: 质量与验证
+  code: quality/ · validation/
+  role: 缺失与隔离、交叉核验、快照抽查、复现
 guarantees:
-  - title: 来源可追溯
-    detail: 每次取得原样保存原始文件及校验值；标准化版本只追加、不覆盖，记录上游快照与上一版本。
-  - title: 缺失显式表达
-    detail: 不填零、不沿用前值、不插值；冲突数据隔离；覆盖不足时，依赖它的结论标为不支持。
-  - title: 期间覆盖对照日历
-    detail: 日期覆盖对照经核验的发布日历计算；期间不完整时只保留首尾对比，不输出均值、极值与计数。
-  - title: 时点资格需要证据
-    detail: 只有当前修订的数据，不能凭假定的发布延迟进入过去的时点视图；必须是当时已取得的快照或供应方历史版本。
-  - title: 失败留痕
-    detail: 每次取得记录开始与终态；任何阶段失败都保留旧版本与诊断快照；凭证不进入日志。
-  - title: 固定输入可复现
-    detail: 运行清单固定研究定义、数据版本、输入角色与代码内容校验值；verify 重算并比较结果校验值。
+- title: 来源可追溯
+  detail: 每次取得原样保存原始文件及校验值；标准化版本只追加、不覆盖，记录上游快照与上一版本。
+- title: 缺失显式表达
+  detail: 不填零、不沿用前值、不插值；冲突数据隔离；覆盖不足时，依赖它的结论标为不支持。
+- title: 期间覆盖对照日历
+  detail: 日期覆盖对照经核验的发布日历计算；期间不完整时只保留首尾对比，不输出均值、极值与计数。
+- title: 时点资格需要证据
+  detail: 只有当前修订的数据，不能凭假定的发布延迟进入过去的时点视图；必须是当时已取得的快照或供应方历史版本。
+- title: 失败留痕
+  detail: 每次取得记录开始与终态；任何阶段失败都保留旧版本与诊断快照；凭证不进入日志。
+- title: 固定输入可复现
+  detail: 运行清单固定研究定义、数据版本、输入角色与代码内容校验值；verify 重算并比较结果校验值。
+classification:
+  objects:
+    macro:
+      name:
+        zh: 宏观经济
+        en: Macroeconomy
+      children:
+        inflation:
+          zh: 通胀
+          en: Inflation
+        policy:
+          zh: 政策利率与流动性
+          en: Policy and liquidity
+        growth:
+          zh: 增长与就业
+          en: Growth and employment
+    assets:
+      name:
+        zh: 大类资产
+        en: Asset classes
+      children:
+        equity:
+          zh: 股票市场整体
+          en: Equity markets
+        rates:
+          zh: 国债与利率
+          en: Treasuries and rates
+        credit:
+          zh: 信用
+          en: Credit
+        property:
+          zh: 房地产
+          en: Real estate
+        commodities:
+          zh: 黄金与商品
+          en: Gold and commodities
+        multi:
+          zh: 多资产比较
+          en: Cross-asset comparisons
+    industry:
+      name:
+        zh: 行业与产业链
+        en: Industries and supply chains
+      children:
+        portfolios:
+          zh: 行业组合
+          en: Industry portfolios
+        refining:
+          zh: 炼油
+          en: Refining
+        chips:
+          zh: 芯片
+          en: Semiconductors
+    company:
+      name:
+        zh: 公司
+        en: Companies
+      children:
+        issuer:
+          zh: 经营主体
+          en: Operating entities
+    security:
+      name:
+        zh: 证券
+        en: Securities
+      children:
+        stock:
+          zh: 个股
+          en: Individual equities
+        bond:
+          zh: 真实债券
+          en: Actual bonds
+    fund:
+      name:
+        zh: 基金
+        en: Funds
+      children:
+        product:
+          zh: 基金产品
+          en: Fund products
+        bond_fund:
+          zh: 债券基金
+          en: Bond funds
+    portfolio:
+      name:
+        zh: 组合
+        en: Portfolios
+      children:
+        constructed:
+          zh: 构造的组合
+          en: Constructed portfolios
+  questions:
+    returns:
+      name:
+        zh: 收益与风险
+        en: Returns and risk
+      children:
+        history:
+          zh: 历史回报
+          en: Historical returns
+        risk:
+          zh: 波动与回撤
+          en: Volatility and drawdowns
+        correlation:
+          zh: 相关性
+          en: Correlations
+        stress:
+          zh: 压力时期表现
+          en: Stress-period returns
+        excess:
+          zh: 超额回报
+          en: Excess returns
+    prices:
+      name:
+        zh: 价格、收益率与价差
+        en: Prices, yields and spreads
+      children:
+        levels:
+          zh: 价格与指标水平
+          en: Price and indicator levels
+        curve:
+          zh: 收益率曲线形态
+          en: Yield curve shape
+        spread:
+          zh: 价差水平
+          en: Spread levels
+    valuation:
+      name:
+        zh: 估值
+        en: Valuation
+      children:
+        multiples:
+          zh: 估值倍数快照
+          en: Valuation multiple snapshots
+        background:
+          zh: 估值背景指标
+          en: Valuation context
+        dcf:
+          zh: 现金流估值
+          en: Cash-flow valuation
+        implied:
+          zh: 隐含预期回报
+          en: Implied expected returns
+    fundamentals:
+      name:
+        zh: 基本面与经营
+        en: Fundamentals and operations
+      children:
+        economy:
+          zh: 经济指标
+          en: Economic indicators
+        financials:
+          zh: 财务指标
+          en: Financial metrics
+        segments:
+          zh: 分部经营
+          en: Segment operations
+        output:
+          zh: 实体行业产出
+          en: Industry output
+        capacity:
+          zh: 产能与利用率
+          en: Capacity and utilization
+        guidance:
+          zh: 管理层指引对照
+          en: Management guidance
+        fees:
+          zh: 产品费用
+          en: Product fees
+    structure:
+      name:
+        zh: 结构与关联
+        en: Structure and business relationships
+      children:
+        composition:
+          zh: 分类与业务构成
+          en: Business composition
+        relationships:
+          zh: 上下游与客户、供应关系
+          en: Supply and customer relationships
+        concentration:
+          zh: 集中度与样本构成
+          en: Concentration and sample composition
+        holdings:
+          zh: 持仓构成
+          en: Holdings
+    exposure:
+      name:
+        zh: 暴露与关联
+        en: Exposures and associations
+      children:
+        factors:
+          zh: 因子暴露
+          en: Factor exposures
+        regimes:
+          zh: 宏观环境分组表现
+          en: Macro-regime comparisons
+        lags:
+          zh: 领先/滞后相关
+          en: Lead-lag correlations
+        association:
+          zh: 指标间的历史关系
+          en: Historical associations
+    attribution:
+      name:
+        zh: 分解与归因
+        en: Decomposition and attribution
+      children:
+        accounting:
+          zh: 会计恒等式分解
+          en: Accounting decomposition
+        model:
+          zh: 模型归因
+          en: Model attribution
+        causal:
+          zh: 因果识别
+          en: Causal identification
+    scenario:
+      name:
+        zh: 情景与敏感性
+        en: Scenarios and sensitivity
+      children:
+        rates:
+          zh: 利率冲击
+          en: Rate shocks
+        capacity:
+          zh: 产能或处理量情景
+          en: Capacity and throughput scenarios
+        stress:
+          zh: 压力情景
+          en: Stress scenarios
+    prediction:
+      name:
+        zh: 预测与信号
+        en: Prediction and signals
+      children:
+        accuracy:
+          zh: 预测准确性
+          en: Forecast accuracy
+        signal:
+          zh: 信号有效性
+          en: Signal validity
+        strategy:
+          zh: 策略模拟表现
+          en: Strategy simulations
+    data:
+      name:
+        zh: 数据可得性与口径
+        en: Data availability and definitions
+      children:
+        coverage:
+          zh: 覆盖与口径核对
+          en: Coverage and definitions
+        comparability:
+          zh: 可比性分析
+          en: Comparability
+        feasibility:
+          zh: 免费数据能否回答
+          en: Free-data feasibility
+  capabilities:
+  - object: macro
+    subject: inflation
+    question: fundamentals
+    topic: economy
+    scope:
+      zh: 已有指标序列；尚无专门研究
+      en: Indicator series; no dedicated study
+    datasets:
+    - fred_cpiaucsl
+  - object: macro
+    subject: policy
+    question: fundamentals
+    topic: economy
+    scope:
+      zh: 已有指标序列；尚无专门研究
+      en: Indicator series; no dedicated study
+    datasets:
+    - fred_dff
+    - fred_sofr
+  - object: macro
+    subject: growth
+    question: fundamentals
+    topic: economy
+    scope:
+      zh: 已有指标序列；尚无专门研究
+      en: Indicator series; no dedicated study
+    datasets:
+    - fred_gdp
+    - fred_payems
+    - fred_unrate
+  - object: assets
+    subject: credit
+    question: prices
+    topic: spread
+    scope:
+      zh: 穆迪收益率利差，不是期权调整利差
+      en: Moody’s yield spreads, not option-adjusted spreads
+    datasets:
+    - fred_baa10y
+    - fred_aaa10y
+  - object: assets
+    subject: equity
+    question: prices
+    topic: levels
+    scope:
+      zh: VIX 水平；不代表波动率溢价研究
+      en: VIX levels; no volatility-premium study
+    datasets:
+    - fred_vixcls
+  - object: assets
+    subject: multi
+    question: returns
+    topic: history
+    scope:
+      zh: 美国以外的地区因子收益；尚无跨市场研究
+      en: Regional factor returns outside the US; no cross-market study
+    datasets:
+    - french_europe3
+  - object: fund
+    subject: product
+    question: fundamentals
+    topic: fees
+    scope:
+      zh: 需核验发行方费用资料
+      en: Issuer fee disclosures need verification
+    datasets: []
+    planned: true
+  - object: fund
+    subject: product
+    question: structure
+    topic: holdings
+    scope:
+      zh: 需核验发行方持仓资料
+      en: Issuer holdings need verification
+    datasets: []
+    planned: true
+  - object: security
+    subject: bond
+    question: returns
+    topic: history
+    scope:
+      zh: 需真实现金流、价格与总收益
+      en: Actual cash flows, prices and total returns required
+    datasets: []
+    planned: true
+  - object: fund
+    subject: bond_fund
+    question: returns
+    topic: history
+    scope:
+      zh: 需基金价格与总收益，净值不替代成交价
+      en: Fund prices and total returns required; NAV is not a traded price
+    datasets: []
+    planned: true
+  references:
+  - object: industry
+    subject: chips
+    question: structure
+    topic: relationships
+    href: sources.html#business-relations
+    scope:
+      zh: 芯片产业的 17 条候选公司关系；不是已确认的上下游研究。
+      en: 17 candidate company relationships in chips; not confirmed supply-chain
+        research.
+  - object: company
+    subject: issuer
+    question: structure
+    topic: composition
+    href: sources.html#business-mappings
+    scope:
+      zh: NVIDIA、Micron 的 7 条分部与业务部分映射；有效期未知，不能分摊收入。
+      en: 7 partial segment-to-business mappings for NVIDIA and Micron; validity unknown,
+        no revenue allocation.
+data_groups:
+- id: macro_policy
+  name: 宏观与政策
+  question: 增长、通胀、信用、流动性和政策如何变化？
+  directions:
+  - id: us_inflation_macro
+    name: 通胀
+    summary: CPI、盈亏平衡通胀率与 TIPS 实际收益率；时点研究需要 ALFRED 历史版本
+    risk:
+    - inflation
+    datasets:
+    - fred_cpiaucsl
+    - fred_t10yie
+    - fred_dfii10
+    - alfred_cpiaucsl
+    can_answer: []
+    cannot_answer:
+    - 盈亏平衡通胀率与 TIPS 收益率当时公布的数值（只有当前修订版本；CPI 的历史版本已由 ALFRED 接入）
+    - 市场的通胀预期本身（盈亏平衡通胀率含通胀风险溢价与流动性溢价）
+  - id: policy_liquidity
+    name: 政策利率与流动性
+    summary: 联邦基金有效利率、SOFR、3 个月国库券利率与美联储资产负债表规模
+    risk:
+    - rates
+    - liquidity
+    datasets:
+    - fred_dff
+    - fred_sofr
+    - fred_dtb3
+    - fred_walcl
+    can_answer: []
+    cannot_answer:
+    - 市场对未来政策利率的预期（需要期货或调查数据）
+  - id: growth_labor
+    name: 增长与就业
+    summary: 名义 GDP、失业率与非农就业人数：当前修订版本，以及 ALFRED 的全部历史版本（当时公布的数值）
+    datasets:
+    - fred_gdp
+    - fred_unrate
+    - fred_payems
+    - alfred_gdp
+    - alfred_unrate
+    - alfred_payems
+    can_answer: []
+    cannot_answer:
+    - 实际 GDP 与产出缺口（只接入了名义 GDP）
+    - 增长预期（SPF、GDPNow 等调查与模型估计尚未接入，须与观测值分开登记）
+- id: markets_assets
+  name: 市场与大类资产
+  question: 不同资产的收益、估值和风险如何比较？
+  directions:
+  - id: us_treasury_curve
+    name: 美国国债期限结构
+    summary: 名义票面收益率曲线的水平、斜率、曲率与倒挂，以及变化在实际利率、通胀补偿与政策利率之间的会计分解
+    risk:
+    - rates
+    datasets:
+    - ust_par_yield_curve
+    - fred_dgs10
+    - fred_dfii10
+    - fred_t10yie
+    - fred_dff
+    can_answer:
+    - 指定期间内各期限收益率、利差与曲率如何变化
+    - 期间内倒挂持续了多少天、何时由倒挂转为正斜率
+    - 10 年期与 2 年期的变化各有多少来自实际利率、通胀补偿、已实施的政策利率与对未来政策路径的定价
+    cannot_answer:
+    - 持有国债或债券基金的回报（票面收益率不是持有期回报）
+    - 曲线变化的因果原因（会计分解只拆出实际利率、通胀补偿与政策利率各自的变化，不能区分期限溢价与政策预期）
+    - 未来曲线走势（需要预测模型与样本外验证）
+  - id: rates_duration_risk
+    name: 债券利率敏感性
+    summary: 假设平价债券的久期、凸性、DV01 与收益率冲击情景
+    risk:
+    - rates
+    datasets:
+    - ust_par_yield_curve
+    can_answer:
+    - 以最近票面收益率构造的假设平价债券，收益率平移若干 bp 时价格变化多少
+    - 久期、久期 + 凸性近似相对完整重新定价的误差有多大、随期限如何变化
+    cannot_answer:
+    - 某只真实国债或债券基金（如 TLT）的风险与回报（需要真实现金流、价格或总收益数据）
+    - 非平移的曲线形变（需要零息曲线与关键利率久期）
+    - 冲击发生的概率或未来利率走势（需要预测模型与样本外验证）
+  - id: equity_risk
+    name: 股票
+    summary: 美国股票市场与 Fama/French 因子的月度收益，以及标普综合指数 1871 年起的价格、股息、盈利与 CAPE 估值
+    risk:
+    - equity
+    datasets:
+    - french_ff3
+    - french_ff5
+    - french_mom
+    - damodaran_histret
+    - shiller_price
+    - shiller_fundamentals
+    - shiller_cape
+    - shiller_real
+    can_answer: []
+    cannot_answer:
+    - 个股或具体指数基金的回报（只有组合层面的因子收益）
+    - 行业或个股层面的估值（只有标普综合指数整体的 CAPE 与市盈率）
+    - 美国以外的股票市场
+  - id: credit_premium
+    name: 信用
+    summary: 穆迪 Baa、Aaa 公司债收益率相对 10 年期国债的利差（日度），以及由收益率推算的 Baa 公司债年度回报
+    risk:
+    - credit
+    datasets:
+    - fred_baa10y
+    - fred_aaa10y
+    - damodaran_histret
+    can_answer: []
+    cannot_answer:
+    - 期权调整利差与高收益债利差（只有穆迪收益率利差）
+    - 公司债指数的实际持有回报（Damodaran 的 Baa 回报由收益率推算）
+  - id: vol_premium
+    name: 波动率
+    summary: Cboe VIX 波动率指数（标普 500 期权隐含的 30 天波动率，日度）
+    risk:
+    - instrument
+    datasets:
+    - fred_vixcls
+    can_answer: []
+    cannot_answer:
+    - 隐含波动率相对已实现波动率的溢价（需要股票日度收益，尚未接入）
+    - 期权定价与波动率曲面（完整历史期权链列为能力缺口）
+  - id: global_assets
+    name: 跨市场比较
+    summary: 发达、欧洲、日本、亚太、北美与新兴市场的股票因子月度收益（美元计价，1990 年起），以及主要汇率与美元广义指数
+    risk:
+    - fx
+    - equity
+    datasets:
+    - french_developed3
+    - french_developed_ex_us3
+    - french_europe3
+    - french_japan3
+    - french_asia_pacific_ex_japan3
+    - french_north_america3
+    - french_emerging5
+    - fred_dexuseu
+    - fred_dexjpus
+    - fred_dexchus
+    - fred_dexusuk
+    - fred_dtwexbgs
+    can_answer: []
+    cannot_answer:
+    - 以当地货币计的回报（French 国际因子只有美元计价）
+    - 各国国债与宏观数据（世界银行、IMF、BIS、OECD 尚未接入）
+    - 中国 A 股（交易所与社区工具尚未接入）
+- id: sectors_regions
+  name: 地区与行业
+  question: 结构、周期、集中度和相对表现有何差异？
+  directions:
+  - id: sector_structure
+    name: 行业与地区结构
+    summary: 美国 12 与 49 行业的收益风险、因子暴露，经济、历史公司财报、估值和指引专题，以及炼油产业链的处理量、裂解价差与公司总收益
+    risk:
+    - equity
+    datasets:
+    - french_ind12_vw
+    - french_ind49_vw
+    - french_ind12_ew
+    - french_ind12_firms
+    - french_ind12_bm
+    - fred_rvam
+    - fred_rvama
+    - fred_rvar
+    - fred_rvaw
+    - fred_rvai
+    - industry_sec_facts
+    - industry_valuation
+    - industry_guidance
+    - eia_refinery_gross_inputs
+    - eia_refinery_operable_capacity
+    - eia_refinery_utilization
+    - eia_spot_wti_cushing
+    - eia_spot_gasoline_gulf
+    - eia_spot_ulsd_gulf
+    - sec_tsr_valero
+    - sec_tsr_pbf
+    can_answer:
+    - 哪些行业的历史回报伴随更高风险或风格暴露
+    - 选定行业的实体经济、历史申报样本盈利和管理层指引如何变化
+    - 美国炼厂利用率与裂解价差的历史关系，以及独立炼油公司总收益与二者的描述性对照
+    cannot_answer:
+    - 精确的行业盈利—估值回报分解、历史成分权重和全市场一致预期
+    - 美国以外的地区与行业
+- id: securities_funds
+  name: 证券与基金
+  question: 财务、估值、费用、持仓及工具结构有何特点？
+  directions:
+  - id: company_filings
+    name: 公司财报
+    summary: 15 家验证公司的核心指标与时点视图，以及能源、批零、半导体软件的历史 SIC 年度专题样本
+    risk:
+    - equity
+    datasets:
+    - edgar_fsds
+    - edgar_companyfacts
+    - company_sec_facts
+    - industry_sec_facts
+    - industry_guidance
+    can_answer:
+    - 选定历史申报样本的营收、利润率、现金流与资本配置
+    cannot_answer:
+    - 全部上市普通股的同口径盈利（专题 SEC 申报样本不等于股票成分）
+    - 季度数据（E3 尚未开始）
+    - 部分公司的个别指标（如银行的资本开支），见 EDGAR 设计说明的缺口列表
+  - id: fund_costs
+    name: 基金费用与持仓
+    risk:
+    - instrument
+    planned: true
+    needs: 需要逐家核验基金发行方的费用、净值与持仓资料；净值不替代成交价
+  - id: real_bonds
+    name: 真实债券与债券基金
+    risk:
+    - rates
+    planned: true
+    needs: 需要真实现金流、价格或总收益数据，才能与假设平价债券对比
+- id: portfolio_scenarios
+  name: 组合与情景
+  question: 资产如何共同影响风险，假设变化会造成什么结果？
+  directions:
+  - id: portfolio
+    name: 模拟组合风险
+    summary: 股票、国库券、国债、公司债、房地产与黄金的年度回报（1928 年起），以及股票市场与无风险利率的月度收益；只做模拟组合，不需要真实账户
+    datasets:
+    - damodaran_histret
+    - french_ff3
+    can_answer: []
+    cannot_answer:
+    - 月度或日度的多资产组合风险（债券等只有年度回报）
+    - 交易成本、税负与真实账户的执行
+- id: forecast_strategy
+  name: 预测与策略实验
+  question: 某种信号是否改善预测或模拟表现？
+  directions:
+  - id: signal_tests
+    name: 信号与预测检验
+    planned: true
+    needs: 需要时点数据（ALFRED 或持续积累的本地快照），以及预设基准、样本外评估与预登记

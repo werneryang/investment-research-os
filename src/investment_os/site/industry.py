@@ -15,6 +15,12 @@ def inline(value):
 def details(result):
     body, title, extra = sections(result)
     parts = ['<p class="muted">'+L("表格口径与详细解释见下文；该专题的完整报告使用中文。", "Detailed tables and the full dossier are in Chinese; English labels are used in the figures.")+"</p>"]
+    anchors = {"市场表现：": "industry-market", "因子暴露（": "industry-factors",
+               "估值与样本背景：": "industry-background", "实体行业：": "industry-economy",
+               "领先/滞后相关：": "industry-lags", "宏观环境分组（": "industry-regimes",
+               "固定压力时期的累计总收益：": "industry-stress", "财报样本：": "industry-financials",
+               "Damodaran 独立行业快照：": "industry-valuation", "管理层指引：": "industry-guidance"}
+    seen = set()
     for item in [*body, title, *extra]:
         if isinstance(item, tuple):
             _, headers, rows = item
@@ -23,7 +29,12 @@ def details(result):
                          +''.join('<tr>'+''.join('<td>'+inline(c)+'</td>' for c in row)+'</tr>' for row in rows)
                          +'</tbody></table></div></details>')
         else:
-            parts.append('<p>'+inline(item)+'</p>')
+            key = next((key for prefix, key in anchors.items() if item.startswith(prefix)), None)
+            attr = f' id="{key}"' if key and key not in seen else ''
+            if key:
+                seen.add(key)
+            # Source report paragraphs remain Chinese in either language, explicitly marked.
+            parts.append('<p' + attr + ' lang="zh-CN">'+inline(item)+'</p>')
     return ''.join(parts)
 
 

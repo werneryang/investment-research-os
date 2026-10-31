@@ -32,7 +32,7 @@ STATUS_CHIP = {"candidate": "skipped", "docs_verified": "partial", "access_verif
 def _directions(content: dict[str, Any]) -> dict[str, dict[str, Any]]:
     """方向 id → 名称与所属分支。"""
     return {d["id"]: {"name": d["name"], "branch": b["id"], "branch_name": b["name"]}
-            for b in content.get("branches", []) for d in b.get("directions", [])}
+            for b in content.get("data_groups", []) for d in b.get("directions", [])}
 
 
 def catalog(registry: Registry, datasets: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
@@ -112,7 +112,7 @@ def _counts(rows: list[dict[str, Any]]) -> str:
 
 def _by_direction(content: dict[str, Any], rows: list[dict[str, Any]], gaps: list[dict[str, Any]]) -> str:
     out = []
-    for b in content.get("branches", []):
+    for b in content.get("data_groups", []):
         lines = []
         for d in b.get("directions", []):
             srcs = [r for r in rows if d["id"] in r["directions"]]
@@ -131,7 +131,7 @@ def _by_direction(content: dict[str, Any], rows: list[dict[str, Any]], gaps: lis
 
 
 def sources_page(content: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],
-                 build: dict[str, Any]) -> str:
+                 build: dict[str, Any], references: str = "") -> str:
     rows = catalog(registry, datasets)
     dirs = _directions(content)
     names = {r["id"]: r["name"] for r in rows}
@@ -162,6 +162,7 @@ have not been verified.</strong>""")
                       "One index of free resources: where to get them, how far verification has gone, which research "
                       "they can serve, and what comes next.")}</p></div></header>
 <main class="wrap">
+{references}
 <section><h2>{L("核验进度", "Verification progress")}</h2>
 {_counts(rows)}
 <p class="muted small">{intro}</p>

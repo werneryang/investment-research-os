@@ -631,12 +631,20 @@ def _asset_detail(result: dict[str, Any]) -> Html:
         f"<td>{_pc(nom[a]['volatility'])}</td><td>{_pc(nom[a]['worst'])} ({nom[a]['worst_year']})</td>"
         f"<td>{_pc(nom[a]['max_drawdown'])}</td><td>{_pc((real.get(a) or {}).get('geometric'))}</td></tr>" for a in assets)
     first = next(iter(real.values()), None)
-    out = (L(f"<p>{r['first_year']}–{r['last_year']}（{result['coverage']['years']} 个完整年度）；实际回报 "
+    out = (L(f"<p id=\"asset-returns\">{r['first_year']}–{r['last_year']}（{result['coverage']['years']} 个完整年度）；实际回报 "
              f"{first['first_year'] if first else '—'}–{first['last_year'] if first else '—'}。</p>",
-             f"<p>{r['first_year']}–{r['last_year']} ({result['coverage']['years']} complete years); real returns "
+             f"<p id=\"asset-returns\">{r['first_year']}–{r['last_year']} ({result['coverage']['years']} complete years); real returns "
              f"{first['first_year'] if first else '—'}–{first['last_year'] if first else '—'}.</p>")
            + f'<div class="scroll"><table class="compact"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table></div>')
     corr = r.get("correlations", {})
+    full = corr.get("full")
+    if full and full.get("matrix"):
+        matrix = full["matrix"]
+        names = list(matrix)
+        heading = L("年度回报相关矩阵（完整样本）", "Annual-return correlation matrix (full sample)")
+        header = "<th></th>" + "".join(f"<th>{e(_an(a))}</th>" for a in names)
+        rows = "".join(f"<tr><th>{e(_an(a))}</th>" + "".join(f"<td>{num(matrix[a].get(b), 2, True)}</td>" for b in names) + "</tr>" for a in names)
+        out += f'<p id="asset-correlations">{heading} · {full["first_year"]}–{full["last_year"]}</p><div class="scroll"><table class="compact"><thead><tr>{header}</tr></thead><tbody>{rows}</tbody></table></div>'
     blocks = [b for b in [corr.get("full"), *corr.get("periods", [])] if b and "SP500" in b["matrix"]]
     if blocks:
         ch = L("<th>期间</th><th>股票与 10 年期国债</th><th>股票与 Baa 公司债</th><th>股票与黄金</th>",
@@ -648,7 +656,7 @@ def _asset_detail(result: dict[str, Any]) -> Html:
                 f'<div class="scroll"><table class="compact"><thead><tr>{ch}</tr></thead><tbody>{rows}</tbody></table></div>')
     erp = r.get("equity_risk_premium", {})
     if erp:
-        out += ('<p class="small muted">' + L("股票的历史超额回报（几何平均之差）：", "Historical equity excess return (difference of geometric means): ")
+        out += ('<p id="asset-excess" class="small muted">' + L("股票的历史超额回报（几何平均之差）：", "Historical equity excess return (difference of geometric means): ")
                 + e(L("；", "; ").join(f"{L('相对' + (' ' if _an(k)[0].isdigit() else ''), 'vs ')}{_an(k)} {num(v * 100, 1)} pp"
                                       for k, v in erp.items())) + "</p>")
     return out
