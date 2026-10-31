@@ -230,10 +230,10 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
     limitations = list(study.limitations)
     statistics = _statistics(complete) if stats_unit.computable and len(complete) else None
     if not stats_unit.computable:
-        unsupported.append({"item": "周度统计", "reason": f"输入能力为 {stats_unit.grade}："
+        unsupported.append({"item": "周度统计", "kind": "data", "reason": f"输入能力为 {stats_unit.grade}："
                             + "；".join(stats_unit.reasons)})
     if gaps:
-        unsupported.append({"item": "完整期间结论", "reason": f"{len(gaps)} 周缺少至少一个数值（不插值）："
+        unsupported.append({"item": "完整期间结论", "kind": "data", "reason": f"{len(gaps)} 周缺少至少一个数值（不插值）："
                             + "、".join(gaps[:8]) + ("等" if len(gaps) > 8 else "")})
     if not_yet:
         limitations.append(f"窗口内 {len(not_yet)} 周晚于数据最后观测 {data_last.date() if data_last is not None else '—'}，"
@@ -271,7 +271,8 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
                           depends_on=[stats_unit])
             units.append(unit)
             if not unit.computable:
-                unsupported.append({"item": f"情景 {sc['id']}", "reason": f"输入能力为 {unit.grade}："
+                unsupported.append({"item": f"情景 {sc['id']}",
+                                    "kind": "data" if not stats_unit.computable else "scope", "reason": f"输入能力为 {unit.grade}："
                                     + "；".join(unit.reasons)})
                 scenarios_out.append({"id": sc["id"], "g": g, "kappa": sc.get("kappa"),
                                       "label": sc.get("label", ""), "grade": unit.grade})

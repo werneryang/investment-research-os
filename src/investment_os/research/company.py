@@ -113,7 +113,7 @@ def run(study, inputs, registry):
         study.scope, max(s["last"] for s in summaries), study.method, [input_record(inp)], results,
         {"completeness": "partial", "period_complete": False, "companies": len(summaries),
          "annual_periods": len(rows), "missing_metrics": missing},
-        [{"item": "全市场排名、因果归因及历史回测", "reason": "目的性选择的 15 家样本；使用快照内最新年度申报，不是历史时点投资信号"}],
+        [{"item": "全市场排名、因果归因及历史回测", "kind": "scope", "reason": "目的性选择的 15 家样本；使用快照内最新年度申报，不是历史时点投资信号"}],
         list(study.limitations),
         {"selection": {"status": "pass", "reason": "年度合并 USD；逐项保留科目、申报、版本与缺失；派生比率要求同一申报"},
          "filing_review": {"status": "skipped", "reason": "本次未逐条人工核对全部年报；同科目改值仅为修订候选，不自动认定会计重述"}},

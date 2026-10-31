@@ -211,7 +211,8 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
                 (page_dir / "index.html").write_text(
                     study_page(study_id, shown[study_id], archived, registry, content, build), encoding="utf-8")
             frame = framework(content, registry, ds_by_id, latest)
-            (base / "index.html").write_text(home_page(studies, latest, content, build, frame), encoding="utf-8")
+            frequency = {k: d["frequency"] for k, d in ds_by_id.items()}
+            (base / "index.html").write_text(home_page(studies, latest, content, build, frame, frequency), encoding="utf-8")
             (base / "map.html").write_text(capability_page(content, registry, ds_by_id, latest, build), encoding="utf-8")
             (base / "sources.html").write_text(sources_page(content, registry, ds_by_id, build), encoding="utf-8")
             (base / "methods.html").write_text(
