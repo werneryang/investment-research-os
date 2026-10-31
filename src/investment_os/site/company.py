@@ -59,25 +59,26 @@ def details(result):
         overview.append([f'<a href="../company_{e(p["slug"])}/">{e(p["label"])}</a>',p['last'],
                          fmt(r['revenue']),fmt(r['operating_margin'],True),fmt(r['net_margin'],True),
                          fmt(r['operating_cash_flow']),fmt(r['capex']),str(p['missing'])])
+    out+='<div id="company-overview"></div>'
     out+=table([L('公司','Company'),L('最新期末','Latest end'),'Revenue','Op margin','Net margin','OCF','Capex',L('缺失项 / 全期间','Missing / all periods')],overview)
     if len(profiles)>1:
-        out+='<h3>'+L('哪些公司可以比较？','Which companies can be compared?')+'</h3>'
+        out+='<h3 id="company-comparability">'+L('哪些公司可以比较？','Which companies can be compared?')+'</h3>'
         out+=table([L('公司','Company'),L('比较边界','Comparison boundary')],[[e(p['label']),e(p['comparison'])] for p in profiles])
         return out
     p=profiles[0]; rows=result['tables']['annual']
     out+='<p><a href="../company_sample/">'+L('← 15 家公司总览','← 15-company overview')+'</a></p>'
-    out+='<h3>'+L('可比性与口径','Comparability and definitions')+'</h3><p>'+e(p['comparison'])+'</p><p>'+e(p['note'])+'</p>'
+    out+='<h3 id="company-comparability">'+L('可比性与口径','Comparability and definitions')+'</h3><p>'+e(p['comparison'])+'</p><p>'+e(p['note'])+'</p>'
     out+='<p>'+ ' · '.join(f'<a href="../company_{e(peer["slug"])}/">{e(peer["label"])}</a>' for peer in p.get('peer_links', []))+'</p>'
     out+='<p>'+L('以下公司备注为中文。','Company-specific research notes below are in Chinese.')+'</p>'
     out+=chart(rows,['revenue'])+chart(rows,['operating_margin','net_margin'],True)+chart(rows,['operating_cash_flow','capex','free_cash_flow'])
-    out+='<h3>'+L('年度变化','Annual changes')+'</h3>'
+    out+='<h3 id="company-annual">'+L('年度变化','Annual changes')+'</h3>'
     out+=table(['Period','Revenue','Op margin','Net margin','OCF','Capex','OCF − capex','Revenue YoY','OCF YoY','Capex YoY'],
         [[r['date'],fmt(r['revenue']),fmt(r['operating_margin'],True),fmt(r['net_margin'],True),
           fmt(r['operating_cash_flow']),fmt(r['capex']),fmt(r['free_cash_flow']),
           *[fmt((r['growth'].get(m) or {}).get('value'),True) for m in ('revenue','operating_cash_flow','capex')]] for r in rows])
     out+='<p class="small">'+L('同比来自同一申报、同一科目的相邻财年比较数，可能不同于图上逐年最新值的比值；分母非正或配对失败不计算。',
         'YoY uses adjacent fiscal years with the same tag in one filing; it may differ from ratios of latest values in the chart. Non-positive bases or unmatched pairs are withheld.')+'</p>'
-    out+='<h3>'+L('逐项证据、缺失与修订候选','Evidence, gaps and revision candidates')+'</h3>'
+    out+='<h3 id="company-evidence">'+L('逐项证据、缺失与修订候选','Evidence, gaps and revision candidates')+'</h3>'
     out+='<p>'+L('同科目数值改变只标为修订候选；科目切换另列。所有版本可展开，包含实际期末、申报链接和替代科目。',
         'Changed same-tag values are revision candidates, not confirmed restatements. Tag switches are separate. Expand versions for actual ends, filing links and alternative tags.')+'</p>'
     for r in reversed(rows):

@@ -47,17 +47,12 @@ def test_build_site_from_runs(loaded):
     index = build_site(loaded, loaded / "_site")
     site = loaded / "_site"
     page = index.read_text(encoding="utf-8")
-    # 首页先列六个分支的总览（规划中的分支链接到能力地图），再列已有研究；每项研究只有一句发现与用途
-    assert "<h2>研究框架</h2>" in page and page.count('class="branch-tile') == 6
-    assert '<li class="branch-tile planned"><a href="map.html#forecast_strategy">预测与策略实验</a>' in page
-    assert '<li class="branch-tile"><a href="#securities_funds">' in page  # 公司财报已登记 SEC 数据集，不再是规划中的分支
-    assert '<li class="branch-tile"><a href="#sectors_regions">地区与行业</a>' in page  # 已接入行业收益
-    assert "每项研究的形成：" in page and "研究焦点" in page and "研究目录" in page
-    assert "未归入研究方向的研究" in page  # 测试研究不在 content.yaml 的任何方向中
-    assert "10 年期收益率由 3.95% 升至 4.05%" in page
-    assert "关键发现" not in page and "stat-value" not in page  # 指标卡片与发现列表只在研究页
-    assert "用途：历史描述，不是预测或交易回测" in page
+    assert '<h2>按对象找</h2>' in page and '<h2>按问题找</h2>' in page
+    assert page.count('data-filter="object"') == 7 and page.count('data-filter="question"') == 10
+    assert '尚未分类' in page and '研究目录' in page
+    assert '10 年期收益率由 3.95% 升至 4.05%' in page
     assert 'href="studies/ust_curve_test/"' in page
+    assert 'data-record=' in page and '已执行的' in page
     # 系统状态在页脚；过期提示由脚本在过期时显示
     assert "data-built-at=" in page and 'class="stale"' in page and "系统状态" in page
     assert str(loaded) not in page
@@ -80,7 +75,7 @@ def test_build_site_from_runs(loaded):
     assert "studies/ust_curve_test/#history" in (site / "history" / "ust_curve_test.html").read_text()
 
     cap = (site / "map.html").read_text(encoding="utf-8")
-    assert "<h2>研究分支与方向</h2>" in cap and "美国国债期限结构" in cap and "规划，未开始" in cap
+    assert "<h2>数据来源分组</h2>" in cap and "美国国债期限结构" in cap and "规划，未开始" in cap
     assert "<tr class='branch' id='markets_assets'>" in cap and "工具结构" in cap
     assert "研究模块渐进扩展 <span class=\"chip chip-partial\">部分完成</span>" in cap  # P3 已有两类研究
     methods = (site / "methods.html").read_text(encoding="utf-8")
@@ -131,7 +126,7 @@ def test_spread_display_labels():
 def test_site_without_runs(project):
     shutil.copytree(PROJECT_ROOT / "site", project / "site")
     page = build_site(project, project / "_site").read_text(encoding="utf-8")
-    assert "暂无研究运行记录" in page
+    assert "尚未发布" in page
     assert (project / "_site" / "map.html").exists() and (project / "_site" / "methods.html").exists()
 
 
@@ -166,7 +161,7 @@ def test_site_rebuilds_owned_output_but_preserves_extra_files(project):
     build_site(project, out)
     (out / "index.html").write_text("old generated page")
     build_site(project, out)
-    assert "暂无研究运行记录" in (out / "index.html").read_text()
+    assert "尚未发布" in (out / "index.html").read_text()
     sentinel = out / "unrelated.txt"
     sentinel.write_text("keep me")
     with pytest.raises(ValueError, match="未登记"):
@@ -212,26 +207,31 @@ def test_site_restores_previous_build_if_install_fails(project, monkeypatch):
     assert (out / "index.html").read_bytes() == previous
 
 
-def test_home_places_studies_in_their_branch(loaded):
-    shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
-    content = loaded / "site" / "content.yaml"
-    text = content.read_text(encoding="utf-8")
-    assert "studies: [ust_curve_last_year, ust_curve_2024, ust_curve_attribution_last_year, ust_curve_attribution_2024]" in text
-    content.write_text(text.replace("studies: [ust_curve_last_year, ust_curve_2024, ust_curve_attribution_last_year, ust_curve_attribution_2024]", "studies: [ust_curve_test]"),
-                       encoding="utf-8")
+def _register_test_routes(root, multiple=False):
+    import copy
+    import yaml
+    path = root / 'site' / 'content.yaml'
+    content = yaml.safe_load(path.read_text())
+    route = copy.deepcopy(content['studies']['ust_curve_2024']['routes'][0])
+    routes = [route]
+    if multiple:
+        routes.append({**route, 'primary': False, 'object': 'macro', 'subject': 'policy'})
+    content['studies']['ust_curve_test'] = {'routes': routes}
+    path.write_text(yaml.safe_dump(content, allow_unicode=True, sort_keys=False))
+
+
+def test_home_uses_paired_routes_and_stable_targets(loaded):
+    shutil.copytree(PROJECT_ROOT / 'site', loaded / 'site')
+    _register_test_routes(loaded)
     run_study(loaded, write_study(loaded))
-    page = build_site(loaded, loaded / "_site").read_text(encoding="utf-8")
-    featured = page[page.index("研究焦点"):page.index("研究框架")]
-    assert 'href="studies/ust_curve_test/"' in featured and "美国国债期限结构" in featured
-    card = page[page.index('id="markets_assets"'):]
-    card = card[:card.index("</article>")]
-    assert 'href="studies/ust_curve_test/"' in card
-    # 分支写明具体覆盖，不用一个「已有研究」概括整个分支；尚无研究的方向合并为一行，已登记未取得的不算已有数据
-    assert "6 个方向：1 个已有研究，1 个只有数据，4 个数据已登记、未取得" in card and "规划中" not in card
-    assert "1 个方向已有数据、尚无研究" in card and "4 个方向的数据已登记、本次构建未取得" in card
-    assert "未归入研究方向的研究" not in page
-    # 目录遵循研究框架顺序，与顶部总览一致
-    assert page.index('id="macro_policy"') < page.index('id="markets_assets"')
+    page = build_site(loaded, loaded / '_site').read_text()
+    assert 'href="studies/ust_curve_test/#curve"' in page
+    summary = json.loads((loaded / '_site/summary.json').read_text())
+    record = next(r for r in summary['classification']['studies'] if r['id'] == 'ust_curve_test')
+    assert record['routes'][0]['available'] is True
+    assert record['routes'][0]['object'] == 'assets'
+    study = (loaded / '_site/studies/ust_curve_test/index.html').read_text()
+    assert study.count('id="curve"') == 1
 
 
 def _item(validation=None, ver=None, inputs=(), unsupported=(), cutoff="2026-10-30"):
@@ -295,34 +295,6 @@ def test_withheld_conclusions_are_graded_by_their_recorded_reason():
     assert [(n.level, n.text) for n in notices(old)] == [("info", "1 项结论未输出，原因见研究页")]
 
 
-def test_collection_entry_surfaces_member_limits():
-    """集合折叠后，成员的失败与限制仍在入口计数，并在展开的表格逐行列出。"""
-    from investment_os.site.catalog import CollectionView, Notice, StudyView
-    from investment_os.site.home import _collection_row
-
-    def view(sid, notices):
-        return StudyView(sid, sid, "e", "f", "2025", "complete", "u", notices, "c")
-
-    lead = view("lead", [])
-    gap = view("m1", [Notice("warn", "用途核验未覆盖部分研究期间：x（…）", "1 项输入的用途核验未覆盖部分研究期间")])
-    broken = view("m2", [Notice("fail", "固定输入重算不一致"), Notice("warn", "w")])
-    c = CollectionView("c", "C", lead, [(gap, {"branch": "none"}), (broken, {"branch": "none"}), (view("m3", []), {"branch": "none"})])
-    assert [(n.level, n.text) for n in c.notices] == [
-        ("fail", "1 项成员研究的检查未通过"), ("warn", "1 项成员研究有覆盖或数据限制，见逐项表格")]
-    html = _collection_row(c, False)
-    assert "1 项输入的用途核验未覆盖部分研究期间" in html and "固定输入重算不一致" in html
-
-
-def test_registered_data_is_not_presented_as_available():
-    """数据已登记但本次构建未取得的方向，不写成「已有数据」。"""
-    from investment_os.site.home import _branch_card, _coverage
-    b = {"id": "x", "name": "X", "category": "data_only", "directions": [
-        ({"name": "甲"}, {"category": "data_only"}), ({"name": "乙"}, {"category": "registered"})]}
-    assert _coverage(b) == "2 个方向：1 个只有数据，1 个数据已登记、未取得"
-    card = _branch_card(b, None)
-    assert "1 个方向已有数据、尚无研究：甲。" in card and "1 个方向的数据已登记、本次构建未取得：乙。" in card
-
-
 def test_check_note_does_not_turn_missing_checks_into_pass():
     """没有警告不等于检查通过：未执行、跳过与部分重算都要写明。"""
     from investment_os.site.catalog import check_note
@@ -334,34 +306,15 @@ def test_check_note_does_not_turn_missing_checks_into_pass():
     assert check_note(_item(ver={"reproduced": True, "scope": "partial"})) == "暂无通过的检查；部分执行：固定输入重算"
 
 
-def test_primary_direction_and_collections():
-    from investment_os.site.catalog import collection_of, primary_directions
-    branches = [{"directions": [({"id": "a", "studies": ["s1", "s2"]}, {}), ({"id": "b", "studies": ["s1", "c0", "c1"]}, {})]}]
-    assert primary_directions(branches, {}) == {"s1": "a", "s2": "a", "c0": "b", "c1": "b"}
-    assert primary_directions(branches, {"s1": {"primary_direction": "b"}})["s1"] == "b"
-    with pytest.raises(ValueError):
-        primary_directions(branches, {"s2": {"primary_direction": "b"}})
-    primary = primary_directions(branches, {})
-    assert collection_of({"k": {"lead": "c0", "members": ["c1"]}}, primary) == {"c0": "k", "c1": "k"}
-    with pytest.raises(ValueError):
-        collection_of({"k": {"lead": "c0", "members": ["s2"]}}, primary)
-
-
 def test_home_lists_each_study_once(loaded):
-    """同属多个方向的研究只在主方向列出完整条目，其他方向是「另见」链接。"""
-    shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
-    content = loaded / "site" / "content.yaml"
-    text = content.read_text(encoding="utf-8")
-    old = "studies: [ust_par_bond_rate_risk]"
-    assert old in text
-    content.write_text(text.replace(old, "studies: [ust_par_bond_rate_risk, ust_curve_test]")
-                       .replace("studies: [ust_curve_last_year, ust_curve_2024, ust_curve_attribution_last_year, ust_curve_attribution_2024]",
-                                "studies: [ust_curve_test]"), encoding="utf-8")
+    shutil.copytree(PROJECT_ROOT / 'site', loaded / 'site')
+    _register_test_routes(loaded, multiple=True)
     run_study(loaded, write_study(loaded))
-    page = build_site(loaded, loaded / "_site").read_text(encoding="utf-8")
-    catalog = page[page.index("研究目录"):]
-    assert catalog.count('class="study-title" href="studies/ust_curve_test/"') == 1
-    assert "另见：" in catalog and "（列于「美国国债期限结构」）" in catalog
+    page = build_site(loaded, loaded / '_site').read_text()
+    assert page.count('<h3><a href="studies/ust_curve_test/">') == 1
+    summary = json.loads((loaded / '_site/summary.json').read_text())
+    records = [r for r in summary['classification']['studies'] if r['id'] == 'ust_curve_test']
+    assert len(records) == 1 and len(records[0]['routes']) == 2
 
 
 def test_charts_are_static_first_and_self_hosted(loaded):
@@ -397,13 +350,29 @@ def test_charts_are_static_first_and_self_hosted(loaded):
 
 
 def _visible_chinese(html: str) -> list[str]:
-    """正文中未标为 lang="zh-CN" 的中文（语言切换链接除外）。"""
+    """Check text nodes; attributes contain bilingual query data, not displayed text."""
     import re
+    from html.parser import HTMLParser
 
-    body = html[html.index("<body"):]
-    body = re.sub(r'<span lang="zh-CN">.*?</span>', "", body, flags=re.S)
-    body = re.sub(r'<a class="lang-switch"[^>]*>.*?</a>', "", body)
-    return re.findall(r".{0,20}[一-鿿　-〿＀-￯].{0,20}", body)
+    class Text(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.stack = []
+            self.text = []
+        def handle_starttag(self, tag, attrs):
+            attrs = dict(attrs)
+            skip = tag in ('script', 'style', 'head') or attrs.get('lang') == 'zh-CN' and tag != 'html' or attrs.get('class') == 'lang-switch'
+            if tag not in ('meta', 'link', 'input', 'br', 'hr', 'img', 'source'):
+                self.stack.append((tag, skip or any(v for _, v in self.stack)))
+        def handle_endtag(self, tag):
+            for i in range(len(self.stack)-1, -1, -1):
+                if self.stack[i][0] == tag:
+                    self.stack = self.stack[:i]
+                    break
+        def handle_data(self, data):
+            if not any(v for _, v in self.stack): self.text.append(data)
+    parser = Text(); parser.feed(html)
+    return re.findall(r'.{0,20}[一-鿿　-〿＀-￯].{0,20}', ''.join(parser.text))
 
 
 def test_english_pages_mirror_chinese_pages(loaded):
@@ -420,7 +389,7 @@ def test_english_pages_mirror_chinese_pages(loaded):
     assert '<html lang="zh-CN">' in zh_home and '<html lang="en">' in en_home
     assert '<a class="lang-switch" href="en/index.html" hreflang="en"' in zh_home
     assert '<a class="lang-switch" href="../index.html" hreflang="zh-CN"' in en_home
-    assert 'href="../assets/style.css' in en_home and "Research framework" in en_home
+    assert 'href="../assets/style.css' in en_home and "Browse by object" in en_home
     # 选过英文的读者打开中文地址时转到英文页面；?lang=zh 可以强制中文
     assert 'localStorage.getItem("lang")==="en"' in zh_home and "localStorage" not in en_home.split("</head>")[0]
 
@@ -457,8 +426,8 @@ def test_site_content_has_english_text():
     from investment_os.site.i18n import has_cjk, load_phrases, tx, use
 
     content = yaml.safe_load((PROJECT_ROOT / "site" / "content.yaml").read_text(encoding="utf-8"))
-    texts = [content["tagline"]] + [m["label"] for m in content["studies"].values()]
-    for b in content["branches"]:
+    texts = [content["tagline"]] + [m["label"] for m in content["studies"].values() if "label" in m]
+    for b in content["data_groups"]:
         texts += [b["name"], b["question"]]
         for d in b["directions"]:
             texts += [d["name"], d.get("summary", ""), d.get("needs", "")]

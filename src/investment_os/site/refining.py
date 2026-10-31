@@ -67,7 +67,7 @@ def _throughput_stats(result: dict[str, Any]) -> str:
         items.append(stat(L("情景", "Scenarios"), str(len(scen)),
                           L(f"B {grades.count('B')} 个，C {grades.count('C')} 个（不生成数值）",
                             f"B: {grades.count('B')}, C: {grades.count('C')} (no values)")))
-    return _stats(items)
+    return '<div id="refining-statistics">' + _stats(items) + "</div>"
 
 
 def _throughput_detail(result: dict[str, Any]) -> str:
@@ -79,7 +79,7 @@ def _throughput_detail(result: dict[str, Any]) -> str:
                  e(L(*GRADE.get(x["grade"], (x["grade"], x["grade"])))),
                  *([str(x["weeks_evaluated"]), str(x["weeks_with_shortfall"]), num(x["mean_shortfall"], 1),
                     num(x["max_shortfall"], 1)] if x["grade"] in ("A", "B") else ["—"] * 4)] for x in scen]
-        out += ("<p class='small'>" + L("情景：D = (1 + g) × G，Q_cap = kappa × K，缺口 S = max(D − Q_cap, 0)，千桶/日；"
+        out += ("<p id='refining-scenarios' class='small'>" + L("情景：D = (1 + g) × G，Q_cap = kappa × K，缺口 S = max(D − Q_cap, 0)，千桶/日；"
                                         "g 是外生情景定义，kappa 是允许假设，缺口不是历史短缺或预测。",
                                         "Scenarios: D = (1 + g) × G, Q_cap = kappa × K, shortfall S = max(D − Q_cap, 0), "
                                         "thousand barrels per day; g is an exogenous scenario, kappa an allowed assumption; "
@@ -129,10 +129,10 @@ def _investment_stats(result: dict[str, Any]) -> str:
     if c:
         items.append(stat(L("3-2-1 裂解价差均值", "Mean 3-2-1 crack spread"), f"${num(c['mean'], 2)}",
                           L(f"美元/桶，{c['weeks']} 周；最高 {num(c['max'], 2)}（{c['max_week']}）",
-                            f"USD per barrel, {c['weeks']} weeks; high {num(c['max'], 2)} ({c['max_week']})")))
+                            f"USD per barrel, {c['weeks']} weeks; high {num(c['max'], 2)} ({c['max_week']})")).replace('<div ', '<div id="refining-spread" ', 1))
     if rel and rel.get("pearson") is not None:
         items.append(stat(L("利用率与价差相关", "Utilization–crack correlation"), num(rel["pearson"], 2, True),
-                          L(f"周度水平，Spearman {num(rel['spearman'], 2, True)}", f"weekly levels, Spearman {num(rel['spearman'], 2, True)}")))
+                          L(f"周度水平，Spearman {num(rel['spearman'], 2, True)}", f"weekly levels, Spearman {num(rel['spearman'], 2, True)}")).replace('<div ', '<div id="refining-association" ', 1))
     for t in (r.get("tsr") or {}).values():
         items.append(stat(L(f"{t['name']} 累计总收益", f"{t['name']} cumulative TSR"), _pct(t["cumulative"]["company"], 0),
                           L(f"{t['years']} 年；标普 500 {_pct(t['cumulative']['sp500'], 0)}；{t['years_beating_sp500']} 年跑赢",
@@ -164,7 +164,7 @@ def _investment_detail(result: dict[str, Any]) -> str:
         head = [L("年份", "Year")]
         for cid in ids:
             head += [e(tsr[cid]["name"]), L(f"{tsr[cid]['name']} 超额", f"{tsr[cid]['name']} excess")]
-        out += ("<p class='small'>" + L("日历年股东总收益（含股息再投资，来自公司 10-K 业绩图）；超额收益 = 公司 − 标普 500。",
+        out += ("<p id='refining-tsr' class='small'>" + L("日历年股东总收益（含股息再投资，来自公司 10-K 业绩图）；超额收益 = 公司 − 标普 500。",
                                         "Calendar-year total shareholder return (dividends reinvested, from the companies' "
                                         "10-K performance graphs); excess = company − S&P 500.") + "</p>"
                 + _table(head + [L("标普 500", "S&P 500")], rows))

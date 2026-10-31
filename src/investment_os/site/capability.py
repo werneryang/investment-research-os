@@ -1,8 +1,6 @@
-"""研究能力地图：按研究分支列出每个研究方向的数据、分析与验证状态。
+"""Shared research discovery plus data registration and engineering status.
 
-研究框架（分支 → 方向）写在 site/content.yaml，见 docs/research-map.md。方向的状态由登记
-（数据集、来源核验）、研究定义与最新运行自动得出；只有「规划中」的方向人工维护。
-工程完成（代码可运行、测试通过）与研究验证完成（用途核验）分开显示。
+Data groups preserve source links; paired study ownership lives in discovery.py.
 """
 
 from __future__ import annotations
@@ -49,7 +47,7 @@ def framework(content: dict[str, Any], registry: Registry, datasets: dict[str, d
               latest: dict[str, dict[str, Any]]) -> list[dict[str, Any]]:
     """研究框架的各分支：每个方向附带状态，分支状态取方向中最好的一项。"""
     out = []
-    for branch in content.get("branches", []):
+    for branch in content.get("data_groups", []):
         dirs = [(d, direction_status(d, registry, datasets, latest)) for d in branch.get("directions", [])]
         best = min((CATEGORIES.index(st["category"]) for _, st in dirs), default=len(CATEGORIES) - 1)
         out.append({**branch, "category": CATEGORIES[best], "directions": dirs})
@@ -221,7 +219,9 @@ def _branch_rows(branch: dict[str, Any]) -> str:
 
 
 def capability_page(content: dict[str, Any], registry: Registry, datasets: dict[str, dict[str, Any]],
-                    latest: dict[str, dict[str, Any]], build: dict[str, Any]) -> str:
+                    latest: dict[str, dict[str, Any]], build: dict[str, Any], discovery_model=None) -> str:
+    from .discovery import browser
+    discovery_html = browser(content, discovery_model, latest, build, {k: v["frequency"] for k,v in datasets.items()}) if discovery_model else ""
     rows = "".join(_branch_rows(b) for b in framework(content, registry, datasets, latest))
     head = L("<th>研究方向</th><th>数据能力</th><th>分析能力（工程）</th><th>研究验证</th>",
              "<th>Research direction</th><th>Data</th><th>Analysis (engineering)</th><th>Research verification</th>")
@@ -230,19 +230,10 @@ def capability_page(content: dict[str, Any], registry: Registry, datasets: dict[
 <p class="tagline">{L("系统现在能研究什么、证据成熟到什么程度、下一步研究什么。",
                       "What the system can study now, how mature the evidence is, and what comes next.")}</p></div></header>
 <main class="wrap">
-<section><h2>{L("研究分支与方向", "Research branches and directions")}</h2>
-<p class="muted small">{L("""研究按架构 §4 的六个研究分支组织，分支下是研究方向；标签是方向涉及的风险来源。
-方向的状态由数据登记、来源核验与最新运行自动得出，只有「规划」由人工维护。
-<strong>工程完成</strong>（代码可运行、测试与每次运行的检查通过）与<strong>研究验证完成</strong>
-（在来源登记中记录了针对该用途的核验）是两回事，分列显示。不使用笼统的完成百分比：研究范围会持续扩大，分母并不固定。""",
-"""Research is organized into the six research branches of architecture §4, each split into research directions;
-tags show the risk sources a direction involves. A direction's status is derived from data registration, source
-verification and the latest runs; only \u201cplanned\u201d is maintained by hand.
-<strong>Engineering done</strong> (code runs, tests and per-run checks pass) and <strong>research verification
-done</strong> (a verification for that use is recorded in the source registry) are different things and are shown
-separately. There is no overall completion percentage: the scope of research keeps growing, so there is no fixed
-denominator.""")}</p>
-<div class="scroll"><table class="capability"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div></section>
+{discovery_html}
+<details><summary>{L("数据接入登记与工程状态", "Data registration and engineering status")}</summary><section><h2>{L("数据来源分组", "Data source groups")}</h2>
+<p class="muted small">{L("以下分组用于来源与数据接入，不是研究归属。数据取得、工程实现和研究用途核验分别判断。", "These groups describe sources and data access, not study ownership. Data access, engineering and verification for a research use are assessed separately.")}</p>
+<div class="scroll"><table class="capability"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div></section></details>
 <section><h2>{L("成果类型", "Result types")}</h2>
 <p class="muted small">{L("描述、解释、预测、模拟的证据要求不同（架构 V0.3 §6.3、§8），各自需要独立的验证方式与展示模板。",
                           "Description, explanation, forecasts and simulations need different evidence (architecture "

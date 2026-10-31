@@ -2,7 +2,7 @@
 
 网站只读取已有的结构化记录，不重新计算研究结果。各页面的分工：
 
-- 系统研究什么、从哪里进入：首页按研究框架（分支 → 方向 → 研究）组织，研究焦点只显示关键数字
+- 系统研究什么、从哪里进入：首页由同一份对象 × 问题目录生成双向查找入口
 - 研究发现了什么：研究页（studies/<id>/）的关键发现与图表
 - 这些发现有多可靠：研究页的证据面板与数据覆盖、数据与方法页
 - 系统能研究什么：研究能力地图（map.html）；系统状态放在页脚与 methods.html#status
@@ -40,10 +40,11 @@ from ..archive import archived_runs
 from ..data.store import DataStore
 from ..maintenance import check_calendar
 from ..registry import Registry
-from .capability import capability_page, framework, summary
+from .capability import capability_page, summary
 from .collect import collect_runs, datasets, fundamentals_datasets, ordered_studies
 from .common import repo_url
-from .home import home_page
+from . import discovery
+from .references import reference_page_part, company_reference_index, company_reference_part
 from .i18n import LANGS, load_phrases, use
 from .methods import methods_page
 from .renderers import get_renderer
@@ -166,6 +167,8 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
     shutil.copytree(root / "site" / "assets", out / "assets")
     archived = archived_runs(archive) if archive is not None else None
 
+    discovery.validate(content)
+    definitions = {p.stem: yaml.safe_load(p.read_text()) for p in (root / "config" / "studies").glob("*.yaml")}
     by_study = collect_runs(root)
     studies = ordered_studies(by_study, content)
     latest: dict[str, dict[str, Any]] = {}
@@ -197,6 +200,8 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
         (out / "history" / f"{study_id}.html").write_text(
             redirect(f"../studies/{study_id}/#history"), encoding="utf-8")
 
+    company_references = company_reference_index(root)
+    discovery_model = discovery.catalog(content, latest, definitions, ds_by_id, bool(company_references))
     calendar_checks = _calendar_checks(root, registry)
     cap = summary(content, registry, ds_by_id, latest)
     # 中文页面在根目录，英文页面在 en/；英文页面上没有译文的原文记入 untranslated
@@ -209,19 +214,20 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
                 page_dir = base / "studies" / study_id
                 page_dir.mkdir(parents=True)
                 (page_dir / "index.html").write_text(
-                    study_page(study_id, shown[study_id], archived, registry, content, build), encoding="utf-8")
-            frame = framework(content, registry, ds_by_id, latest)
+                    study_page(study_id, shown[study_id], archived, registry, content, build, company_reference_part(latest[study_id]["result"], company_references)), encoding="utf-8")
             frequency = {k: d["frequency"] for k, d in ds_by_id.items()}
-            (base / "index.html").write_text(home_page(studies, latest, content, build, frame, frequency), encoding="utf-8")
-            (base / "map.html").write_text(capability_page(content, registry, ds_by_id, latest, build), encoding="utf-8")
-            (base / "sources.html").write_text(sources_page(content, registry, ds_by_id, build), encoding="utf-8")
+            (base / "index.html").write_text(discovery.page(content, discovery_model, latest, build, frequency), encoding="utf-8")
+            (base / "map.html").write_text(capability_page(content, registry, ds_by_id, latest, build, discovery_model), encoding="utf-8")
+            (base / "sources.html").write_text(sources_page(content, registry, ds_by_id, build, reference_page_part(root)), encoding="utf-8")
             (base / "methods.html").write_text(
                 methods_page(content, registry, ds_rows, latest, build, calendar_checks), encoding="utf-8")
+            discovery.verify_targets(base, out, [*discovery_model["studies"], *discovery_model["references"]])
     (out / ".nojekyll").write_text("", encoding="utf-8")
 
     doc = {
         "build": build,
         "capability": cap,
+        "classification": discovery_model,
         # 英文页面上仍显示中文原文的文字（需要在 site/en.yaml 补译文）
         "untranslated": sorted(untranslated),
         "calendar_checks": calendar_checks,

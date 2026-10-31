@@ -1,21 +1,4 @@
-"""首页展示模型：研究的归属、集合、证据提示与首屏精选，与页面布局分开。
-
-- 归属：一项研究可以属于多个研究方向（关系保留在 content.yaml 的 directions.studies）。首页只在主方向列出
-  完整条目，其他方向给出「另见」链接。主方向默认是框架顺序中第一个列出该研究的方向，可用
-  studies.<id>.primary_direction 指定。
-- 集合（content.yaml 的 collections）：同一方向下的一组同类研究收成一个入口，由 lead 研究代表。
-- 证据提示分三级，先拆事实再定级别：
-  fail 是已执行的检查明确失败；
-  warn 是用途核验缺口落在研究期间的前段或中段、研究期间整体在核验范围外、只缺尾端但滞后超过维护周期
-  （TAIL_LAG_DAYS，频率不明也算），或因数据、输入不足而未输出的结论（unsupported 的 kind 为 data）；
-  info 是在维护周期内的尾端核验滞后、研究设计不回答的问题（kind 为 scope），以及没有分类的旧结果
-  （只说未输出，不推断原因）。数据截止日之后的期间不提示。没有记录的检查算未执行，不算通过。
-  集合入口汇总成员的失败与限制，展开表格逐行列出。
-- 精选：content.yaml 的 featured 显式指定，与目录顺序分开；检查失败的研究不进入精选。
-
-这里只决定选什么、归在哪里、提示什么（文字按当前语言生成）；布局在 home.py。
-"""
-
+"""Shared study summaries and evidence notices; classification lives in discovery.py."""
 from __future__ import annotations
 
 from calendar import monthrange
@@ -27,8 +10,6 @@ from .common import RESULT_TYPE_LABEL, e, span_text
 from .i18n import L, te, tx
 from .renderers import get_renderer
 from .study import localized_findings
-
-FEATURED_MAX = 4
 
 # 用途核验靠人工确认延长（README「日历与用途核验的维护」），尾端未延长是例行维护的滞后。核验最晚日期到
 # 数据截止日不超过这些天数（约一个月，低频数据约一到两个观测期）才按维护滞后提示；超过或频率不明时按缺口提示
@@ -70,27 +51,6 @@ class StudyView:
     @property
     def limited(self) -> bool:
         return any(n.level == "warn" for n in self.notices)
-
-
-@dataclass
-class CollectionView:
-    id: str
-    name: str
-    lead: StudyView
-    members: list[tuple[StudyView, dict[str, Any]]]  # 成员及其结果（集合表格用）
-
-    @property
-    def notices(self) -> list[Notice]:
-        """集合入口的提示：代表研究自身的提示，加上成员的检查失败与限制计数（细节在展开的表格）。"""
-        out = list(self.lead.notices)
-        failed = sum(v.failed for v, _ in self.members)
-        limited = sum(v.limited and not v.failed for v, _ in self.members)
-        if failed:
-            out.append(Notice("fail", L(f"{failed} 项成员研究的检查未通过", f"checks failed in {failed} member stud(ies)")))
-        if limited:
-            out.append(Notice("warn", L(f"{limited} 项成员研究有覆盖或数据限制，见逐项表格",
-                                        f"{limited} member stud(ies) have coverage or data limits; see the table")))
-        return out
 
 
 # ---- 检查与证据提示 -----------------------------------------------------------------
@@ -236,75 +196,3 @@ def study_view(study_id: str, item: dict[str, Any], meta: dict[str, Any],
     return StudyView(id=study_id, title=te(r["title"]), eyebrow=f'{te(meta.get("label", L("研究", "Study")))} · {kind}',
                      finding=_finding(item), cutoff=r["data_cutoff"], status=m["status"],
                      use_note=get_renderer(r["branch"]).use_note, notices=notices(item, frequency), checks=check_note(item))
-
-
-# ---- 归属、集合与精选 ---------------------------------------------------------------
-
-def primary_directions(branches: list[dict[str, Any]], metas: dict[str, Any]) -> dict[str, str]:
-    """每项研究的主方向 id。指定的主方向必须是列出该研究的方向之一，否则构建失败。"""
-    listed: dict[str, list[str]] = {}
-    for b in branches:
-        for d, _ in b["directions"]:
-            for s in d.get("studies", []):
-                listed.setdefault(s, []).append(d["id"])
-    out = {}
-    for s, dirs in listed.items():
-        chosen = (metas.get(s) or {}).get("primary_direction", dirs[0])
-        if chosen not in dirs:
-            raise ValueError(f"研究 {s} 的 primary_direction {chosen} 没有列出该研究")
-        out[s] = chosen
-    return out
-
-
-def collection_of(collections: dict[str, Any], primary: dict[str, str]) -> dict[str, str]:
-    """成员研究 → 集合 id。lead 与成员必须同属一个主方向，避免集合拆散在不同方向。"""
-    out = {}
-    for cid, c in collections.items():
-        for s in [c["lead"], *c.get("members", [])]:
-            if s in primary and primary[s] != primary.get(c["lead"]):
-                raise ValueError(f"集合 {cid} 的成员 {s} 与 lead 不在同一主方向")
-            out[s] = cid
-    return out
-
-
-def featured(content: dict[str, Any], views: dict[str, StudyView], order: list[str]) -> list[StudyView]:
-    """首屏精选：按 featured 配置；没有可用配置时取目录顺序的第一项。检查失败的研究不进入精选。"""
-    picks = [views[s] for s in content.get("featured", []) if s in views and not views[s].failed]
-    if not picks:
-        picks = [views[s] for s in order if s in views and not views[s].failed][:1]
-    return picks[:FEATURED_MAX]
-
-
-class Catalog:
-    """一次构建中首页的归属关系与条目：每项研究的主方向、集合、各方向列出的条目与「另见」。"""
-
-    def __init__(self, branches: list[dict[str, Any]], latest: dict[str, dict[str, Any]], content: dict[str, Any],
-                 order: list[str], frequency: dict[str, str] | None = None) -> None:
-        metas = content.get("studies", {})
-        self.collections = content.get("collections", {})
-        self.order = order
-        self.views = {s: study_view(s, latest[s], metas.get(s, {}), frequency) for s in order}
-        self.results = {s: latest[s]["result"] for s in order}
-        self.primary = primary_directions(branches, metas)
-        self.member_of = collection_of(self.collections, self.primary)
-        self.where = {d["id"]: (b["name"], d["name"]) for b in branches for d, _ in b["directions"]}
-
-    def entries(self, d: dict[str, Any]) -> tuple[list[StudyView | CollectionView], list[str]]:
-        """方向的条目（主方向在此的研究与集合，按目录顺序）与另见的研究 id（主方向在别处）。"""
-        here = sorted((s for s in d.get("studies", []) if s in self.views), key=self.order.index)
-        own = [s for s in here if self.primary.get(s) == d["id"]]
-        items: list[StudyView | CollectionView] = []
-        for s in own:
-            cid = self.member_of.get(s)
-            if cid is None or self.collections[cid]["lead"] not in own:  # 集合代表没有运行时，成员照常列出
-                items.append(self.views[s])
-            elif s == self.collections[cid]["lead"]:
-                members = [m for m in own if self.member_of.get(m) == cid and m != s]
-                items.append(CollectionView(cid, self.collections[cid].get("name", ""), self.views[s],
-                                            [(self.views[m], self.results[m]) for m in members]))
-        return items, [s for s in here if s not in own]
-
-    def grouped(self) -> int:
-        """收在集合中的成员研究数（不含代表研究）。"""
-        leads = {c["lead"] for c in self.collections.values()}
-        return sum(1 for s in self.order if s in self.member_of and s not in leads)
