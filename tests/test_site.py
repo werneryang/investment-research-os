@@ -241,6 +241,23 @@ def test_home_caveats_show_only_exceptions():
                                                                      "uncovered": [["2026-10-23", "2026-10-23"]]}}]}}
     assert _caveats(bad) == ["固定输入重算不一致", "用途核验部分在范围内（ust 范围外：2026-10-23）",
                              "1 项结论因数据不足不输出"]
+    other = {"result": {"validation": {"ratio_check": {"status": "fail"}}}, "verification": None, "manifest": {"inputs": []}}
+    assert _caveats(other) == ["1 项数据检查未通过"]
+
+
+def test_home_check_note_does_not_turn_missing_checks_into_pass():
+    """没有警告不等于检查通过：未执行、跳过与部分重算都要写明。"""
+    from investment_os.site.home import _check_note
+    ok = {"result": {"validation": {"raw_spot_check": {"checked": 12, "status": "pass"}}},
+          "verification": {"reproduced": True, "scope": "full"}, "manifest": {"inputs": []}}
+    assert _check_note(ok) == "已执行的 2 项检查通过"
+    missing = {"result": {"validation": {"raw_spot_check": {"status": "skipped"}, "ratio_check": {"status": "pass"},
+                                         "filing_review": {"status": "skipped"}}},
+               "verification": None, "manifest": {"inputs": []}}
+    assert _check_note(missing) == "已执行的 1 项检查通过；未执行：原始快照抽查、固定输入重算、另 1 项检查"
+    partial = {"result": {"validation": {}}, "verification": {"reproduced": True, "scope": "partial"},
+               "manifest": {"inputs": []}}
+    assert _check_note(partial) == "暂无通过的检查；部分执行：固定输入重算"
 
 
 def test_shared_data_lists_only_directions_with_runs():
