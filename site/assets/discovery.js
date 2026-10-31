@@ -31,19 +31,20 @@
   function update(save=true) {
     let published=0, missing=0, capabilities=0, references=0;
     const query = val('search').trim().toLowerCase();
-    const synonyms = {'pe':'valuation','p/e':'valuation','市盈率':'valuation','估值':'valuation','valuation':'valuation','相关性':'returns','correlation':'returns'};
+    const synonyms = {'pe':['valuation','multiples'],'p/e':['valuation','multiples'],'市盈率':['valuation','multiples'],'估值':['valuation'],'valuation':['valuation'],'相关性':['returns','correlation'],'correlation':['returns','correlation']};
     const alias = synonyms[query];
+    const queryRoute = r => !alias || (r.question===alias[0]&&(!alias[1]||r.topic===alias[1]));
     for (const {el,data} of records) {
-      const matched=data.routes.filter(routeMatch);
+      const matched=data.routes.filter(r=>routeMatch(r)&&queryRoute(r));
       let show = (!data.routes.length ? !val('object')&&!val('question')&&!val('subject')&&!val('topic') : matched.length>0);
       const text = (data.title||'')+' '+matched.map(r=>[vocab.objects[r.object].name,vocab.objects[r.object].children[r.subject],vocab.questions[r.question].name,vocab.questions[r.question].children[r.topic],r.scope[en?'en':'zh']].join(' ')).join(' ');
       show &&= !(val('start') && val('end') && val('start')>val('end'));
-      show &&= !query || text.toLowerCase().includes(query) || matched.some(r=>r.question===alias);
+      show &&= !query || (alias ? matched.some(r=>r.question===alias[0]&&(!alias[1]||r.topic===alias[1])) : text.toLowerCase().includes(query));
       if(data.kind==='study') {
         show &&= (!val('result_type')||data.result_type===val('result_type')) && (!val('market')||data.scope.market===val('market')) && (!val('frequency')||data.scope.frequency===val('frequency'));
         show &&= (!val('start')||endDate(String(data.scope.end||''))>=val('start')) && (!val('end')||String(data.scope.start||'9999')<=val('end')) && (!val('cutoff')||endDate(String(data.cutoff))>=val('cutoff'));
         if (show) { if(matched.some(r=>r.available)) published++; else missing++; }
-        el.querySelectorAll('[data-route]').forEach(link=>{link.hidden=!routeMatch(JSON.parse(link.dataset.route));});
+        el.querySelectorAll('[data-route]').forEach(link=>{const r=JSON.parse(link.dataset.route);link.hidden=!routeMatch(r)||!queryRoute(r);});
       } else {
         // A plan has no observation period or result type. Do not invent those attributes.
         show &&= !['result_type','market','frequency','start','end','cutoff'].some(val);

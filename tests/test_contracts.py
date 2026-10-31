@@ -252,7 +252,7 @@ def test_project_source_index_is_consistent():
     import yaml
     reg = Registry.load(PROJECT_ROOT)
     content = yaml.safe_load((PROJECT_ROOT / "site" / "content.yaml").read_text(encoding="utf-8"))
-    directions = {d["id"] for b in content["branches"] for d in b["directions"]}
+    directions = {d["id"] for b in content["data_groups"] for d in b["directions"]}
     for src in reg.sources.values():
         assert src.category in reg.source_categories, src.id
         assert set(src.directions) <= directions, (src.id, set(src.directions) - directions)

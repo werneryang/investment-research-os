@@ -136,7 +136,7 @@ def test_capability_categories_come_from_registry_and_runs():
     assert direction_status({"datasets": ["alfred_sofr"], "studies": []}, reg,
                          {"alfred_sofr": {"status": "docs_verified", "version_id": None,
                                               "verified_uses": []}}, {})["category"] == "registered"
-    content = {"branches": [
+    content = {"data_groups": [
         {"id": "a", "directions": [{"datasets": ["ust_par_yield_curve"], "studies": ["s1"]}, {"planned": True}]},
         {"id": "b", "directions": [{"datasets": ["fred_sofr"], "studies": []}]},
         {"id": "c", "directions": [{"planned": True}]}]}
