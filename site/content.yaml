@@ -4,11 +4,25 @@
 title: Investment Research OS
 tagline: 基于公开免费数据、可追溯、可复现的市场研究
 
-# 研究的显示顺序：第一项为研究焦点（日常查看的滚动研究），首页在其研究方向下显示关键数字
+# 研究的显示顺序：首页目录中同一方向内按此排列，未列出的按 id 排在后面
 study_order: [us_industry_dossier, us_industry_12, us_industry_49, ust_curve_last_year, ust_curve_attribution_last_year, us_asset_history_last_25y, ust_par_bond_rate_risk,
               ust_curve_2024, ust_curve_attribution_2024, us_asset_history, us_refining_investment_2016_2025, us_refining_utilization_2025,
               us_refining_throughput_scenarios_2025]
 
+# 首页「研究焦点」：显式选择，与目录顺序分开；最多 4 项，检查失败的研究不显示
+featured: [us_industry_dossier, ust_curve_last_year, us_asset_history_last_25y, company_sample]
+
+# 研究集合：同一主方向下的一组同类研究在首页收成一个入口，由 lead 代表；成员仍各有研究页
+collections:
+  company_filings:
+    name: 公司年度财报
+    lead: company_sample
+    members: [company_apple, company_microsoft, company_nvidia, company_amazon, company_alphabet, company_tesla, company_jpmorgan,
+              company_berkshire, company_exxon, company_johnson-johnson, company_procter-gamble, company_coca-cola, company_walmart,
+              company_costco, company_nike]
+
+# label：首页条目的类型标签；primary_direction（可选）：研究属于多个方向时，首页列出完整条目的方向，
+# 默认是框架顺序中第一个列出该研究的方向
 studies:
   us_industry_dossier: {label: 四层行业专题}
   us_industry_12: {label: 12 行业总览}

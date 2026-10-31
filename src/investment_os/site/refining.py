@@ -210,6 +210,31 @@ def _investment_summary(result: dict[str, Any]) -> list[str]:
             L(f"总收益核对 {ok}/{len(checks)} 通过", f"total-return checks {ok}/{len(checks)} passed")]
 
 
+def _throughput_home(result: dict[str, Any]) -> str | None:
+    s, cov = result["results"].get("statistics"), result["coverage"]
+    if not s:
+        return None
+    return L(f"平均利用率 {num(s['mean_utilization'], 1)}%（周度区间 {num(s['min_utilization'], 1)}%–{num(s['max_utilization'], 1)}%，"
+             f"≥ 95% 的有 {s['weeks_at_or_above_95']} 周）；三项齐全 {cov['valid_weeks']}/{cov['expected_weeks']} 周",
+             f"mean utilization {num(s['mean_utilization'], 1)}% (weekly range {num(s['min_utilization'], 1)}%–"
+             f"{num(s['max_utilization'], 1)}%, {s['weeks_at_or_above_95']} weeks at or above 95%); "
+             f"{cov['valid_weeks']}/{cov['expected_weeks']} complete weeks")
+
+
+def _investment_home(result: dict[str, Any]) -> str | None:
+    r = result["results"]
+    c, rel = r.get("crack_spread"), r.get("utilization_crack")
+    if not c:
+        return None
+    out = L(f"3-2-1 裂解价差均值 {num(c['mean'], 2)} 美元/桶（{c['weeks']} 周，最高 {num(c['max'], 2)}，{c['max_week']}）",
+            f"mean 3-2-1 crack spread USD {num(c['mean'], 2)} per barrel ({c['weeks']} weeks, high {num(c['max'], 2)} "
+            f"in {c['max_week']})")
+    if rel and rel.get("pearson") is not None:
+        out += L(f"；周度利用率与价差相关 {num(rel['pearson'], 2, True)}",
+                 f"; weekly utilization–crack correlation {num(rel['pearson'], 2, True)}")
+    return out
+
+
 def make_renderers(Renderer: Any) -> dict[str, Any]:
     throughput = Renderer(
         key_stats=_throughput_stats,
@@ -233,6 +258,7 @@ def make_renderers(Renderer: Any) -> dict[str, Any]:
         use_note_t=("历史描述与假设情景，不是需求、产量或燃料短缺预测",
                     "Historical description and hypothetical scenarios; not a demand, output or fuel-shortage forecast"),
         state_description_t=("输入能力等级与复算是否相容", "input-capability grades and whether recomputation is compatible"),
+        home_summary=_throughput_home,
     )
     investment = Renderer(
         key_stats=_investment_stats,
@@ -250,5 +276,6 @@ def make_renderers(Renderer: Any) -> dict[str, Any]:
         use_note_t=("历史描述，不是因果解释、交易信号或收益预测",
                     "Historical description; not a causal explanation, trading signal or return forecast"),
         state_description_t=("输入能力等级与总收益核对是否通过", "input-capability grades and whether total-return checks pass"),
+        home_summary=_investment_home,
     )
     return {"refining_throughput": throughput, "refining_investment": investment}

@@ -38,6 +38,15 @@ class Renderer:
     rule_params_label: Callable[[dict[str, Any]], str] = field(default=lambda p: "")
     supported: bool = True
     inline_visuals: bool = False
+    # 首页：没有规则化发现时，由已有结果字段格式化的一句摘要（不新增计算）；None 表示没有
+    home_summary: Callable[[dict[str, Any]], str | None] = field(default=lambda r: None)
+    # 首页集合表格：列名与每项研究一行（单元格为 HTML）；没有时用通用列
+    summary_columns_t: tuple[Text, ...] = ()
+    summary_row: Callable[[dict[str, Any]], list[Html]] | None = None
+
+    @property
+    def summary_columns(self) -> list[str]:
+        return [L(*x) for x in self.summary_columns_t]
 
     @property
     def coverage_title(self) -> str:

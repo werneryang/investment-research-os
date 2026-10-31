@@ -115,4 +115,7 @@ def make_renderer(Renderer):
         history_columns_t=((("公司数","Companies"),lambda r:str(r['results']['company_count'])),),
         chart_data=lambda r:None,figures_t=(),
         use_note_t=('公司年度描述研究；不作投资建议','Annual descriptive research; no investment recommendation'),
+        summary_columns_t=(('最新财年末','Latest fiscal end'),('营收（十亿美元）','Revenue (USD bn)'),('营收同比（同一申报）','Revenue YoY (same filing)')),
+        summary_row=lambda r:(lambda p:[e(p['last']),fmt(p['latest'].get('revenue')),
+            fmt(((p['latest'].get('growth') or {}).get('revenue') or {}).get('value'),True)])(r['results']['companies'][0]),
         state_description_t=('公司覆盖与数据缺口','Company coverage and data gaps'), inline_visuals=True)

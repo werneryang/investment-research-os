@@ -50,9 +50,9 @@ def test_build_site_from_runs(loaded):
     # 首页先列六个分支的总览（规划中的分支链接到能力地图），再列已有研究；每项研究只有一句发现与用途
     assert "<h2>研究框架</h2>" in page and page.count('class="branch-tile') == 6
     assert '<li class="branch-tile planned"><a href="map.html#forecast_strategy">预测与策略实验</a>' in page
-    assert 'map.html#securities_funds' not in page  # 公司财报已登记 SEC 数据集，不再是规划中的分支
+    assert '<li class="branch-tile"><a href="#securities_funds">' in page  # 公司财报已登记 SEC 数据集，不再是规划中的分支
     assert '<li class="branch-tile"><a href="#sectors_regions">地区与行业</a>' in page  # 已接入行业收益
-    assert "每项研究的形成：" in page and "研究焦点" in page
+    assert "每项研究的形成：" in page and "研究焦点" in page and "研究目录" in page
     assert "未归入研究方向的研究" in page  # 测试研究不在 content.yaml 的任何方向中
     assert "10 年期收益率由 3.95% 升至 4.05%" in page
     assert "关键发现" not in page and "stat-value" not in page  # 指标卡片与发现列表只在研究页
@@ -221,53 +221,92 @@ def test_home_places_studies_in_their_branch(loaded):
                        encoding="utf-8")
     run_study(loaded, write_study(loaded))
     page = build_site(loaded, loaded / "_site").read_text(encoding="utf-8")
+    featured = page[page.index("研究焦点"):page.index("研究框架")]
+    assert 'href="studies/ust_curve_test/"' in featured and "美国国债期限结构" in featured
     card = page[page.index('id="markets_assets"'):]
     card = card[:card.index("</article>")]
-    assert "研究焦点" in card and 'href="studies/ust_curve_test/"' in card and "美国国债期限结构" in card
-    # 分支写明具体覆盖，不用一个「已有研究」概括整个分支
+    assert 'href="studies/ust_curve_test/"' in card
+    # 分支写明具体覆盖，不用一个「已有研究」概括整个分支；只有数据的方向合并为一行
     assert "6 个方向：1 个已有研究，5 个只有数据" in card and "规划中" not in card
+    assert "5 个方向已有数据、尚无研究" in card
     assert "未归入研究方向的研究" not in page
-    # 已有研究的分支排在只有数据的分支之前
-    assert page.index('id="markets_assets"') < page.index('id="macro_policy"')
+    # 目录遵循研究框架顺序，与顶部总览一致
+    assert page.index('id="macro_policy"') < page.index('id="markets_assets"')
 
 
-def test_home_caveats_show_only_exceptions():
-    from investment_os.site.home import _caveats
-    ok = {"result": {"validation": {"raw_spot_check": {"checked": 12, "status": "pass"}}},
-          "verification": {"reproduced": True}, "manifest": {"inputs": []}}
-    assert _caveats(ok) == []
-    bad = {"result": {"validation": {}, "unsupported": ["x"]}, "verification": {"reproduced": False},
-           "manifest": {"inputs": [{"dataset_id": "ust", "use_scope": {"status": "partial",
-                                                                     "uncovered": [["2026-10-23", "2026-10-23"]]}}]}}
-    assert _caveats(bad) == ["固定输入重算不一致", "用途核验部分在范围内（ust 范围外：2026-10-23）",
-                             "1 项结论因数据不足不输出"]
-    other = {"result": {"validation": {"ratio_check": {"status": "fail"}}}, "verification": None, "manifest": {"inputs": []}}
-    assert _caveats(other) == ["1 项数据检查未通过"]
+def _item(validation=None, ver=None, inputs=(), unsupported=(), cutoff="2026-10-30"):
+    return {"result": {"validation": validation or {}, "unsupported": list(unsupported), "data_cutoff": cutoff},
+            "verification": ver, "manifest": {"inputs": list(inputs)}}
 
 
-def test_home_check_note_does_not_turn_missing_checks_into_pass():
+def _scope(status, uncovered, verified):
+    return {"status": status, "uncovered": uncovered, "verified_ranges": verified}
+
+
+def test_notices_separate_failures_gaps_and_boundaries():
+    """先拆事实再定级别：检查失败为 fail，前段或中段的核验缺口为 warn，只缺最新尾端与研究边界为 info。"""
+    from investment_os.site.catalog import notices
+    ok = _item({"raw_spot_check": {"checked": 12, "status": "pass"}}, {"reproduced": True})
+    assert notices(ok) == []
+    tail = {"dataset_id": "ust", "use_scope": _scope("partial", [["2026-10-23", "2026-10-30"]], [["1990-01-02", "2026-10-22"]])}
+    head = {"dataset_id": "cpi", "use_scope": _scope("partial", [["1928-01-01", "1947-11-30"]], [["1947-12-01", None]])}
+    head2 = {"dataset_id": "dtb3", "use_scope": _scope("partial", [["1928-01-01", "1947-11-30"]], [["1947-12-01", None]])}
+    bad = _item({"ratio_check": {"status": "fail"}}, {"reproduced": False}, [tail, head, head2], ["x"])
+    assert [(n.level, n.text) for n in notices(bad)] == [
+        ("fail", "1 项数据检查未通过"), ("fail", "固定输入重算不一致"),
+        ("info", "用途核验未覆盖最新数据：ust（2026-10-23 至 2026-10-30）"),
+        ("warn", "用途核验未覆盖部分研究期间：cpi、dtb3（1928-01-01 至 1947-11-30）"),
+        ("info", "1 项结论因数据不足未输出")]
+    assert [n.brief for n in notices(bad)][2:4] == ["1 项输入的用途核验未覆盖最新数据", "2 项输入的用途核验未覆盖部分研究期间"]
+    # 数据截止日之后的期间不影响结果，不提示
+    after = {"dataset_id": "ff3", "use_scope": _scope("partial", [["2026-01-01", "2026-10-30"]], [["1926-07-01", "2025-12-31"]])}
+    assert notices(_item(ver={"reproduced": True}, inputs=[after], cutoff="2025-12-31")) == []
+    # 月份截止日按月末比较
+    month = {"dataset_id": "ff3", "use_scope": _scope("partial", [["2026-08-15", "2026-10-30"]], [["1926-07-01", "2026-08-14"]])}
+    assert [n.level for n in notices(_item(ver={"reproduced": True}, inputs=[month], cutoff="2026-08"))] == ["info"]
+    out = {"dataset_id": "x", "use_scope": _scope("out_of_scope", [["2001-01-01", "2002-01-01"]], [["2010-01-01", None]])}
+    assert [n.level for n in notices(_item(ver={"reproduced": True}, inputs=[out]))] == ["warn"]
+
+
+def test_check_note_does_not_turn_missing_checks_into_pass():
     """没有警告不等于检查通过：未执行、跳过与部分重算都要写明。"""
-    from investment_os.site.home import _check_note
-    ok = {"result": {"validation": {"raw_spot_check": {"checked": 12, "status": "pass"}}},
-          "verification": {"reproduced": True, "scope": "full"}, "manifest": {"inputs": []}}
-    assert _check_note(ok) == "已执行的 2 项检查通过"
-    missing = {"result": {"validation": {"raw_spot_check": {"status": "skipped"}, "ratio_check": {"status": "pass"},
-                                         "filing_review": {"status": "skipped"}}},
-               "verification": None, "manifest": {"inputs": []}}
-    assert _check_note(missing) == "已执行的 1 项检查通过；未执行：原始快照抽查、固定输入重算、另 1 项检查"
-    partial = {"result": {"validation": {}}, "verification": {"reproduced": True, "scope": "partial"},
-               "manifest": {"inputs": []}}
-    assert _check_note(partial) == "暂无通过的检查；部分执行：固定输入重算"
+    from investment_os.site.catalog import check_note
+    ok = _item({"raw_spot_check": {"checked": 12, "status": "pass"}}, {"reproduced": True, "scope": "full"})
+    assert check_note(ok) == "已执行的 2 项检查通过"
+    missing = _item({"raw_spot_check": {"status": "skipped"}, "ratio_check": {"status": "pass"},
+                     "filing_review": {"status": "skipped"}})
+    assert check_note(missing) == "已执行的 1 项检查通过；未执行：原始快照抽查、固定输入重算、另 1 项检查"
+    assert check_note(_item(ver={"reproduced": True, "scope": "partial"})) == "暂无通过的检查；部分执行：固定输入重算"
 
 
-def test_shared_data_lists_only_directions_with_runs():
-    from investment_os.site.home import _shared_data
-    dirs = [({"name": "期限结构", "datasets": ["ust"]}, {"runs": [1]}),
-            ({"name": "利率敏感性", "datasets": ["ust"]}, {"runs": [1]}),
-            ({"name": "规划", "datasets": ["ust"]}, {"runs": []})]
-    html = _shared_data(dirs)
-    assert "同时支撑「期限结构」「利率敏感性」" in html and "规划" not in html
-    assert _shared_data(dirs[:1]) == ""
+def test_primary_direction_and_collections():
+    from investment_os.site.catalog import collection_of, primary_directions
+    branches = [{"directions": [({"id": "a", "studies": ["s1", "s2"]}, {}), ({"id": "b", "studies": ["s1", "c0", "c1"]}, {})]}]
+    assert primary_directions(branches, {}) == {"s1": "a", "s2": "a", "c0": "b", "c1": "b"}
+    assert primary_directions(branches, {"s1": {"primary_direction": "b"}})["s1"] == "b"
+    with pytest.raises(ValueError):
+        primary_directions(branches, {"s2": {"primary_direction": "b"}})
+    primary = primary_directions(branches, {})
+    assert collection_of({"k": {"lead": "c0", "members": ["c1"]}}, primary) == {"c0": "k", "c1": "k"}
+    with pytest.raises(ValueError):
+        collection_of({"k": {"lead": "c0", "members": ["s2"]}}, primary)
+
+
+def test_home_lists_each_study_once(loaded):
+    """同属多个方向的研究只在主方向列出完整条目，其他方向是「另见」链接。"""
+    shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
+    content = loaded / "site" / "content.yaml"
+    text = content.read_text(encoding="utf-8")
+    old = "studies: [ust_par_bond_rate_risk]"
+    assert old in text
+    content.write_text(text.replace(old, "studies: [ust_par_bond_rate_risk, ust_curve_test]")
+                       .replace("studies: [ust_curve_last_year, ust_curve_2024, ust_curve_attribution_last_year, ust_curve_attribution_2024]",
+                                "studies: [ust_curve_test]"), encoding="utf-8")
+    run_study(loaded, write_study(loaded))
+    page = build_site(loaded, loaded / "_site").read_text(encoding="utf-8")
+    catalog = page[page.index("研究目录"):]
+    assert catalog.count('class="study-title" href="studies/ust_curve_test/"') == 1
+    assert "另见：" in catalog and "（列于「美国国债期限结构」）" in catalog
 
 
 def test_charts_are_static_first_and_self_hosted(loaded):

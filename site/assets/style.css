@@ -128,6 +128,12 @@ figure.coverage .cov-monthly{display:block}.cov-note-monthly{display:inline}}
 .study-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}
 .study-row{display:flex;justify-content:space-between;gap:16px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
 .study-row p{margin:.2rem 0 0}.study-title{font-weight:600;font-size:1.02rem}
+.bad{color:var(--bad)}
+.featured-grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.featured-grid .card{margin:0;display:flex;flex-direction:column}.featured-grid p{margin:.3rem 0 0}
+details.collection{margin-top:.5rem;font-size:.85rem}details.collection summary{cursor:pointer;color:var(--accent)}
+details.collection table{margin-top:.4rem}details.collection td{white-space:nowrap}
+.see-also,.direction-more{margin:.6rem 0 0}.direction-more{border-top:1px solid var(--line);padding-top:12px;margin-top:14px}
 .about-strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
 .about-strip h3{margin:0 0 .3rem;font-size:1rem}.about-strip p{margin:0 0 .4rem}
 
