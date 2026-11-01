@@ -1,0 +1,43 @@
+# 关系链研究：NVIDIA 的上游与下游（docs/relation-chain-design.md）
+study_id: chip_relation_chain_nvda
+title: NVIDIA 的上下游关系链（2026 财年申报）
+question: >-
+  从 NVIDIA 2026 财年年报披露的直接关系出发，按登记的关系向上游、下游各展开两层，需求可能沿哪些公司与业务传导？
+  链在哪里断开、为什么断开？NVIDIA 营收上升期间，链上供应方在各自年报中的营收是否同期上升？
+result_type: descriptive
+branch: relation_chain
+
+scope:
+  market: US
+  # 链上公司三个财年营收覆盖的期间：Micron 2023 财年始于 2022-09-02，Fabrinet 2026 财年止于 2026-06-26（月份口径）；
+  # 关系链按 method.as_of 截至 2026-10-31 已公开的原文生成
+  start: 2022-09-01
+  end: 2026-06-30
+  frequency: annual
+  vintage_policy: latest
+
+data:
+  evidence: relation_chain_evidence
+
+method:
+  root: co_nvidia
+  depth: 2
+  as_of: "2026-10-31"
+  # 下游说明：NVIDIA 原文的客户类型与间接客户集中度，不生成具名关系
+  downstream_notes: [clm_nvda26_customer_types, clm_nvda26_indirect_concentration]
+
+benchmark: 关系链只来自登记的原文证据；营收与同比取自各公司自己的年报
+evaluation:
+  - 只经过已复核的关系；每个停止展开处都有断点原因
+  - 「已查原文、未披露」与「尚未查阅」分开
+  - 营收同比只在同一申报、同一币种内计算；分部合计与合并营收一致
+  - 固定证据包版本可重现（iros verify）
+
+limitations:
+  - 关系来自公司年报的披露：「such as」等列举不是完整名单，没有披露不等于没有关系
+  - 占比只按原文口径列出（NVIDIA 对两个匿名客户的销售占其营收、Fabrinet 对 NVIDIA 的销售占其营收），不推算其他公司的份额，也不相乘推算间接敞口
+  - 上游第二层只读了 SEC 上的年报（台积电 20-F、Micron 10-K）；三星、SK 海力士、鸿海、纬创的当地披露尚未查阅
+  - 下游反向检索只查了公司样本中已有的 14 家公司的最新 10-K；其他服务器、系统厂商与云厂商留待后续
+  - Micron 已有 2026 财年 10-K（2026-10-09 提交），本研究的查阅与营收仍基于 2025 财年 10-K
+  - 营收为各公司财年口径，财年截止月不同（NVIDIA 1 月下旬、台积电 12 月、Micron 8 月下旬、Fabrinet 6 月下旬）；台积电为新台币，不换算
+  - 同期营收变化是描述，不说明由 NVIDIA 带动，也不是预测

@@ -14,6 +14,7 @@ study_order:
 - us_refining_investment_2016_2025
 - us_refining_utilization_2025
 - us_refining_throughput_scenarios_2025
+- chip_relation_chain_nvda
 collections:
   company_filings:
     name: 公司年度财报
@@ -818,6 +819,45 @@ studies:
     entity_ids:
     - co_nvidia
     - co_micron
+  chip_relation_chain_nvda:
+    label: 关系链研究
+    routes:
+    - object: industry
+      subject: chips
+      question: structure
+      topic: relationships
+      target: chain-upstream
+      scope:
+        zh: 以 NVIDIA 为起点的上游两层；关系来自登记的年报原文，不是完整的产业链
+        en: Two upstream layers from NVIDIA; relationships come from registered filing text and are not a complete supply chain
+      primary: true
+    - object: company
+      subject: issuer
+      question: structure
+      topic: relationships
+      target: chain-downstream
+      scope:
+        zh: NVIDIA 的匿名直接客户与 14 家样本公司年报的反向检索
+        en: NVIDIA's anonymous direct customers and a reverse search of 14 sample companies' filings
+      primary: false
+    - object: industry
+      subject: chips
+      question: exposure
+      topic: association
+      target: chain-revenue
+      scope:
+        zh: NVIDIA 与上游第 1 层公司在各自年报中的三个财年营收；只描述同期变化
+        en: Three fiscal years of revenue for NVIDIA and upstream layer-1 companies from their own filings; co-movement only
+      primary: false
+    entity_ids:
+    - co_nvidia
+    - co_tsmc
+    - co_samsung
+    - co_sk_hynix
+    - co_micron
+    - co_hon_hai
+    - co_wistron
+    - co_fabrinet
   company_alphabet:
     routes:
     - object: company
@@ -1587,6 +1627,9 @@ classification:
     - act_test
     - act_semi_equipment
     - act_eda_ip
+    - act_wafer_materials
+    - act_process_chemicals
+    - act_package_substrate
     href: sources.html#business-activities
     routes:
     - object: industry
@@ -1650,6 +1693,12 @@ classification:
     - cmp_micron_sandisk
     - cmp_cxmt_micron
     - cmp_micron_ymtc
+    - rel_tsmc_wafer_inputs
+    - rel_tsmc_chemical_inputs
+    - rel_tsmc_equipment_inputs
+    - rel_mu_wafer_inputs
+    - rel_mu_chemical_inputs
+    - rel_mu_substrate_inputs
     href: sources.html#business-relations
     routes:
     - object: industry

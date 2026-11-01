@@ -275,3 +275,20 @@ text-decoration:none;white-space:nowrap}
 .limit-badge{font-size:.75rem;padding:1px 7px;border-radius:999px;background:var(--warn-bg);white-space:nowrap}
 .limit-badge.bad{background:var(--bad-bg)}
 @media(max-width:700px){.shelf-row{display:block}.shelf-row>.nowrap{display:block;margin-top:2px}.home-search{flex-wrap:wrap}.home-search input{flex-basis:100%}}
+
+/* Relationship chain: upstream layers on the left, the starting point in the middle, downstream on the right. */
+.chain-map{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin:12px 0 6px}
+.chain-col h4{margin:0 0 6px;font-size:.85rem;color:var(--muted);font-weight:600}
+.chain-col ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.chain-node{padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-size:.85rem;overflow-wrap:anywhere}
+.chain-node p{margin:.15rem 0 0}
+.chain-node.root{border:2px solid var(--accent)}
+.chain-node.anon{background:transparent}
+.chain-node.unreviewed{opacity:.6}
+.chain-node.external{border-style:dashed}
+.chain-empty{color:var(--muted);font-size:.85rem}
+.chain-tag{display:inline-block;margin:4px 4px 0 0;padding:0 6px;border-radius:999px;font-size:.72rem;background:var(--mute-bg)}
+.chain-tag.warn{background:var(--warn-bg);color:var(--warn)}
+tr.chain-total td{border-top:2px solid var(--line)}
+blockquote{margin:.4rem 0;padding:.3rem .6rem;border-left:2px solid var(--line);font-size:.85rem}
+@media(max-width:860px){.chain-map{grid-template-columns:1fr}}

@@ -1,0 +1,89 @@
+# 查阅记录：读过哪份原文、找什么、有没有找到点名的对手方（docs/relation-chain-design.md §2.3、§2.4）
+#
+# 用于区分「已查原文、未披露」与「尚未查阅」：没有查阅记录的主体在关系链上是「尚未查阅」，不是「没有关系」。
+# result：found 表示找到点名的对手方（relations 中至少一条关系的另一方是具名公司）；not_found 表示没有点名，
+# 这时 relations 只能是匿名对手方的关系，claims 记录原文给出的类别或说明。
+# counterpart 为要找的对手方（下游反向检索为 NVIDIA）。subject 为登记主体；未登记的公司（下游反向检索的样本公司）写 subject_cik 与 subject_name。
+# 2026-10-31 的记录由模型逐份阅读原文得出；技术复核另见 reviews.yaml，不等于人工签认。
+
+schema_version: supply_chain.v1
+
+searches:
+  # ---- 上游第二层：NVIDIA 第一层供应方自己的年报 ----
+  - id: srch_tsmc_fy2025
+    document: doc_tsmc_20f_fy2025
+    subject: co_tsmc
+    direction: upstream
+    looked_for: 晶圆代工业务所用材料与设备的供应商名称；是否点名 NVIDIA
+    method: 阅读 Item 4 Raw Materials 与 Item 3 风险因素中原材料、设备供应的段落；全文检索 supplier 与 NVIDIA
+    searched_at: "2026-10-31"
+    result: not_found
+    relations: [rel_tsmc_wafer_inputs, rel_tsmc_chemical_inputs, rel_tsmc_equipment_inputs]
+    claims: [clm_tsmc25_raw_materials, clm_tsmc25_equipment]
+    note: 只列出硅片、化学品、气体、贵金属与设备等类别，没有点名供应商；全文没有出现 NVIDIA
+  - id: srch_mu_fy2025
+    document: doc_mu_10k_fy2025
+    subject: co_micron
+    direction: upstream
+    looked_for: 存储业务所用材料与部件的供应商名称；是否点名 NVIDIA
+    method: 阅读 Item 1A 风险因素中材料、部件与服务供应的段落；全文检索 supplier 与 NVIDIA
+    searched_at: "2026-10-31"
+    result: not_found
+    relations: [rel_mu_wafer_inputs, rel_mu_chemical_inputs, rel_mu_substrate_inputs]
+    claims: [clm_mu25_supply_sources, clm_mu25_materials]
+    note: 只列出化学品、硅片、气体、光刻胶、基板等类别，没有点名供应商；全文没有出现 NVIDIA
+  - id: srch_fn_fy2026
+    document: doc_fn_10k_fy2026
+    subject: co_fabrinet
+    direction: upstream
+    looked_for: 关键材料的供应商名称；对 NVIDIA 的销售占比
+    method: 阅读 Item 1A 风险因素中客户集中度与材料供应的段落；全文检索 NVIDIA 与 supplier
+    searched_at: "2026-10-31"
+    result: not_found
+    claims: [clm_fn26_suppliers]
+    note: >-
+      没有点名供应商。原文给出 NVIDIA 占 Fabrinet 2026 财年营收 16.3%（登记在 rel_fabrinet_nvda_atp）；
+      NVIDIA → Fabrinet 的业务原文未说明，关系链不从 Fabrinet 继续展开
+  # ---- 下游：公司样本中已有公司的最新 10-K（反向证据检索） ----
+  - {id: srch_aapl_fy2025_nvidia, document: doc_aapl_10k_fy2025, subject_cik: 320193, subject_name: "Apple", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_msft_fy2026_nvidia, document: doc_msft_10k_fy2026, subject_cik: 789019, subject_name: "Microsoft", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_amzn_fy2025_nvidia, document: doc_amzn_10k_fy2025, subject_cik: 1018724, subject_name: "Amazon", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_goog_fy2025_nvidia, document: doc_goog_10k_fy2025, subject_cik: 1652044, subject_name: "Alphabet", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_tsla_fy2025_nvidia, document: doc_tsla_10k_fy2025, subject_cik: 1318605, subject_name: "Tesla", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_jpm_fy2025_nvidia, document: doc_jpm_10k_fy2025, subject_cik: 19617, subject_name: "JPMorgan Chase", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_brk_fy2025_nvidia, document: doc_brk_10k_fy2025, subject_cik: 1067983, subject_name: "Berkshire Hathaway", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_xom_fy2025_nvidia, document: doc_xom_10k_fy2025, subject_cik: 34088, subject_name: "Exxon Mobil", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_jnj_fy2025_nvidia, document: doc_jnj_10k_fy2025, subject_cik: 200406, subject_name: "Johnson & Johnson", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_pg_fy2026_nvidia, document: doc_pg_10k_fy2026, subject_cik: 80424, subject_name: "Procter & Gamble", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_ko_fy2025_nvidia, document: doc_ko_10k_fy2025, subject_cik: 21344, subject_name: "Coca-Cola", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_wmt_fy2026_nvidia, document: doc_wmt_10k_fy2026, subject_cik: 104169, subject_name: "Walmart", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_cost_fy2026_nvidia, document: doc_cost_10k_fy2026, subject_cik: 909832, subject_name: "Costco", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}
+  - {id: srch_nke_fy2026_nvidia, document: doc_nke_10k_fy2026, subject_cik: 320187, subject_name: "Nike", direction: downstream, counterpart: co_nvidia,
+     looked_for: 是否点名向 NVIDIA 采购, method: 全文检索 NVIDIA（不区分大小写）, searched_at: "2026-10-31", result: not_found,
+     note: 原文没有出现 NVIDIA}

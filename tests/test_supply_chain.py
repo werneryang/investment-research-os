@@ -163,8 +163,8 @@ def test_project_catalog_loads_and_has_no_errors_offline():
     assert rep.errors == []
     assert rep.warnings and not rep.verified
     assert "reviewed" not in rep.statuses.values()  # 证据未能核对时，技术复核过的映射也只算候选
-    assert {1045810, 723125} == cat.ciks()
-    assert rep.inventory["counts"]["activities"] == 8
+    assert {1045810, 723125, 1046179, 1408710} == cat.ciks()  # 台积电、Fabrinet 为关系链第二层的申报主体
+    assert rep.inventory["counts"]["activities"] == 11  # v2 新增三项上游投入
 
 
 DOC_TEXT = ("<p>For the fiscal year ended January 25, 2026</p>"

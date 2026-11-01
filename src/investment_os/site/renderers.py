@@ -744,11 +744,12 @@ UNSUPPORTED = Renderer(
 from .industry import make_renderer  # noqa: E402
 from .company import make_renderer as company_renderer  # noqa: E402
 from .refining import make_renderers as refining_renderers  # noqa: E402
+from .relation_chain import make_renderer as relation_chain_renderer  # noqa: E402
 
 RENDERERS: dict[str, Renderer] = {"rates_curve": CURVE, "par_bond_scenarios": BOND,
                                   "curve_attribution": ATTRIBUTION, "asset_history": ASSETS,
                                   "industry": make_renderer(Renderer), "company": company_renderer(Renderer),
-                                  **refining_renderers(Renderer)}
+                                  "relation_chain": relation_chain_renderer(Renderer), **refining_renderers(Renderer)}
 
 
 def get_renderer(branch: str) -> Renderer:

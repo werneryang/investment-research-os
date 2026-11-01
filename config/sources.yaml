@@ -802,6 +802,16 @@ sources:
           数字取自同一份 10-K（不跨申报拼接）；使用当前申报数据；财年期间 2022-09-01 至 2026-01-31。
           不包括分部到芯片活动的归属（映射与证据未经人工复核，仍为候选）、重组前的旧业务单元、其他公司、
           时点研究（当时公布的值）、出货量或份额推算与预测；核验范围之外的期间或公司须先补充核验。
+      - dataset: relation_chain_evidence
+        status: access_verified
+        date: "2026-10-31"
+        evidence: >-
+          经 iros chain relations 生成并导入证据包 v20261101T012836Z-c1ed8bc0（营收 37 条，关系 23 条，查阅记录 17 条）；生成前产业链登记核对
+          零错误、零未核对（19 份原文 SHA256 一致，35 条证据机器核对与技术复核均通过）。营收从登记原文的内联 XBRL 解析，独立核对：
+          NVIDIA 2026 财年 215,938、Micron 2025 财年 37,378 百万美元、Fabrinet 2026 财年 4,641,097 千美元与 SEC Company Facts 一致；
+          台积电 2023、2024 年新台币营收 2,161,735.8、2,894,307.7 百万元与 Company Facts 一致（2025 年 20-F 的数字 Company Facts
+          尚未收录，只在原文中核对）；NVIDIA 计算与网络分部 193,479、Micron CMBU 13,524 百万美元与芯片证据包的已复核 XBRL 证据一致
+        scope: 关系链登记快照与链上公司各一份年报中三个财年的合并与业务分部营收；不含其他公司或其他年报
       - dataset: edgar_companyfacts
         status: access_verified
         date: "2026-10-24"

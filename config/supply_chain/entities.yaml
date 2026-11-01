@@ -10,12 +10,12 @@ schema_version: supply_chain.v1
 entities:
   - {id: co_nvidia, type: company, name: "NVIDIA Corporation", cik: 1045810, country: US}
   - {id: co_micron, type: company, name: "Micron Technology, Inc.", cik: 723125, country: US}
-  - {id: co_tsmc, type: company, name: "Taiwan Semiconductor Manufacturing Company Limited", country: TW}
+  - {id: co_tsmc, type: company, name: "Taiwan Semiconductor Manufacturing Company Limited", cik: 1046179, country: TW}
   - {id: co_samsung, type: company, name: "Samsung Electronics Co., Ltd.", country: KR}
   - {id: co_sk_hynix, type: company, name: "SK hynix Inc.", country: KR}
   - {id: co_hon_hai, type: company, name: "Hon Hai Precision Industry Co., Ltd.", country: TW}
   - {id: co_wistron, type: company, name: "Wistron Corporation", country: TW}
-  - {id: co_fabrinet, type: company, name: "Fabrinet", country: KY}
+  - {id: co_fabrinet, type: company, name: "Fabrinet", cik: 1408710, country: KY}
   - {id: co_kioxia, type: company, name: "Kioxia Holdings Corporation", country: JP}
   - {id: co_sandisk, type: company, name: "Sandisk Corporation", country: US}
   - {id: co_cxmt, type: company, name: "ChangXin Memory Technologies, Inc.", country: CN}
@@ -60,3 +60,10 @@ entities:
   - {id: anon_nvda_fy2026_direct_1, type: anonymous, name: "NVIDIA 2026 财年直接客户之一（占总营收 22%）", parent: co_nvidia}
   - {id: anon_nvda_fy2026_direct_2, type: anonymous, name: "NVIDIA 2026 财年另一直接客户（占总营收 14%）", parent: co_nvidia}
   - {id: anon_mu_fy2025_top10, type: anonymous, name: "Micron 2025 财年前十大客户（合计，未逐一披露）", parent: co_micron}
+  # 关系链第二层：原文只列出投入类别、没有点名供应商（docs/relation-chain-design.md §2.3「对手方匿名」）
+  - {id: anon_tsmc_fy2025_wafer_suppliers, type: anonymous, name: "台积电 2025 年硅片供应商（未点名）", parent: co_tsmc}
+  - {id: anon_tsmc_fy2025_chemical_suppliers, type: anonymous, name: "台积电 2025 年化学品与气体供应商（未点名）", parent: co_tsmc}
+  - {id: anon_tsmc_fy2025_equipment_suppliers, type: anonymous, name: "台积电 2025 年设备供应商（未点名）", parent: co_tsmc}
+  - {id: anon_mu_fy2025_wafer_suppliers, type: anonymous, name: "Micron 2025 财年硅片供应商（未点名）", parent: co_micron}
+  - {id: anon_mu_fy2025_chemical_suppliers, type: anonymous, name: "Micron 2025 财年化学品、气体与光刻胶供应商（未点名）", parent: co_micron}
+  - {id: anon_mu_fy2025_substrate_suppliers, type: anonymous, name: "Micron 2025 财年基板供应商（未点名）", parent: co_micron}

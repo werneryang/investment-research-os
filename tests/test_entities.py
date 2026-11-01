@@ -29,13 +29,13 @@ def index(inputs):
 def test_identity_and_direct_records(index):
     assert index['by_cik']['1045810']=='co_nvidia'
     assert 'cik_1045810' not in index['entities']
-    assert not index['entities']['co_tsmc'].get('cik')
+    assert index['entities']['co_tsmc']['cik']==1046179 and index['by_cik']['1046179']=='co_tsmc'
     assert index['study_entities']['company_nvidia']==['co_nvidia']
     assert index['study_entities']['us_industry_dossier']==[]
     nv=subject_records(index,'co_nvidia')
     assert len(nv['mappings'])==2 and len(nv['relations'])==10
-    assert len(subject_records(index,'co_micron')['relations'])==8
-    assert len(subject_records(index,'co_tsmc')['relations'])==1
+    assert len(subject_records(index,'co_micron')['relations'])==11  # 含关系链第二层的 3 类上游投入
+    assert len(subject_records(index,'co_tsmc')['relations'])==4
     anon=subject_records(index,'anon_nvda_fy2026_direct_1')
     assert len(anon['relations'])==1 and anon['mappings']==[]
     assert subject_records(index,'cik_320193')=={'known':True,'relations':[],'mappings':[]}
@@ -77,7 +77,7 @@ def test_evidence_change_invalidates_dependents(inputs,monkeypatch):
     monkeypatch.setattr(entities,'fingerprint',lambda cat,id:'changed' if id=='clm_nvda26_foundry' else original(cat,id))
     index=build_index(PROJECT_ROOT,*inputs)
     r=index['relations']['rel_tsmc_nvda_foundry']
-    assert r['evidence_problem'] and r['technical']=='none'
+    assert r['evidence_problem'] and r['technical']=='passed'  # 关系自身的复核仍有效，证据失效另行标出
     assert index['evidence']['clm_nvda26_foundry']['technical']=='stale'
     html=relationship_view(index,initial_entity='co_tsmc',embedded=True)
     assert '所引用证据存在失效' in html and '复核记录已失效' in html
@@ -120,9 +120,9 @@ const row=idx.relations.rel_micron_nvda_memory;
 assert.equal(S.role(row,'co_nvidia'),'upstream');assert.equal(S.role(row,'co_micron'),'downstream');
 assert(S.recordMatch(row,{entity:'co_nvidia'}));assert(!S.recordMatch(row,{entity:'unknown'}));
 const union=Object.values(idx.relations).filter(r=>S.recordMatch(r,{entity:'co_nvidia',compare:'co_micron'}));
-assert.equal(union.length,17);assert.equal(new Set(union.map(r=>r.id)).size,17);
+assert.equal(union.length,20);assert.equal(new Set(union.map(r=>r.id)).size,20);
 assert.equal(Object.values(idx.relations).filter(r=>S.recordMatch(r,{entity:'co_nvidia',activity:'unknown'})).length,5);
-assert(!S.recordMatch(row,{review:'passed'}));assert(S.recordMatch(row,{review:'none'}));
+assert(S.recordMatch(row,{review:'passed'}));assert(!S.recordMatch(row,{review:'none'}));
 assert(!S.recordMatch({...row,technical:'passed',evidence_problem:true},{review:'passed'}));
 assert(S.recordMatch({...row,human:'retracted'},{review:'problem'}));
 assert(!S.recordMatch({...row,evidence_date:null},{evidence_before:'2099-01-01'}));

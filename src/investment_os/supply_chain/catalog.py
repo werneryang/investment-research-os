@@ -7,6 +7,10 @@
 - 证据须来自相关公司的申报；XBRL 证据须写明数值与单位，单位参与匹配；分部别名须属于上级公司的申报与业务分部维度
 - 原文登记的精确期末须在原文中出现，且与 FSDS 的月末相差不超过半个月
 - 被否定或撤回的证据不能支撑任何映射或关系
+- external_report（外部报告）只核对本地文件存在且 SHA256 一致；摘要与报告是否一致属于技术复核。外部来源与一手证据分开：
+  关系的证据级别（evidence_class）为 primary（有可用的一手证据）、external_corroborated（只有外部来源，但 corroborated_by
+  列出的一手证据证实了该业务或关系存在）或 external
+- 查阅记录（searches.yaml，可选文件）：读过哪份原文、找什么、有没有找到点名的对手方；用于区分「已查原文、未披露」与「尚未查阅」
 
 三种核对分开记录：
 - 机器核对（claim_checks）：摘录能否在原文中逐字找到、数值能否在分部事实中找到
@@ -36,6 +40,8 @@ import yaml
 
 SCHEMA_VERSION = "supply_chain.v1"
 FILES = ("activities", "entities", "links", "relations", "claims", "units", "reviews")
+# 可选登记：没有该文件时为空（旧证据包与只用前七个文件的登记不受影响）
+OPTIONAL_FILES = ("searches",)
 DIRECTED = ("supply", "foundry", "contract_manufacturing")
 UNDIRECTED = ("partnership", "competition", "substitution")
 MATCH_TYPES = ("exact", "partial", "ambiguous")
@@ -44,6 +50,10 @@ TECHNICAL = ("passed", "failed")
 _REVIEW_FIELDS = ("review_status", "reviewer", "reviewed_at")
 ORIGIN = ("observed", "derived", "assumed", "inferred", "unknown")
 ENTITY_TYPES = ("company", "segment", "anonymous")
+CLAIM_TYPES = ("filing_text", "xbrl_segment", "external_report")
+DISPLAY = ("summary", "citation_only")
+SEARCH_RESULTS = ("found", "not_found")
+DIRECTIONS = ("upstream", "downstream")
 UNIT_STATUS = ("unassessed", "A", "B", "C")
 TZ = "America/New_York"
 _QUOTES = str.maketrans({"‘": "'", "’": "'", "“": '"', "”": '"', " ": " "})
@@ -79,6 +89,7 @@ class Catalog:
     reviews: dict[str, dict[str, Any]] = field(default_factory=dict)
     # 每个对象最近一次技术复核：{review, reviewed_at, result, fingerprint, limits}
     technical: dict[str, dict[str, Any]] = field(default_factory=dict)
+    searches: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def ciks(self) -> set[int]:
         return {int(e["cik"]) for e in self.entities.values() if e.get("cik")}
@@ -97,14 +108,20 @@ FIELDS = {
     "原文": {"id", "accession", "form", "entity", "url", "file", "sha256", "accepted_at", "retrieved_at",
              "document_period_end"},
     "证据": {"id", "type", "document", "locator", "excerpt", "accession", "tag", "segments", "period_end",
-             "duration_quarters", "value", "unit", "origin_type", "review_status", "reviewer", "reviewed_at", "note"},
+             "duration_quarters", "value", "unit", "origin_type", "review_status", "reviewer", "reviewed_at", "note",
+             # external_report：出处、取得渠道、本地文件校验值、用自己的话写的摘要与网页显示方式
+             "publisher", "title", "published_at", "channel", "file", "sha256", "summary", "display", "estimate"},
     "映射": {"id", "entity", "activity", "match", "scope", "valid_from", "valid_to", "claims",
              "review_status", "reviewer", "reviewed_at"},
     "关系": {"id", "type", "provider", "recipient", "parties", "market", "activity", "activity_gap", "product",
-             "share", "valid_from", "valid_to", "claims", "note", "review_status", "reviewer", "reviewed_at"},
+             "share", "valid_from", "valid_to", "claims", "note", "review_status", "reviewer", "reviewed_at",
+             # 这条输入服务于接收方的哪项业务（关系链按业务收窄时用）；只有外部来源时，证实业务存在的一手证据
+             "recipient_activity", "corroborated_by"},
     "复核": {"id", "kind", "reviewer", "reviewed_at", "method", "scope", "basis", "record", "items"},
     "研究单元": {"id", "question", "activity", "entities", "observation", "metrics", "period", "required_inputs",
                  "known_gaps", "expected", "status"},
+    "查阅": {"id", "document", "subject", "subject_cik", "subject_name", "direction", "counterpart", "looked_for",
+             "method", "searched_at", "result", "relations", "claims", "note"},
 }
 
 
@@ -154,9 +171,12 @@ def _technical(reviews: dict[str, dict[str, Any]], known: set[str]) -> dict[str,
 def load_catalog(root: Path) -> Catalog:
     base = Path(root) / "config" / "supply_chain"
     docs: dict[str, Any] = {}
-    for name in FILES:
+    for name in FILES + OPTIONAL_FILES:
         path = base / f"{name}.yaml"
         if not path.exists():
+            if name in OPTIONAL_FILES:
+                docs[name] = {}
+                continue
             raise CatalogError(f"缺少产业链登记文件：{path}")
         doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         if doc.get("schema_version") != SCHEMA_VERSION:
@@ -189,10 +209,16 @@ def load_catalog(root: Path) -> Catalog:
     documents = index(docs["claims"].get("documents"), "原文", ("accession", "url", "file", "sha256", "accepted_at"))
     claims = index(docs["claims"].get("claims"), "证据", ("type", "origin_type", "review_status"))
     for c in claims.values():
-        _choice(c["type"], ("filing_text", "xbrl_segment"), f"证据 {c['id']} 的 type")
+        _choice(c["type"], CLAIM_TYPES, f"证据 {c['id']} 的 type")
         _choice(c["origin_type"], ORIGIN, f"证据 {c['id']} 的 origin_type")
-        _need(c, ("document", "locator", "excerpt") if c["type"] == "filing_text" else
-              ("accession", "tag", "segments", "period_end", "duration_quarters"), f"证据 {c['id']}")
+        _need(c, {"filing_text": ("document", "locator", "excerpt"),
+                  "xbrl_segment": ("accession", "tag", "segments", "period_end", "duration_quarters"),
+                  "external_report": ("publisher", "title", "published_at", "channel", "file", "sha256", "locator",
+                                      "summary", "display")}[c["type"]], f"证据 {c['id']}")
+        if c["type"] == "external_report":
+            _choice(c["display"], DISPLAY, f"证据 {c['id']} 的 display")
+            if c.get("excerpt"):
+                raise CatalogError(f"证据 {c['id']} 是外部报告：不保存原文摘录，只保存出处与摘要")
         # 人工复核状态与机器核对分开：confirmed 只能由人工复核给出，须写明复核人与日期
         _reviewed(c, f"证据 {c['id']}")
     links = index(docs["links"].get("links"), "映射", ("entity", "activity", "match", "claims"))
@@ -208,8 +234,15 @@ def load_catalog(root: Path) -> Catalog:
         _choice(u["status"], UNIT_STATUS, f"研究单元 {u['id']} 的 status")
     reviews = index(docs["reviews"].get("reviews"), "复核", ("kind", "reviewer", "reviewed_at", "method", "items"))
     technical = _technical(reviews, set(claims) | set(links) | set(relations))
+    searches = index(docs["searches"].get("searches"), "查阅",
+                     ("document", "direction", "looked_for", "method", "searched_at", "result"))
+    for q in searches.values():
+        _choice(q["direction"], DIRECTIONS, f"查阅 {q['id']} 的 direction")
+        _choice(q["result"], SEARCH_RESULTS, f"查阅 {q['id']} 的 result")
+        if not q.get("subject") and not (q.get("subject_cik") and q.get("subject_name")):
+            raise CatalogError(f"查阅 {q['id']} 须有登记主体 subject，或未登记公司的 subject_cik 与 subject_name")
     return Catalog(Path(root), activities, entities, links, relations, claims, documents, units,
-                   docs["activities"].get("version", ""), reviews, technical)
+                   docs["activities"].get("version", ""), reviews, technical, searches)
 
 
 def _available_at(accepted: str) -> str:
@@ -231,6 +264,8 @@ class Report:
     # 映射与关系的状态：invalid（自身有错误）/ rejected / retracted（人工否定或撤回）/
     # confirmed（人工确认）/ reviewed（技术复核通过）/ candidate；confirmed 与 reviewed 要求引用的证据全部已复核
     statuses: dict[str, str] = field(default_factory=dict)
+    # 关系的证据级别：primary / external_corroborated / external（见模块说明）
+    evidence_class: dict[str, str] = field(default_factory=dict)
     inventory: dict[str, Any] = field(default_factory=dict)
 
     def ok(self, kind: str) -> None:
@@ -365,6 +400,18 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
                 rep.ok("excerpt")
                 rep.claim_checks[c["id"]] = "verified"
             continue
+        if c["type"] == "external_report":
+            path = cat.root / "data" / "supply_chain" / "external" / c["file"]
+            if not path.exists():
+                rep.warnings.append(f"外部报告 {c['id']}（{c['file']}）不在本地，未核对")
+                rep.claim_checks[c["id"]] = "unverified"
+            elif hashlib.sha256(path.read_bytes()).hexdigest() != c["sha256"]:
+                rep.errors.append(f"外部报告 {c['id']} 的 SHA256 与登记不一致")
+                rep.claim_checks[c["id"]] = "failed"
+            else:
+                rep.ok("external_report")
+                rep.claim_checks[c["id"]] = "verified"
+            continue
         if c.get("value") is None or not c.get("unit"):
             rep.warnings.append(f"证据 {c['id']} 缺少数值或单位，未核对")
             rep.claim_checks[c["id"]] = "unverified"
@@ -409,7 +456,9 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
             cat.claims[cid]["review_status"] == "confirmed" or rep.technical.get(cid) == "passed")
 
     def claim_owner(c: dict[str, Any]) -> int | None:
-        """证据来自哪家公司的申报：原文看登记的主体，XBRL 看分部事实中的申报主体。"""
+        """证据来自哪家公司的申报：原文看登记的主体，XBRL 看分部事实中的申报主体；外部报告不属于任何公司。"""
+        if c["type"] == "external_report":
+            return None
         if c["type"] == "filing_text":
             doc = cat.documents.get(c["document"])
             return _company_cik(cat, doc.get("entity")) if doc else None
@@ -522,10 +571,58 @@ def check(cat: Catalog, naics: pd.DataFrame | None = None, segment_facts: pd.Dat
                 rep.errors.append(f"{where} 的占比既无数值也无范围")
             if not (share.get("denominator") and share.get("period")):
                 rep.errors.append(f"{where} 的占比须写明分母与期间")
+            if share.get("of") not in ends:
+                rep.errors.append(f"{where} 的占比须用 of 写明分母属于哪一方（{'、'.join(str(x) for x in ends)}）")
+        if r.get("recipient_activity") is not None:
+            if r["type"] not in DIRECTED:
+                rep.errors.append(f"{where} 是无向关系，不能有 recipient_activity")
+            elif r["recipient_activity"] not in cat.activities:
+                rep.errors.append(f"{where} 的 recipient_activity {r['recipient_activity']} 未登记")
+        kinds = [cat.claims[c]["type"] for c in r.get("claims") or [] if c in cat.claims]
+        corroboration = r.get("corroborated_by") or []
+        for cid in corroboration:
+            c = cat.claims.get(cid)
+            if c is None or c["type"] == "external_report":
+                rep.errors.append(f"{where} 的 corroborated_by 须是登记的一手证据：{cid}")
+        if any(k != "external_report" for k in kinds):
+            rep.evidence_class[r["id"]] = "primary"
+            if corroboration:
+                rep.errors.append(f"{where} 已有一手证据，不用 corroborated_by")
+        else:
+            rep.evidence_class[r["id"]] = "external_corroborated" if corroboration else "external"
         if key in keys:
             rep.errors.append(f"{where} 与 {keys[key]} 重复记录同一关系")
         keys[key] = r["id"]
         supported("关系", r, {_company_cik(cat, x) for x in ends if x}, before)
+
+    # ---- 查阅记录 ----
+    for q in cat.searches.values():
+        where = f"查阅 {q['id']}"
+        if q["document"] not in cat.documents:
+            rep.errors.append(f"{where} 引用了未登记的原文 {q['document']}")
+        subject = q.get("subject")
+        if subject is not None and subject not in cat.entities:
+            rep.errors.append(f"{where} 的主体 {subject} 未登记")
+        if q.get("counterpart") is not None and q["counterpart"] not in cat.entities:
+            rep.errors.append(f"{where} 的对手方 {q['counterpart']} 未登记")
+        named = False
+        for rid in q.get("relations") or []:
+            r = cat.relations.get(rid)
+            if r is None:
+                rep.errors.append(f"{where} 引用了未登记的关系 {rid}")
+                continue
+            ends = [r.get("provider"), r.get("recipient"), *(r.get("parties") or [])]
+            if subject is not None and subject not in ends:
+                rep.errors.append(f"{where} 的关系 {rid} 不涉及查阅主体 {subject}")
+            named |= any(cat.entities.get(x, {}).get("type") == "company" and x != subject for x in ends)
+        for cid in q.get("claims") or []:
+            c = cat.claims.get(cid)
+            if c is None or c.get("document") != q["document"]:
+                rep.errors.append(f"{where} 的证据 {cid} 未登记或不来自所查原文")
+        if q["result"] == "found" and not named:
+            rep.errors.append(f"{where} 记为 found，但没有引用点名对手方的关系")
+        if q["result"] == "not_found" and named:
+            rep.errors.append(f"{where} 记为 not_found，却引用了点名对手方的关系")
 
     # ---- 研究单元 ----
     for u in cat.units.values():
