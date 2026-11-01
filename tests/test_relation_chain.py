@@ -226,3 +226,30 @@ def test_study_refuses_bundles_with_unchecked_catalog(project, registry, store):
     spath = project / "config" / "studies" / "chain.yaml"
     spath.write_text(yaml.safe_dump(STUDY, allow_unicode=True), encoding="utf-8")
     assert run_study(project, spath)["status"] == "failed"
+
+
+def _edge(layer, src, to, relation, kind="supply", status="reviewed", evidence_class="primary", counterparty="company",
+          share=None):
+    return {"layer": layer, "from": src, "from_name": src.upper(), "to": to, "to_name": to.upper(), "relation": relation,
+            "type": kind, "activity_name": None, "status": status, "evidence_class": evidence_class,
+            "external_path": False, "counterparty_type": counterparty, "share": share}
+
+
+def test_chain_graph_draws_one_box_per_subject_and_one_link_per_relationship():
+    from investment_os.site.relation_chain import _wrap, chain_graph
+
+    up = {"layers": [[_edge(1, "root", "s", "r1", kind="foundry"), _edge(1, "root", "s", "r2"),
+                      _edge(1, "root", "t", "r3", status="candidate", evidence_class="external", share={"value": 0.163})],
+                     [_edge(2, "s", "anon_in", "r4", counterparty="anonymous")]],
+          "breakpoints": [{"node": "s", "relation": "r2", "reason": "not_searched", "layer": 2}]}
+    down = {"layers": [[_edge(1, "root", "buyer<b>", "r5", counterparty="anonymous")]], "breakpoints": []}
+    res = {"root": "root", "root_name": "Root Co", "depth": 2, "upstream": up, "downstream": down,
+           "reverse_search": [{"subject": "Buyer"}], "summary": {"reverse_searched": 3, "reverse_found": 0}}
+    svg = chain_graph({"results": res})
+    assert svg.count('<path class="cg-edge') == 5  # 同一对主体的两条关系各画一条
+    assert svg.count('class="cg-node') == 6        # s 只有一个框；另有 t、anon_in、root、buyer、反向检索
+    assert 'class="cg-edge unreviewed external"' in svg and "占比 16.3%" in svg
+    assert "停止：尚未查阅" in svg and 'href="#chain-reverse-search"' in svg
+    assert "BUYER&lt;B&gt;" in svg and "<b>" not in svg  # SVG 文字转义，不含 HTML 标签
+    assert _wrap("Taiwan Semiconductor Manufacturing Company Limited and more words", 13, 2)[-1].endswith("…")
+    assert _wrap("台积电 2025 年设备供应商（未点名）", 13, 3) == ["台积电 2025 年设备供应商（", "未点名）"]
