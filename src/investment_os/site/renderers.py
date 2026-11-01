@@ -17,6 +17,7 @@ from .common import CHECK_LABEL, USE_LABEL, chip, e, num, stat
 from .coverage import coverage_strip
 from .findings_en import COVERAGE_LABEL_EN, coverage_summary_en
 from .i18n import L, is_en, te
+from .visuals import axis, heatmap, panel, panels, scaled, series, view
 
 Html = str
 Text = tuple[str, str]  # (中文, English)，取值时按当前语言
@@ -491,6 +492,48 @@ def _attr_detail(result: dict[str, Any]) -> Html:
     return out
 
 
+def _attr_chart(result: dict[str, Any]) -> dict[str, Any] | None:
+    """瀑布图：各部分依次相加到名义变化（bp）；路径图：各部分相对期初的逐日累计变化。"""
+    r = result["results"]
+    if not r.get("long_end"):
+        return None
+    lg, sh, sl = r["long_end"], r["short_end"], r["slope"]
+    name = lambda k: L(*_ATTR_NAMES[k])  # noqa: E731
+
+    def steps(parts: list[tuple[str, Any, str]], total_label: str, total: Any, total_ref: str) -> list[dict[str, Any]]:
+        pts = [{"x": name(k), "y": v, "ref": ref} for k, v, ref in parts
+               if v is not None and not (k == "residual" and abs(v) < 0.05)]  # 取整残差几乎为零时不画
+        return pts + [{"x": total_label, "y": total, "total": True, "ref": total_ref}]
+    views = [
+        view(lg["tenor"], series(lg["tenor"], steps(
+            [(k, lg[k]["change_bp"], f"results.long_end.{k}") for k in ("real", "breakeven")]
+            + [("residual", lg.get("residual_bp"), "results.long_end.residual_bp")],
+            L(f"{lg['tenor']} 名义变化", f"{lg['tenor']} nominal change"), lg["nominal"]["change_bp"], "results.long_end.nominal"))),
+        view(sh["tenor"], series(sh["tenor"], steps(
+            [(k, sh[k]["change_bp"], f"results.short_end.{k}") for k in ("policy", "spread")],
+            L(f"{sh['tenor']} 名义变化", f"{sh['tenor']} nominal change"), sh["nominal"]["change_bp"], "results.short_end.nominal"))),
+        view(sl["label"], series(sl["label"], steps(
+            [(k, v, f"results.slope.contributions_bp.{k}") for k, v in sl.get("contributions_bp", {}).items()],
+            L(f"{sl['label']} 变化", f"{sl['label']} change"), sl["change_bp"], "results.slope.change_bp"))),
+    ]
+    waterfall = panel("waterfall", L("各部分对名义变化的贡献", "Contributions to the nominal change"), axis(""),
+                      axis(L("变化", "Change"), "bp", 0, zero=True), views, views_label=L("对象", "Leg"),
+                      note=L("蓝为增加、红为减少，灰色为合计；斜率的各部分已按 长端 − 短端 取号。",
+                             "Blue adds, red subtracts, grey is the total; slope contributions are signed as long minus short."))
+    path = (result.get("tables") or {}).get("path_bp") or []
+
+    def lines(keys: list[tuple[str, str, int]]) -> dict[str, Any]:
+        return [series(label, [{"x": row["date"], "y": row.get(k)} for row in path], slot=slot) for k, label, slot in keys]
+    path_panel = panel("line", L("相对期初的逐日累计变化", "Daily cumulative change from the start"),
+                       axis(L("日期", "Date")), axis(L("累计变化", "Cumulative change"), "bp", 0),
+                       [view(lg["tenor"], *lines([("long", L(f"{lg['tenor']} 名义", f"{lg['tenor']} nominal"), 0),
+                                                  ("real", name("real"), 1), ("breakeven", name("breakeven"), 2)])),
+                        view(sh["tenor"], *lines([("short", L(f"{sh['tenor']} 名义", f"{sh['tenor']} nominal"), 0),
+                                                  ("policy", name("policy"), 3), ("spread", name("spread"), 4)]))],
+                       views_label=L("对象", "Leg"), wide=True)
+    return panels(waterfall, path_panel)
+
+
 def _attr_evidence(result: dict[str, Any]) -> list[tuple[str, Html]]:
     v, cov = result["validation"], result["coverage"]
     rows = []
@@ -542,7 +585,7 @@ ATTRIBUTION = Renderer(
                         lambda r: num(((r["results"].get("long_end") or {}).get("nominal") or {}).get("change_bp"), 0, True)),
                        (("斜率变化 bp", "Slope change bp"),
                         lambda r: num((r["results"].get("slope") or {}).get("change_bp"), 0, True))),
-    chart_data=lambda r: None,
+    chart_data=_attr_chart,
     figures_t=(("attribution_bars.png", ("各部分对 10Y、2Y 与斜率变化的贡献",
                                          "Contributions to the 10Y, 2Y and slope changes")),
                ("attribution_path.png", ("各部分相对期初的逐日累计变化", "Daily cumulative change of each part"))),
@@ -640,11 +683,12 @@ def _asset_detail(result: dict[str, Any]) -> Html:
     full = corr.get("full")
     if full and full.get("matrix"):
         matrix = full["matrix"]
-        names = list(matrix)
+        names = [(a, _an(a)) for a in matrix]
         heading = L("年度回报相关矩阵（完整样本）", "Annual-return correlation matrix (full sample)")
-        header = "<th></th>" + "".join(f"<th>{e(_an(a))}</th>" for a in names)
-        rows = "".join(f"<tr><th>{e(_an(a))}</th>" + "".join(f"<td>{num(matrix[a].get(b), 2, True)}</td>" for b in names) + "</tr>" for a in names)
-        out += f'<p id="asset-correlations">{heading} · {full["first_year"]}–{full["last_year"]}</p><div class="scroll"><table class="compact"><thead><tr>{header}</tr></thead><tbody>{rows}</tbody></table></div>'
+        out += (f'<p id="asset-correlations">{heading} · {full["first_year"]}–{full["last_year"]}</p>'
+                + heatmap(names, names, lambda a, b: (matrix[a].get(b), None) if a != b else None,
+                          lambda v: num(v, 2, True), top=1.0,
+                          legend=L("蓝为同向、红为反向；对角线省略", "blue: move together; red: move opposite; diagonal omitted")))
     blocks = [b for b in [corr.get("full"), *corr.get("periods", [])] if b and "SP500" in b["matrix"]]
     if blocks:
         ch = L("<th>期间</th><th>股票与 10 年期国债</th><th>股票与 Baa 公司债</th><th>股票与黄金</th>",
@@ -660,6 +704,46 @@ def _asset_detail(result: dict[str, Any]) -> Html:
                 + e(L("；", "; ").join(f"{L('相对' + (' ' if _an(k)[0].isdigit() else ''), 'vs ')}{_an(k)} {num(v * 100, 1)} pp"
                                       for k, v in erp.items())) + "</p>")
     return out
+
+
+def _asset_chart(result: dict[str, Any]) -> dict[str, Any] | None:
+    """累计财富（可切换对数刻度）、回报与波动率散点（名义 / 实际）、最大回撤、标普 500 滚动回报。"""
+    r, t = result["results"], result.get("tables") or {}
+    assets = r.get("assets", [])
+    slot = {a: i for i, a in enumerate(assets)}  # 颜色跟随资产，不随筛选重排
+    wealth = panel("line", L("1 美元的累计财富（名义）", "Cumulative wealth of $1 (nominal)"),
+                   axis(L("年份", "Year"), type="linear"), axis(L("财富", "Wealth"), L("美元", "USD"), 2, log_toggle=True, log_default=True),
+                   [view("", *[series(_an(a), [{"x": row["year"], "y": row.get(a)} for row in t.get("wealth_index", [])],
+                                      slot=slot[a]) for a in assets])],
+                   wide=True, height=320,
+                   note=L("年末财富，起点 1 美元；长期复利差异在对数刻度下更容易比较。", "Year-end wealth from $1; log scale makes long-run compounding easier to compare."))
+
+    def risk_view(label: str, block: dict[str, Any], prefix: str) -> dict[str, Any]:
+        pts = [{"x": scaled(v["volatility"]), "y": scaled(v["geometric"]), "label": _an(a), "ref": f"results.{prefix}.{a}"}
+               for a, v in block.items() if v.get("volatility") is not None]
+        return view(label, series(L("资产", "Assets"), pts))
+    nom, real = r.get("nominal", {}), r.get("real", {})
+    views = [risk_view(L(f"名义 {r.get('first_year')}–{r.get('last_year')}", f"Nominal {r.get('first_year')}–{r.get('last_year')}"), nom, "nominal")]
+    first_real = next(iter(real.values()), None)
+    if first_real:
+        views.append(risk_view(L(f"实际 {first_real['first_year']}–{first_real['last_year']}",
+                                 f"Real {first_real['first_year']}–{first_real['last_year']}"), real, "real"))
+    scatter = panel("scatter", L("年化回报与波动率", "Annualized return vs volatility"),
+                    axis(L("波动率", "Volatility"), "%"), axis(L("几何平均回报", "Geometric mean return"), "%"),
+                    views, labels=True, views_label=L("口径", "Basis"))
+    drawdown = panel("bar", L("最大回撤（年度数据）", "Maximum drawdown (annual data)"), axis(""),
+                     axis(L("最大回撤", "Maximum drawdown"), "%"),
+                     [view("", series(L("最大回撤", "Maximum drawdown"),
+                                      [{"x": _an(a), "y": scaled(nom[a]["max_drawdown"]), "ref": f"results.nominal.{a}"}
+                                       for a in assets if a in nom], slot=7))],
+                     horizontal=True, note=L("年度数据的回撤浅于月度；股票的月度回撤见上方指标。",
+                                             "Annual-data drawdowns are shallower than monthly ones; the equity monthly drawdown is in the stats above."))
+    window = (r.get("rolling") or {}).get("window_years")
+    rolling = panel("line", L(f"标普 500 的 {window} 年滚动年化回报", f"S&P 500 {window}-year rolling annualized return"),
+                    axis(L("窗口结束年份", "Window end year"), type="linear"), axis(L("年化回报", "Annualized return"), "%"),
+                    [view("", series(_an("SP500"), [{"x": row["end_year"], "y": scaled(row.get("SP500"))}
+                                                     for row in t.get("rolling", [])], slot=slot.get("SP500", 0)))])
+    return panels(wealth, scatter, drawdown, rolling)
 
 
 def _asset_evidence(result: dict[str, Any]) -> list[tuple[str, Html]]:
@@ -707,7 +791,7 @@ ASSETS = Renderer(
     history_columns_t=((("期间", "Period"), lambda r: f"{r['results'].get('first_year')}–{r['results'].get('last_year')}"),
                        (("标普 500 年化", "S&P 500 annualized"),
                         lambda r: _pc(((r["results"].get("nominal") or {}).get("SP500") or {}).get("geometric")))),
-    chart_data=lambda r: None,
+    chart_data=_asset_chart,
     figures_t=(("risk_return.png", ("各资产的年化回报与波动率", "Annualized return and volatility by asset")),
                ("wealth.png", ("各资产 1 美元的累计财富", "Cumulative wealth of $1 by asset")),
                ("correlations.png", ("年度回报的相关系数", "Correlation of annual returns")),

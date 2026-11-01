@@ -18,12 +18,14 @@ import pandas as pd
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from cycler import cycler  # noqa: E402
 from matplotlib import font_manager  # noqa: E402
 
 from ..analytics.rates import curvature_label, spread_label  # noqa: E402
 from ..research.findings import COVERAGE_LABEL, completeness, coverage_summary  # noqa: E402
 from ..tenor import parse_tenor  # noqa: E402
 from .company import sections as company_sections
+from .palette import PALETTE  # noqa: E402
 from .industry import figures as industry_figures, sections as industry_sections  # noqa: E402
 from .chip import check_line as chip_check_line, figures as chip_figures, sections as chip_sections  # noqa: E402
 from .refining import (baseline_line, figures as refining_figures, investment_figures, investment_sections,  # noqa: E402
@@ -78,7 +80,8 @@ def _t(zh: str, en: str) -> str:
 
 def _style() -> None:
     plt.rcParams.update({"figure.dpi": 110, "axes.spines.top": False, "axes.spines.right": False,
-                         "axes.grid": True, "grid.alpha": 0.3, "font.size": 9})
+                         "axes.grid": True, "grid.alpha": 0.3, "font.size": 9,
+                         "axes.prop_cycle": cycler(color=PALETTE)})
     if font := _cjk_font():
         plt.rcParams.update({"font.sans-serif": [font, "DejaVu Sans"], "axes.unicode_minus": False})
 
@@ -193,7 +196,7 @@ def _attribution_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[st
                sh["nominal"]["change_bp"]),
               (sl["label"], {k: v for k, v in sl["contributions_bp"].items() if k != "residual"}, sl["change_bp"])]
     fig, ax = plt.subplots(figsize=(7, 3.6))
-    colors = {"real": "#2b5a87", "breakeven": "#8fb6dd", "policy": "#a12d2d", "spread": "#f09a9a"}
+    colors = {"real": PALETTE[0], "breakeven": PALETTE[2], "policy": PALETTE[1], "spread": PALETTE[3]}
     for x, (_, parts, total) in enumerate(groups):
         pos = neg = 0.0
         for k, v in parts.items():

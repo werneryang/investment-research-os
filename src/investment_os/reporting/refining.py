@@ -217,6 +217,7 @@ def sp500_line(v: dict[str, Any]) -> str:
 def investment_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str, Path]]:
     import matplotlib.pyplot as plt
 
+    from .palette import PALETTE
     from .report import _save, _style
 
     weekly = result["tables"].get("weekly") or []
@@ -227,14 +228,12 @@ def investment_figures(result: dict[str, Any], out_dir: Path) -> list[tuple[str,
     figs: list[tuple[str, Path]] = []
     w = pd.DataFrame(weekly)
     w["week_ending"] = pd.to_datetime(w["week_ending"])
-    fig, ax = plt.subplots(figsize=(8, 3.6))
-    ax.plot(w["week_ending"], w["crack"], lw=1, label="3-2-1 crack spread ($/bbl, left)")
-    ax2 = ax.twinx()
-    ax2.plot(w["week_ending"], w["utilization"], lw=1, color="tab:orange", label="Utilization (%, right)")
-    ax.set_title("Gulf Coast 3-2-1 crack spread and U.S. refinery utilization, weekly")
-    lines = ax.get_lines() + ax2.get_lines()
-    ax.legend(lines, [x.get_label() for x in lines], frameon=False, loc="upper center",
-              bbox_to_anchor=(0.5, -0.12), ncol=2)
+    # 两个量纲不同的序列分画上下两图、共用时间轴，不用双纵轴
+    fig, (ax, ax2) = plt.subplots(2, 1, figsize=(8, 4.6), sharex=True)
+    ax.plot(w["week_ending"], w["crack"], lw=1)
+    ax.set_title("Gulf Coast 3-2-1 crack spread ($/bbl), weekly", fontsize=9, loc="left")
+    ax2.plot(w["week_ending"], w["utilization"], lw=1, color=PALETTE[1])
+    ax2.set_title("U.S. refinery utilization (%), weekly", fontsize=9, loc="left")
     figs.append(("周度裂解价差与利用率", _save(fig, out_dir / "refining_crack_utilization.png")))
 
     annual = pd.DataFrame(result["tables"].get("annual_tsr") or [])

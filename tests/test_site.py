@@ -71,8 +71,11 @@ def test_build_site_from_runs(loaded):
     assert 'class="coverage"' in study and "cov-ok" in study
     assert old["run_id"] in study and latest["run_id"] in study  # 无档案时历史列出全部运行
     run_dir = site / "runs" / latest["run_id"]
-    for name in ("report.html", "manifest.json", "result.json", "chart.json", "figures/spreads.png"):
+    for name in ("report.html", "manifest.json", "result.json", "chart.json", "chart.en.json", "figures/spreads.png"):
         assert (run_dir / name).exists()
+    # 交互图表数据按页面语言各一份
+    assert f'{latest["run_id"]}/chart.json"' in study
+    assert f'{latest["run_id"]}/chart.en.json"' in (site / "en" / "studies" / "ust_curve_test" / "index.html").read_text(encoding="utf-8")
     report = (run_dir / "report.html").read_text(encoding="utf-8")
     assert '<a href="../../index.html">' in report and "10Y − 2Y" in report and "a {" in report
     assert (site / "latest" / "ust_curve_test" / "report.html").exists()
