@@ -812,6 +812,22 @@ sources:
           台积电 2023、2024 年新台币营收 2,161,735.8、2,894,307.7 百万元与 Company Facts 一致（2025 年 20-F 的数字 Company Facts
           尚未收录，只在原文中核对）；NVIDIA 计算与网络分部 193,479、Micron CMBU 13,524 百万美元与芯片证据包的已复核 XBRL 证据一致
         scope: 关系链登记快照与链上公司各一份年报中三个财年的合并与业务分部营收；不含其他公司或其他年报
+      - dataset: relation_chain_evidence
+        status: use_verified
+        use: descriptive
+        date: "2026-10-31"
+        # 核验覆盖的财年期间：Micron 2023 财年（2022-09-02 起）至 Fabrinet 2026 财年（2026-06-26 止，月份口径）
+        valid_from: "2022-09-01"
+        valid_through: "2026-06-30"
+        evidence: >-
+          基线运行 chip_relation_chain_nvda-20261101T014306Z-20721020（证据包 v20261101T012836Z-c1ed8bc0），代码 aa2cddb，dirty=false，
+          2026-10-31 iros verify 以固定输入重算结果校验值一致（171d4f95…）。关系链：上游第 1 层 8 条关系（7 家点名公司）全部为已复核，
+          第 2 层 6 条匿名投入；断点按原因计数与登记逐条核对（业务未定 3、已查原文未披露 2、匿名 6、尚未查阅 3；下游匿名 2）；
+          14 份反向检索原文均未出现 NVIDIA。营收：NVIDIA 与 Micron 的分部营收（含其他分部）合计与合并营收逐年一致（6 个财年），
+          同比只在同一申报、同一币种内计算。技术复核由模型完成，不是人工签认
+        scope: >-
+          以登记关系描述 NVIDIA 上下游两层的结构与断点，以及链上公司在各自年报中的三个财年营收与同比；使用当前申报数据。
+          不包括影响大小或份额推算、跨层占比相乘、因果判断、预测、未登记的关系或尚未查阅的年报；核验范围之外的期间须先补充核验
       - dataset: edgar_companyfacts
         status: access_verified
         date: "2026-10-24"
