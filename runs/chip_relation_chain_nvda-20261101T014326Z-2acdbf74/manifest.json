@@ -1,0 +1,132 @@
+{
+  "run_id": "chip_relation_chain_nvda-20261101T014326Z-2acdbf74",
+  "study_id": "chip_relation_chain_nvda",
+  "study_path": "config/studies/chip_relation_chain_nvda.yaml",
+  "study_config": {
+    "study_id": "chip_relation_chain_nvda",
+    "title": "NVIDIA 的上下游关系链（2026 财年申报）",
+    "question": "从 NVIDIA 2026 财年年报披露的直接关系出发，按登记的关系向上游、下游各展开两层，需求可能沿哪些公司与业务传导？ 链在哪里断开、为什么断开？NVIDIA 营收上升期间，链上供应方在各自年报中的营收是否同期上升？",
+    "result_type": "descriptive",
+    "branch": "relation_chain",
+    "scope": {
+      "market": "US",
+      "start": "2022-09-01",
+      "end": "2026-06-30",
+      "frequency": "annual",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-11-01T01:43:26+00:00",
+      "data_checked_at": {
+        "relation_chain_evidence": "2026-11-01T01:28:36+00:00"
+      }
+    },
+    "data": {
+      "evidence": "relation_chain_evidence"
+    },
+    "method": {
+      "root": "co_nvidia",
+      "depth": 2,
+      "as_of": "2026-10-31",
+      "downstream_notes": [
+        "clm_nvda26_customer_types",
+        "clm_nvda26_indirect_concentration"
+      ]
+    },
+    "benchmark": "关系链只来自登记的原文证据；营收与同比取自各公司自己的年报",
+    "evaluation": [
+      "只经过已复核的关系；每个停止展开处都有断点原因",
+      "「已查原文、未披露」与「尚未查阅」分开",
+      "营收同比只在同一申报、同一币种内计算；分部合计与合并营收一致",
+      "固定证据包版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "关系来自公司年报的披露：「such as」等列举不是完整名单，没有披露不等于没有关系",
+      "占比只按原文口径列出（NVIDIA 对两个匿名客户的销售占其营收、Fabrinet 对 NVIDIA 的销售占其营收），不推算其他公司的份额，也不相乘推算间接敞口",
+      "上游第二层只读了 SEC 上的年报（台积电 20-F、Micron 10-K）；三星、SK 海力士、鸿海、纬创的当地披露尚未查阅",
+      "下游反向检索只查了公司样本中已有的 14 家公司的最新 10-K；其他服务器、系统厂商与云厂商留待后续",
+      "Micron 已有 2026 财年 10-K（2026-10-09 提交），本研究的查阅与营收仍基于 2025 财年 10-K",
+      "营收为各公司财年口径，财年截止月不同（NVIDIA 1 月下旬、台积电 12 月、Micron 8 月下旬、Fabrinet 6 月下旬）；台积电为新台币，不换算",
+      "同期营收变化是描述，不说明由 NVIDIA 带动，也不是预测"
+    ]
+  },
+  "study_config_hash": "c03a801701b05d4ddf5c06b119a02bb8d24b62fc7f87b40f13251277260c423f",
+  "started_at": "2026-11-01T01:43:26+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "7fd4cbfb679b0befac7133137b01b46c78d58d83fb294f89bae0496fd4bc52ed",
+    "git_commit": "6d24782d0b1f3facb9299d43806e393517374a89",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.13",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "partial",
+  "inputs": [
+    {
+      "role": "evidence",
+      "used": true,
+      "dataset_id": "relation_chain_evidence",
+      "version_id": "v20261101T012836Z-c1ed8bc0",
+      "content_hash": "c1ed8bc0bbf8c18dd9ef107cf72fde0200bef93ae474fd1d9cbe1a08f5fdee97",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2022-09-01",
+            "2026-06-30"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-31"
+        ]
+      }
+    }
+  ],
+  "result_hash": "fb43a4761dbd764936a8cb68344f1582e8a4012d75b58c75f236ad9905e8d07a",
+  "warnings": [],
+  "unsupported": [
+    {
+      "item": "链上各公司受影响的金额或比例",
+      "kind": "scope",
+      "reason": "关系链只描述登记的关系；对方收入中来自起点公司的份额大多未披露，各层占比不相乘、不推算间接敞口"
+    },
+    {
+      "item": "因果判断",
+      "kind": "scope",
+      "reason": "同期营收变化不说明由起点公司带动或拉动"
+    },
+    {
+      "item": "营收对照：Hon Hai Precision Industry Co., Ltd.、Samsung Electronics Co., Ltd.、SK hynix Inc.、Wistron Corporation",
+      "kind": "data",
+      "reason": "这些公司不在 SEC 申报，第一版尚未取得其年报"
+    },
+    {
+      "item": "Q2b 下游客户资本开支对照",
+      "kind": "data",
+      "reason": "下游链上没有原文点名的公司：起点的直接客户匿名，反向检索的 14 家公司年报都没有点名"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runs/chip_relation_chain_nvda-20261101T014326Z-2acdbf74/result.json",
+      "sha256": "d4c9ad4681a20e9616a0cf7daec1d5a9b153346ae0877916ce38b9b84b579866"
+    },
+    {
+      "path": "reports/chip_relation_chain_nvda/chip_relation_chain_nvda-20261101T014326Z-2acdbf74/report.md",
+      "sha256": "d291dfcb1d5d7581123672d7d43e39ba1a28aa5d850ef4fe5c9a6e3f142a0d32"
+    },
+    {
+      "path": "reports/chip_relation_chain_nvda/chip_relation_chain_nvda-20261101T014326Z-2acdbf74/report.html",
+      "sha256": "3578dc54123b0bb1486f556de4d2edf66d8366fb5e62bba3f995d5c189eeb26a"
+    }
+  ],
+  "finished_at": "2026-11-01T01:43:26+00:00"
+}

@@ -1,0 +1,1951 @@
+{
+  "study_id": "chip_relation_chain_nvda",
+  "title": "NVIDIA 的上下游关系链（2026 财年申报）",
+  "question": "从 NVIDIA 2026 财年年报披露的直接关系出发，按登记的关系向上游、下游各展开两层，需求可能沿哪些公司与业务传导？ 链在哪里断开、为什么断开？NVIDIA 营收上升期间，链上供应方在各自年报中的营收是否同期上升？",
+  "result_type": "descriptive",
+  "branch": "relation_chain",
+  "scope": {
+    "market": "US",
+    "start": "2022-09-01",
+    "end": "2026-06-30",
+    "frequency": "annual",
+    "vintage_policy": "latest",
+    "evaluated_at": "2026-11-01T01:43:26+00:00",
+    "data_checked_at": {
+      "relation_chain_evidence": "2026-11-01T01:28:36+00:00"
+    }
+  },
+  "data_cutoff": "2026-08-19",
+  "methods": {
+    "description": "从固定的关系链证据包按登记的有向关系向上游、下游逐层展开：方向不混用，只沿与上一条边相关的业务展开，只经过已复核的关系，匿名对手方、业务未定、未复核与层数上限处停止，并按查阅记录区分「已查原文、未披露」与「尚未查阅」。营收取自各公司自己的一份年报（三个财年），只计算同一申报、同一币种内的同比。",
+    "parameters": {
+      "root": "co_nvidia",
+      "depth": 2,
+      "as_of": "2026-10-31",
+      "downstream_notes": [
+        "clm_nvda26_customer_types",
+        "clm_nvda26_indirect_concentration"
+      ]
+    },
+    "bundle": {
+      "built_at": "2026-11-01T01:28:36+00:00",
+      "catalog_files": {
+        "activities": "da9d07bcccc2f1ebf266ca470b71cdf2dab1e4b507fd6abfea1fc4cdf3fd3641",
+        "entities": "7318aaf6a1f2106c875ed73d6640de7ac87e5c5c02780547815428ab64120775",
+        "links": "b9dbc338ab416073b09cbdcfbd93437308da7fa8accda1e44defc214e2736aba",
+        "relations": "f1d07382e8dee217f134565db1e7ca956a5e34f7aa49fea04e55b9a995cde320",
+        "claims": "1102486779951523458f96f3f173fd593c46b3819dec77038a51fd7541e79d7c",
+        "units": "b480d82e09c87225472e3f38c828c021627cefe11e17d7a491e1b7c47bba23d1",
+        "reviews": "efab2dc6f9539d372151f339314320d5ac4b2c23aae8df3a7184e0b0bc54e866",
+        "searches": "777db35cf7ca71296befdf1f4b3c6c6f6796c88ccc5c3df4b923a6e8fd316319"
+      },
+      "revenue_documents": {
+        "co_nvidia": "doc_nvda_10k_fy2026",
+        "co_tsmc": "doc_tsmc_20f_fy2025",
+        "co_micron": "doc_mu_10k_fy2025",
+        "co_fabrinet": "doc_fn_10k_fy2026"
+      }
+    },
+    "catalog_version": "v2"
+  },
+  "inputs": [
+    {
+      "role": "evidence",
+      "dataset_id": "relation_chain_evidence",
+      "version_id": "v20261101T012836Z-c1ed8bc0",
+      "content_hash": "c1ed8bc0bbf8c18dd9ef107cf72fde0200bef93ae474fd1d9cbe1a08f5fdee97",
+      "source_id": "sec_edgar",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2022-09-01",
+            "2026-06-30"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-31"
+        ]
+      }
+    }
+  ],
+  "results": {
+    "root": "co_nvidia",
+    "root_name": "NVIDIA Corporation",
+    "as_of": "2026-10-31",
+    "depth": 2,
+    "upstream": {
+      "root": "co_nvidia",
+      "direction": "upstream",
+      "depth": 2,
+      "as_of": "2026-10-31",
+      "layers": [
+        [
+          {
+            "relation": "rel_fabrinet_nvda_atp",
+            "layer": 1,
+            "from": "co_nvidia",
+            "to": "co_fabrinet",
+            "type": "contract_manufacturing",
+            "activity": null,
+            "recipient_activity": null,
+            "activity_gap": "同上，原文未说明组装对象；Fabrinet 10-K 只给出对 NVIDIA 的销售占比，也未说明产品",
+            "product": "最终产品的组装、测试与封装",
+            "share": {
+              "value": 0.163,
+              "numerator": "对 NVIDIA 的销售",
+              "denominator": "Fabrinet 总营收",
+              "period": "FY2026（截至 2026-06-26）",
+              "of": "co_fabrinet"
+            },
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_fabrinet",
+              "co_nvidia"
+            ],
+            "available_at": "2026-02-26T00:00:00-05:00",
+            "limits": "双方都披露：NVIDIA 原文列举 Fabrinet，Fabrinet 原文给出 NVIDIA 占其 2026 财年营收 16.3%；占比为全部销售，产品与业务未说明",
+            "note": "双方都披露。占比是 Fabrinet 对 NVIDIA 的全部销售，不限于组装、测试与封装；2025、2024 财年分别为 27.6%、35.1%",
+            "external_path": false,
+            "counterparty_type": "company",
+            "cycle": false,
+            "from_name": "NVIDIA Corporation",
+            "to_name": "Fabrinet",
+            "activity_name": null,
+            "recipient_activity_name": null,
+            "disclosed_by_names": [
+              "Fabrinet",
+              "NVIDIA Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_nvda26_atp",
+                "locator": "Part I, Item 1 Business — Manufacturing",
+                "excerpt": "We engage with independent subcontractors and contract manufacturers such as Hon Hai Precision Industry Co., Ltd., Wistron Corporation, and Fabrinet to perform assembly, testing and packaging of our final products.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              },
+              {
+                "claim": "clm_fn26_customers",
+                "locator": "Part I, Item 1A Risk Factors — customer concentration",
+                "excerpt": "During fiscal year 2026, Cisco Systems, Inc., NVIDIA Corporation, Nokia Corporation and Amazon.com, Inc. contributed 19.9%, 16.3%, 10.7% and 10.5%, respectively, of our revenues.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1408710/000140871026000028/fn-20260626.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_honhai_nvda_atp",
+            "layer": 1,
+            "from": "co_nvidia",
+            "to": "co_hon_hai",
+            "type": "contract_manufacturing",
+            "activity": null,
+            "recipient_activity": null,
+            "activity_gap": "原文为 assembly, testing and packaging of our final products，未说明是芯片封装测试还是板卡与系统组装",
+            "product": "最终产品的组装、测试与封装",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_nvidia"
+            ],
+            "available_at": "2026-02-26T00:00:00-05:00",
+            "limits": "鸿海为 NVIDIA 最终产品提供组装、测试与封装；对象可能含板卡与系统，业务未定，不能等同芯片封装测试",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "company",
+            "cycle": false,
+            "from_name": "NVIDIA Corporation",
+            "to_name": "Hon Hai Precision Industry Co., Ltd.",
+            "activity_name": null,
+            "recipient_activity_name": null,
+            "disclosed_by_names": [
+              "NVIDIA Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_nvda26_atp",
+                "locator": "Part I, Item 1 Business — Manufacturing",
+                "excerpt": "We engage with independent subcontractors and contract manufacturers such as Hon Hai Precision Industry Co., Ltd., Wistron Corporation, and Fabrinet to perform assembly, testing and packaging of our final products.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_micron_nvda_memory",
+            "layer": 1,
+            "from": "co_nvidia",
+            "to": "co_micron",
+            "type": "supply",
+            "activity": "act_memory_production",
+            "recipient_activity": null,
+            "activity_gap": null,
+            "product": "存储芯片（原文未区分 HBM 或其他类型）",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_nvidia"
+            ],
+            "available_at": "2026-02-26T00:00:00-05:00",
+            "limits": "NVIDIA 向 Micron 采购存储芯片；Micron 一方未点名 NVIDIA，不推出 Micron 的客户集中度",
+            "note": "只有 NVIDIA 一方披露；Micron 的 10-K 没有点名 NVIDIA，不能据此推出 Micron 的客户集中度或采购份额",
+            "external_path": false,
+            "counterparty_type": "company",
+            "cycle": false,
+            "from_name": "NVIDIA Corporation",
+            "to_name": "Micron Technology, Inc.",
+            "activity_name": "存储芯片生产与销售",
+            "recipient_activity_name": null,
+            "disclosed_by_names": [
+              "NVIDIA Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_nvda26_memory",
+                "locator": "Part I, Item 1 Business — Manufacturing",
+                "excerpt": "We purchase memory from SK Hynix Inc., Micron Technology, Inc., and Samsung.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_samsung_nvda_foundry",
+            "layer": 1,
+            "from": "co_nvidia",
+            "to": "co_samsung",
+            "type": "foundry",
+            "activity": "act_wafer_foundry",
+            "recipient_activity": "act_chip_design",
+            "activity_gap": null,
+            "product": "半导体晶圆",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_nvidia"
+            ],
+            "available_at": "2026-02-26T00:00:00-05:00",
+            "limits": "同上，三星为列举的晶圆代工方；不证明份额或当前量产产品",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "company",
+            "cycle": false,
+            "from_name": "NVIDIA Corporation",
+            "to_name": "Samsung Electronics Co., Ltd.",
+            "activity_name": "晶圆代工",
+            "recipient_activity_name": "芯片设计（无晶圆厂）",
+            "disclosed_by_names": [
+              "NVIDIA Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_nvda26_foundry",
+                "locator": "Part I, Item 1 Business — Manufacturing",
+                "excerpt": "We utilize foundries, such as Taiwan Semiconductor Manufacturing Company Limited, or TSMC, and Samsung Electronics Co., Ltd., or Samsung, to produce our semiconductor wafers.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_samsung_nvda_memory",
+            "layer": 1,
+            "from": "co_nvidia",
+            "to": "co_samsung",
+            "type": "supply",
+            "activity": "act_memory_production",
+            "recipient_activity": null,
+            "activity_gap": null,
+            "product": "存储芯片（原文未区分 HBM 或其他类型）",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_nvidia"
+            ],
+            "available_at": "2026-02-26T00:00:00-05:00",
+            "limits": "NVIDIA 向三星采购存储芯片；原文未区分 HBM 或其他类型",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "company",
+            "cycle": false,
+            "from_name": "NVIDIA Corporation",
+            "to_name": "Samsung Electronics Co., Ltd.",
+            "activity_name": "存储芯片生产与销售",
+            "recipient_activity_name": null,
+            "disclosed_by_names": [
+              "NVIDIA Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_nvda26_memory",
+                "locator": "Part I, Item 1 Business — Manufacturing",
+                "excerpt": "We purchase memory from SK Hynix Inc., Micron Technology, Inc., and Samsung.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_skhynix_nvda_memory",
+            "layer": 1,
+            "from": "co_nvidia",
+            "to": "co_sk_hynix",
+            "type": "supply",
+            "activity": "act_memory_production",
+            "recipient_activity": null,
+            "activity_gap": null,
+            "product": "存储芯片（原文未区分 HBM 或其他类型）",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_nvidia"
+            ],
+            "available_at": "2026-02-26T00:00:00-05:00",
+            "limits": "NVIDIA 向 SK 海力士采购存储芯片；原文未区分 HBM 或其他类型，不推出份额",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "company",
+            "cycle": false,
+            "from_name": "NVIDIA Corporation",
+            "to_name": "SK hynix Inc.",
+            "activity_name": "存储芯片生产与销售",
+            "recipient_activity_name": null,
+            "disclosed_by_names": [
+              "NVIDIA Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_nvda26_memory",
+                "locator": "Part I, Item 1 Business — Manufacturing",
+                "excerpt": "We purchase memory from SK Hynix Inc., Micron Technology, Inc., and Samsung.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_tsmc_nvda_foundry",
+            "layer": 1,
+            "from": "co_nvidia",
+            "to": "co_tsmc",
+            "type": "foundry",
+            "activity": "act_wafer_foundry",
+            "recipient_activity": "act_chip_design",
+            "activity_gap": null,
+            "product": "半导体晶圆",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_nvidia"
+            ],
+            "available_at": "2026-02-26T00:00:00-05:00",
+            "limits": "NVIDIA 原文列举台积电为晶圆代工方（such as，不排除其他代工方）；只有 NVIDIA 一方披露，不证明份额或独家；recipient_activity 为芯片设计是依据无晶圆厂模式的研究判断",
+            "note": "只有 NVIDIA 一方披露；台积电 2025 年 20-F 没有点名 NVIDIA（见查阅记录 srch_tsmc_fy2025）",
+            "external_path": false,
+            "counterparty_type": "company",
+            "cycle": false,
+            "from_name": "NVIDIA Corporation",
+            "to_name": "Taiwan Semiconductor Manufacturing Company Limited",
+            "activity_name": "晶圆代工",
+            "recipient_activity_name": "芯片设计（无晶圆厂）",
+            "disclosed_by_names": [
+              "NVIDIA Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_nvda26_foundry",
+                "locator": "Part I, Item 1 Business — Manufacturing",
+                "excerpt": "We utilize foundries, such as Taiwan Semiconductor Manufacturing Company Limited, or TSMC, and Samsung Electronics Co., Ltd., or Samsung, to produce our semiconductor wafers.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_wistron_nvda_atp",
+            "layer": 1,
+            "from": "co_nvidia",
+            "to": "co_wistron",
+            "type": "contract_manufacturing",
+            "activity": null,
+            "recipient_activity": null,
+            "activity_gap": "同上，原文未说明组装对象",
+            "product": "最终产品的组装、测试与封装",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_nvidia"
+            ],
+            "available_at": "2026-02-26T00:00:00-05:00",
+            "limits": "同上，纬创；业务未定",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "company",
+            "cycle": false,
+            "from_name": "NVIDIA Corporation",
+            "to_name": "Wistron Corporation",
+            "activity_name": null,
+            "recipient_activity_name": null,
+            "disclosed_by_names": [
+              "NVIDIA Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_nvda26_atp",
+                "locator": "Part I, Item 1 Business — Manufacturing",
+                "excerpt": "We engage with independent subcontractors and contract manufacturers such as Hon Hai Precision Industry Co., Ltd., Wistron Corporation, and Fabrinet to perform assembly, testing and packaging of our final products.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "relation": "rel_mu_chemical_inputs",
+            "layer": 2,
+            "from": "co_micron",
+            "to": "anon_mu_fy2025_chemical_suppliers",
+            "type": "supply",
+            "activity": "act_process_chemicals",
+            "recipient_activity": "act_memory_production",
+            "activity_gap": null,
+            "product": "化学品、气体与光刻胶",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_micron"
+            ],
+            "available_at": "2025-10-04T00:00:00-04:00",
+            "limits": "Micron 的化学品、气体与光刻胶来自未点名供应商；份额未知",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Micron Technology, Inc.",
+            "to_name": "Micron 2025 财年化学品、气体与光刻胶供应商（未点名）",
+            "activity_name": "工艺化学品、特种气体与光刻胶",
+            "recipient_activity_name": "存储芯片生产与销售",
+            "disclosed_by_names": [
+              "Micron Technology, Inc."
+            ],
+            "evidence": [
+              {
+                "claim": "clm_mu25_supply_sources",
+                "locator": "Part I, Item 1A Risk Factors — materials and components",
+                "excerpt": "We generally have multiple sources of supply for our materials and services.",
+                "url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000028/mu-20250828.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              },
+              {
+                "claim": "clm_mu25_materials",
+                "locator": "Part I, Item 1A Risk Factors — materials and components",
+                "excerpt": "The availability of materials or components, such as chemicals, silicon wafers, gases, photoresists, semiconductors, substrates, lead frames, printed circuit boards, targets, and reticle glass blanks is impacted by various factors.",
+                "url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000028/mu-20250828.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_mu_substrate_inputs",
+            "layer": 2,
+            "from": "co_micron",
+            "to": "anon_mu_fy2025_substrate_suppliers",
+            "type": "supply",
+            "activity": "act_package_substrate",
+            "recipient_activity": "act_memory_production",
+            "activity_gap": null,
+            "product": "基板",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_micron"
+            ],
+            "available_at": "2025-10-04T00:00:00-04:00",
+            "limits": "Micron 的基板来自未点名供应商；原文未区分封装基板与其他基板",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Micron Technology, Inc.",
+            "to_name": "Micron 2025 财年基板供应商（未点名）",
+            "activity_name": "封装基板",
+            "recipient_activity_name": "存储芯片生产与销售",
+            "disclosed_by_names": [
+              "Micron Technology, Inc."
+            ],
+            "evidence": [
+              {
+                "claim": "clm_mu25_supply_sources",
+                "locator": "Part I, Item 1A Risk Factors — materials and components",
+                "excerpt": "We generally have multiple sources of supply for our materials and services.",
+                "url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000028/mu-20250828.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              },
+              {
+                "claim": "clm_mu25_materials",
+                "locator": "Part I, Item 1A Risk Factors — materials and components",
+                "excerpt": "The availability of materials or components, such as chemicals, silicon wafers, gases, photoresists, semiconductors, substrates, lead frames, printed circuit boards, targets, and reticle glass blanks is impacted by various factors.",
+                "url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000028/mu-20250828.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_mu_wafer_inputs",
+            "layer": 2,
+            "from": "co_micron",
+            "to": "anon_mu_fy2025_wafer_suppliers",
+            "type": "supply",
+            "activity": "act_wafer_materials",
+            "recipient_activity": "act_memory_production",
+            "activity_gap": null,
+            "product": "硅片",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_micron"
+            ],
+            "available_at": "2025-10-04T00:00:00-04:00",
+            "limits": "Micron 的硅片来自多个未点名的供应来源，服务于存储生产；份额未知",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Micron Technology, Inc.",
+            "to_name": "Micron 2025 财年硅片供应商（未点名）",
+            "activity_name": "晶圆材料（硅片）",
+            "recipient_activity_name": "存储芯片生产与销售",
+            "disclosed_by_names": [
+              "Micron Technology, Inc."
+            ],
+            "evidence": [
+              {
+                "claim": "clm_mu25_supply_sources",
+                "locator": "Part I, Item 1A Risk Factors — materials and components",
+                "excerpt": "We generally have multiple sources of supply for our materials and services.",
+                "url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000028/mu-20250828.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              },
+              {
+                "claim": "clm_mu25_materials",
+                "locator": "Part I, Item 1A Risk Factors — materials and components",
+                "excerpt": "The availability of materials or components, such as chemicals, silicon wafers, gases, photoresists, semiconductors, substrates, lead frames, printed circuit boards, targets, and reticle glass blanks is impacted by various factors.",
+                "url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000028/mu-20250828.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_tsmc_chemical_inputs",
+            "layer": 2,
+            "from": "co_tsmc",
+            "to": "anon_tsmc_fy2025_chemical_suppliers",
+            "type": "supply",
+            "activity": "act_process_chemicals",
+            "recipient_activity": "act_wafer_foundry",
+            "activity_gap": null,
+            "product": "化学品与气体",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_tsmc"
+            ],
+            "available_at": "2026-04-17T00:00:00-04:00",
+            "limits": "台积电向未点名的供应商采购化学品与气体；光刻胶在 20-F 风险因素中提到，本条只按 Raw Materials 原文",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Taiwan Semiconductor Manufacturing Company Limited",
+            "to_name": "台积电 2025 年化学品与气体供应商（未点名）",
+            "activity_name": "工艺化学品、特种气体与光刻胶",
+            "recipient_activity_name": "晶圆代工",
+            "disclosed_by_names": [
+              "Taiwan Semiconductor Manufacturing Company Limited"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_tsmc25_raw_materials",
+                "locator": "Item 4 Information on the Company — Raw Materials",
+                "excerpt": "Our manufacturing processes use many raw materials, primarily silicon wafers, chemicals, gases and various types of precious metals. Although most of our raw materials are available from multiple suppliers, some materials are purchased through sole-sourced suppliers.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1046179/000162828026025362/tsm-20251231.htm",
+                "form": "20-F",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_tsmc_equipment_inputs",
+            "layer": 2,
+            "from": "co_tsmc",
+            "to": "anon_tsmc_fy2025_equipment_suppliers",
+            "type": "supply",
+            "activity": "act_semi_equipment",
+            "recipient_activity": "act_wafer_foundry",
+            "activity_gap": null,
+            "product": "制造设备及相关服务",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_tsmc"
+            ],
+            "available_at": "2026-04-17T00:00:00-04:00",
+            "limits": "台积电依赖少数未点名供应商的设备与相关服务；不区分设备类别",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Taiwan Semiconductor Manufacturing Company Limited",
+            "to_name": "台积电 2025 年设备供应商（未点名）",
+            "activity_name": "半导体设备制造",
+            "recipient_activity_name": "晶圆代工",
+            "disclosed_by_names": [
+              "Taiwan Semiconductor Manufacturing Company Limited"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_tsmc25_equipment",
+                "locator": "Item 3 Key Information — Risk Factors",
+                "excerpt": "Our operations and ongoing expansion plans depend on our ability to obtain necessary equipment and related services available from a limited number of suppliers.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1046179/000162828026025362/tsm-20251231.htm",
+                "form": "20-F",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_tsmc_wafer_inputs",
+            "layer": 2,
+            "from": "co_tsmc",
+            "to": "anon_tsmc_fy2025_wafer_suppliers",
+            "type": "supply",
+            "activity": "act_wafer_materials",
+            "recipient_activity": "act_wafer_foundry",
+            "activity_gap": null,
+            "product": "硅片",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_tsmc"
+            ],
+            "available_at": "2026-04-17T00:00:00-04:00",
+            "limits": "台积电向未点名的供应商采购硅片，服务于其晶圆代工业务；供应商与份额未知",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Taiwan Semiconductor Manufacturing Company Limited",
+            "to_name": "台积电 2025 年硅片供应商（未点名）",
+            "activity_name": "晶圆材料（硅片）",
+            "recipient_activity_name": "晶圆代工",
+            "disclosed_by_names": [
+              "Taiwan Semiconductor Manufacturing Company Limited"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_tsmc25_raw_materials",
+                "locator": "Item 4 Information on the Company — Raw Materials",
+                "excerpt": "Our manufacturing processes use many raw materials, primarily silicon wafers, chemicals, gases and various types of precious metals. Although most of our raw materials are available from multiple suppliers, some materials are purchased through sole-sourced suppliers.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1046179/000162828026025362/tsm-20251231.htm",
+                "form": "20-F",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          }
+        ]
+      ],
+      "breakpoints": [
+        {
+          "node": "co_fabrinet",
+          "layer": 1,
+          "reason": "activity_unknown",
+          "relation": "rel_fabrinet_nvda_atp",
+          "detail": "同上，原文未说明组装对象；Fabrinet 10-K 只给出对 NVIDIA 的销售占比，也未说明产品",
+          "node_name": "Fabrinet"
+        },
+        {
+          "node": "co_hon_hai",
+          "layer": 1,
+          "reason": "activity_unknown",
+          "relation": "rel_honhai_nvda_atp",
+          "detail": "原文为 assembly, testing and packaging of our final products，未说明是芯片封装测试还是板卡与系统组装",
+          "node_name": "Hon Hai Precision Industry Co., Ltd."
+        },
+        {
+          "node": "co_wistron",
+          "layer": 1,
+          "reason": "activity_unknown",
+          "relation": "rel_wistron_nvda_atp",
+          "detail": "同上，原文未说明组装对象",
+          "node_name": "Wistron Corporation"
+        },
+        {
+          "node": "co_micron",
+          "layer": 2,
+          "reason": "searched_not_disclosed",
+          "relation": "rel_micron_nvda_memory",
+          "detail": "srch_mu_fy2025",
+          "node_name": "Micron Technology, Inc.",
+          "searches": [
+            {
+              "id": "srch_mu_fy2025",
+              "note": "只列出化学品、硅片、气体、光刻胶、基板等类别，没有点名供应商；全文没有出现 NVIDIA",
+              "url": "https://www.sec.gov/Archives/edgar/data/723125/000072312525000028/mu-20250828.htm"
+            }
+          ]
+        },
+        {
+          "node": "anon_mu_fy2025_chemical_suppliers",
+          "layer": 2,
+          "reason": "anonymous",
+          "relation": "rel_mu_chemical_inputs",
+          "detail": "",
+          "node_name": "Micron 2025 财年化学品、气体与光刻胶供应商（未点名）"
+        },
+        {
+          "node": "anon_mu_fy2025_substrate_suppliers",
+          "layer": 2,
+          "reason": "anonymous",
+          "relation": "rel_mu_substrate_inputs",
+          "detail": "",
+          "node_name": "Micron 2025 财年基板供应商（未点名）"
+        },
+        {
+          "node": "anon_mu_fy2025_wafer_suppliers",
+          "layer": 2,
+          "reason": "anonymous",
+          "relation": "rel_mu_wafer_inputs",
+          "detail": "",
+          "node_name": "Micron 2025 财年硅片供应商（未点名）"
+        },
+        {
+          "node": "co_samsung",
+          "layer": 2,
+          "reason": "not_searched",
+          "relation": "rel_samsung_nvda_foundry",
+          "detail": "",
+          "node_name": "Samsung Electronics Co., Ltd."
+        },
+        {
+          "node": "co_samsung",
+          "layer": 2,
+          "reason": "not_searched",
+          "relation": "rel_samsung_nvda_memory",
+          "detail": "",
+          "node_name": "Samsung Electronics Co., Ltd."
+        },
+        {
+          "node": "co_sk_hynix",
+          "layer": 2,
+          "reason": "not_searched",
+          "relation": "rel_skhynix_nvda_memory",
+          "detail": "",
+          "node_name": "SK hynix Inc."
+        },
+        {
+          "node": "co_tsmc",
+          "layer": 2,
+          "reason": "searched_not_disclosed",
+          "relation": "rel_tsmc_nvda_foundry",
+          "detail": "srch_tsmc_fy2025",
+          "node_name": "Taiwan Semiconductor Manufacturing Company Limited",
+          "searches": [
+            {
+              "id": "srch_tsmc_fy2025",
+              "note": "只列出硅片、化学品、气体、贵金属与设备等类别，没有点名供应商；全文没有出现 NVIDIA",
+              "url": "https://www.sec.gov/Archives/edgar/data/1046179/000162828026025362/tsm-20251231.htm"
+            }
+          ]
+        },
+        {
+          "node": "anon_tsmc_fy2025_chemical_suppliers",
+          "layer": 2,
+          "reason": "anonymous",
+          "relation": "rel_tsmc_chemical_inputs",
+          "detail": "",
+          "node_name": "台积电 2025 年化学品与气体供应商（未点名）"
+        },
+        {
+          "node": "anon_tsmc_fy2025_equipment_suppliers",
+          "layer": 2,
+          "reason": "anonymous",
+          "relation": "rel_tsmc_equipment_inputs",
+          "detail": "",
+          "node_name": "台积电 2025 年设备供应商（未点名）"
+        },
+        {
+          "node": "anon_tsmc_fy2025_wafer_suppliers",
+          "layer": 2,
+          "reason": "anonymous",
+          "relation": "rel_tsmc_wafer_inputs",
+          "detail": "",
+          "node_name": "台积电 2025 年硅片供应商（未点名）"
+        }
+      ],
+      "side_relations": [
+        {
+          "relation": "cmp_cxmt_micron",
+          "type": "competition",
+          "parties": [
+            "co_cxmt",
+            "co_micron"
+          ],
+          "market": "半导体存储与存储产品",
+          "status": "candidate",
+          "party_names": [
+            "ChangXin Memory Technologies, Inc.",
+            "Micron Technology, Inc."
+          ]
+        },
+        {
+          "relation": "cmp_kioxia_micron",
+          "type": "competition",
+          "parties": [
+            "co_kioxia",
+            "co_micron"
+          ],
+          "market": "半导体存储与存储产品",
+          "status": "candidate",
+          "party_names": [
+            "Kioxia Holdings Corporation",
+            "Micron Technology, Inc."
+          ]
+        },
+        {
+          "relation": "cmp_micron_samsung",
+          "type": "competition",
+          "parties": [
+            "co_micron",
+            "co_samsung"
+          ],
+          "market": "半导体存储与存储产品",
+          "status": "candidate",
+          "party_names": [
+            "Micron Technology, Inc.",
+            "Samsung Electronics Co., Ltd."
+          ]
+        },
+        {
+          "relation": "cmp_micron_sandisk",
+          "type": "competition",
+          "parties": [
+            "co_micron",
+            "co_sandisk"
+          ],
+          "market": "半导体存储与存储产品",
+          "status": "candidate",
+          "party_names": [
+            "Micron Technology, Inc.",
+            "Sandisk Corporation"
+          ]
+        },
+        {
+          "relation": "cmp_micron_skhynix",
+          "type": "competition",
+          "parties": [
+            "co_micron",
+            "co_sk_hynix"
+          ],
+          "market": "半导体存储与存储产品",
+          "status": "candidate",
+          "party_names": [
+            "Micron Technology, Inc.",
+            "SK hynix Inc."
+          ]
+        },
+        {
+          "relation": "cmp_micron_ymtc",
+          "type": "competition",
+          "parties": [
+            "co_micron",
+            "co_ymtc"
+          ],
+          "market": "半导体存储与存储产品",
+          "status": "candidate",
+          "party_names": [
+            "Micron Technology, Inc.",
+            "Yangtze Memory Technologies Co., Ltd."
+          ]
+        }
+      ],
+      "searches": [],
+      "breakpoint_counts": {
+        "activity_unknown": 3,
+        "searched_not_disclosed": 2,
+        "anonymous": 6,
+        "not_searched": 3
+      }
+    },
+    "downstream": {
+      "root": "co_nvidia",
+      "direction": "downstream",
+      "depth": 2,
+      "as_of": "2026-10-31",
+      "layers": [
+        [
+          {
+            "relation": "rel_nvda_direct_1",
+            "layer": 1,
+            "from": "co_nvidia",
+            "to": "anon_nvda_fy2026_direct_1",
+            "type": "supply",
+            "activity": null,
+            "recipient_activity": null,
+            "activity_gap": "原文只说主要归属 Compute & Networking 分部，该分部含芯片以外的系统、软件与服务",
+            "product": "主要为 Compute & Networking 分部产品",
+            "share": {
+              "value": 0.22,
+              "numerator": "对该客户的销售",
+              "denominator": "总营收",
+              "period": "FY2026",
+              "of": "co_nvidia"
+            },
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_nvidia"
+            ],
+            "available_at": "2026-02-26T00:00:00-05:00",
+            "limits": "匿名直接客户占 NVIDIA 2026 财年总营收 22%，主要归属计算与网络分部；不推测客户身份",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "NVIDIA Corporation",
+            "to_name": "NVIDIA 2026 财年直接客户之一（占总营收 22%）",
+            "activity_name": null,
+            "recipient_activity_name": null,
+            "disclosed_by_names": [
+              "NVIDIA Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_nvda26_customers",
+                "locator": "Part I, Item 1A Risk Factors — customer concentration",
+                "excerpt": "For fiscal year 2026, sales to one direct customer represented 22% of total revenue and sales to another direct customer represented 14% of total revenue, all of which were primarily attributable to the Compute & Networking segment.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_nvda_direct_2",
+            "layer": 1,
+            "from": "co_nvidia",
+            "to": "anon_nvda_fy2026_direct_2",
+            "type": "supply",
+            "activity": null,
+            "recipient_activity": null,
+            "activity_gap": "原文只说主要归属 Compute & Networking 分部，该分部含芯片以外的系统、软件与服务",
+            "product": "主要为 Compute & Networking 分部产品",
+            "share": {
+              "value": 0.14,
+              "numerator": "对该客户的销售",
+              "denominator": "总营收",
+              "period": "FY2026",
+              "of": "co_nvidia"
+            },
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_nvidia"
+            ],
+            "available_at": "2026-02-26T00:00:00-05:00",
+            "limits": "匿名直接客户占 NVIDIA 2026 财年总营收 14%，主要归属计算与网络分部；不推测客户身份",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "NVIDIA Corporation",
+            "to_name": "NVIDIA 2026 财年另一直接客户（占总营收 14%）",
+            "activity_name": null,
+            "recipient_activity_name": null,
+            "disclosed_by_names": [
+              "NVIDIA Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_nvda26_customers",
+                "locator": "Part I, Item 1A Risk Factors — customer concentration",
+                "excerpt": "For fiscal year 2026, sales to one direct customer represented 22% of total revenue and sales to another direct customer represented 14% of total revenue, all of which were primarily attributable to the Compute & Networking segment.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          }
+        ]
+      ],
+      "breakpoints": [
+        {
+          "node": "anon_nvda_fy2026_direct_1",
+          "layer": 1,
+          "reason": "anonymous",
+          "relation": "rel_nvda_direct_1",
+          "detail": "",
+          "node_name": "NVIDIA 2026 财年直接客户之一（占总营收 22%）"
+        },
+        {
+          "node": "anon_nvda_fy2026_direct_2",
+          "layer": 1,
+          "reason": "anonymous",
+          "relation": "rel_nvda_direct_2",
+          "detail": "",
+          "node_name": "NVIDIA 2026 财年另一直接客户（占总营收 14%）"
+        }
+      ],
+      "side_relations": [],
+      "searches": [
+        "srch_aapl_fy2025_nvidia",
+        "srch_msft_fy2026_nvidia",
+        "srch_amzn_fy2025_nvidia",
+        "srch_goog_fy2025_nvidia",
+        "srch_tsla_fy2025_nvidia",
+        "srch_jpm_fy2025_nvidia",
+        "srch_brk_fy2025_nvidia",
+        "srch_xom_fy2025_nvidia",
+        "srch_jnj_fy2025_nvidia",
+        "srch_pg_fy2026_nvidia",
+        "srch_ko_fy2025_nvidia",
+        "srch_wmt_fy2026_nvidia",
+        "srch_cost_fy2026_nvidia",
+        "srch_nke_fy2026_nvidia"
+      ],
+      "breakpoint_counts": {
+        "anonymous": 2
+      }
+    },
+    "reverse_search": [
+      {
+        "id": "srch_goog_fy2025_nvidia",
+        "subject": "Alphabet",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_amzn_fy2025_nvidia",
+        "subject": "Amazon",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_aapl_fy2025_nvidia",
+        "subject": "Apple",
+        "form": "10-K",
+        "period_end": "2025-09-27",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_brk_fy2025_nvidia",
+        "subject": "Berkshire Hathaway",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526083899/brka-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_ko_fy2025_nvidia",
+        "subject": "Coca-Cola",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_cost_fy2026_nvidia",
+        "subject": "Costco",
+        "form": "10-K",
+        "period_end": "2026-08-30",
+        "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983226000093/cost-20260830.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_xom_fy2025_nvidia",
+        "subject": "Exxon Mobil",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_jpm_fy2025_nvidia",
+        "subject": "JPMorgan Chase",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_jnj_fy2025_nvidia",
+        "subject": "Johnson & Johnson",
+        "form": "10-K",
+        "period_end": "2025-12-28",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/jnj-20251228.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_msft_fy2026_nvidia",
+        "subject": "Microsoft",
+        "form": "10-K",
+        "period_end": "2026-06-30",
+        "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_nke_fy2026_nvidia",
+        "subject": "Nike",
+        "form": "10-K",
+        "period_end": "2026-05-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/320187/000032018726000088/nke-20260531.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_pg_fy2026_nvidia",
+        "subject": "Procter & Gamble",
+        "form": "10-K",
+        "period_end": "2026-06-30",
+        "url": "https://www.sec.gov/Archives/edgar/data/80424/000008042426000103/pg-20260630.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_tsla_fy2025_nvidia",
+        "subject": "Tesla",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      },
+      {
+        "id": "srch_wmt_fy2026_nvidia",
+        "subject": "Walmart",
+        "form": "10-K",
+        "period_end": "2026-01-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/104169/000010416926000055/wmt-20260131.htm",
+        "result": "not_found",
+        "method": "全文检索 NVIDIA（不区分大小写）",
+        "note": "原文没有出现 NVIDIA"
+      }
+    ],
+    "downstream_notes": [
+      {
+        "claim": "clm_nvda26_customer_types",
+        "locator": "Part II, Item 7 MD&A — Concentration of Revenue",
+        "excerpt": "We refer to indirect customers as those who purchase products through our direct customers; indirect customers include CSPs, Neocloud builders, AI model makers, enterprises, and public sector entities.",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "limits": "直接客户与间接客户的定义及间接客户类型；类型说明不点名任何公司，不生成具名关系"
+      },
+      {
+        "claim": "clm_nvda26_indirect_concentration",
+        "locator": "Part I, Item 1A Risk Factors — customer concentration",
+        "excerpt": "We generate a significant amount of our revenue from a limited number of indirect customers, and we estimate some individually representing 10% or more of our revenue.",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "limits": "NVIDIA 估计部分间接客户单独占营收 10% 以上；是公司估计，客户未点名，不能与具名公司对应"
+      }
+    ],
+    "revenue": {
+      "co_nvidia": {
+        "entity": "co_nvidia",
+        "unit": "USD",
+        "document": "doc_nvda_10k_fy2026",
+        "form": "10-K",
+        "accession": "0001045810-26-000021",
+        "document_period_end": "2026-01-25",
+        "consolidated": [
+          {
+            "period_end": "2024-01-28",
+            "value": 60922000000.0
+          },
+          {
+            "period_end": "2025-01-26",
+            "value": 130497000000.0,
+            "growth": 1.1420340763599355
+          },
+          {
+            "period_end": "2026-01-25",
+            "value": 215938000000.0,
+            "growth": 0.6547353579009478
+          }
+        ],
+        "segments": {
+          "nvda:ComputeAndNetworkingSegmentMember": [
+            {
+              "period_end": "2024-01-28",
+              "value": 47405000000.0
+            },
+            {
+              "period_end": "2025-01-26",
+              "value": 116193000000.0,
+              "growth": 1.4510705621769855
+            },
+            {
+              "period_end": "2026-01-25",
+              "value": 193479000000.0,
+              "growth": 0.665151945470037
+            }
+          ],
+          "nvda:GraphicsSegmentMember": [
+            {
+              "period_end": "2024-01-28",
+              "value": 13517000000.0
+            },
+            {
+              "period_end": "2025-01-26",
+              "value": 14304000000.0,
+              "growth": 0.05822297847155444
+            },
+            {
+              "period_end": "2026-01-25",
+              "value": 22459000000.0,
+              "growth": 0.5701202460850112
+            }
+          ]
+        },
+        "other_units": []
+      },
+      "co_fabrinet": {
+        "entity": "co_fabrinet",
+        "unit": "USD",
+        "document": "doc_fn_10k_fy2026",
+        "form": "10-K",
+        "accession": "0001408710-26-000028",
+        "document_period_end": "2026-06-26",
+        "consolidated": [
+          {
+            "period_end": "2024-06-28",
+            "value": 2882967000.0
+          },
+          {
+            "period_end": "2025-06-27",
+            "value": 3419327000.0,
+            "growth": 0.18604444657188246
+          },
+          {
+            "period_end": "2026-06-26",
+            "value": 4641097000.0,
+            "growth": 0.3573130034068108
+          }
+        ],
+        "segments": {
+          "fn:ReportableSegmentMember": [
+            {
+              "period_end": "2024-06-28",
+              "value": 2882967000.0
+            },
+            {
+              "period_end": "2025-06-27",
+              "value": 3419327000.0,
+              "growth": 0.18604444657188246
+            },
+            {
+              "period_end": "2026-06-26",
+              "value": 4641097000.0,
+              "growth": 0.3573130034068108
+            }
+          ]
+        },
+        "other_units": []
+      },
+      "co_micron": {
+        "entity": "co_micron",
+        "unit": "USD",
+        "document": "doc_mu_10k_fy2025",
+        "form": "10-K",
+        "accession": "0000723125-25-000028",
+        "document_period_end": "2025-08-28",
+        "consolidated": [
+          {
+            "period_end": "2023-08-31",
+            "value": 15540000000.0
+          },
+          {
+            "period_end": "2024-08-29",
+            "value": 25111000000.0,
+            "growth": 0.6158944658944658
+          },
+          {
+            "period_end": "2025-08-28",
+            "value": 37378000000.0,
+            "growth": 0.4885110111106685
+          }
+        ],
+        "segments": {
+          "mu:AEBUMember": [
+            {
+              "period_end": "2023-08-31",
+              "value": 4139000000.0
+            },
+            {
+              "period_end": "2024-08-29",
+              "value": 4631000000.0,
+              "growth": 0.11886929209954089
+            },
+            {
+              "period_end": "2025-08-28",
+              "value": 4753000000.0,
+              "growth": 0.02634420211617372
+            }
+          ],
+          "mu:CDBUMember": [
+            {
+              "period_end": "2023-08-31",
+              "value": 2124000000.0
+            },
+            {
+              "period_end": "2024-08-29",
+              "value": 4984000000.0,
+              "growth": 1.3465160075329567
+            },
+            {
+              "period_end": "2025-08-28",
+              "value": 7229000000.0,
+              "growth": 0.4504414125200642
+            }
+          ],
+          "mu:CMBUMember": [
+            {
+              "period_end": "2023-08-31",
+              "value": 1872000000.0
+            },
+            {
+              "period_end": "2024-08-29",
+              "value": 3792000000.0,
+              "growth": 1.0256410256410255
+            },
+            {
+              "period_end": "2025-08-28",
+              "value": 13524000000.0,
+              "growth": 2.5664556962025316
+            }
+          ],
+          "mu:MCBUMember": [
+            {
+              "period_end": "2023-08-31",
+              "value": 7394000000.0
+            },
+            {
+              "period_end": "2024-08-29",
+              "value": 11667000000.0,
+              "growth": 0.5779010008114687
+            },
+            {
+              "period_end": "2025-08-28",
+              "value": 11859000000.0,
+              "growth": 0.016456672666495198
+            }
+          ],
+          "us-gaap:AllOtherSegmentsMember": [
+            {
+              "period_end": "2023-08-31",
+              "value": 11000000.0
+            },
+            {
+              "period_end": "2024-08-29",
+              "value": 37000000.0,
+              "growth": 2.3636363636363638
+            },
+            {
+              "period_end": "2025-08-28",
+              "value": 13000000.0,
+              "growth": -0.6486486486486487
+            }
+          ]
+        },
+        "other_units": []
+      },
+      "co_tsmc": {
+        "entity": "co_tsmc",
+        "unit": "TWD",
+        "document": "doc_tsmc_20f_fy2025",
+        "form": "20-F",
+        "accession": "0001628280-26-025362",
+        "document_period_end": "2025-12-31",
+        "consolidated": [
+          {
+            "period_end": "2023-12-31",
+            "value": 2161735799999.9998
+          },
+          {
+            "period_end": "2024-12-31",
+            "value": 2894307700000.0,
+            "growth": 0.3388813286063914
+          },
+          {
+            "period_end": "2025-12-31",
+            "value": 3809054300000.0,
+            "growth": 0.3160502250676387
+          }
+        ],
+        "segments": {},
+        "other_units": [
+          "USD"
+        ]
+      }
+    },
+    "revenue_missing": [
+      {
+        "entity": "co_hon_hai",
+        "name": "Hon Hai Precision Industry Co., Ltd."
+      },
+      {
+        "entity": "co_samsung",
+        "name": "Samsung Electronics Co., Ltd."
+      },
+      {
+        "entity": "co_sk_hynix",
+        "name": "SK hynix Inc."
+      },
+      {
+        "entity": "co_wistron",
+        "name": "Wistron Corporation"
+      }
+    ],
+    "summary": {
+      "upstream_named": 7,
+      "upstream_edges": 14,
+      "downstream_named": 0,
+      "reverse_searched": 14,
+      "reverse_found": 0,
+      "breakpoints": {
+        "upstream": {
+          "activity_unknown": 3,
+          "searched_not_disclosed": 2,
+          "anonymous": 6,
+          "not_searched": 3
+        },
+        "downstream": {
+          "anonymous": 2
+        }
+      }
+    }
+  },
+  "coverage": {
+    "edges": 16,
+    "completeness": "partial"
+  },
+  "unsupported": [
+    {
+      "item": "链上各公司受影响的金额或比例",
+      "kind": "scope",
+      "reason": "关系链只描述登记的关系；对方收入中来自起点公司的份额大多未披露，各层占比不相乘、不推算间接敞口"
+    },
+    {
+      "item": "因果判断",
+      "kind": "scope",
+      "reason": "同期营收变化不说明由起点公司带动或拉动"
+    },
+    {
+      "item": "营收对照：Hon Hai Precision Industry Co., Ltd.、Samsung Electronics Co., Ltd.、SK hynix Inc.、Wistron Corporation",
+      "kind": "data",
+      "reason": "这些公司不在 SEC 申报，第一版尚未取得其年报"
+    },
+    {
+      "item": "Q2b 下游客户资本开支对照",
+      "kind": "data",
+      "reason": "下游链上没有原文点名的公司：起点的直接客户匿名，反向检索的 14 家公司年报都没有点名"
+    }
+  ],
+  "limitations": [
+    "关系来自公司年报的披露：「such as」等列举不是完整名单，没有披露不等于没有关系",
+    "占比只按原文口径列出（NVIDIA 对两个匿名客户的销售占其营收、Fabrinet 对 NVIDIA 的销售占其营收），不推算其他公司的份额，也不相乘推算间接敞口",
+    "上游第二层只读了 SEC 上的年报（台积电 20-F、Micron 10-K）；三星、SK 海力士、鸿海、纬创的当地披露尚未查阅",
+    "下游反向检索只查了公司样本中已有的 14 家公司的最新 10-K；其他服务器、系统厂商与云厂商留待后续",
+    "Micron 已有 2026 财年 10-K（2026-10-09 提交），本研究的查阅与营收仍基于 2025 财年 10-K",
+    "营收为各公司财年口径，财年截止月不同（NVIDIA 1 月下旬、台积电 12 月、Micron 8 月下旬、Fabrinet 6 月下旬）；台积电为新台币，不换算",
+    "同期营收变化是描述，不说明由 NVIDIA 带动，也不是预测"
+  ],
+  "validation": {
+    "catalog_check": {
+      "status": "pass",
+      "checked": 99,
+      "reason": "证据包生成前产业链登记核对零错误、零未核对"
+    },
+    "segment_total": {
+      "status": "pass",
+      "checked": 6,
+      "rows": [
+        {
+          "entity": "co_nvidia",
+          "period_end": "2024-01-28",
+          "diff": 0.0,
+          "status": "pass"
+        },
+        {
+          "entity": "co_nvidia",
+          "period_end": "2025-01-26",
+          "diff": 0.0,
+          "status": "pass"
+        },
+        {
+          "entity": "co_nvidia",
+          "period_end": "2026-01-25",
+          "diff": 0.0,
+          "status": "pass"
+        },
+        {
+          "entity": "co_micron",
+          "period_end": "2023-08-31",
+          "diff": 0.0,
+          "status": "pass"
+        },
+        {
+          "entity": "co_micron",
+          "period_end": "2024-08-29",
+          "diff": 0.0,
+          "status": "pass"
+        },
+        {
+          "entity": "co_micron",
+          "period_end": "2025-08-28",
+          "diff": 0.0,
+          "status": "pass"
+        }
+      ]
+    },
+    "raw_spot_check": {
+      "status": "skipped",
+      "reason": "没有可在原始 CSV 中定位的合格观测"
+    }
+  },
+  "tables": {
+    "edges": [
+      {
+        "relation": "rel_fabrinet_nvda_atp",
+        "layer": 1,
+        "from": "co_nvidia",
+        "to": "co_fabrinet",
+        "type": "contract_manufacturing",
+        "activity": null,
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_honhai_nvda_atp",
+        "layer": 1,
+        "from": "co_nvidia",
+        "to": "co_hon_hai",
+        "type": "contract_manufacturing",
+        "activity": null,
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_micron_nvda_memory",
+        "layer": 1,
+        "from": "co_nvidia",
+        "to": "co_micron",
+        "type": "supply",
+        "activity": "act_memory_production",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_samsung_nvda_foundry",
+        "layer": 1,
+        "from": "co_nvidia",
+        "to": "co_samsung",
+        "type": "foundry",
+        "activity": "act_wafer_foundry",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_samsung_nvda_memory",
+        "layer": 1,
+        "from": "co_nvidia",
+        "to": "co_samsung",
+        "type": "supply",
+        "activity": "act_memory_production",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_skhynix_nvda_memory",
+        "layer": 1,
+        "from": "co_nvidia",
+        "to": "co_sk_hynix",
+        "type": "supply",
+        "activity": "act_memory_production",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_tsmc_nvda_foundry",
+        "layer": 1,
+        "from": "co_nvidia",
+        "to": "co_tsmc",
+        "type": "foundry",
+        "activity": "act_wafer_foundry",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_wistron_nvda_atp",
+        "layer": 1,
+        "from": "co_nvidia",
+        "to": "co_wistron",
+        "type": "contract_manufacturing",
+        "activity": null,
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_mu_chemical_inputs",
+        "layer": 2,
+        "from": "co_micron",
+        "to": "anon_mu_fy2025_chemical_suppliers",
+        "type": "supply",
+        "activity": "act_process_chemicals",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_mu_substrate_inputs",
+        "layer": 2,
+        "from": "co_micron",
+        "to": "anon_mu_fy2025_substrate_suppliers",
+        "type": "supply",
+        "activity": "act_package_substrate",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_mu_wafer_inputs",
+        "layer": 2,
+        "from": "co_micron",
+        "to": "anon_mu_fy2025_wafer_suppliers",
+        "type": "supply",
+        "activity": "act_wafer_materials",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_tsmc_chemical_inputs",
+        "layer": 2,
+        "from": "co_tsmc",
+        "to": "anon_tsmc_fy2025_chemical_suppliers",
+        "type": "supply",
+        "activity": "act_process_chemicals",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_tsmc_equipment_inputs",
+        "layer": 2,
+        "from": "co_tsmc",
+        "to": "anon_tsmc_fy2025_equipment_suppliers",
+        "type": "supply",
+        "activity": "act_semi_equipment",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_tsmc_wafer_inputs",
+        "layer": 2,
+        "from": "co_tsmc",
+        "to": "anon_tsmc_fy2025_wafer_suppliers",
+        "type": "supply",
+        "activity": "act_wafer_materials",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_nvda_direct_1",
+        "layer": 1,
+        "from": "co_nvidia",
+        "to": "anon_nvda_fy2026_direct_1",
+        "type": "supply",
+        "activity": null,
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "downstream"
+      },
+      {
+        "relation": "rel_nvda_direct_2",
+        "layer": 1,
+        "from": "co_nvidia",
+        "to": "anon_nvda_fy2026_direct_2",
+        "type": "supply",
+        "activity": null,
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "downstream"
+      }
+    ],
+    "breakpoints": [
+      {
+        "node": "co_fabrinet",
+        "layer": 1,
+        "reason": "activity_unknown",
+        "relation": "rel_fabrinet_nvda_atp",
+        "direction": "upstream"
+      },
+      {
+        "node": "co_hon_hai",
+        "layer": 1,
+        "reason": "activity_unknown",
+        "relation": "rel_honhai_nvda_atp",
+        "direction": "upstream"
+      },
+      {
+        "node": "co_wistron",
+        "layer": 1,
+        "reason": "activity_unknown",
+        "relation": "rel_wistron_nvda_atp",
+        "direction": "upstream"
+      },
+      {
+        "node": "co_micron",
+        "layer": 2,
+        "reason": "searched_not_disclosed",
+        "relation": "rel_micron_nvda_memory",
+        "direction": "upstream"
+      },
+      {
+        "node": "anon_mu_fy2025_chemical_suppliers",
+        "layer": 2,
+        "reason": "anonymous",
+        "relation": "rel_mu_chemical_inputs",
+        "direction": "upstream"
+      },
+      {
+        "node": "anon_mu_fy2025_substrate_suppliers",
+        "layer": 2,
+        "reason": "anonymous",
+        "relation": "rel_mu_substrate_inputs",
+        "direction": "upstream"
+      },
+      {
+        "node": "anon_mu_fy2025_wafer_suppliers",
+        "layer": 2,
+        "reason": "anonymous",
+        "relation": "rel_mu_wafer_inputs",
+        "direction": "upstream"
+      },
+      {
+        "node": "co_samsung",
+        "layer": 2,
+        "reason": "not_searched",
+        "relation": "rel_samsung_nvda_foundry",
+        "direction": "upstream"
+      },
+      {
+        "node": "co_samsung",
+        "layer": 2,
+        "reason": "not_searched",
+        "relation": "rel_samsung_nvda_memory",
+        "direction": "upstream"
+      },
+      {
+        "node": "co_sk_hynix",
+        "layer": 2,
+        "reason": "not_searched",
+        "relation": "rel_skhynix_nvda_memory",
+        "direction": "upstream"
+      },
+      {
+        "node": "co_tsmc",
+        "layer": 2,
+        "reason": "searched_not_disclosed",
+        "relation": "rel_tsmc_nvda_foundry",
+        "direction": "upstream"
+      },
+      {
+        "node": "anon_tsmc_fy2025_chemical_suppliers",
+        "layer": 2,
+        "reason": "anonymous",
+        "relation": "rel_tsmc_chemical_inputs",
+        "direction": "upstream"
+      },
+      {
+        "node": "anon_tsmc_fy2025_equipment_suppliers",
+        "layer": 2,
+        "reason": "anonymous",
+        "relation": "rel_tsmc_equipment_inputs",
+        "direction": "upstream"
+      },
+      {
+        "node": "anon_tsmc_fy2025_wafer_suppliers",
+        "layer": 2,
+        "reason": "anonymous",
+        "relation": "rel_tsmc_wafer_inputs",
+        "direction": "upstream"
+      },
+      {
+        "node": "anon_nvda_fy2026_direct_1",
+        "layer": 1,
+        "reason": "anonymous",
+        "relation": "rel_nvda_direct_1",
+        "direction": "downstream"
+      },
+      {
+        "node": "anon_nvda_fy2026_direct_2",
+        "layer": 1,
+        "reason": "anonymous",
+        "relation": "rel_nvda_direct_2",
+        "direction": "downstream"
+      }
+    ]
+  },
+  "run_id": "chip_relation_chain_nvda-20261101T014326Z-2acdbf74",
+  "generated_at": "2026-11-01T01:43:26+00:00",
+  "result_hash": "fb43a4761dbd764936a8cb68344f1582e8a4012d75b58c75f236ad9905e8d07a"
+}

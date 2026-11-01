@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA 的上下游关系链（2026 财年申报）</title>
+<style>
+:root { --bg:#fbfaf7; --fg:#1d1d1b; --muted:#6b6b66; --line:#e2e0d9; --accent:#2f5d8a; }
+@media (prefers-color-scheme: dark) { :root { --bg:#161614; --fg:#ecebe6; --muted:#a3a29b; --line:#34332f; --accent:#8fb6dd; }
+  img { background:#fff; border-radius:4px; } }
+body { background:var(--bg); color:var(--fg); margin:0; padding:24px 16px 64px;
+  font:15px/1.6 -apple-system, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; }
+main { max-width:880px; margin:0 auto; }
+h1 { font-size:1.6rem; margin:0 0 1rem; } h2 { font-size:1.15rem; margin:2rem 0 .6rem;
+  padding-bottom:.3rem; border-bottom:1px solid var(--line); color:var(--accent); }
+table { border-collapse:collapse; font-size:.9rem; font-variant-numeric:tabular-nums; }
+th, td { border-bottom:1px solid var(--line); padding:.35rem .7rem; text-align:right; white-space:nowrap; }
+th:first-child, td:first-child { text-align:left; } th { color:var(--muted); font-weight:600; }
+.scroll { overflow-x:auto; margin:.6rem 0 1rem; }
+figure { margin:1rem 0; } img { max-width:100%; height:auto; }
+figcaption { color:var(--muted); font-size:.85rem; }
+code { font-size:.85em; }
+a { color:var(--accent); }
+a:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
+</style></head>
+<body><main><h1>NVIDIA 的上下游关系链（2026 财年申报）</h1>
+<h2>概要</h2><p><strong>研究问题：</strong> 从 NVIDIA 2026 财年年报披露的直接关系出发，按登记的关系向上游、下游各展开两层，需求可能沿哪些公司与业务传导？ 链在哪里断开、为什么断开？NVIDIA 营收上升期间，链上供应方在各自年报中的营收是否同期上升？</p><p><strong>成果类型：</strong> 描述与比较　<strong>研究分支：</strong> relation_chain　<strong>结论状态：</strong> 部分结论受限</p><p><strong>研究范围：</strong> US ·  · 2022-09-01 至 2026-06-30 · annual</p><p><strong>数据截止：</strong> 2026-08-19　<strong>生成时间：</strong> 2026-11-01T01:43:26+00:00</p><p><strong>运行 ID：</strong> <code>chip_relation_chain_nvda-20261101T014326Z-2acdbf74</code>　<strong>结果校验值：</strong> <code>fb43a4761dbd7649</code></p><h2>主要结果</h2><p>该研究分支暂无报告模板。</p><h2>图表</h2><p>无可绘制的数据。</p><h2>覆盖与限制范围</h2><div class="scroll"><table><thead><tr><th>不支持的结论</th><th>原因</th></tr></thead><tbody><tr><td>链上各公司受影响的金额或比例</td><td>关系链只描述登记的关系；对方收入中来自起点公司的份额大多未披露，各层占比不相乘、不推算间接敞口</td></tr><tr><td>因果判断</td><td>同期营收变化不说明由起点公司带动或拉动</td></tr><tr><td>营收对照：Hon Hai Precision Industry Co., Ltd.、Samsung Electronics Co., Ltd.、SK hynix Inc.、Wistron Corporation</td><td>这些公司不在 SEC 申报，第一版尚未取得其年报</td></tr><tr><td>Q2b 下游客户资本开支对照</td><td>下游链上没有原文点名的公司：起点的直接客户匿名，反向检索的 14 家公司年报都没有点名</td></tr></tbody></table></div><h2>验证</h2><p><strong>catalog_check：</strong> 通过；证据包生成前产业链登记核对零错误、零未核对</p><p><strong>分部营收合计核对：</strong> 通过；6 个财年，各分部（含 AllOtherSegments）营收之和与同一申报的合并营收比较（容差 1 美元）</p><p><strong>原始快照抽查：</strong> 跳过；没有可在原始 CSV 中定位的合格观测</p><h2>数据与方法</h2><div class="scroll"><table><thead><tr><th>角色</th><th>数据集</th><th>版本</th><th>来源</th><th>核验状态</th></tr></thead><tbody><tr><td>evidence</td><td>relation_chain_evidence</td><td><code>v20261101T012836Z-c1ed8bc0</code></td><td>sec_edgar</td><td>use_verified</td></tr></tbody></table></div><p><strong>方法：</strong> 从固定的关系链证据包按登记的有向关系向上游、下游逐层展开：方向不混用，只沿与上一条边相关的业务展开，只经过已复核的关系，匿名对手方、业务未定、未复核与层数上限处停止，并按查阅记录区分「已查原文、未披露」与「尚未查阅」。营收取自各公司自己的一份年报（三个财年），只计算同一申报、同一币种内的同比。</p><h2>限制</h2><ul><li>关系来自公司年报的披露：「such as」等列举不是完整名单，没有披露不等于没有关系</li><li>占比只按原文口径列出（NVIDIA 对两个匿名客户的销售占其营收、Fabrinet 对 NVIDIA 的销售占其营收），不推算其他公司的份额，也不相乘推算间接敞口</li><li>上游第二层只读了 SEC 上的年报（台积电 20-F、Micron 10-K）；三星、SK 海力士、鸿海、纬创的当地披露尚未查阅</li><li>下游反向检索只查了公司样本中已有的 14 家公司的最新 10-K；其他服务器、系统厂商与云厂商留待后续</li><li>Micron 已有 2026 财年 10-K（2026-10-09 提交），本研究的查阅与营收仍基于 2025 财年 10-K</li><li>营收为各公司财年口径，财年截止月不同（NVIDIA 1 月下旬、台积电 12 月、Micron 8 月下旬、Fabrinet 6 月下旬）；台积电为新台币，不换算</li><li>同期营收变化是描述，不说明由 NVIDIA 带动，也不是预测</li></ul>
+</main></body></html>
