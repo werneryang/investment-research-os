@@ -1,6 +1,6 @@
-"""Relationship-chain pages: layered chain map, per-edge evidence, breakpoints and same-filing revenue."""
+"""Relationship-chain pages: layered chain graph (SVG), per-edge evidence, breakpoints and same-filing revenue."""
 from .common import e, stat
-from .i18n import L, te
+from .i18n import L, has_cjk, te, tx
 
 REASON = {'anonymous': ('对手方匿名', 'Counterparty not named'),
           'activity_unknown': ('业务未定', 'Business not stated'),
@@ -37,16 +37,6 @@ def _kind(edge):
     return out + (' · ' + te(business) if business and business != TYPE.get(edge['type'], ('',))[0] else '')
 
 
-def _marks(edge, breaks):
-    tags = []
-    if edge['status'] not in ('reviewed', 'confirmed'):
-        tags.append(f'<span class="chain-tag muted">{L("未复核", "Not reviewed")}</span>')
-    if edge['evidence_class'] != 'primary' or edge.get('external_path'):
-        tags.append(f'<span class="chain-tag">{L("外部来源", "External source")}</span>')
-    tags += [f'<span class="chain-tag warn">{_reason(b["reason"])}</span>' for b in breaks]
-    return ''.join(tags)
-
-
 def _breaks(chain):
     by = {}
     for b in chain['breakpoints']:
@@ -54,45 +44,187 @@ def _breaks(chain):
     return by
 
 
-def _card(edge, chain, side):
-    breaks = _breaks(chain).get((edge['to'], edge['relation']), [])
-    cls = ['chain-node']
-    if edge['counterparty_type'] == 'anonymous':
-        cls.append('anon')
-    if edge['status'] not in ('reviewed', 'confirmed'):
-        cls.append('unreviewed')
-    if edge['evidence_class'] != 'primary' or edge.get('external_path'):
-        cls.append('external')
-    via = '' if edge['layer'] == 1 else f'<p class="small muted">{"→" if side == "up" else "←"} {te(edge["from_name"])}</p>'
-    value = (edge.get('share') or {}).get('value')
-    share = f'<p class="small">{L("占比", "Share")} {value * 100:.1f}%</p>' if value is not None else ''
-    return (f'<li class="{" ".join(cls)}"><strong>{te(edge["to_name"])}</strong><p class="small">{_kind(edge)}</p>'
-            f'{via}{share}{_marks(edge, breaks)}</li>')
+# 关系链图：Python 直接生成 SVG，不依赖脚本；逐条证据仍在下方表格。连线方向为供货方向（提供方 → 接收方）。
+COL_W, COL_GAP, PAD, HEAD = 200, 64, 9, 26
+NAME, META = (13, 17), (11.5, 15)  # (字号, 行高)
 
 
-def chain_map(r):
-    res = r['results']
+def _plain_kind(edge):
+    """同 _kind，但返回纯文本（SVG 文字不能含 HTML 标签）。"""
+    out = L(*TYPE.get(edge['type'], (edge['type'], edge['type'])))
+    business = edge.get('activity_name')
+    return out + (' · ' + tx(business) if business and business != TYPE.get(edge['type'], ('',))[0] else '')
+
+
+def _wrap(text, size, lines):
+    """按估计字宽换行：汉字约一个字号宽，其他字符约 0.56 个字号；超出行数时截断并加省略号。"""
+    width = COL_W - 2 * PAD
+    tokens, word = [], ''
+    for ch in text:
+        if has_cjk(ch):
+            tokens += [word, ch] if word else [ch]
+            word = ''
+        elif ch == ' ':
+            tokens += [word, ' '] if word else [' ']
+            word = ''
+        else:
+            word += ch
+    if word:
+        tokens.append(word)
+    measure = lambda t: sum(size if has_cjk(c) else size * .56 for c in t)
+    out, cur = [], ''
+    for t in tokens:
+        if cur and measure(cur + t) > width:
+            out.append(cur.rstrip())
+            cur = '' if t == ' ' else t
+        else:
+            cur += t
+    if cur.strip():
+        out.append(cur.rstrip())
+    if len(out) > lines:
+        out = out[:lines]
+        while out[-1] and measure(out[-1] + '…') > width:
+            out[-1] = out[-1][:-1]
+        out[-1] += '…'
+    return out
+
+
+def _node(key, title, rows, cls, href=None):
+    """rows: [(文字, 样式类, 字号与行高, 最多行数)]"""
+    lines = [(t, c, f) for text, c, f, n in rows for t in _wrap(text, f[0], n)]
+    height = 2 * PAD + sum(f[1] for _, _, f in lines)
+    return {'key': key, 'title': title, 'lines': lines, 'cls': cls, 'href': href, 'h': height}
+
+
+def _graph_nodes(res):
     up, down = res['upstream'], res['downstream']
-    depth = res['depth']
+    breaks = {'up': _breaks(up), 'down': _breaks(down)}
+
+    def side_nodes(chain, side):
+        layers, order = [], {res['root']: 0}
+        for i, edges in enumerate(chain['layers'], 1):
+            groups = {}
+            for x in edges:
+                groups.setdefault(x['to'], []).append(x)
+            ids = sorted(groups, key=lambda t: order.get(groups[t][0]['from'], 0))  # 跟随上一层的顺序，减少交叉
+            order = {t: n for n, t in enumerate(ids)}
+            nodes = []
+            for t in ids:
+                edges_in = groups[t]
+                first = edges_in[0]
+                rows = [(tx(first['to_name']), 'cg-name', NAME, 3)]
+                for x in edges_in:
+                    value = (x.get('share') or {}).get('value')
+                    rows.append((_plain_kind(x) + (f' · {L("占比", "Share")} {value * 100:.1f}%' if value is not None else ''),
+                                 'cg-meta', META, 2))
+                tags = []
+                if any(x['status'] not in ('reviewed', 'confirmed') for x in edges_in):
+                    tags.append(L('未复核', 'Not reviewed'))
+                if any(x['evidence_class'] != 'primary' or x.get('external_path') for x in edges_in):
+                    tags.append(L('外部来源', 'External source'))
+                if tags:
+                    rows.append((' · '.join(tags), 'cg-meta', META, 1))
+                reasons = list(dict.fromkeys(_reason(b['reason']) for x in edges_in
+                                             for b in breaks[side].get((t, x['relation']), [])))
+                if reasons:
+                    rows.append((L('停止：', 'Stops: ') + ' · '.join(reasons), 'cg-warn', META, 2))
+                cls = ['cg-node']
+                if first['counterparty_type'] == 'anonymous':
+                    cls.append('anon')
+                if all(x['status'] not in ('reviewed', 'confirmed') for x in edges_in):
+                    cls.append('unreviewed')
+                if any(x['evidence_class'] != 'primary' or x.get('external_path') for x in edges_in):
+                    cls.append('external')
+                title = '\n'.join([tx(first['to_name'])] + [r[0] for r in rows[1:]])
+                nodes.append(_node((side, i, t), title, rows, cls))
+            layers.append((nodes, edges))
+        return layers
+
+    up_layers, down_layers = side_nodes(up, 'up'), side_nodes(down, 'down')
     cols = []
-    for layer in range(depth, 0, -1):
-        edges = up['layers'][layer - 1] if len(up['layers']) >= layer else []
-        cols.append((L(f'上游第 {layer} 层', f'Upstream layer {layer}'), ''.join(_card(x, up, 'up') for x in edges)))
-    cols.append((L('起点', 'Starting point'), f'<li class="chain-node root"><strong>{te(res["root_name"])}</strong></li>'))
-    searched, found = res['summary']['reverse_searched'], res['summary']['reverse_found']
-    counts = L(f'{searched} 家样本公司年报，{found} 家点名 {res["root_name"]}',
-               f"{found} of {searched} sample companies' filings name {res['root_name']}")
-    reverse = (f'<li class="chain-node anon"><a href="#chain-reverse-search">{L("反向检索", "Reverse search")}</a>'
-               f'<p class="small">{e(counts)}</p></li>')
-    for layer in range(1, depth + 1):
-        edges = down['layers'][layer - 1] if len(down['layers']) >= layer else []
-        cols.append((L(f'下游第 {layer} 层', f'Downstream layer {layer}'),
-                     ''.join(_card(x, down, 'down') for x in edges) + (reverse if layer == 1 and res['reverse_search'] else '')))
-    body = ''.join(f'<div class="chain-col"><h4>{h}</h4><ul>{cards or "<li class=chain-empty>—</li>"}</ul></div>' for h, cards in cols)
-    legend = L('灰色为未复核；虚线为外部来源；黄色标签为停止展开的原因。关系不表示影响大小，占比只按原文口径列出。',
-               'Grey: not reviewed; dashed: external source; yellow tags: why expansion stopped. A link does not measure '
-               'impact; shares are shown only as disclosed.')
-    return f'<div class="chain-map">{body}</div><p class="small muted">{legend}</p>'
+    for i in range(len(up_layers), 0, -1):
+        cols.append((L(f'上游第 {i} 层', f'Upstream layer {i}'), up_layers[i - 1][0]))
+    root = _node(('root',), tx(res['root_name']),
+                 [(tx(res['root_name']), 'cg-name', NAME, 3), (L('起点', 'Starting point'), 'cg-meta', META, 1)], ['cg-node', 'root'])
+    cols.append((L('起点', 'Starting point'), [root]))
+    for i, (nodes, _) in enumerate(down_layers, 1):
+        cols.append((L(f'下游第 {i} 层', f'Downstream layer {i}'), list(nodes)))
+    if res['reverse_search']:
+        searched, found = res['summary']['reverse_searched'], res['summary']['reverse_found']
+        counts = L(f'{searched} 家样本公司年报，{found} 家点名 {tx(res["root_name"])}',
+                   f"{found} of {searched} sample companies' filings name {res['root_name']}")
+        rev = _node(('reverse',), counts, [(L('反向检索', 'Reverse search'), 'cg-link', NAME, 1), (counts, 'cg-meta', META, 3)],
+                    ['cg-node', 'anon'], href='#chain-reverse-search')
+        if len(cols) == len(up_layers) + 1:
+            cols.append((L('下游第 1 层', 'Downstream layer 1'), []))
+        cols[len(up_layers) + 1][1].append(rev)
+    cols = [c for c in cols if c[1]]
+    edges = []
+    for side, layers in (('up', up_layers), ('down', down_layers)):
+        for i, (_, layer_edges) in enumerate(layers, 1):
+            for x in layer_edges:
+                near = ('root',) if i == 1 else (side, i - 1, x['from'])
+                far = (side, i, x['to'])
+                edges.append((far, near, x) if side == 'up' else (near, far, x))
+    return cols, edges
+
+
+def chain_graph(r):
+    """分层关系图（SVG）：上游在左、起点居中、下游在右；同一对主体的多条关系并排画出。"""
+    res = r['results']
+    cols, edges = _graph_nodes(res)
+    gap = 12
+    height = max(sum(n['h'] for n in nodes) + gap * (len(nodes) - 1) for _, nodes in cols)
+    width = len(cols) * COL_W + (len(cols) - 1) * COL_GAP
+    pos, parts = {}, []
+    for c, (label, nodes) in enumerate(cols):
+        x = c * (COL_W + COL_GAP)
+        parts.append(f'<text class="cg-col" x="{x}" y="14">{e(label)}</text>')
+        y = HEAD + (height - sum(n['h'] for n in nodes) - gap * (len(nodes) - 1)) / 2
+        for n in nodes:
+            pos[n['key']] = (x, y, n['h'])
+            body = [f'<rect class="cg-box" x="{x}" y="{y:.1f}" width="{COL_W}" height="{n["h"]:.1f}" rx="7"/>']
+            ty = y + PAD
+            for text, cls, (size, lh) in n['lines']:
+                ty += lh
+                body.append(f'<text class="{cls}" x="{x + PAD}" y="{ty - (lh - size) / 2 - 2:.1f}">{e(text)}</text>')
+            g = f'<g class="{" ".join(n["cls"])}"><title>{e(n["title"])}</title>{"".join(body)}</g>'
+            parts.append(f'<a href="{e(n["href"])}">{g}</a>' if n['href'] else g)
+            y += n['h'] + gap
+    pairs = {}
+    for a, b, _ in edges:
+        pairs[(a, b)] = pairs.get((a, b), 0) + 1
+    seen, lines = {}, []
+    for a, b, x in edges:
+        if a not in pos or b not in pos:
+            continue
+        k = seen[(a, b)] = seen.get((a, b), -1) + 1
+        off = (k - (pairs[(a, b)] - 1) / 2) * 6
+        ax, ay, ah = pos[a]
+        bx, by, bh = pos[b]
+        x1, y1, x2, y2 = ax + COL_W, ay + ah / 2 + off, bx - 5, by + bh / 2 + off
+        mid = (x1 + x2) / 2
+        cls = ['cg-edge']
+        if x['status'] not in ('reviewed', 'confirmed'):
+            cls.append('unreviewed')
+        if x['evidence_class'] != 'primary' or x.get('external_path'):
+            cls.append('external')
+        value = (x.get('share') or {}).get('value')
+        tip = f'{tx(x["to_name"] if a[0] == "up" else x["from_name"])} → {tx(x["from_name"] if a[0] == "up" else x["to_name"])} · {_plain_kind(x)}'
+        tip += f' · {L("占比", "Share")} {value * 100:.1f}%' if value is not None else ''
+        lines.append(f'<path class="{" ".join(cls)}" d="M{x1:.1f},{y1:.1f} C{mid:.1f},{y1:.1f} {mid:.1f},{y2:.1f} {x2:.1f},{y2:.1f}"'
+                     f' marker-end="url(#cg-arrow)"><title>{e(tip)}</title></path>')
+    label = L(f'{tx(res["root_name"])} 的上下游关系图', f'Upstream and downstream relationships of {res["root_name"]}')
+    defs = ('<defs><marker id="cg-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">'
+            '<path class="cg-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs>')
+    svg = (f'<svg class="chain-graph" viewBox="-2 0 {width + 4} {height + HEAD + 4:.0f}" role="group" aria-label="{e(label)}">'
+           f'<title>{e(label)}</title>{defs}{"".join(lines)}{"".join(parts)}</svg>')
+    legend = L('箭头为供货方向（提供方 → 接收方）；虚线框为未点名的对手方，虚线连线为外部来源，淡色为未复核；橙色文字为停止展开的原因。'
+               '连线不表示影响大小，各占比的分母不同，只按原文口径标注。悬停查看完整名称与关系。',
+               'Arrows point from provider to recipient; dashed boxes are unnamed counterparties, dashed links external sources, '
+               'faded items not reviewed; orange text gives why expansion stopped. A link does not measure impact; shares have '
+               'different denominators and are shown only as disclosed. Hover for full names and relationships.')
+    return f'<div class="chain-graph-wrap">{svg}</div><p class="small muted">{legend}</p>'
 
 
 def _evidence(edge):
@@ -195,7 +327,7 @@ def _side(res):
 
 def details(r):
     res = r['results']
-    return (chain_map(r)
+    return (chain_graph(r)
             + _edge_table(res['upstream'], 'chain-upstream', L('上游：逐条关系与证据', 'Upstream: relationships and evidence'))
             + _breakpoints(res) + _downstream(res) + _revenue(res) + _side(res))
 
