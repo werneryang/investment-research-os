@@ -1,6 +1,7 @@
 """Company pages: evidence, fiscal trends and limited peer comparisons."""
 from .common import e, stat
 from .i18n import L
+from .visuals import dotplot, nice_ticks, scaled
 from ..research.company import METRICS, select_fact
 
 LABELS = {'revenue':'营收 / Revenue', 'operating_income':'经营利润 / Operating income',
@@ -18,33 +19,48 @@ def table(headers, rows):
 
 
 def chart(rows, metrics, percent=False):
-    """Accessible SVG; absent observations break paths rather than connect gaps."""
-    colors=['#247ba0','#d56b25','#6e58a0']
+    """Accessible SVG line chart; absent observations break paths rather than connect gaps.
+
+    Series colours come from the shared tokens (--c1…) in fixed order; labels stay in text ink."""
     values=[r[m] for r in rows for m in metrics if r[m] is not None]
     if not values:
         return '<p>'+L('没有可绘制的同口径数据。','No comparable data to plot.')+'</p>'
-    lo,hi=min(0,min(values)),max(0,max(values))
-    if hi==lo: hi=lo+1
+    scale=100 if percent else 1e-9
+    ticks=nice_ticks(min(0,min(values))*scale,max(0,max(values))*scale,4)
+    lo,hi=ticks[0]/scale,ticks[-1]/scale
     x=lambda i: 65+i*625/max(1,len(rows)-1)
     y=lambda v: 205-(v-lo)*165/(hi-lo)
     title=' / '.join(LABELS[m] for m in metrics)
-    out=f'<figure><figcaption>{e(title)} · {"%" if percent else "USD bn"}</figcaption><svg viewBox="0 0 740 260" role="img" aria-label="{e(title)}"><title>{e(title)}</title>'
-    for v in [lo,(hi+lo)/2,hi]:
-        out+=f'<line x1="65" x2="690" y1="{y(v):.1f}" y2="{y(v):.1f}" stroke="#ccc"/><text x="3" y="{y(v)+4:.1f}" font-size="16" fill="currentColor">{fmt(v,percent)}</text>'
-    for m,color in zip(metrics,colors):
+    tick=lambda v: f'{v:.0f}%' if percent else f'{v:,.0f}'
+    out=f'<figure class="chart-card"><h4>{e(title)} · {"%" if percent else "USD bn"}</h4><svg class="dotplot" viewBox="0 0 740 250" role="img" aria-label="{e(title)}"><title>{e(title)}</title>'
+    for t in ticks:
+        out+=f'<line class="grid" x1="65" x2="690" y1="{y(t/scale):.1f}" y2="{y(t/scale):.1f}"/><text class="axis" x="58" y="{y(t/scale)+4:.1f}" text-anchor="end">{tick(t)}</text>'
+    for slot,m in enumerate(metrics,1):
         path=''; previous=None
         for i,r in enumerate(rows):
             if r[m] is None:
                 previous=None;continue
             consecutive=previous is not None and int(r['date'][:4])-int(rows[previous]['date'][:4])==1
             path+=f'{"L" if consecutive else "M"}{x(i):.1f},{y(r[m]):.1f} '
-            out+=f'<circle cx="{x(i):.1f}" cy="{y(r[m]):.1f}" r="3" fill="{color}"><title>{e(r["date"])} · {e(LABELS[m])}: {fmt(r[m],percent)}</title></circle>'
+            out+=f'<circle cx="{x(i):.1f}" cy="{y(r[m]):.1f}" r="3.5" style="fill:var(--c{slot});stroke:var(--panel);stroke-width:1"><title>{e(r["date"])} · {e(LABELS[m])}: {fmt(r[m],percent)}</title></circle>'
             previous=i
-        out+=f'<path d="{path}" fill="none" stroke="{color}" stroke-width="2"/>'
-    for i in sorted({0,len(rows)//2,len(rows)-1}):
-        out+=f'<text x="{x(i):.1f}" y="230" text-anchor="middle" font-size="16" fill="currentColor">{e(rows[i]["date"])}</text>'
-    out+='</svg><p class="small">'+ ' · '.join(f'<span style="color:{c}">{e(LABELS[m])}</span>' for m,c in zip(metrics,colors))+'</p></figure>'
+        out+=f'<path d="{path}" fill="none" style="stroke:var(--c{slot})" stroke-width="2"/>'
+    step=max(1,round(len(rows)/6))
+    for i in sorted(set(range(0,len(rows),step))|{len(rows)-1}):
+        out+=f'<text class="axis" x="{x(i):.1f}" y="230" text-anchor="middle">{e(rows[i]["date"][:4])}</text>'
+    legend=' '.join(f'<span class="legend-item"><i style="background:var(--c{slot})"></i>{e(LABELS[m])}</span>' for slot,m in enumerate(metrics,1))
+    out+=f'</svg><p class="chart-note">{legend}</p></figure>'
     return out
+
+
+def overview_dots(profiles):
+    """15 家公司最新财年利润率的点图：按样本顺序排列，不排名；各公司财年截止日不同。"""
+    rows=[(p['label'],{'operating_margin':scaled(p['latest'].get('operating_margin')),
+                       'net_margin':scaled(p['latest'].get('net_margin'))},p['last'][:7]) for p in profiles]
+    return dotplot(rows,[('operating_margin',L('经营利润率','Operating margin'),0),('net_margin',L('净利润率','Net margin'),1)],
+                   lambda v: f'{v:.0f}%',title=L('最新财年的利润率','Latest fiscal-year margins'),
+                   note=L('按样本顺序排列，不是排名；财年截止日不同（见名称后的年月），商业模式差异见下方可比性说明。',
+                          'Listed in sample order, not ranked; fiscal years end on different dates (shown after each name); see comparability notes below.'))
 
 
 def details(result):
@@ -62,6 +78,7 @@ def details(result):
     out+='<div id="company-overview"></div>'
     out+=table([L('公司','Company'),L('最新期末','Latest end'),'Revenue','Op margin','Net margin','OCF','Capex',L('缺失项 / 全期间','Missing / all periods')],overview)
     if len(profiles)>1:
+        out+=overview_dots(profiles)
         out+='<h3 id="company-comparability">'+L('哪些公司可以比较？','Which companies can be compared?')+'</h3>'
         out+=table([L('公司','Company'),L('比较边界','Comparison boundary')],[[e(p['label']),e(p['comparison'])] for p in profiles])
         return out

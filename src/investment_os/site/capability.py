@@ -24,6 +24,7 @@ from .common import (
 )
 from .i18n import L, Labels, te, tx
 from .renderers import use_key
+from .visuals import timeline
 
 USE_SHORT = Labels({Use.DESCRIPTIVE: ("历史描述", "Historical description"),
                     Use.POINT_IN_TIME: ("时点研究", "Point-in-time study"), Use.SCENARIO: ("情景模拟", "Scenario simulation")})
@@ -194,6 +195,11 @@ def capability_page(content: dict[str, Any], registry: Registry, datasets: dict[
     from .discovery import browser
     discovery_html = browser(content, discovery_model, latest, build, {k: v["frequency"] for k,v in datasets.items()}) if discovery_model else ""
     rows = "".join(_branch_rows(b) for b in framework(content, registry, datasets, latest))
+    members = {m for c in content.get("collections", {}).values() for m in c.get("members", [])}
+    spans = timeline(((tx(i["result"]["title"]), i["result"].get("scope", {}).get("start"), i["result"].get("data_cutoff"),
+                       f"studies/{sid}/") for sid, i in latest.items() if sid not in members),
+                     title=L("各研究的时间覆盖", "Time coverage of each study"),
+                     note=L("从研究期间起点到数据截止；公司财报研究在总览中另列。", "From the study start to the data cutoff; company filings are listed in their overview."))
     head = L("<th>数据用途分组</th><th>数据接入状态</th>",
              "<th>Data use group</th><th>Data access status</th>")
     body = f"""
@@ -202,6 +208,7 @@ def capability_page(content: dict[str, Any], registry: Registry, datasets: dict[
                       "What the system can study now, how mature the evidence is, and what comes next.")}</p></div></header>
 <main class="wrap">
 {discovery_html}
+{f'<section id="time-coverage">{spans}</section>' if spans else ''}
 <details><summary>{L("数据接入登记与工程状态", "Data registration and engineering status")}</summary><section><h2>{L("数据来源分组", "Data source groups")}</h2>
 <p class="muted small">{L("以下分组用于来源与数据接入，不是研究归属。数据取得、工程实现和研究用途核验分别判断。", "These groups describe sources and data access, not study ownership. Data access, engineering and verification for a research use are assessed separately.")}</p>
 <div class="scroll"><table class="capability"><thead><tr>{head}</tr></thead><tbody>{rows}</tbody></table></div></section></details>

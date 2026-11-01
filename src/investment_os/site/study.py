@@ -6,6 +6,7 @@
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from ..registry import Registry
@@ -44,7 +45,7 @@ def chart_panel(run_href: str, available: list[str], wanted: tuple[tuple[str, st
     static = figs or f'<p class="muted small">{L("该运行没有静态图。", "This run has no static figures.")}</p>'
     if figs and is_en():
         static += '<p class="muted small">Static figures are labelled in Chinese; the interactive chart is in English.</p>'
-    src = f' data-src="{run_href}/chart.json"' if interactive else ""
+    src = f' data-src="{run_href}/{"chart.en.json" if is_en() else "chart.json"}"' if interactive else ""
     return (f'<div class="chart-panel"{src}>'
             f'<div class="chart-static figs">{static}</div>'
             '<div class="interactive" hidden></div>'
@@ -66,8 +67,11 @@ def findings_list(items: list[dict[str, Any]], limit: int | None = None) -> str:
         evidence = "".join(f"<li><code>{e(k)}</code> = {e(num(v, 2) if isinstance(v, float) else v)}</li>"
                            for k, v in f["evidence"].items())
         text = e(f["text"]) if f.get("translated", True) else f'<span lang="zh-CN">{e(f["text"])}</span>'
+        # 「在图中定位」：依据里的结果路径与图上点的 ref 对应时，脚本才显示这个按钮
+        refs = json.dumps([k for k in f["evidence"] if k.startswith("results.")])
         rows.append(f'<li><span>{text}</span>'
-                    f'<details class="basis"><summary>{L("依据", "Basis")}</summary><ul>{evidence}</ul></details></li>')
+                    f'<details class="basis"><summary>{L("依据", "Basis")}</summary><ul>{evidence}</ul></details>'
+                    f'<button type="button" class="locate" data-refs="{e(refs)}" hidden>{L("在图中定位", "Locate in chart")}</button></li>')
     return f'<ol class="findings">{"".join(rows)}</ol>'
 
 

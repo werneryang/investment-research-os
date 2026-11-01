@@ -297,3 +297,42 @@ text-decoration:none;white-space:nowrap}
 .cg-arrow{fill:var(--muted)}
 tr.chain-total td{border-top:2px solid var(--line)}
 blockquote{margin:.4rem 0;padding:.3rem .6rem;border-left:2px solid var(--line);font-size:.85rem}
+
+/* ---- Shared chart tokens: one categorical order for every chart (validated for colour-vision deficiency on these
+ * surfaces), used in fixed order and never cycled. Python figures read the same values from reporting/palette.py. ---- */
+:root{--c1:#2a78d6;--c2:#eb6834;--c3:#1baf7a;--c4:#eda100;--c5:#e87ba4;--c6:#008300;--c7:#6250d6;--c8:#e34948;
+--div-pos:#2a78d6;--div-neg:#e34948;--grid:#e1e0d9}
+@media (prefers-color-scheme:dark){:root{--c1:#3987e5;--c2:#d95926;--c3:#199e70;--c4:#c98500;--c5:#d55181;--c6:#008300;
+--c7:#9085e9;--c8:#e66767;--div-pos:#3987e5;--div-neg:#e66767;--grid:#2c2c2a}}
+.panel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:12px}
+.chart-card{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel);min-width:0}
+.chart-card.wide{grid-column:1/-1}
+.chart-card h4{margin:0 0 2px;font-size:.92rem}
+.chart-card .chart-box{border:0;padding:0;background:none}
+.chart-note{margin:.3rem 0 0;color:var(--muted);font-size:.78rem}
+/* Heatmaps are plain tables (readable without scripts); cell shade = magnitude, blue above zero, red below. */
+.heatmap{width:auto;min-width:100%;font-size:.8rem}
+.heatmap th,.heatmap td{padding:3px 8px;border-bottom:1px solid var(--panel)}
+.heatmap td.cell{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.heatmap td.cell a{color:inherit;text-decoration:none;display:block}
+.heatmap td.empty{color:var(--muted);text-align:center}
+.heatmap-legend{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.78rem;margin:6px 0}
+.heatmap-legend i{display:inline-block;width:72px;height:10px;border-radius:2px;
+background:linear-gradient(90deg,var(--div-neg),var(--panel),var(--div-pos))}
+.heatmap-legend.seq i{background:linear-gradient(90deg,var(--panel),var(--div-pos))}
+/* "Locate in chart": a finding outlines the chart marks and table cells it cites. */
+.hl{outline:2px solid var(--fg);outline-offset:-2px}
+button.locate{border:0;background:none;color:var(--accent);font-size:.8rem;cursor:pointer;padding:0 0 0 6px}
+button.locate[hidden]{display:none}
+.dotplot,.timeline{display:block;width:100%;height:auto}
+.dotplot text,.timeline text{fill:var(--fg);font-size:12px}
+.dotplot .axis,.timeline .axis{fill:var(--muted);font-size:11px}
+.dotplot line.grid,.timeline line.grid{stroke:var(--grid)}
+.timeline rect{fill:var(--c1)}
+.timeline a:hover rect{fill:var(--accent)}
+.legend-item{display:inline-flex;align-items:center;gap:4px;margin-right:12px}
+.legend-item i{display:inline-block;width:10px;height:10px;border-radius:50%}
+.timeline{min-width:640px}
+.home-matrix{margin:8px 0 16px}.home-matrix summary{cursor:pointer;font-weight:600;margin-bottom:6px}
+#time-coverage{padding:20px 0}
+figure.chart-card{margin:0 0 12px}

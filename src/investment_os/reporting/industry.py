@@ -118,6 +118,7 @@ def sections(result):
 
 def figures(result, out_dir: Path):
     import matplotlib.pyplot as plt
+    from .palette import PALETTE
     from .report import _save, _style
     _style()
     out_dir.mkdir(parents=True,exist_ok=True)
@@ -125,8 +126,8 @@ def figures(result, out_dir: Path):
     r,t=result["results"],result["tables"]
     rows=sorted([x for x in r["summary"] if x["window"]=="2001–2025" and x["status"]=="ok"],key=lambda x:x["cagr"])
     fig,axes=plt.subplots(1,2,figsize=(10,max(4,len(rows)*.19)))
-    axes[0].barh([x["sector"] for x in rows],[x["cagr"]*100 for x in rows],color="#286d8a")
-    axes[1].barh([x["sector"] for x in rows],[x["max_drawdown"]*100 for x in rows],color="#ba6345")
+    axes[0].barh([x["sector"] for x in rows],[x["cagr"]*100 for x in rows],color=PALETTE[0])
+    axes[1].barh([x["sector"] for x in rows],[x["max_drawdown"]*100 for x in rows],color=PALETTE[7])
     axes[0].set_title("CAGR (%) | 2001–2025"); axes[1].set_title("Maximum monthly drawdown (%)")
     figs.append(("行业收益与回撤",_save(fig,out_dir/"industry_risk.png")))
     fig,ax=plt.subplots(figsize=(9,4))

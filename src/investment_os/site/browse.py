@@ -9,6 +9,7 @@ from .common import e, shell
 from .discovery import label
 from .i18n import L, is_en, te, tx
 from .renderers import get_renderer
+from .visuals import heatmap
 
 
 def _members(content):
@@ -55,6 +56,24 @@ def _company_name(rec):
         if sep in title:
             return title.split(sep, 1)[0]
     return title
+
+
+def coverage_matrix(tax, published):
+    """研究对象 × 研究问题的已发布研究数：一眼看出哪里有研究、哪里还空着；单元格链接到全部研究页的组合筛选。"""
+    count = {}
+    for rec in published:
+        for pair in {(r['object'], r['question']) for r in rec['routes'] if r['available'] and r.get('object')}:
+            count[pair] = count.get(pair, 0) + 1
+    if not count:
+        return ''
+    objects = [(o, label(v['name'])) for o, v in tax['objects'].items()]
+    questions = [(q, label(v['name'])) for q, v in tax['questions'].items() if any(k[1] == q for k in count)]
+    table = heatmap(objects, questions, lambda o, q: (count[(o, q)], None) if (o, q) in count else None, lambda v: str(int(v)),
+                    diverging=False, row_head=L('对象 \\ 问题', 'Object \\ question'),
+                    legend=L('已发布研究数；— 表示尚无研究', 'published studies; — means none yet'),
+                    link=lambda o, q: f'research.html?object={o}&question={q}')
+    return (f'<details class="home-matrix" open><summary>{L("研究覆盖：对象 × 问题", "Coverage: object × question")}</summary>'
+            f'{table}</details>')
 
 
 def home_page(content, model, latest, build):
@@ -131,7 +150,7 @@ def home_page(content, model, latest, build):
             f'<p class="tagline">{L("用公开数据做可复现的美国市场研究：利率、资产、行业与公司。每项结果附数据来源、检查与适用范围。", "Reproducible research on US markets from public data: rates, asset classes, industries and companies. Every result carries its sources, checks and scope.")}</p>'
             f'<p class="small muted">{meta}</p></div></header><main class="wrap home">{search}'
             f'<p class="question-pills"><span class="muted">{L("按问题", "By question")}</span>{pills}</p>'
-            f'<div class="object-cards">{"".join(cards)}</div>{none}'
+            f'<div class="object-cards">{"".join(cards)}</div>{none}{coverage_matrix(tax, published)}'
             f'<p class="small home-more"><a href="research.html#data-plans">{L("数据与规划", "Data and plans")}</a> · '
             f'<a href="sources.html#references">{L("分类与产业关系资料", "Classifications and business relationships")}</a> · '
             f'<a href="map.html">{L("研究能力地图", "Capability map")}</a></p></main>')

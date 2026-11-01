@@ -1,5 +1,6 @@
 /* 交互图表：读取每次运行的 chart.json（由研究分支的展示组件生成），只做呈现，不重新计算。
- * kind 决定图表类型：curve（收益率走势与曲线对比）、scenarios（假设债券情景）；未知类型回退到静态图。
+ * kind 决定图表类型：curve（收益率走势与曲线对比）、scenarios（假设债券情景）、panels（通用面板：折线、散点、
+ * 柱状、瀑布，可切换视图）；未知类型回退到静态图。颜色取自 style.css 的 --c1…--c8，按固定顺序使用。
  * 缺失值保持为断点（spanGaps: false），与计算中不插值的规则一致。
  *
  * 渐进增强：每个 .chart-panel 默认显示静态图；只有 Chart.js 已加载、数据取得、
@@ -8,7 +9,7 @@
 (function () {
   "use strict";
 
-  var PALETTE = ["#2b6cb0", "#dd6b20", "#2f855a", "#c53030", "#6b46c1", "#718096", "#b7791f"];
+  var PALETTE = [];
   /* 页面语言：英文页面（html lang="en"）的界面文字用英文 */
   var EN = document.documentElement.lang === "en";
   function T(zh, en) { return EN ? en : zh; }
@@ -16,6 +17,10 @@
 
   function css(name) {
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+  function palette() {
+    if (!PALETTE.length) for (var i = 1; i <= 8; i++) PALETTE.push(css("--c" + i) || "#777");
+    return PALETTE;
   }
 
   function el(tag, attrs, text) {
@@ -224,9 +229,243 @@
     render();
   }
 
+  /* ---- 通用面板 ------------------------------------------------------------------
+   * 每个面板一张图；views 是同一面板的不同数据视图（如名义 / 实际、各时间窗口）。点的 ref 是结果中的
+   * 路径（如 results.nominal.SP500），关键发现的「在图中定位」据此高亮。数值已在生成网站时换算成显示单位，
+   * 这里只格式化，不重新计算（瀑布图只把各部分依次堆叠显示）。 */
+  var REGISTRY = [];
+
+  function titled(axis) {
+    return axis.label + (axis.unit ? T("（" + axis.unit + "）", " (" + axis.unit + ")") : "");
+  }
+
+  function fmt(axis, v) {
+    if (v == null || isNaN(v)) return "—";
+    var d = axis.digits == null ? 1 : axis.digits;
+    return (axis.signed && v > 0 ? "+" : "") + v.toFixed(d) + (axis.unit ? (axis.unit === "%" ? "%" : " " + axis.unit) : "");
+  }
+
+  /* 散点的直接标注：只在面板要求时画（点少于十几个），文字用正文墨色，不用系列色 */
+  var pointLabels = {
+    id: "pointLabels",
+    afterDatasetsDraw: function (chart) {
+      if (!chart.options.plugins.pointLabels) return;
+      var ctx = chart.ctx;
+      ctx.save(); ctx.font = "11px " + getComputedStyle(document.body).fontFamily; ctx.fillStyle = css("--fg");
+      chart.data.datasets.forEach(function (ds, i) {
+        if (!chart.isDatasetVisible(i)) return;
+        chart.getDatasetMeta(i).data.forEach(function (el, j) {
+          var p = ds.data[j]; if (p && p.label) ctx.fillText(p.label, el.x + 6, el.y - 6);
+        });
+      });
+      ctx.restore();
+    }
+  };
+
+  function datasetsFor(panel, view) {
+    var colors = palette();
+    if (panel.type === "waterfall") {
+      var pts = view.series[0].points, run = 0;
+      var bars = pts.map(function (p) {
+        if (p.total) { run = p.y; return { x: p.x, y: [0, p.y], v: p.y, ref: p.ref, total: true }; }
+        var from = run; run += p.y;
+        return { x: p.x, y: [from, run], v: p.y, ref: p.ref };
+      });
+      return [{ label: view.series[0].label, data: bars, parsing: { xAxisKey: "x", yAxisKey: "y" },
+                backgroundColor: bars.map(function (b) { return b.total ? css("--muted") : b.v >= 0 ? colors[0] : colors[7]; }),
+                borderRadius: 4, borderSkipped: false, maxBarThickness: 48 }];
+    }
+    return view.series.map(function (s, i) {
+      var c = colors[(s.slot == null ? i : s.slot) % colors.length];
+      var base = { label: s.label, borderColor: c, backgroundColor: c, borderDash: s.dash ? [6, 4] : [] };
+      if (panel.type === "bar") {
+        return Object.assign(base, { data: s.points.map(function (p) { return { x: panel.horizontal ? p.y : p.x, y: panel.horizontal ? p.x : p.y, ref: p.ref, label: p.label }; }),
+                                     borderRadius: 4, borderSkipped: false, maxBarThickness: 28 });
+      }
+      if (panel.type === "scatter") {
+        return Object.assign(base, { data: s.points, pointRadius: 4.5, pointHoverRadius: 7, pointBorderColor: css("--panel"), pointBorderWidth: 1.5 });
+      }
+      return Object.assign(base, { data: s.points, pointRadius: 0, pointHoverRadius: 4, borderWidth: 2, spanGaps: false });
+    });
+  }
+
+  function buildPanel(host, panel) {
+    var card = el("div", { class: "chart-card" + (panel.wide ? " wide" : "") });
+    card.appendChild(el("h4", {}, panel.title));
+    var controls = el("div", { class: "controls" });
+    var box = el("div", { class: "chart-box" });
+    box.style.height = (panel.height || 280) + "px";
+    var canvas = el("canvas", { role: "img", "aria-label": panel.title });
+    box.appendChild(canvas);
+    card.appendChild(controls); card.appendChild(box);
+    if (panel.note) card.appendChild(el("p", { class: "chart-note" }, panel.note));
+    host.appendChild(card);
+
+    var state = { view: 0, log: !!panel.y.log_default };
+    var horizontal = panel.type === "bar" && panel.horizontal;
+    var valueAxis = horizontal ? "x" : "y", catAxis = horizontal ? "y" : "x";
+    var opts = baseOptions(titled(panel.y));
+    opts.plugins.pointLabels = !!panel.labels;
+    opts.plugins.legend.display = panel.type !== "waterfall" && (panel.views[0].series.length > 1);
+    if (horizontal) {
+      opts.indexAxis = "y";
+      opts.scales.x.title = { display: true, text: opts.scales.y.title.text, color: css("--muted") };
+      opts.scales.y = { ticks: { color: css("--muted"), autoSkip: false, font: { size: 10 } }, grid: { display: false } };
+    }
+    if (panel.type === "scatter" || (panel.type === "line" && panel.x.type === "linear")) {
+      opts.scales.x.type = "linear";
+      opts.scales.x.title = { display: true, text: titled(panel.x), color: css("--muted") };
+      if (panel.x.type === "linear" && panel.type === "line") {
+        opts.scales.x.bounds = "data";  // 横轴只到数据两端，不按整刻度外扩
+        opts.scales.x.ticks.callback = function (v) { return String(v); };
+      }
+    }
+    if (panel.type === "scatter") {
+      opts.interaction = { mode: "nearest", intersect: true };
+      opts.scales.x.grace = "5%"; opts.scales.y.grace = "8%";
+    }
+    opts.layout = { padding: { top: 6, right: panel.labels ? 56 : 8 } };  // 直接标注不被裁掉
+    opts.plugins.tooltip = { callbacks: {
+      title: function (items) {
+        var p = items[0] && items[0].raw;
+        return p && p.label ? p.label : items[0] ? String(items[0].label) : "";
+      },
+      label: function (c) {
+        var p = c.raw || {};
+        if (panel.type === "waterfall") return (p.total ? T("合计", "Total") : c.dataset.label) + T("：", ": ") + fmt(Object.assign({ signed: !p.total }, panel.y), p.v);
+        if (panel.type === "scatter") return panel.x.label + " " + fmt(panel.x, p.x) + " · " + panel.y.label + " " + fmt(panel.y, p.y);
+        return c.dataset.label + T("：", ": ") + fmt(panel.y, horizontal ? c.parsed.x : c.parsed.y);
+      } } };
+    if (panel.y.zero) opts.scales[valueAxis].beginAtZero = true;
+    var chart = new Chart(canvas, { type: panel.type === "waterfall" ? "bar" : panel.type, data: { datasets: [] },
+                                    options: opts, plugins: [pointLabels] });
+    var entry = { chart: chart, panel: panel, state: state, render: null };
+    REGISTRY.push(entry);
+
+    function render() {
+      var view = panel.views[state.view];
+      chart.data.datasets = datasetsFor(panel, view);
+      if (panel.type === "line" && panel.x.type !== "linear") {
+        var seen = {}, labels = [];
+        view.series.forEach(function (s) { s.points.forEach(function (p) { if (!seen[p.x]) { seen[p.x] = 1; labels.push(p.x); } }); });
+        labels.sort();
+        chart.data.labels = labels;
+        chart.data.datasets.forEach(function (ds, i) {
+          var by = {}; view.series[i].points.forEach(function (p) { by[p.x] = p.y; });
+          ds.data = labels.map(function (x) { return by[x] == null ? null : by[x]; });
+        });
+      } else if (panel.type === "bar" || panel.type === "waterfall") {
+        chart.data.labels = view.series[0].points.map(function (p) { return p.x; });  // 类别轴按给定顺序
+      } else {
+        chart.data.labels = undefined;
+      }
+      var scale = chart.options.scales[valueAxis];
+      scale.type = state.log ? "logarithmic" : "linear";
+      /* 对数轴只标 1、10、100…，避免 50,000.0 这类刻度 */
+      scale.ticks.callback = state.log ? function (v) {
+        var p = Math.log10(v);
+        return Math.abs(p - Math.round(p)) < 1e-9 ? Number(v).toLocaleString() : "";
+      } : undefined;
+      if (horizontal) box.style.height = Math.max(panel.height || 280, 16 * view.series[0].points.length + 60) + "px";
+      chart.update();
+    }
+    entry.render = render;
+    if (panel.views.length > 1) {
+      controls.appendChild(el("span", { class: "group-label" }, panel.views_label || T("视图", "View")));
+      var buttons = panel.views.map(function (v, i) {
+        var b = el("button", { type: "button", class: "toggle", "aria-pressed": String(i === 0) }, v.label);
+        b.addEventListener("click", function () {
+          state.view = i;
+          buttons.forEach(function (o) { o.setAttribute("aria-pressed", String(o === b)); });
+          render();
+        });
+        controls.appendChild(b);
+        return b;
+      });
+      entry.select = function (i) { buttons[i].click(); };
+    }
+    if (panel.y.log_toggle) {
+      controls.appendChild(toggle(T("对数刻度", "Log scale"), state.log, function (b) {
+        state.log = b.getAttribute("aria-pressed") === "true"; render();
+      }));
+    }
+    if (!controls.childNodes.length) controls.hidden = true;
+    render();
+  }
+
+  function panelCharts(grid, data) {
+    if (!data.panels || !data.panels.length) throw new Error("no panels");
+    grid.className = "panel-grid";
+    data.panels.forEach(function (panel) { buildPanel(grid, panel); });
+  }
+
+  /* 引用 ref 的发现：证据键等于 ref，或以 ref + "." 开头 */
+  function cites(refs, ref) {
+    return !!ref && refs.some(function (k) { return k === ref || k.indexOf(ref + ".") === 0; });
+  }
+
+  function matches(entry, refs, viewIndex) {
+    var hits = [];
+    entry.panel.views[viewIndex].series.forEach(function (s, di) {
+      s.points.forEach(function (p, i) { if (cites(refs, p.ref)) hits.push({ datasetIndex: di, index: i }); });
+    });
+    return hits;
+  }
+
+  function highlight(refs) {
+    var first = null;
+    document.querySelectorAll(".hl").forEach(function (n) { n.classList.remove("hl"); });
+    document.querySelectorAll("[data-ref]").forEach(function (n) {
+      if (cites(refs, n.getAttribute("data-ref"))) { n.classList.add("hl"); first = first || n; }
+    });
+    REGISTRY.forEach(function (entry) {
+      var view = entry.state.view, hits = matches(entry, refs, view);
+      if (!hits.length) {
+        for (var v = 0; v < entry.panel.views.length && !hits.length; v++) {
+          if (v !== view && matches(entry, refs, v).length && entry.select) { entry.select(v); hits = matches(entry, refs, v); }
+        }
+      }
+      if (entry.panel.type === "waterfall") hits = hits.map(function (h) { return { datasetIndex: 0, index: h.index }; });
+      var c = entry.chart;
+      c.setActiveElements(hits);
+      if (c.tooltip) c.tooltip.setActiveElements(hits.slice(0, 1), { x: 0, y: 0 });
+      c.update();
+      if (hits.length) first = first || c.canvas;
+    });
+    if (first) first.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  function hasTarget(refs) {
+    var dom = Array.prototype.some.call(document.querySelectorAll("[data-ref]"), function (n) { return cites(refs, n.getAttribute("data-ref")); });
+    return dom || REGISTRY.some(function (entry) {
+      return entry.panel.views.some(function (_, v) { return matches(entry, refs, v).length > 0; });
+    });
+  }
+
+  /* 关键发现旁的「在图中定位」：只在本页确有对应图形时显示 */
+  function enableLocate() {
+    document.querySelectorAll("button.locate[data-refs]").forEach(function (b) {
+      var refs = JSON.parse(b.getAttribute("data-refs"));
+      b.hidden = !hasTarget(refs);
+      if (!b.dataset.bound) {
+        b.dataset.bound = "1";
+        b.addEventListener("click", function () { highlight(refs); });
+      }
+    });
+  }
+
   var BUILDERS = {
-    curve: function (left, right, data) { seriesChart(left, data); curveChart(right, data); },
-    scenarios: scenarioCharts
+    curve: function (grid, data) {
+      var left = el("div"), right = el("div");
+      grid.appendChild(left); grid.appendChild(right);
+      seriesChart(left, data); curveChart(right, data);
+    },
+    scenarios: function (grid, data) {
+      var left = el("div"), right = el("div");
+      grid.appendChild(left); grid.appendChild(right);
+      scenarioCharts(left, right, data);
+    },
+    panels: panelCharts
   };
 
   function enhance(panel) {
@@ -249,17 +488,19 @@
       .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
       .then(function (data) {
         var grid = el("div", { class: "chart-grid" });
-        var left = el("div"), right = el("div");
-        grid.appendChild(left); grid.appendChild(right); box.appendChild(grid);
+        box.appendChild(grid);
         try {
           var build = BUILDERS[data.kind || "curve"];
           if (!build) throw new Error("unknown chart kind " + data.kind);
-          build(left, right, data);
+          palette();
+          build(grid, data);
         } catch (err) {
           fallback(T("交互图表生成失败", "The interactive chart could not be drawn"));
           return;
         }
         box.hidden = false;
+        REGISTRY.forEach(function (entry) { entry.chart.resize(); });
+        enableLocate();
         if (!hasStatic) return;
         still.hidden = true;
         panel.appendChild(still);  // 展开的静态图放在按钮下方，展开时读者不会丢失位置
@@ -303,5 +544,6 @@
     rememberLanguage();
     staleness();
     document.querySelectorAll(".chart-panel[data-src]").forEach(enhance);
+    enableLocate();
   });
 })();

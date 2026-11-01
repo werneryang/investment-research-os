@@ -6,6 +6,7 @@ from typing import Any
 
 from .common import CHECK_LABEL, USE_LABEL, chip, e, num, stat
 from .i18n import L, te
+from .visuals import axis, panel, panels, scaled, series, view
 
 GRADE = {"A": ("A：已核验输入", "A: verified inputs"), "B": ("B：明示假设的情景", "B: scenario with stated assumptions"),
          "C": ("C：受阻，不生成数值", "C: blocked, no values"), "unassessed": ("未评估：不计算", "Unassessed: not computed")}
@@ -235,6 +236,59 @@ def _investment_home(result: dict[str, Any]) -> str | None:
     return out
 
 
+def _throughput_chart(result: dict[str, Any]) -> dict[str, Any] | None:
+    """周度总投入与可运行产能（同一单位，同一图）、公布与复算的利用率，以及各情景的处理缺口。"""
+    t = result.get("tables") or {}
+    weekly = t.get("weekly") or []
+    week = axis(L("周末日期", "Week ending"))
+    volumes = panel("line", L("周度总投入与可运行产能", "Weekly gross inputs and operable capacity"), week,
+                    axis(L("千桶/日", "Thousand b/d"), "", 0),
+                    [view("", series(L("总投入", "Gross inputs"), [{"x": w["week_ending"], "y": w.get("gross_inputs")} for w in weekly], slot=0),
+                          series(L("可运行产能", "Operable capacity"), [{"x": w["week_ending"], "y": w.get("operable_capacity")} for w in weekly],
+                                 slot=1, dash=True))])
+    util = panel("line", L("利用率：公布值与复算值", "Utilization: published and recomputed"), week, axis(L("利用率", "Utilization"), "%"),
+                 [view("", series(L("公布", "Published"), [{"x": w["week_ending"], "y": w.get("utilization")} for w in weekly], slot=0),
+                       series(L("复算", "Recomputed"), [{"x": w["week_ending"], "y": w.get("utilization_calc")} for w in weekly],
+                              slot=1, dash=True))])
+    scen = t.get("scenario_weeks") or []
+    names = list(dict.fromkeys(x["scenario"] for x in scen))
+    shortfall = panel("line", L("各情景的周度处理缺口（假设情景）", "Weekly throughput shortfall by scenario (assumptions)"), week,
+                      axis(L("缺口", "Shortfall"), L("千桶/日", "kb/d"), 0),
+                      [view(n, series(n, [{"x": x["week_ending"], "y": x.get("shortfall")} for x in scen if x["scenario"] == n], slot=0))
+                       for n in names], views_label=L("情景", "Scenario"), wide=True,
+                      note=L("情景参数为明示假设，不是需求或产量预测。", "Scenario parameters are stated assumptions, not demand or output forecasts."))
+    return panels(volumes, util, shortfall)
+
+
+def _investment_chart(result: dict[str, Any]) -> dict[str, Any] | None:
+    """裂解价差与利用率分画两图（不用双纵轴）；年度超额收益与年均价差散点；逐年总收益对照标普 500。"""
+    r, t = result["results"], result.get("tables") or {}
+    weekly, annual = t.get("weekly") or [], t.get("annual_tsr") or []
+    week = axis(L("周末日期", "Week ending"))
+    crack = panel("line", L("3-2-1 裂解价差（周度）", "3-2-1 crack spread (weekly)"), week, axis(L("价差", "Spread"), "$/bbl", 2),
+                  [view("", series(L("裂解价差", "Crack spread"), [{"x": w["week_ending"], "y": w.get("crack")} for w in weekly], slot=0))])
+    util = panel("line", L("美国炼厂利用率（周度）", "U.S. refinery utilization (weekly)"), week, axis(L("利用率", "Utilization"), "%"),
+                 [view("", series(L("利用率", "Utilization"), [{"x": w["week_ending"], "y": w.get("utilization")} for w in weekly], slot=1))])
+    years = {b["year"]: b for b in r.get("by_year") or [] if b.get("complete")}
+    companies = list(dict.fromkeys(x["company"] for x in annual))
+    name = lambda c: (r.get("tsr") or {}).get(c, {}).get("name", c)  # noqa: E731
+    scatter = panel("scatter", L("年度超额收益与年均价差", "Annual excess return vs mean crack spread"),
+                    axis(L("年均价差", "Mean crack spread"), "$/bbl", 2), axis(L("相对标普 500 的超额收益", "Excess return vs S&P 500"), "pp", signed=True),
+                    [view("", *[series(name(c), [{"x": years[x["year"]]["mean_crack"], "y": scaled(x["excess"]), "label": str(x["year"])}
+                                                 for x in annual if x["company"] == c and x["year"] in years and x.get("excess") is not None],
+                                       slot=i) for i, c in enumerate(companies)])],
+                    note=L("每点一个公司年度，悬停查看年份；只描述同年共现，不是因果或交易信号。",
+                           "One point per company-year; hover for the year. Same-year co-occurrence only; not causal and not a trading signal."))
+    tsr = panel("bar", L("逐年总收益与标普 500", "Annual total return vs S&P 500"), axis(L("年份", "Year")),
+                axis(L("总收益", "Total return"), "%", signed=True),
+                [view(name(c), series(name(c), [{"x": str(x["year"]), "y": scaled(x["tsr"]), "ref": f"results.tsr.{c}"}
+                                                for x in annual if x["company"] == c], slot=i),
+                      series(L("标普 500", "S&P 500"), [{"x": str(x["year"]), "y": scaled(x["sp500"])} for x in annual if x["company"] == c],
+                             slot=5))
+                 for i, c in enumerate(companies)], views_label=L("公司", "Company"))
+    return panels(crack, util, scatter, tsr)
+
+
 def make_renderers(Renderer: Any) -> dict[str, Any]:
     throughput = Renderer(
         key_stats=_throughput_stats,
@@ -249,7 +303,7 @@ def make_renderers(Renderer: Any) -> dict[str, Any]:
         history_columns_t=((("齐全周", "Complete weeks"), lambda r: str(r["coverage"].get("valid_weeks", "—"))),
                            (("平均利用率", "Mean utilization"),
                             lambda r: num((r["results"].get("statistics") or {}).get("mean_utilization"), 1))),
-        chart_data=lambda r: None,
+        chart_data=_throughput_chart,
         figures_t=(("refining_inputs_capacity.png", ("周度总投入与可运行产能", "Weekly gross inputs and operable capacity")),
                    ("refining_utilization_check.png", ("复算利用率与公布值之差及舍入区间",
                                                        "Recomputed minus published utilization, with rounding intervals")),
@@ -270,7 +324,7 @@ def make_renderers(Renderer: Any) -> dict[str, Any]:
         history_columns_t=((("平均价差", "Mean crack"), lambda r: num((r["results"].get("crack_spread") or {}).get("mean"), 2)),
                            (("周度相关", "Weekly correlation"),
                             lambda r: num((r["results"].get("utilization_crack") or {}).get("pearson"), 2, True))),
-        chart_data=lambda r: None,
+        chart_data=_investment_chart,
         figures_t=(("refining_crack_utilization.png", ("周度裂解价差与利用率", "Weekly crack spread and utilization")),
                    ("refining_excess_vs_crack.png", ("年度超额收益与年均价差", "Annual excess return vs mean crack spread"))),
         use_note_t=("历史描述，不是因果解释、交易信号或收益预测",

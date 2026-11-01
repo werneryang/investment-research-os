@@ -96,8 +96,10 @@ def _check_output(root: Path, out: Path, archive: Path | None) -> None:
         raise ValueError(f"网站输出中含未登记文件或目录，拒绝清空：{', '.join(sorted(extra))}")
 
 
-def _copy_run(root: Path, item: dict[str, Any], dest: Path) -> list[str]:
-    """复制报告、图表与原始记录。报告顶部加返回导航。返回复制的图表文件名。"""
+def _copy_run(root: Path, item: dict[str, Any], dest: Path, phrases: dict[str, str]) -> list[str]:
+    """复制报告、图表与原始记录。报告顶部加返回导航。返回复制的图表文件名。
+
+    交互图表数据按语言各写一份（chart.json 中文，chart.en.json 英文），图上的文字跟随页面语言。"""
     dest.mkdir(parents=True, exist_ok=True)
     manifest = item["manifest"]
     figures = []
@@ -115,9 +117,13 @@ def _copy_run(root: Path, item: dict[str, Any], dest: Path) -> list[str]:
     run_dir = root / "runs" / manifest["run_id"]
     for name in ("manifest.json", "result.json"):
         shutil.copy2(run_dir / name, dest / name)
-    chart = get_renderer(item["result"]["branch"]).chart_data(item["result"])
-    if chart is not None:
-        (dest / "chart.json").write_text(json.dumps(chart, ensure_ascii=False), encoding="utf-8")
+    renderer = get_renderer(item["result"]["branch"])
+    for language in LANGS:
+        with use(language, phrases):
+            chart = renderer.chart_data(item["result"])
+        if chart is not None:
+            name = "chart.json" if language == "zh" else f"chart.{language}.json"
+            (dest / name).write_text(json.dumps(chart, ensure_ascii=False), encoding="utf-8")
     return figures
 
 
@@ -177,12 +183,13 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
     studies = ordered_studies(by_study, content)
     latest: dict[str, dict[str, Any]] = {}
     shown: dict[str, list[dict[str, Any]]] = {}
+    phrases, untranslated = load_phrases(root), set()
     for study_id in studies:
         runs = by_study[study_id]
         if archived is not None:
             runs = [r for i, r in enumerate(runs) if i == 0 or r["manifest"]["run_id"] in archived]
         for item in runs:
-            item["figures"] = _copy_run(root, item, out / "runs" / item["manifest"]["run_id"])
+            item["figures"] = _copy_run(root, item, out / "runs" / item["manifest"]["run_id"], phrases)
         latest[study_id], shown[study_id] = runs[0], runs
 
     ds_rows = datasets(registry, store) + fundamentals_datasets(registry, root)
@@ -209,7 +216,6 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
     calendar_checks = _calendar_checks(root, registry)
     cap = summary(content, registry, ds_by_id, latest)
     # 中文页面在根目录，英文页面在 en/；英文页面上没有译文的原文记入 untranslated
-    phrases, untranslated = load_phrases(root), set()
     for language in LANGS:
         base = out if language == "zh" else out / language
         base.mkdir(exist_ok=True)

@@ -1,6 +1,7 @@
 """Relationship-chain pages: layered chain graph (SVG), per-edge evidence, breakpoints and same-filing revenue."""
 from .common import e, stat
 from .i18n import L, has_cjk, te, tx
+from .visuals import zh_mark
 
 REASON = {'anonymous': ('对手方匿名', 'Counterparty not named'),
           'activity_unknown': ('业务未定', 'Business not stated'),
@@ -188,7 +189,7 @@ def chain_graph(r):
             for text, cls, (size, lh) in n['lines']:
                 ty += lh
                 body.append(f'<text class="{cls}" x="{x + PAD}" y="{ty - (lh - size) / 2 - 2:.1f}">{e(text)}</text>')
-            g = f'<g class="{" ".join(n["cls"])}"><title>{e(n["title"])}</title>{"".join(body)}</g>'
+            g = f'<g class="{" ".join(n["cls"])}"{zh_mark(n["title"])}><title>{e(n["title"])}</title>{"".join(body)}</g>'
             parts.append(f'<a href="{e(n["href"])}">{g}</a>' if n['href'] else g)
             y += n['h'] + gap
     pairs = {}
@@ -213,7 +214,7 @@ def chain_graph(r):
         tip = f'{tx(x["to_name"] if a[0] == "up" else x["from_name"])} → {tx(x["from_name"] if a[0] == "up" else x["to_name"])} · {_plain_kind(x)}'
         tip += f' · {L("占比", "Share")} {value * 100:.1f}%' if value is not None else ''
         lines.append(f'<path class="{" ".join(cls)}" d="M{x1:.1f},{y1:.1f} C{mid:.1f},{y1:.1f} {mid:.1f},{y2:.1f} {x2:.1f},{y2:.1f}"'
-                     f' marker-end="url(#cg-arrow)"><title>{e(tip)}</title></path>')
+                     f' marker-end="url(#cg-arrow)"{zh_mark(tip)}><title>{e(tip)}</title></path>')
     label = L(f'{tx(res["root_name"])} 的上下游关系图', f'Upstream and downstream relationships of {res["root_name"]}')
     defs = ('<defs><marker id="cg-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">'
             '<path class="cg-arrow" d="M0,0 L10,5 L0,10 z"/></marker></defs>')
