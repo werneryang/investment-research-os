@@ -75,7 +75,7 @@ def share_html(share):
         amount = str(share['bound'])
     else:
         amount = L('未披露', 'Undisclosed')
-    return '<p class="share-scope">'+L('披露占比', 'Disclosed share')+': '+e(amount)+' · '+te(share.get('numerator', ''))+' / '+te(share.get('denominator', ''))+' · '+e(share.get('period', ''))+'</p>'
+    return '<p class="share-scope">'+L('披露占比', 'Disclosed share')+': '+e(amount)+' · '+te(share.get('numerator', ''))+' / '+te(share.get('denominator', ''))+' · '+te(str(share.get('period', '')))+'</p>'
 
 
 def relationship_view(index, studies=None, prefix='', initial_entity='', embedded=False):

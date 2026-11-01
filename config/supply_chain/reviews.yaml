@@ -99,3 +99,66 @@ reviews:
          limits: "汽车、工业与消费市场的 memory 与 storage 加公司生产模式支持联系；不推导具体产品份额"}
       - {id: lnk_mu_cnbu_memory, fingerprint: d3a80127e6b5cc10, result: passed,
          limits: "FY2024 业务定义与自有工厂制造说明支持联系；只用于重组前口径，不与新业务单元拼接"}
+  - id: trv_chain_20261031
+    kind: technical
+    reviewer: 模型技术复核（关系链研究，docs/relation-chain-design.md 步骤 1 与步骤 3）
+    reviewed_at: "2026-10-31"
+    method: >-
+      事实核对：五份新取得原文（台积电 2025 年 20-F、Fabrinet 2026 财年 10-K 等）与已有 NVIDIA、Micron 10-K 的 SHA256 与登记一致；
+      8 条新摘录逐字出现在原文中，并结合前后文阅读，确认出处章节与语义；Fabrinet 的 NVIDIA 占比与原文附注表一致（16.3%）。
+      语义复核：逐条判断证据是否支持关系的方向、类型、业务、产品与占比口径：「such as」为列举，不当作完整名单；
+      memory 不升级为 HBM；只有一方披露的关系不推出另一方份额；原文只列类别的投入登记为匿名供应商，不猜测公司；
+      recipient_activity 为研究判断，写入结论边界。
+    scope: >-
+      8 条证据与关系链用到的 16 条关系（NVIDIA 第一层 10 条、台积电与 Micron 的上游投入 6 条）。6 条竞争关系与 Micron 前十大客户关系不在本次范围内，仍为候选。
+    basis: 分支 research/relation-chain 上的登记内容（2026-10-31）
+    record: 本条记录；各条结论边界见 limits
+    items:
+      - {id: clm_nvda26_customer_types, fingerprint: 4ea1c8f1b5ec5b56, result: passed,
+         limits: "直接客户与间接客户的定义及间接客户类型；类型说明不点名任何公司，不生成具名关系"}
+      - {id: clm_nvda26_indirect_concentration, fingerprint: 1b9f95f11bcf3ccf, result: passed,
+         limits: "NVIDIA 估计部分间接客户单独占营收 10% 以上；是公司估计，客户未点名，不能与具名公司对应"}
+      - {id: clm_tsmc25_raw_materials, fingerprint: ad9a17e4b3321e3d, result: passed,
+         limits: "台积电生产使用硅片、化学品、气体与贵金属，多数可从多家供应商取得；供应商未点名，不提供采购份额"}
+      - {id: clm_tsmc25_equipment, fingerprint: 99627c327590d0aa, result: passed,
+         limits: "台积电的运营与扩产依赖少数供应商的设备与相关服务；供应商未点名"}
+      - {id: clm_mu25_supply_sources, fingerprint: af3311ea1ac202a1, result: passed,
+         limits: "Micron 的材料与服务一般有多个供应来源；不点名供应商"}
+      - {id: clm_mu25_materials, fingerprint: 762f994dc82a0631, result: passed,
+         limits: "列出化学品、硅片、气体、光刻胶、基板等材料与部件类别；不点名供应商，不提供用量或份额"}
+      - {id: clm_fn26_customers, fingerprint: 47c6f2d185048688, result: passed,
+         limits: "Fabrinet 2026 财年营收中 NVIDIA 占 16.3%；不说明对 NVIDIA 提供的产品或服务"}
+      - {id: clm_fn26_suppliers, fingerprint: baf82d8da6a76231, result: passed,
+         limits: "部分关键材料来自单一或少数供应商；不点名供应商"}
+      - {id: rel_tsmc_nvda_foundry, fingerprint: 1b0bdcf03e7e6910, result: passed,
+         limits: "NVIDIA 原文列举台积电为晶圆代工方（such as，不排除其他代工方）；只有 NVIDIA 一方披露，不证明份额或独家；recipient_activity 为芯片设计是依据无晶圆厂模式的研究判断"}
+      - {id: rel_samsung_nvda_foundry, fingerprint: 5d380200df75e7df, result: passed,
+         limits: "同上，三星为列举的晶圆代工方；不证明份额或当前量产产品"}
+      - {id: rel_skhynix_nvda_memory, fingerprint: 4857663242a1854f, result: passed,
+         limits: "NVIDIA 向 SK 海力士采购存储芯片；原文未区分 HBM 或其他类型，不推出份额"}
+      - {id: rel_micron_nvda_memory, fingerprint: 18b4a68f8952665b, result: passed,
+         limits: "NVIDIA 向 Micron 采购存储芯片；Micron 一方未点名 NVIDIA，不推出 Micron 的客户集中度"}
+      - {id: rel_samsung_nvda_memory, fingerprint: 0651b15c6a587dc4, result: passed,
+         limits: "NVIDIA 向三星采购存储芯片；原文未区分 HBM 或其他类型"}
+      - {id: rel_honhai_nvda_atp, fingerprint: fb0c3d98e091d9cc, result: passed,
+         limits: "鸿海为 NVIDIA 最终产品提供组装、测试与封装；对象可能含板卡与系统，业务未定，不能等同芯片封装测试"}
+      - {id: rel_wistron_nvda_atp, fingerprint: 1c5deba917a36097, result: passed,
+         limits: "同上，纬创；业务未定"}
+      - {id: rel_fabrinet_nvda_atp, fingerprint: b26f49c522cc103f, result: passed,
+         limits: "双方都披露：NVIDIA 原文列举 Fabrinet，Fabrinet 原文给出 NVIDIA 占其 2026 财年营收 16.3%；占比为全部销售，产品与业务未说明"}
+      - {id: rel_nvda_direct_1, fingerprint: e2c9986370f5cce5, result: passed,
+         limits: "匿名直接客户占 NVIDIA 2026 财年总营收 22%，主要归属计算与网络分部；不推测客户身份"}
+      - {id: rel_nvda_direct_2, fingerprint: ead2712ca0dda2fa, result: passed,
+         limits: "匿名直接客户占 NVIDIA 2026 财年总营收 14%，主要归属计算与网络分部；不推测客户身份"}
+      - {id: rel_tsmc_wafer_inputs, fingerprint: 842660092e046afe, result: passed,
+         limits: "台积电向未点名的供应商采购硅片，服务于其晶圆代工业务；供应商与份额未知"}
+      - {id: rel_tsmc_chemical_inputs, fingerprint: 256fc1bb7fbd31f2, result: passed,
+         limits: "台积电向未点名的供应商采购化学品与气体；光刻胶在 20-F 风险因素中提到，本条只按 Raw Materials 原文"}
+      - {id: rel_tsmc_equipment_inputs, fingerprint: 57ad0528eb4e1fe2, result: passed,
+         limits: "台积电依赖少数未点名供应商的设备与相关服务；不区分设备类别"}
+      - {id: rel_mu_wafer_inputs, fingerprint: 42130c26ce056b06, result: passed,
+         limits: "Micron 的硅片来自多个未点名的供应来源，服务于存储生产；份额未知"}
+      - {id: rel_mu_chemical_inputs, fingerprint: 0d682f598340e7d8, result: passed,
+         limits: "Micron 的化学品、气体与光刻胶来自未点名供应商；份额未知"}
+      - {id: rel_mu_substrate_inputs, fingerprint: d6501d19ec8dec3c, result: passed,
+         limits: "Micron 的基板来自未点名供应商；原文未区分封装基板与其他基板"}

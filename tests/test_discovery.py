@@ -20,7 +20,7 @@ def content():
 def test_every_study_has_one_primary_paired_route(content):
     validate(content)
     ids = {p.stem for p in (PROJECT_ROOT / 'config/studies').glob('*.yaml')}
-    assert len(ids) == 30 and ids == set(content['studies'])
+    assert len(ids) == 31 and ids == set(content['studies'])
     assert 'branches' not in content
     assert all('studies' not in d for b in content['data_groups'] for d in b['directions'])
     assert len(content['classification']['objects']) == 7

@@ -50,6 +50,155 @@ documents:
     document_period_end: "2024-08-29"
     retrieved_at: "2026-10-29"
 
+  # ---- 关系链研究（docs/relation-chain-design.md，2026-10-31 取得）----
+  # 台积电 20-F 与 Fabrinet 10-K：上游第二层；公司样本 14 家的最新 10-K：下游反向检索（未登记主体，只作查阅原文）
+  - id: doc_aapl_10k_fy2025
+    accession: 0000320193-25-000079
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm
+    file: aapl-20250927.htm
+    sha256: c28f94b10f309d5433f9381221dbf961668a419d832c6990c23a7643850db0da
+    accepted_at: "2025-10-31T06:01:26-04:00"
+    document_period_end: "2025-09-27"
+    retrieved_at: "2026-10-31"
+  - id: doc_msft_10k_fy2026
+    accession: 0001193125-26-323660
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm
+    file: msft-20260630.htm
+    sha256: 692aca91dbbe8c474546381b1faa75193f37d00b6257580a179e99969cd9cf31
+    accepted_at: "2026-07-29T16:08:01-04:00"
+    document_period_end: "2026-06-30"
+    retrieved_at: "2026-10-31"
+  - id: doc_amzn_10k_fy2025
+    accession: 0001018724-26-000004
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm
+    file: amzn-20251231.htm
+    sha256: f6342513027c127ab2b47faedc8bcaeb736542c186472b5bd6b3a2c814073091
+    accepted_at: "2026-02-05T18:44:31-05:00"
+    document_period_end: "2025-12-31"
+    retrieved_at: "2026-10-31"
+  - id: doc_goog_10k_fy2025
+    accession: 0001652044-26-000018
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm
+    file: goog-20251231.htm
+    sha256: 97e224961894cf569e3d55e91fbabd456bd39c4a7fcd70d625705b8d24662b11
+    accepted_at: "2026-02-04T21:56:03-05:00"
+    document_period_end: "2025-12-31"
+    retrieved_at: "2026-10-31"
+  - id: doc_tsla_10k_fy2025
+    accession: 0001628280-26-003952
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm
+    file: tsla-20251231.htm
+    sha256: 670e8ec17c222e628c4cd30c791922c98af82b4092c13d5211d68d139b04e4e1
+    accepted_at: "2026-01-28T20:55:03-05:00"
+    document_period_end: "2025-12-31"
+    retrieved_at: "2026-10-31"
+  - id: doc_jpm_10k_fy2025
+    accession: 0001628280-26-008131
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm
+    file: jpm-20251231.htm
+    sha256: f656684baf827e497d5863da9acc074c3cc45a613d906bbc0f4d701771fafb6b
+    accepted_at: "2026-02-13T16:20:00-05:00"
+    document_period_end: "2025-12-31"
+    retrieved_at: "2026-10-31"
+  - id: doc_brk_10k_fy2025
+    accession: 0001193125-26-083899
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/1067983/000119312526083899/brka-20251231.htm
+    file: brka-20251231.htm
+    sha256: 7b66b8b3976dd5bbed2c09207832aec59c03ad0ea8f8f0c35c814197cf3e44c7
+    accepted_at: "2026-03-02T06:02:28-05:00"
+    document_period_end: "2025-12-31"
+    retrieved_at: "2026-10-31"
+  - id: doc_xom_10k_fy2025
+    accession: 0000034088-26-000045
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm
+    file: xom-20251231.htm
+    sha256: bf1d13564cb9818fe855bc4992754e83225aeb25c435c6252481e693e2fd528f
+    accepted_at: "2026-02-18T16:06:52-05:00"
+    document_period_end: "2025-12-31"
+    retrieved_at: "2026-10-31"
+  - id: doc_jnj_10k_fy2025
+    accession: 0000200406-26-000016
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/jnj-20251228.htm
+    file: jnj-20251228.htm
+    sha256: 79399881421fd1a3ebd0cdc56838c21d71ae3daaa198f827d8e1b3fcb547e5a3
+    accepted_at: "2026-02-11T16:06:11-05:00"
+    document_period_end: "2025-12-28"
+    retrieved_at: "2026-10-31"
+  - id: doc_pg_10k_fy2026
+    accession: 0000080424-26-000103
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/80424/000008042426000103/pg-20260630.htm
+    file: pg-20260630.htm
+    sha256: 19aaf77c65a9b9dda06f00df88ec78eef86d948c8d5959a75c048b5de8e01725
+    accepted_at: "2026-08-04T16:11:35-04:00"
+    document_period_end: "2026-06-30"
+    retrieved_at: "2026-10-31"
+  - id: doc_ko_10k_fy2025
+    accession: 0001628280-26-010047
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm
+    file: ko-20251231.htm
+    sha256: b69978f2462f2e58d30038be5223efb7573a956cb8f5f5ddb98256d5162f77dd
+    accepted_at: "2026-02-20T09:46:32-05:00"
+    document_period_end: "2025-12-31"
+    retrieved_at: "2026-10-31"
+  - id: doc_wmt_10k_fy2026
+    accession: 0000104169-26-000055
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/104169/000010416926000055/wmt-20260131.htm
+    file: wmt-20260131.htm
+    sha256: 1e02620f0057de4d2d5a7e1afe95288d3cf55849a7d2253d56ba14ed2ea5f79e
+    accepted_at: "2026-03-13T16:06:24-04:00"
+    document_period_end: "2026-01-31"
+    retrieved_at: "2026-10-31"
+  - id: doc_cost_10k_fy2026
+    accession: 0000909832-26-000093
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/909832/000090983226000093/cost-20260830.htm
+    file: cost-20260830.htm
+    sha256: 9d7a8722e1ab5247d03781f8641c552024958a0f3ec52370282b836338394684
+    accepted_at: "2026-10-06T21:13:15-04:00"
+    document_period_end: "2026-08-30"
+    retrieved_at: "2026-10-31"
+  - id: doc_nke_10k_fy2026
+    accession: 0000320187-26-000088
+    form: 10-K
+    url: https://www.sec.gov/Archives/edgar/data/320187/000032018726000088/nke-20260531.htm
+    file: nke-20260531.htm
+    sha256: 5bc475ba384bf9b59b5bfcc890e90fe4577a704f83d1f8a9d5a0f3af694b589b
+    accepted_at: "2026-07-15T16:43:49-04:00"
+    document_period_end: "2026-05-31"
+    retrieved_at: "2026-10-31"
+  - id: doc_tsmc_20f_fy2025
+    accession: 0001628280-26-025362
+    form: 20-F
+    entity: co_tsmc
+    url: https://www.sec.gov/Archives/edgar/data/1046179/000162828026025362/tsm-20251231.htm
+    file: tsm-20251231.htm
+    sha256: 3d6bc0dd2933675a1f7bec605ea66d581f1e1a063827b4d4190faf01825e159a
+    accepted_at: "2026-04-16T06:05:49-04:00"
+    document_period_end: "2025-12-31"
+    retrieved_at: "2026-10-31"
+  - id: doc_fn_10k_fy2026
+    accession: 0001408710-26-000028
+    form: 10-K
+    entity: co_fabrinet
+    url: https://www.sec.gov/Archives/edgar/data/1408710/000140871026000028/fn-20260626.htm
+    file: fn-20260626.htm
+    sha256: c1f23433a07dc4b4952ef8a33a20152e74a912c7e2d3df8618ae48542340e8a5
+    accepted_at: "2026-08-18T07:12:07-04:00"
+    document_period_end: "2026-06-26"
+    retrieved_at: "2026-10-31"
+
 claims:
   # ---- NVIDIA 2026 财年 10-K 原文 ----
   - id: clm_nvda26_fabless
@@ -243,3 +392,75 @@ claims:
      tag: RevenueFromContractWithCustomerExcludingAssessedTax,
      segments: "BusinessSegments=AEBU;ConsolidationItems=OperatingSegments;",
      period_end: "2025-08-31", duration_quarters: 4, value: 4753000000, unit: USD, origin_type: observed, review_status: candidate}
+
+  # ---- 关系链研究：NVIDIA 客户类型（下游说明，不生成具名关系） ----
+  - id: clm_nvda26_customer_types
+    type: filing_text
+    document: doc_nvda_10k_fy2026
+    locator: Part II, Item 7 MD&A — Concentration of Revenue
+    excerpt: >-
+      We refer to indirect customers as those who purchase products through our direct customers; indirect customers include
+      CSPs, Neocloud builders, AI model makers, enterprises, and public sector entities.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_nvda26_indirect_concentration
+    type: filing_text
+    document: doc_nvda_10k_fy2026
+    locator: Part I, Item 1A Risk Factors — customer concentration
+    excerpt: >-
+      We generate a significant amount of our revenue from a limited number of indirect customers, and we estimate some
+      individually representing 10% or more of our revenue.
+    origin_type: observed
+    review_status: candidate
+  # ---- 关系链研究：上游第二层原文 ----
+  - id: clm_tsmc25_raw_materials
+    type: filing_text
+    document: doc_tsmc_20f_fy2025
+    locator: Item 4 Information on the Company — Raw Materials
+    excerpt: >-
+      Our manufacturing processes use many raw materials, primarily silicon wafers, chemicals, gases and various types of
+      precious metals. Although most of our raw materials are available from multiple suppliers, some materials are purchased
+      through sole-sourced suppliers.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_tsmc25_equipment
+    type: filing_text
+    document: doc_tsmc_20f_fy2025
+    locator: Item 3 Key Information — Risk Factors
+    excerpt: >-
+      Our operations and ongoing expansion plans depend on our ability to obtain necessary equipment and related services
+      available from a limited number of suppliers.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_mu25_materials
+    type: filing_text
+    document: doc_mu_10k_fy2025
+    locator: Part I, Item 1A Risk Factors — materials and components
+    excerpt: >-
+      The availability of materials or components, such as chemicals, silicon wafers, gases, photoresists, semiconductors,
+      substrates, lead frames, printed circuit boards, targets, and reticle glass blanks is impacted by various factors.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_mu25_supply_sources
+    type: filing_text
+    document: doc_mu_10k_fy2025
+    locator: Part I, Item 1A Risk Factors — materials and components
+    excerpt: We generally have multiple sources of supply for our materials and services.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_fn26_customers
+    type: filing_text
+    document: doc_fn_10k_fy2026
+    locator: Part I, Item 1A Risk Factors — customer concentration
+    excerpt: >-
+      During fiscal year 2026, Cisco Systems, Inc., NVIDIA Corporation, Nokia Corporation and Amazon.com, Inc. contributed
+      19.9%, 16.3%, 10.7% and 10.5%, respectively, of our revenues.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_fn26_suppliers
+    type: filing_text
+    document: doc_fn_10k_fy2026
+    locator: Part I, Item 1A Risk Factors — summary
+    excerpt: We purchase some of the critical materials used in certain of our products from a single source or a limited number of suppliers.
+    origin_type: observed
+    review_status: candidate

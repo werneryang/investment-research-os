@@ -12,11 +12,17 @@
 
 schema_version: supply_chain.v1
 catalog: chip
-version: v1
+version: v2
 change_log:
   - version: v1
     date: "2026-10-29"
     reason: 初始清单；按设计文档 §8.1 的四类经营机制展开为八项，供 P3b 选取至少两个机制不同的活动
+  - version: v2
+    date: "2026-10-31"
+    reason: >-
+      新增三项上游投入（晶圆材料、工艺化学品与气体、封装基板）。触发条件为 §2.1 的「继续细分改变问题答案」：关系链研究
+      （docs/relation-chain-design.md）的第二层要回答需求沿哪些上游行业传导，台积电 20-F 与 Micron 10-K 按这些类别披露
+      原材料投入；不细分时，这些投入无法与晶圆代工、存储生产区分。v1 的八项含义不变
 
 activities:
   - id: act_chip_design
@@ -82,3 +88,25 @@ activities:
     naics:
       - {code: "513210", match_type: partial, note: 软件出版；只覆盖 EDA 软件部分, review_status: candidate}
       - {code: "533110", match_type: partial, note: 非金融无形资产出租；只覆盖 IP 授权部分, review_status: candidate}
+  - id: act_wafer_materials
+    name: 晶圆材料（硅片）
+    definition: 生产并销售芯片制造所用的硅片等晶圆基材
+    includes: [抛光片、外延片等硅片]
+    excludes: [晶圆制造服务（见 act_wafer_foundry）, 工艺化学品与气体（见 act_process_chemicals）]
+    naics:
+      - {code: "334413", match_type: ambiguous, note: 硅片制造是否与器件制造同属该代码待核验, review_status: candidate}
+  - id: act_process_chemicals
+    name: 工艺化学品、特种气体与光刻胶
+    definition: 生产并销售芯片制造工艺所用的化学品、特种气体与光刻胶
+    includes: [湿化学品, 特种气体, 光刻胶]
+    excludes: [通用工业化学品的非半导体用途]
+    naics:
+      - {code: "325120", match_type: partial, note: 工业气体制造；只覆盖气体部分, review_status: candidate}
+      - {code: "325998", match_type: ambiguous, note: 其他化学制品；光刻胶与湿化学品的归属待核验, review_status: candidate}
+  - id: act_package_substrate
+    name: 封装基板
+    definition: 生产并销售芯片封装所用的基板
+    includes: [有机封装基板]
+    excludes: [封装服务（见 act_packaging）, 板卡组装]
+    naics:
+      - {code: "334412", match_type: ambiguous, note: 裸印制电路板制造；封装基板是否归入该代码待核验, review_status: candidate}

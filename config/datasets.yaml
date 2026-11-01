@@ -1355,6 +1355,17 @@ datasets:
 
   # ---- 芯片经营分析证据包（2026-10-29）：产业链登记分部的年度 10-K 分部事实与登记状态，由 iros chain bundle 生成 ----
   # 研究按版本固定证据包，不直接读取 segment_facts 或登记文件；每条记录自带申报、接受时间与可用时间
+  relation_chain_evidence:
+    source_id: sec_edgar
+    upstream_id: "config/supply_chain 登记快照与链上公司年报（10-K、20-F）内联 XBRL 的年度营收"
+    connector: evidence_bundle
+    params: {replace_snapshot: true}
+    description: "关系链研究证据包（docs/relation-chain-design.md）：登记的关系、核对状态、证据与查阅记录快照，链上公司各自年报中三个财年的营收"
+    frequency: annual
+    unit: mixed
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
   chip_segment_evidence:
     source_id: sec_edgar
     upstream_id: "FSDS 分部事实（产业链登记的 NVIDIA、Micron）与 config/supply_chain 登记状态"

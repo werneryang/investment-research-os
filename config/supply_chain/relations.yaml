@@ -13,9 +13,10 @@ schema_version: supply_chain.v1
 relations:
   # ---- NVIDIA 的供应方（来自 NVIDIA 的披露） ----
   - {id: rel_tsmc_nvda_foundry, type: foundry, provider: co_tsmc, recipient: co_nvidia, activity: act_wafer_foundry,
-     product: 半导体晶圆, claims: [clm_nvda26_foundry]}
+     recipient_activity: act_chip_design, product: 半导体晶圆, claims: [clm_nvda26_foundry],
+     note: 只有 NVIDIA 一方披露；台积电 2025 年 20-F 没有点名 NVIDIA（见查阅记录 srch_tsmc_fy2025）}
   - {id: rel_samsung_nvda_foundry, type: foundry, provider: co_samsung, recipient: co_nvidia, activity: act_wafer_foundry,
-     product: 半导体晶圆, claims: [clm_nvda26_foundry]}
+     recipient_activity: act_chip_design, product: 半导体晶圆, claims: [clm_nvda26_foundry]}
   - {id: rel_skhynix_nvda_memory, type: supply, provider: co_sk_hynix, recipient: co_nvidia, activity: act_memory_production,
      product: 存储芯片（原文未区分 HBM 或其他类型）, claims: [clm_nvda26_memory]}
   - {id: rel_micron_nvda_memory, type: supply, provider: co_micron, recipient: co_nvidia, activity: act_memory_production,
@@ -29,19 +30,22 @@ relations:
   - {id: rel_wistron_nvda_atp, type: contract_manufacturing, provider: co_wistron, recipient: co_nvidia, activity: null,
      activity_gap: 同上，原文未说明组装对象, product: 最终产品的组装、测试与封装, claims: [clm_nvda26_atp]}
   - {id: rel_fabrinet_nvda_atp, type: contract_manufacturing, provider: co_fabrinet, recipient: co_nvidia, activity: null,
-     activity_gap: 同上，原文未说明组装对象, product: 最终产品的组装、测试与封装, claims: [clm_nvda26_atp]}
+     activity_gap: 同上，原文未说明组装对象；Fabrinet 10-K 只给出对 NVIDIA 的销售占比，也未说明产品, product: 最终产品的组装、测试与封装,
+     share: {value: 0.163, numerator: 对 NVIDIA 的销售, denominator: Fabrinet 总营收, period: FY2026（截至 2026-06-26）, of: co_fabrinet},
+     claims: [clm_nvda26_atp, clm_fn26_customers],
+     note: 双方都披露。占比是 Fabrinet 对 NVIDIA 的全部销售，不限于组装、测试与封装；2025、2024 财年分别为 27.6%、35.1%}
 
   # ---- NVIDIA 的匿名直接客户：占比为原文披露，名称未披露 ----
   - {id: rel_nvda_direct_1, type: supply, provider: co_nvidia, recipient: anon_nvda_fy2026_direct_1,
      activity: null, activity_gap: 原文只说主要归属 Compute & Networking 分部，该分部含芯片以外的系统、软件与服务,
      product: 主要为 Compute & Networking 分部产品,
-     share: {value: 0.22, numerator: 对该客户的销售, denominator: 总营收, period: FY2026}, claims: [clm_nvda26_customers]}
+     share: {value: 0.22, numerator: 对该客户的销售, denominator: 总营收, period: FY2026, of: co_nvidia}, claims: [clm_nvda26_customers]}
   - {id: rel_nvda_direct_2, type: supply, provider: co_nvidia, recipient: anon_nvda_fy2026_direct_2,
      activity: null, activity_gap: 原文只说主要归属 Compute & Networking 分部，该分部含芯片以外的系统、软件与服务,
      product: 主要为 Compute & Networking 分部产品,
-     share: {value: 0.14, numerator: 对该客户的销售, denominator: 总营收, period: FY2026}, claims: [clm_nvda26_customers]}
+     share: {value: 0.14, numerator: 对该客户的销售, denominator: 总营收, period: FY2026, of: co_nvidia}, claims: [clm_nvda26_customers]}
   - {id: rel_mu_top10, type: supply, provider: co_micron, recipient: anon_mu_fy2025_top10, activity: act_memory_production,
-     product: 存储产品, share: {value: null, bound: "> 0.5", numerator: 对前十大客户的销售, denominator: 总营收, period: FY2025},
+     product: 存储产品, share: {value: null, bound: "> 0.5", numerator: 对前十大客户的销售, denominator: 总营收, period: FY2025, of: co_micron},
      claims: [clm_mu25_top10], note: 原文只给出「超过一半」，不写成精确值}
 
   # ---- Micron 的竞争对手（无向，市场范围见 market） ----
@@ -57,3 +61,19 @@ relations:
      claims: [clm_mu25_competitors]}
   - {id: cmp_micron_ymtc, type: competition, parties: [co_micron, co_ymtc], market: 半导体存储与存储产品, activity: act_memory_production,
      claims: [clm_mu25_competitors]}
+
+  # ---- 关系链第二层：台积电与 Micron 的上游投入（原文只列类别，供应商未点名） ----
+  # recipient_activity 写明投入服务于接收方的哪项业务：关系链从 NVIDIA 经晶圆代工到台积电、经存储到 Micron 后，
+  # 只沿服务于这两项业务的投入继续展开（docs/relation-chain-design.md §2.2 第 3 条）
+  - {id: rel_tsmc_wafer_inputs, type: supply, provider: anon_tsmc_fy2025_wafer_suppliers, recipient: co_tsmc,
+     activity: act_wafer_materials, recipient_activity: act_wafer_foundry, product: 硅片, claims: [clm_tsmc25_raw_materials]}
+  - {id: rel_tsmc_chemical_inputs, type: supply, provider: anon_tsmc_fy2025_chemical_suppliers, recipient: co_tsmc,
+     activity: act_process_chemicals, recipient_activity: act_wafer_foundry, product: 化学品与气体, claims: [clm_tsmc25_raw_materials]}
+  - {id: rel_tsmc_equipment_inputs, type: supply, provider: anon_tsmc_fy2025_equipment_suppliers, recipient: co_tsmc,
+     activity: act_semi_equipment, recipient_activity: act_wafer_foundry, product: 制造设备及相关服务, claims: [clm_tsmc25_equipment]}
+  - {id: rel_mu_wafer_inputs, type: supply, provider: anon_mu_fy2025_wafer_suppliers, recipient: co_micron,
+     activity: act_wafer_materials, recipient_activity: act_memory_production, product: 硅片, claims: [clm_mu25_supply_sources, clm_mu25_materials]}
+  - {id: rel_mu_chemical_inputs, type: supply, provider: anon_mu_fy2025_chemical_suppliers, recipient: co_micron,
+     activity: act_process_chemicals, recipient_activity: act_memory_production, product: 化学品、气体与光刻胶, claims: [clm_mu25_supply_sources, clm_mu25_materials]}
+  - {id: rel_mu_substrate_inputs, type: supply, provider: anon_mu_fy2025_substrate_suppliers, recipient: co_micron,
+     activity: act_package_substrate, recipient_activity: act_memory_production, product: 基板, claims: [clm_mu25_supply_sources, clm_mu25_materials]}

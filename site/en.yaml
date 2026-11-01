@@ -6,6 +6,37 @@
 # patterns：运行时带日期、数字生成的句子。zh 是整句匹配的正则，命名分组在 en 中以 {name} 引用；
 #   分组内容本身再查 phrases（列表中的「、」换成英文逗号）。
 phrases:
+  对 NVIDIA 的销售: Sales to NVIDIA
+  Fabrinet 总营收: Fabrinet total revenue
+  FY2026（截至 2026-06-26）: FY2026 (ended 2026-06-26)
+  关系链研究: Relationship chain
+  NVIDIA 的上下游关系链（2026 财年申报）: NVIDIA's upstream and downstream relationship chain (fiscal 2026 filings)
+  从 NVIDIA 2026 财年年报披露的直接关系出发，按登记的关系向上游、下游各展开两层，需求可能沿哪些公司与业务传导？ 链在哪里断开、为什么断开？NVIDIA 营收上升期间，链上供应方在各自年报中的营收是否同期上升？: Starting from the direct relationships disclosed in NVIDIA's fiscal 2026 annual report and expanding two layers upstream and downstream along registered relationships, through which companies and businesses could demand pass? Where does the chain stop, and why? While NVIDIA's revenue rose, did the revenue of suppliers on the chain rise in their own annual reports over the same period?
+  关系来自公司年报的披露：「such as」等列举不是完整名单，没有披露不等于没有关系: 'Relationships come from companies'' annual-report disclosures: lists introduced by "such as" are not complete, and the absence of a disclosure does not mean no relationship exists'
+  占比只按原文口径列出（NVIDIA 对两个匿名客户的销售占其营收、Fabrinet 对 NVIDIA 的销售占其营收），不推算其他公司的份额，也不相乘推算间接敞口: Shares are shown only as disclosed (NVIDIA's sales to two anonymous customers as a share of its revenue; Fabrinet's sales to NVIDIA as a share of its revenue). Other companies' shares are not inferred, and shares are not multiplied to infer indirect exposure
+  上游第二层只读了 SEC 上的年报（台积电 20-F、Micron 10-K）；三星、SK 海力士、鸿海、纬创的当地披露尚未查阅: Upstream layer 2 covers only SEC annual reports (TSMC 20-F, Micron 10-K); the local filings of Samsung, SK hynix, Hon Hai and Wistron have not yet been read
+  下游反向检索只查了公司样本中已有的 14 家公司的最新 10-K；其他服务器、系统厂商与云厂商留待后续: The downstream reverse search covers only the latest 10-Ks of the 14 companies already in the company sample; other server makers, system makers and cloud providers are left for later
+  Micron 已有 2026 财年 10-K（2026-10-09 提交），本研究的查阅与营收仍基于 2025 财年 10-K: Micron has filed its fiscal 2026 10-K (2026-10-09); this study's reading and revenue still use the fiscal 2025 10-K
+  营收为各公司财年口径，财年截止月不同（NVIDIA 1 月下旬、台积电 12 月、Micron 8 月下旬、Fabrinet 6 月下旬）；台积电为新台币，不换算: Revenue is on each company's fiscal-year basis with different year-end months (NVIDIA late January, TSMC December, Micron late August, Fabrinet late June); TSMC is in New Taiwan dollars and is not converted
+  同期营收变化是描述，不说明由 NVIDIA 带动，也不是预测: Same-period revenue changes are descriptive; they do not show that NVIDIA drove them and are not forecasts
+  晶圆材料（硅片）: Wafer materials (silicon wafers)
+  工艺化学品、特种气体与光刻胶: Process chemicals, specialty gases and photoresist
+  封装基板: Package substrates
+  台积电 2025 年硅片供应商（未点名）: TSMC 2025 silicon wafer suppliers (not named)
+  台积电 2025 年化学品与气体供应商（未点名）: TSMC 2025 chemical and gas suppliers (not named)
+  台积电 2025 年设备供应商（未点名）: TSMC 2025 equipment suppliers (not named)
+  Micron 2025 财年硅片供应商（未点名）: Micron fiscal 2025 silicon wafer suppliers (not named)
+  Micron 2025 财年化学品、气体与光刻胶供应商（未点名）: Micron fiscal 2025 chemical, gas and photoresist suppliers (not named)
+  Micron 2025 财年基板供应商（未点名）: Micron fiscal 2025 substrate suppliers (not named)
+  硅片: Silicon wafers
+  化学品与气体: Chemicals and gases
+  制造设备及相关服务: Manufacturing equipment and related services
+  化学品、气体与光刻胶: Chemicals, gases and photoresist
+  基板: Substrates
+  全文检索 NVIDIA（不区分大小写）: Full-text search for NVIDIA (case-insensitive)
+  链上各公司受影响的金额或比例: The amount or share by which each company on the chain is affected
+  因果判断: Causal judgment
+  Q2b 下游客户资本开支对照: 'Q2b: downstream customer capital spending comparison'
   15 家公司的财报研究: Annual financial research for 15 companies
   公司年度财报: Company annual filings
   营收、利润率、经营现金流与资本开支如何变化？哪些公司可以比较？: How have revenue, margins, operating cash flow and capital spending changed, and which companies

@@ -19,6 +19,8 @@ PATHS = {
     'company-overview': ('results', 'companies'), 'company-annual': ('tables', 'annual'),
     'company-comparability': ('results', 'companies'), 'evidence': ('validation',),
     'chip-segments': ('tables',), 'chip-feasibility': ('results', 'feasibility'),
+    'chain-upstream': ('results', 'upstream', 'layers'), 'chain-downstream': ('results', 'downstream', 'layers'),
+    'chain-revenue': ('results', 'revenue'),
 }
 REPORT_TARGETS = {'chip-segments', 'chip-feasibility'}
 
@@ -40,6 +42,8 @@ def available(result: dict[str, Any], target: str, subject: str | None = None) -
                'industry-economy': 'end_value', 'industry-guidance': 'value'}
     if target in metrics:
         return any(x.get(metrics[target]) is not None for x in value or [])
+    if target in ('chain-upstream', 'chain-downstream'):
+        return any(value or [])
     if target == 'chip-segments':
         return any(rows for key, rows in (value or {}).items() if key.endswith('segment_financials'))
     if target == 'refining-scenarios':

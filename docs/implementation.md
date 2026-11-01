@@ -255,6 +255,11 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 
   本地缺少原文或数据时，相应项目记为未核对。
 
+  关系链研究新增的登记与核对（2026-10-31，[关系链研究设计](relation-chain-design.md)）：
+  - 关系可写 `recipient_activity`（这条输入服务于接收方的哪项业务，须为登记活动，无向关系不能有）；占比 `share` 须用 `of` 写明分母属于哪一方。
+  - 证据类型 `external_report`（外部报告）：登记出处、取得渠道、本地文件 SHA256、用自己的话写的摘要与网页显示方式（`summary` / `citation_only`），不保存原文摘录；机器核对只看本地文件（`data/supply_chain/external/`，不入库）存在且校验值一致，摘要是否属实属于技术复核。关系的证据级别 `evidence_class`：有可用一手证据为 primary；只有外部来源时，`corroborated_by` 列出证实业务存在的一手证据为 external_corroborated，否则为 external。
+  - 可选文件 `searches.yaml`：查阅记录（读了哪份原文、找什么、找没找到点名的对手方）。found 必须引用点名对手方的关系，not_found 不能引用；用于区分「已查原文、未披露」与「尚未查阅」。下游反向检索的样本公司不登记为主体，写 `subject_cik` 与 `subject_name`。
+
 **芯片经营分析**（P3b，2026-10-29；见[芯片模块 P0](study-chips.md) §7）：`iros chain bundle`（`supply_chain/bundle.py`）把分部事实与登记状态打包为 `industry-evidence.v1` 证据包，经 `evidence_bundle` 接入器导入 `chip_segment_evidence`；登记核对有错误或未核对项时拒绝生成。分支 `chip_operations`（`research/chip.py`）按 `config/supply_chain/units.yaml` 的研究单元（随证据包固定）逐一评估：
 - 每个单元的全部数字取自同一份最新的、覆盖所需分部 × 指标 × 财年且无冲突的年度申报。
 - 所需指标没有观测时为 C。
@@ -262,6 +267,8 @@ iros verify <run_id>   → 用清单中的研究定义与数据版本重算，�
 - 活动归属另列为 `attribution_status`（confirmed / reviewed / candidate / unmapped）：只计入指向本单元活动、状态为 confirmed、reviewed 或 candidate 的映射；reviewed 不等于人工签认。证据包带技术复核记录时，结果另列各映射的匹配程度、有效期与结论边界，partial 与未登记有效期作为限制保留；旧证据包保持原结果结构。
 
 报告段落与图表在 `reporting/chip.py`。只在本机运行，未加入 CI。
+
+**关系链**（2026-10-31；设计见[关系链研究设计](relation-chain-design.md)）：`iros chain relations`（`supply_chain/relation_bundle.py`）把产业链登记快照（关系、核对状态、证据级别、技术复核的结论边界、披露方、最早公开时间、证据摘录与查阅记录）与链上公司年报的营收打包为 `industry-evidence.v1` 证据包，导入 `relation_chain_evidence`；登记核对有错误或未核对项时拒绝生成。营收直接从登记原文（SHA256 固定）的内联 XBRL 解析：合并口径与业务分部（可另带经营分部合并项），每家公司只取自己一份年报的三个财年。展开规则在 `supply_chain/chain.py`（纯函数，研究只从证据包快照重算）：上下游方向不混用；竞争等无向关系只作旁注；非起点节点只沿与到达边相关的业务展开（上游看 `recipient_activity`，下游看 `activity`）；只经过 reviewed / confirmed 的关系，候选关系显示但不展开；匿名对手方、业务未定、仅外部来源、层数上限处停止；同一主体经不同业务到达时按业务分别展开，前几层的节点再次出现只记录边；截至日期同时筛选关系与查阅记录。分支 `relation_chain`（`research/relation_chain.py`）输出两条链、断点原因计数、下游反向检索、起点公司的客户类型原文、各公司同一申报内的营收同比与分部合计核对；没有原文点名的下游公司时，Q2b 资本开支对照记为未输出。网站展示在 `site/relation_chain.py`（五栏关系链图与逐条证据表）。只在本机运行，未加入 CI。
 
 **本机与 CI 的分工**（2026-10-24 确认）：接入核验（取样本、查质量、交叉核对、记 `access_verified`）与定时快照都在本机完成。CI 只取得无需凭证、登记了 `scheduled_fetch` 的数据集，用于生成网站与运行研究，同时每天在另一环境复查这些来源仍可取得。需要凭证（如 FRED API key）或人工导入的数据集默认只在本机；只有当 CI 中的研究必须用到时，才给 CI 配置凭证。网站对 CI 中有意不取得的数据集写明原因（需要 API key、人工导入、未登记定时取得，由登记推出，见 `site/collect.py` 的 `skip_reason`）；只有应当取得却没取得时才显示「本次构建未取得」。
 
