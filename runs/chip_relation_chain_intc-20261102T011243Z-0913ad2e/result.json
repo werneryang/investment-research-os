@@ -1,0 +1,1255 @@
+{
+  "study_id": "chip_relation_chain_intc",
+  "title": "Intel 的上下游关系链（2025 财年申报）",
+  "question": "从 Intel 2025 财年年报披露的直接关系出发，按登记的关系向上游、下游各展开两层，需求可能沿哪些公司与业务传导？ 链在哪里断开、为什么断开？Intel 营收变化期间，链上供应方在各自年报中的营收是否同期变化？",
+  "result_type": "descriptive",
+  "branch": "relation_chain",
+  "scope": {
+    "market": "US",
+    "start": "2023-01-01",
+    "end": "2025-12-31",
+    "frequency": "annual",
+    "vintage_policy": "latest",
+    "evaluated_at": "2026-11-02T01:12:43+00:00",
+    "data_checked_at": {
+      "relation_chain_evidence": "2026-11-02T01:05:11+00:00"
+    }
+  },
+  "data_cutoff": "2026-04-17",
+  "methods": {
+    "description": "从固定的关系链证据包按登记的有向关系向上游、下游逐层展开：方向不混用，只沿与上一条边相关的业务展开，只经过已复核的关系，匿名对手方、业务未定、未复核与层数上限处停止，并按查阅记录区分「已查原文、未披露」与「尚未查阅」。营收取自各公司自己的一份年报（三个财年），只计算同一申报、同一币种内的同比。",
+    "parameters": {
+      "root": "co_intel",
+      "depth": 2,
+      "as_of": "2026-11-01",
+      "downstream_notes": [
+        "clm_intc25_customer_types",
+        "clm_intc25_ccg_customers",
+        "clm_intc25_dcai_customers",
+        "clm_intc25_foundry_customers"
+      ]
+    },
+    "bundle": {
+      "built_at": "2026-11-02T01:05:11+00:00",
+      "catalog_files": {
+        "activities": "da9d07bcccc2f1ebf266ca470b71cdf2dab1e4b507fd6abfea1fc4cdf3fd3641",
+        "entities": "cc5f74671297adca7bef50d4825389851b1647677033ca45147795a62ffd4fd2",
+        "links": "b9dbc338ab416073b09cbdcfbd93437308da7fa8accda1e44defc214e2736aba",
+        "relations": "d030d47ee484a9b60cbcfb88ed88f4953ce68cd43a9c15a1f70064ffe3c08e7d",
+        "claims": "72b87e6e0233ffc6daf25995be5bf72ba2f41d508a44f3fd072098d58d01ab9e",
+        "units": "b480d82e09c87225472e3f38c828c021627cefe11e17d7a491e1b7c47bba23d1",
+        "reviews": "323ba8d3cc5e6dcfb8f2ff114689f3dfc50f9bf53e3d501b6adeb4f8d493d655",
+        "searches": "ce919b627c2f0218c5df61cdb0677fa1d7a68aaefbdf9c5d82265fa109a9ec81"
+      },
+      "revenue_documents": {
+        "co_nvidia": "doc_nvda_10k_fy2026",
+        "co_tsmc": "doc_tsmc_20f_fy2025",
+        "co_micron": "doc_mu_10k_fy2025",
+        "co_fabrinet": "doc_fn_10k_fy2026",
+        "co_intel": "doc_intc_10k_fy2025",
+        "co_asml": "doc_asml_20f_fy2025"
+      }
+    },
+    "catalog_version": "v2"
+  },
+  "inputs": [
+    {
+      "role": "evidence",
+      "dataset_id": "relation_chain_evidence",
+      "version_id": "v20261102T010511Z-36a14c2f",
+      "content_hash": "36a14c2f84b8525ae43631cb25d30115f5c6988352657b075aa76fe93a0b60ac",
+      "source_id": "sec_edgar",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2022-09-01",
+            "2026-06-30"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-31"
+        ]
+      }
+    }
+  ],
+  "results": {
+    "root": "co_intel",
+    "root_name": "Intel Corporation",
+    "as_of": "2026-11-01",
+    "depth": 2,
+    "upstream": {
+      "root": "co_intel",
+      "direction": "upstream",
+      "depth": 2,
+      "as_of": "2026-11-01",
+      "layers": [
+        [
+          {
+            "relation": "rel_asml_intc_euv",
+            "layer": 1,
+            "from": "co_intel",
+            "to": "co_asml",
+            "type": "supply",
+            "activity": "act_semi_equipment",
+            "recipient_activity": "act_idm_manufacturing",
+            "activity_gap": null,
+            "product": "EUV 光刻设备",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_intel"
+            ],
+            "available_at": "2026-01-23T00:00:00-05:00",
+            "limits": "ASML 向 Intel 供应 EUV 光刻设备；只有 Intel 一方披露，ASML 20-F 没有点名 Intel，不推出 ASML 的客户集中度；recipient_activity 为研究判断（Intel 同时是自有制造与委外并用的公司）",
+            "note": "只有 Intel 一方披露；ASML 2025 年 20-F 没有点名 Intel 为客户（Intel 只出现在摩尔定律的叙述、薪酬对标公司名单与术语表中）",
+            "external_path": false,
+            "counterparty_type": "company",
+            "cycle": false,
+            "from_name": "Intel Corporation",
+            "to_name": "ASML Holding N.V.",
+            "activity_name": "半导体设备制造",
+            "recipient_activity_name": "集成器件制造（IDM，逻辑与模拟）",
+            "disclosed_by_names": [
+              "Intel Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_intc25_asml",
+                "locator": "Risk Factors — reliance on a limited number of suppliers and third-party foundries",
+                "excerpt": "ASML Holding N.V. (ASML) is currently the sole supplier of EUV lithography tools that we are deploying in our Intel 4, Intel 3, Intel 18A and planned future leading-edge manufacturing process nodes.",
+                "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_tsmc_intc_foundry",
+            "layer": 1,
+            "from": "co_intel",
+            "to": "co_tsmc",
+            "type": "foundry",
+            "activity": "act_wafer_foundry",
+            "recipient_activity": "act_idm_manufacturing",
+            "activity_gap": null,
+            "product": "半导体晶圆（部分芯片模块或整个产品）",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_intel"
+            ],
+            "available_at": "2026-01-23T00:00:00-05:00",
+            "limits": "台积电为 Intel 部分产品的模块或整个产品代工；只有 Intel 一方披露，台积电 20-F 没有点名 Intel，不证明份额；recipient_activity 为研究判断",
+            "note": "只有 Intel 一方披露；Intel 的产品主要在自有工厂制造，台积电用于部分产品的某些模块或整个产品；台积电 2025 年 20-F 中 Intel 只出现在高管履历里，没有披露为客户",
+            "external_path": false,
+            "counterparty_type": "company",
+            "cycle": false,
+            "from_name": "Intel Corporation",
+            "to_name": "Taiwan Semiconductor Manufacturing Company Limited",
+            "activity_name": "晶圆代工",
+            "recipient_activity_name": "集成器件制造（IDM，逻辑与模拟）",
+            "disclosed_by_names": [
+              "Intel Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_intc25_tsmc",
+                "locator": "Our Business — Disaggregated Architecture and Supply Chain",
+                "excerpt": "we have also strategically utilized third-party foundry manufacturing capacity, including at one of our key foundry competitors, TSMC, for various tiles or an entire product where advantageous for cost, performance, schedule or other considerations.",
+                "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "relation": "rel_zeiss_asml_optics",
+            "layer": 2,
+            "from": "co_asml",
+            "to": "co_zeiss_smt",
+            "type": "supply",
+            "activity": null,
+            "recipient_activity": "act_semi_equipment",
+            "activity_gap": "镜头、反射镜、照明器与收集器等光学部件不在活动清单内，未另设活动",
+            "product": "镜头、反射镜、照明器、收集器等光学部件",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_asml"
+            ],
+            "available_at": "2026-02-26T00:00:00-05:00",
+            "limits": "Carl Zeiss SMT 向 ASML 供应光学部件；只有 ASML 一方披露；活动清单没有对应的活动，业务未定，链在此停止",
+            "note": "只有 ASML 一方披露；ASML 称 Carl Zeiss SMT 是这类光学部件的唯一供应商并有排他安排",
+            "external_path": false,
+            "counterparty_type": "company",
+            "cycle": false,
+            "from_name": "ASML Holding N.V.",
+            "to_name": "Carl Zeiss SMT",
+            "activity_name": null,
+            "recipient_activity_name": "半导体设备制造",
+            "disclosed_by_names": [
+              "ASML Holding N.V."
+            ],
+            "evidence": [
+              {
+                "claim": "clm_asml25_zeiss",
+                "locator": "Risk Factors — dependence on suppliers (optics)",
+                "excerpt": "The number of lithography systems we are able to produce is limited by the production capacity of one of our key suppliers, Carl Zeiss SMT, our sole supplier of lenses, mirrors, illuminators, collectors and other critical optical components (which we refer to as optics). We have an exclusive arrangement with Carl Zeiss SMT.",
+                "url": "https://www.sec.gov/Archives/edgar/data/937966/000162828026011378/asml-20251231.htm",
+                "form": "20-F",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_tsmc_chemical_inputs",
+            "layer": 2,
+            "from": "co_tsmc",
+            "to": "anon_tsmc_fy2025_chemical_suppliers",
+            "type": "supply",
+            "activity": "act_process_chemicals",
+            "recipient_activity": "act_wafer_foundry",
+            "activity_gap": null,
+            "product": "化学品与气体",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_tsmc"
+            ],
+            "available_at": "2026-04-17T00:00:00-04:00",
+            "limits": "台积电向未点名的供应商采购化学品与气体；光刻胶在 20-F 风险因素中提到，本条只按 Raw Materials 原文",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Taiwan Semiconductor Manufacturing Company Limited",
+            "to_name": "台积电 2025 年化学品与气体供应商（未点名）",
+            "activity_name": "工艺化学品、特种气体与光刻胶",
+            "recipient_activity_name": "晶圆代工",
+            "disclosed_by_names": [
+              "Taiwan Semiconductor Manufacturing Company Limited"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_tsmc25_raw_materials",
+                "locator": "Item 4 Information on the Company — Raw Materials",
+                "excerpt": "Our manufacturing processes use many raw materials, primarily silicon wafers, chemicals, gases and various types of precious metals. Although most of our raw materials are available from multiple suppliers, some materials are purchased through sole-sourced suppliers.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1046179/000162828026025362/tsm-20251231.htm",
+                "form": "20-F",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_tsmc_equipment_inputs",
+            "layer": 2,
+            "from": "co_tsmc",
+            "to": "anon_tsmc_fy2025_equipment_suppliers",
+            "type": "supply",
+            "activity": "act_semi_equipment",
+            "recipient_activity": "act_wafer_foundry",
+            "activity_gap": null,
+            "product": "制造设备及相关服务",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_tsmc"
+            ],
+            "available_at": "2026-04-17T00:00:00-04:00",
+            "limits": "台积电依赖少数未点名供应商的设备与相关服务；不区分设备类别",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Taiwan Semiconductor Manufacturing Company Limited",
+            "to_name": "台积电 2025 年设备供应商（未点名）",
+            "activity_name": "半导体设备制造",
+            "recipient_activity_name": "晶圆代工",
+            "disclosed_by_names": [
+              "Taiwan Semiconductor Manufacturing Company Limited"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_tsmc25_equipment",
+                "locator": "Item 3 Key Information — Risk Factors",
+                "excerpt": "Our operations and ongoing expansion plans depend on our ability to obtain necessary equipment and related services available from a limited number of suppliers.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1046179/000162828026025362/tsm-20251231.htm",
+                "form": "20-F",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_tsmc_wafer_inputs",
+            "layer": 2,
+            "from": "co_tsmc",
+            "to": "anon_tsmc_fy2025_wafer_suppliers",
+            "type": "supply",
+            "activity": "act_wafer_materials",
+            "recipient_activity": "act_wafer_foundry",
+            "activity_gap": null,
+            "product": "硅片",
+            "share": null,
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_tsmc"
+            ],
+            "available_at": "2026-04-17T00:00:00-04:00",
+            "limits": "台积电向未点名的供应商采购硅片，服务于其晶圆代工业务；供应商与份额未知",
+            "note": null,
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Taiwan Semiconductor Manufacturing Company Limited",
+            "to_name": "台积电 2025 年硅片供应商（未点名）",
+            "activity_name": "晶圆材料（硅片）",
+            "recipient_activity_name": "晶圆代工",
+            "disclosed_by_names": [
+              "Taiwan Semiconductor Manufacturing Company Limited"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_tsmc25_raw_materials",
+                "locator": "Item 4 Information on the Company — Raw Materials",
+                "excerpt": "Our manufacturing processes use many raw materials, primarily silicon wafers, chemicals, gases and various types of precious metals. Although most of our raw materials are available from multiple suppliers, some materials are purchased through sole-sourced suppliers.",
+                "url": "https://www.sec.gov/Archives/edgar/data/1046179/000162828026025362/tsm-20251231.htm",
+                "form": "20-F",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          }
+        ]
+      ],
+      "breakpoints": [
+        {
+          "node": "co_zeiss_smt",
+          "layer": 2,
+          "reason": "activity_unknown",
+          "relation": "rel_zeiss_asml_optics",
+          "detail": "镜头、反射镜、照明器与收集器等光学部件不在活动清单内，未另设活动",
+          "node_name": "Carl Zeiss SMT"
+        },
+        {
+          "node": "co_tsmc",
+          "layer": 2,
+          "reason": "searched_not_disclosed",
+          "relation": "rel_tsmc_intc_foundry",
+          "detail": "srch_tsmc_fy2025",
+          "node_name": "Taiwan Semiconductor Manufacturing Company Limited",
+          "searches": [
+            {
+              "id": "srch_tsmc_fy2025",
+              "note": "只列出硅片、化学品、气体、贵金属与设备等类别，没有点名供应商；全文没有出现 NVIDIA",
+              "url": "https://www.sec.gov/Archives/edgar/data/1046179/000162828026025362/tsm-20251231.htm"
+            }
+          ]
+        },
+        {
+          "node": "anon_tsmc_fy2025_chemical_suppliers",
+          "layer": 2,
+          "reason": "anonymous",
+          "relation": "rel_tsmc_chemical_inputs",
+          "detail": "",
+          "node_name": "台积电 2025 年化学品与气体供应商（未点名）"
+        },
+        {
+          "node": "anon_tsmc_fy2025_equipment_suppliers",
+          "layer": 2,
+          "reason": "anonymous",
+          "relation": "rel_tsmc_equipment_inputs",
+          "detail": "",
+          "node_name": "台积电 2025 年设备供应商（未点名）"
+        },
+        {
+          "node": "anon_tsmc_fy2025_wafer_suppliers",
+          "layer": 2,
+          "reason": "anonymous",
+          "relation": "rel_tsmc_wafer_inputs",
+          "detail": "",
+          "node_name": "台积电 2025 年硅片供应商（未点名）"
+        }
+      ],
+      "side_relations": [
+        {
+          "relation": "cmp_amd_intel",
+          "type": "competition",
+          "parties": [
+            "co_amd",
+            "co_intel"
+          ],
+          "market": "数据中心与 AI 计算（DCAI）",
+          "status": "reviewed",
+          "party_names": [
+            "Advanced Micro Devices, Inc.",
+            "Intel Corporation"
+          ]
+        },
+        {
+          "relation": "cmp_intel_nvidia",
+          "type": "competition",
+          "parties": [
+            "co_intel",
+            "co_nvidia"
+          ],
+          "market": "数据中心与 AI 计算（DCAI）",
+          "status": "reviewed",
+          "party_names": [
+            "Intel Corporation",
+            "NVIDIA Corporation"
+          ]
+        },
+        {
+          "relation": "cmp_intel_samsung",
+          "type": "competition",
+          "parties": [
+            "co_intel",
+            "co_samsung"
+          ],
+          "market": "领先制程的晶圆代工",
+          "status": "reviewed",
+          "party_names": [
+            "Intel Corporation",
+            "Samsung Electronics Co., Ltd."
+          ]
+        },
+        {
+          "relation": "cmp_intel_tsmc",
+          "type": "competition",
+          "parties": [
+            "co_intel",
+            "co_tsmc"
+          ],
+          "market": "领先制程的晶圆代工",
+          "status": "reviewed",
+          "party_names": [
+            "Intel Corporation",
+            "Taiwan Semiconductor Manufacturing Company Limited"
+          ]
+        },
+        {
+          "relation": "ptn_intel_nvidia",
+          "type": "partnership",
+          "parties": [
+            "co_intel",
+            "co_nvidia"
+          ],
+          "market": null,
+          "status": "reviewed",
+          "party_names": [
+            "Intel Corporation",
+            "NVIDIA Corporation"
+          ]
+        }
+      ],
+      "searches": [],
+      "breakpoint_counts": {
+        "activity_unknown": 1,
+        "searched_not_disclosed": 1,
+        "anonymous": 3
+      }
+    },
+    "downstream": {
+      "root": "co_intel",
+      "direction": "downstream",
+      "depth": 2,
+      "as_of": "2026-11-01",
+      "layers": [
+        [
+          {
+            "relation": "rel_intc_customer_a",
+            "layer": 1,
+            "from": "co_intel",
+            "to": "anon_intc_fy2025_customer_a",
+            "type": "supply",
+            "activity": null,
+            "recipient_activity": null,
+            "activity_gap": "原文只说收入主要来自 Intel Products 各经营分部销售的平台与其他部件，未说明经营方式",
+            "product": "平台与其他部件（Intel Products 分部）",
+            "share": {
+              "value": 0.19,
+              "numerator": "对该客户的销售",
+              "denominator": "净营收",
+              "period": "FY2025（截至 2025-12-27）",
+              "of": "co_intel"
+            },
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_intel"
+            ],
+            "available_at": "2026-01-23T00:00:00-05:00",
+            "limits": "匿名客户 A 占 Intel 2025 财年净营收 19%，主要来自 Intel Products；不推测客户身份，不与其他公司的披露对应",
+            "note": "2024、2023 财年的客户 A 分别占 19%、19%；原文没有说明各年的客户 A 是否为同一家",
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Intel Corporation",
+            "to_name": "Intel 2025 财年客户 A（占净营收 19%）",
+            "activity_name": null,
+            "recipient_activity_name": null,
+            "disclosed_by_names": [
+              "Intel Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_intc25_customers",
+                "locator": "Notes to Consolidated Financial Statements — Note 3 Operating Segments, Concentration of Revenue",
+                "excerpt": "In 2025, substantially all of the revenue from our three largest customers was generated from the sale of platforms and other components by our Intel Products operating segments. Our three largest customers accounted for the following percentages of our net revenue: Years Ended Dec 27, 2025 Dec 28, 2024 Dec 30, 2023 Customer A 19 % 19 % 19 % Customer B 12 % 14 % 11 % Customer C 12 % 12 % 10 % Total percentage of net revenue 43 % 45 % 40 %",
+                "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_intc_customer_b",
+            "layer": 1,
+            "from": "co_intel",
+            "to": "anon_intc_fy2025_customer_b",
+            "type": "supply",
+            "activity": null,
+            "recipient_activity": null,
+            "activity_gap": "同上，原文未说明经营方式",
+            "product": "平台与其他部件（Intel Products 分部）",
+            "share": {
+              "value": 0.12,
+              "numerator": "对该客户的销售",
+              "denominator": "净营收",
+              "period": "FY2025（截至 2025-12-27）",
+              "of": "co_intel"
+            },
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_intel"
+            ],
+            "available_at": "2026-01-23T00:00:00-05:00",
+            "limits": "匿名客户 B 占 Intel 2025 财年净营收 12%；不推测客户身份",
+            "note": "2024、2023 财年的客户 B 分别占 14%、11%；原文没有说明各年的客户 B 是否为同一家",
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Intel Corporation",
+            "to_name": "Intel 2025 财年客户 B（占净营收 12%）",
+            "activity_name": null,
+            "recipient_activity_name": null,
+            "disclosed_by_names": [
+              "Intel Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_intc25_customers",
+                "locator": "Notes to Consolidated Financial Statements — Note 3 Operating Segments, Concentration of Revenue",
+                "excerpt": "In 2025, substantially all of the revenue from our three largest customers was generated from the sale of platforms and other components by our Intel Products operating segments. Our three largest customers accounted for the following percentages of our net revenue: Years Ended Dec 27, 2025 Dec 28, 2024 Dec 30, 2023 Customer A 19 % 19 % 19 % Customer B 12 % 14 % 11 % Customer C 12 % 12 % 10 % Total percentage of net revenue 43 % 45 % 40 %",
+                "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          },
+          {
+            "relation": "rel_intc_customer_c",
+            "layer": 1,
+            "from": "co_intel",
+            "to": "anon_intc_fy2025_customer_c",
+            "type": "supply",
+            "activity": null,
+            "recipient_activity": null,
+            "activity_gap": "同上，原文未说明经营方式",
+            "product": "平台与其他部件（Intel Products 分部）",
+            "share": {
+              "value": 0.12,
+              "numerator": "对该客户的销售",
+              "denominator": "净营收",
+              "period": "FY2025（截至 2025-12-27）",
+              "of": "co_intel"
+            },
+            "status": "reviewed",
+            "evidence_class": "primary",
+            "disclosed_by": [
+              "co_intel"
+            ],
+            "available_at": "2026-01-23T00:00:00-05:00",
+            "limits": "匿名客户 C 占 Intel 2025 财年净营收 12%；不推测客户身份",
+            "note": "2024、2023 财年的客户 C 分别占 12%、10%；原文没有说明各年的客户 C 是否为同一家",
+            "external_path": false,
+            "counterparty_type": "anonymous",
+            "cycle": false,
+            "from_name": "Intel Corporation",
+            "to_name": "Intel 2025 财年客户 C（占净营收 12%）",
+            "activity_name": null,
+            "recipient_activity_name": null,
+            "disclosed_by_names": [
+              "Intel Corporation"
+            ],
+            "evidence": [
+              {
+                "claim": "clm_intc25_customers",
+                "locator": "Notes to Consolidated Financial Statements — Note 3 Operating Segments, Concentration of Revenue",
+                "excerpt": "In 2025, substantially all of the revenue from our three largest customers was generated from the sale of platforms and other components by our Intel Products operating segments. Our three largest customers accounted for the following percentages of our net revenue: Years Ended Dec 27, 2025 Dec 28, 2024 Dec 30, 2023 Customer A 19 % 19 % 19 % Customer B 12 % 14 % 11 % Customer C 12 % 12 % 10 % Total percentage of net revenue 43 % 45 % 40 %",
+                "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+                "form": "10-K",
+                "summary": null,
+                "publisher": null,
+                "title": null,
+                "published_at": null,
+                "display": null
+              }
+            ]
+          }
+        ]
+      ],
+      "breakpoints": [
+        {
+          "node": "anon_intc_fy2025_customer_a",
+          "layer": 1,
+          "reason": "anonymous",
+          "relation": "rel_intc_customer_a",
+          "detail": "",
+          "node_name": "Intel 2025 财年客户 A（占净营收 19%）"
+        },
+        {
+          "node": "anon_intc_fy2025_customer_b",
+          "layer": 1,
+          "reason": "anonymous",
+          "relation": "rel_intc_customer_b",
+          "detail": "",
+          "node_name": "Intel 2025 财年客户 B（占净营收 12%）"
+        },
+        {
+          "node": "anon_intc_fy2025_customer_c",
+          "layer": 1,
+          "reason": "anonymous",
+          "relation": "rel_intc_customer_c",
+          "detail": "",
+          "node_name": "Intel 2025 财年客户 C（占净营收 12%）"
+        }
+      ],
+      "side_relations": [
+        {
+          "relation": "cmp_amd_intel",
+          "type": "competition",
+          "parties": [
+            "co_amd",
+            "co_intel"
+          ],
+          "market": "数据中心与 AI 计算（DCAI）",
+          "status": "reviewed",
+          "party_names": [
+            "Advanced Micro Devices, Inc.",
+            "Intel Corporation"
+          ]
+        },
+        {
+          "relation": "cmp_intel_nvidia",
+          "type": "competition",
+          "parties": [
+            "co_intel",
+            "co_nvidia"
+          ],
+          "market": "数据中心与 AI 计算（DCAI）",
+          "status": "reviewed",
+          "party_names": [
+            "Intel Corporation",
+            "NVIDIA Corporation"
+          ]
+        },
+        {
+          "relation": "cmp_intel_samsung",
+          "type": "competition",
+          "parties": [
+            "co_intel",
+            "co_samsung"
+          ],
+          "market": "领先制程的晶圆代工",
+          "status": "reviewed",
+          "party_names": [
+            "Intel Corporation",
+            "Samsung Electronics Co., Ltd."
+          ]
+        },
+        {
+          "relation": "cmp_intel_tsmc",
+          "type": "competition",
+          "parties": [
+            "co_intel",
+            "co_tsmc"
+          ],
+          "market": "领先制程的晶圆代工",
+          "status": "reviewed",
+          "party_names": [
+            "Intel Corporation",
+            "Taiwan Semiconductor Manufacturing Company Limited"
+          ]
+        },
+        {
+          "relation": "ptn_intel_nvidia",
+          "type": "partnership",
+          "parties": [
+            "co_intel",
+            "co_nvidia"
+          ],
+          "market": null,
+          "status": "reviewed",
+          "party_names": [
+            "Intel Corporation",
+            "NVIDIA Corporation"
+          ]
+        }
+      ],
+      "searches": [
+        "srch_aapl_fy2025_intel",
+        "srch_msft_fy2026_intel",
+        "srch_amzn_fy2025_intel",
+        "srch_goog_fy2025_intel",
+        "srch_tsla_fy2025_intel",
+        "srch_jpm_fy2025_intel",
+        "srch_brk_fy2025_intel",
+        "srch_xom_fy2025_intel",
+        "srch_jnj_fy2025_intel",
+        "srch_pg_fy2026_intel",
+        "srch_ko_fy2025_intel",
+        "srch_wmt_fy2026_intel",
+        "srch_cost_fy2026_intel",
+        "srch_nke_fy2026_intel",
+        "srch_nvda_fy2026_intel"
+      ],
+      "breakpoint_counts": {
+        "anonymous": 3
+      }
+    },
+    "reverse_search": [
+      {
+        "id": "srch_goog_fy2025_intel",
+        "subject": "Alphabet",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_amzn_fy2025_intel",
+        "subject": "Amazon",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000004/amzn-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_aapl_fy2025_intel",
+        "subject": "Apple",
+        "form": "10-K",
+        "period_end": "2025-09-27",
+        "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019325000079/aapl-20250927.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_brk_fy2025_intel",
+        "subject": "Berkshire Hathaway",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/1067983/000119312526083899/brka-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_ko_fy2025_intel",
+        "subject": "Coca-Cola",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/21344/000162828026010047/ko-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_cost_fy2026_intel",
+        "subject": "Costco",
+        "form": "10-K",
+        "period_end": "2026-08-30",
+        "url": "https://www.sec.gov/Archives/edgar/data/909832/000090983226000093/cost-20260830.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_xom_fy2025_intel",
+        "subject": "Exxon Mobil",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_jpm_fy2025_intel",
+        "subject": "JPMorgan Chase",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/19617/000162828026008131/jpm-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_jnj_fy2025_intel",
+        "subject": "Johnson & Johnson",
+        "form": "10-K",
+        "period_end": "2025-12-28",
+        "url": "https://www.sec.gov/Archives/edgar/data/200406/000020040626000016/jnj-20251228.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_msft_fy2026_intel",
+        "subject": "Microsoft",
+        "form": "10-K",
+        "period_end": "2026-06-30",
+        "url": "https://www.sec.gov/Archives/edgar/data/789019/000119312526323660/msft-20260630.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_nvda_fy2026_intel",
+        "subject": "NVIDIA Corporation",
+        "form": "10-K",
+        "period_end": "2026-01-25",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文出现 5 次 Intel：4 次在三处竞争对手名单中，1 次说明 NVIDIA 持有 Intel 普通股的投资收益；没有点名向 Intel 采购"
+      },
+      {
+        "id": "srch_nke_fy2026_intel",
+        "subject": "Nike",
+        "form": "10-K",
+        "period_end": "2026-05-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/320187/000032018726000088/nke-20260531.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_pg_fy2026_intel",
+        "subject": "Procter & Gamble",
+        "form": "10-K",
+        "period_end": "2026-06-30",
+        "url": "https://www.sec.gov/Archives/edgar/data/80424/000008042426000103/pg-20260630.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_tsla_fy2025_intel",
+        "subject": "Tesla",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      },
+      {
+        "id": "srch_wmt_fy2026_intel",
+        "subject": "Walmart",
+        "form": "10-K",
+        "period_end": "2026-01-31",
+        "url": "https://www.sec.gov/Archives/edgar/data/104169/000010416926000055/wmt-20260131.htm",
+        "result": "not_found",
+        "method": "全文检索 Intel（不区分大小写、整词）",
+        "note": "原文没有出现 Intel"
+      }
+    ],
+    "downstream_notes": [
+      {
+        "claim": "clm_intc25_customer_types",
+        "locator": "Our Business — Overview",
+        "excerpt": "Our customers primarily include OEMs, ODMs, CSPs, and other manufacturers and service providers, such as industrial and communication equipment manufacturers.",
+        "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+        "limits": "Intel 客户类型（OEM、ODM、云服务商与其他制造商、服务商）；类型说明不点名任何公司，不生成具名关系"
+      },
+      {
+        "claim": "clm_intc25_ccg_customers",
+        "locator": "Our Business — CCG Overview",
+        "excerpt": "Our direct customers include distributors and OEMs that design and sell PCs and related devices.",
+        "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+        "limits": "客户端计算（CCG）的直接客户是分销商与 OEM；不点名公司"
+      },
+      {
+        "claim": "clm_intc25_dcai_customers",
+        "locator": "Our Business — DCAI Overview",
+        "excerpt": "Our direct customers include global CSP/hyperscalers and OEMs.",
+        "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+        "limits": "数据中心与 AI（DCAI）的直接客户是云服务商/超大规模厂商与 OEM；不点名公司"
+      },
+      {
+        "claim": "clm_intc25_foundry_customers",
+        "locator": "Our Business — Intel Foundry",
+        "excerpt": "Potential customers include traditional fabless semiconductor companies in the computing, smartphone, cloud services, automotive, communications, aerospace and defense markets, as well as hyperscalers and the U.S. government.",
+        "url": "https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm",
+        "limits": "Intel Foundry 的潜在客户类型；是潜在客户而非已有客户，不点名公司"
+      }
+    ],
+    "revenue": {
+      "co_intel": {
+        "entity": "co_intel",
+        "unit": "USD",
+        "document": "doc_intc_10k_fy2025",
+        "form": "10-K",
+        "accession": "0000050863-26-000011",
+        "document_period_end": "2025-12-27",
+        "consolidated": [
+          {
+            "period_end": "2023-12-30",
+            "value": 54228000000.0
+          },
+          {
+            "period_end": "2024-12-28",
+            "value": 53101000000.0,
+            "growth": -0.02078262152393595
+          },
+          {
+            "period_end": "2025-12-27",
+            "value": 52853000000.0,
+            "growth": -0.004670345191239322
+          }
+        ],
+        "segments": {},
+        "other_units": []
+      },
+      "co_asml": {
+        "entity": "co_asml",
+        "unit": "EUR",
+        "document": "doc_asml_20f_fy2025",
+        "form": "20-F",
+        "accession": "0001628280-26-011378",
+        "document_period_end": "2025-12-31",
+        "consolidated": [
+          {
+            "period_end": "2023-12-31",
+            "value": 27558500000.0
+          },
+          {
+            "period_end": "2024-12-31",
+            "value": 28262900000.0,
+            "growth": 0.02556017199775029
+          },
+          {
+            "period_end": "2025-12-31",
+            "value": 32667300000.0,
+            "growth": 0.15583680372502462
+          }
+        ],
+        "segments": {},
+        "other_units": []
+      },
+      "co_tsmc": {
+        "entity": "co_tsmc",
+        "unit": "TWD",
+        "document": "doc_tsmc_20f_fy2025",
+        "form": "20-F",
+        "accession": "0001628280-26-025362",
+        "document_period_end": "2025-12-31",
+        "consolidated": [
+          {
+            "period_end": "2023-12-31",
+            "value": 2161735799999.9998
+          },
+          {
+            "period_end": "2024-12-31",
+            "value": 2894307700000.0,
+            "growth": 0.3388813286063914
+          },
+          {
+            "period_end": "2025-12-31",
+            "value": 3809054300000.0,
+            "growth": 0.3160502250676387
+          }
+        ],
+        "segments": {},
+        "other_units": [
+          "USD"
+        ]
+      }
+    },
+    "revenue_missing": [],
+    "summary": {
+      "upstream_named": 2,
+      "upstream_edges": 6,
+      "downstream_named": 0,
+      "reverse_searched": 15,
+      "reverse_found": 0,
+      "breakpoints": {
+        "upstream": {
+          "activity_unknown": 1,
+          "searched_not_disclosed": 1,
+          "anonymous": 3
+        },
+        "downstream": {
+          "anonymous": 3
+        }
+      }
+    }
+  },
+  "coverage": {
+    "edges": 9,
+    "completeness": "partial"
+  },
+  "unsupported": [
+    {
+      "item": "链上各公司受影响的金额或比例",
+      "kind": "scope",
+      "reason": "关系链只描述登记的关系；对方收入中来自起点公司的份额大多未披露，各层占比不相乘、不推算间接敞口"
+    },
+    {
+      "item": "因果判断",
+      "kind": "scope",
+      "reason": "同期营收变化不说明由起点公司带动或拉动"
+    },
+    {
+      "item": "Q2b 下游客户资本开支对照",
+      "kind": "data",
+      "reason": "下游链上没有原文点名的公司：起点的直接客户匿名，反向检索的 15 家公司年报都没有点名"
+    }
+  ],
+  "limitations": [
+    "关系来自公司年报的披露：Intel 称其供应链有数千家供应商，原文只点名 ASML 与台积电，没有点名不等于没有关系",
+    "占比只按原文口径列出（Intel 对三个匿名客户的销售占其净营收），不推算其他公司的份额，也不相乘推算间接敞口；原文没有说明各年的客户 A、B、C 是否为同一家",
+    "Intel 的客户集中度来自 Intel Products；Intel Foundry 的外部客户原文只写「潜在客户」，没有点名任何已有外部客户",
+    "上游第二层只读了 SEC 上的年报（ASML 20-F、台积电 20-F）；Carl Zeiss SMT 不在 SEC 申报，其上游尚未查阅，业务也不在活动清单内",
+    "下游反向检索只查了公司样本中已有的 15 家公司的最新 10-K（含 NVIDIA）；其他服务器、系统厂商与云厂商留待后续",
+    "Intel 的分部营收含分部间销售且有嵌套分部，分部之和不等于合并营收，本研究只用 Intel 的合并营收",
+    "营收为各公司财年口径，财年截止月不同（Intel 12 月下旬、ASML 与台积电 12 月 31 日）；台积电为新台币、ASML 为欧元、Intel 为美元，不换算",
+    "ASML 与台积电的营收来自众多客户，原文没有披露其中来自 Intel 的份额，同期营收对照不衡量 Intel 对它们的影响",
+    "同期营收变化是描述，不说明由 Intel 带动，也不是预测",
+    "美国政府与软银对 Intel 的股权投资不是供应关系，未登记；NVIDIA 的认购只作为合作关系的旁注"
+  ],
+  "validation": {
+    "catalog_check": {
+      "status": "pass",
+      "checked": 116,
+      "reason": "证据包生成前产业链登记核对零错误、零未核对"
+    },
+    "raw_spot_check": {
+      "status": "skipped",
+      "reason": "没有可在原始 CSV 中定位的合格观测"
+    }
+  },
+  "tables": {
+    "edges": [
+      {
+        "relation": "rel_asml_intc_euv",
+        "layer": 1,
+        "from": "co_intel",
+        "to": "co_asml",
+        "type": "supply",
+        "activity": "act_semi_equipment",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_tsmc_intc_foundry",
+        "layer": 1,
+        "from": "co_intel",
+        "to": "co_tsmc",
+        "type": "foundry",
+        "activity": "act_wafer_foundry",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_zeiss_asml_optics",
+        "layer": 2,
+        "from": "co_asml",
+        "to": "co_zeiss_smt",
+        "type": "supply",
+        "activity": null,
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_tsmc_chemical_inputs",
+        "layer": 2,
+        "from": "co_tsmc",
+        "to": "anon_tsmc_fy2025_chemical_suppliers",
+        "type": "supply",
+        "activity": "act_process_chemicals",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_tsmc_equipment_inputs",
+        "layer": 2,
+        "from": "co_tsmc",
+        "to": "anon_tsmc_fy2025_equipment_suppliers",
+        "type": "supply",
+        "activity": "act_semi_equipment",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_tsmc_wafer_inputs",
+        "layer": 2,
+        "from": "co_tsmc",
+        "to": "anon_tsmc_fy2025_wafer_suppliers",
+        "type": "supply",
+        "activity": "act_wafer_materials",
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "upstream"
+      },
+      {
+        "relation": "rel_intc_customer_a",
+        "layer": 1,
+        "from": "co_intel",
+        "to": "anon_intc_fy2025_customer_a",
+        "type": "supply",
+        "activity": null,
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "downstream"
+      },
+      {
+        "relation": "rel_intc_customer_b",
+        "layer": 1,
+        "from": "co_intel",
+        "to": "anon_intc_fy2025_customer_b",
+        "type": "supply",
+        "activity": null,
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "downstream"
+      },
+      {
+        "relation": "rel_intc_customer_c",
+        "layer": 1,
+        "from": "co_intel",
+        "to": "anon_intc_fy2025_customer_c",
+        "type": "supply",
+        "activity": null,
+        "status": "reviewed",
+        "evidence_class": "primary",
+        "direction": "downstream"
+      }
+    ],
+    "breakpoints": [
+      {
+        "node": "co_zeiss_smt",
+        "layer": 2,
+        "reason": "activity_unknown",
+        "relation": "rel_zeiss_asml_optics",
+        "direction": "upstream"
+      },
+      {
+        "node": "co_tsmc",
+        "layer": 2,
+        "reason": "searched_not_disclosed",
+        "relation": "rel_tsmc_intc_foundry",
+        "direction": "upstream"
+      },
+      {
+        "node": "anon_tsmc_fy2025_chemical_suppliers",
+        "layer": 2,
+        "reason": "anonymous",
+        "relation": "rel_tsmc_chemical_inputs",
+        "direction": "upstream"
+      },
+      {
+        "node": "anon_tsmc_fy2025_equipment_suppliers",
+        "layer": 2,
+        "reason": "anonymous",
+        "relation": "rel_tsmc_equipment_inputs",
+        "direction": "upstream"
+      },
+      {
+        "node": "anon_tsmc_fy2025_wafer_suppliers",
+        "layer": 2,
+        "reason": "anonymous",
+        "relation": "rel_tsmc_wafer_inputs",
+        "direction": "upstream"
+      },
+      {
+        "node": "anon_intc_fy2025_customer_a",
+        "layer": 1,
+        "reason": "anonymous",
+        "relation": "rel_intc_customer_a",
+        "direction": "downstream"
+      },
+      {
+        "node": "anon_intc_fy2025_customer_b",
+        "layer": 1,
+        "reason": "anonymous",
+        "relation": "rel_intc_customer_b",
+        "direction": "downstream"
+      },
+      {
+        "node": "anon_intc_fy2025_customer_c",
+        "layer": 1,
+        "reason": "anonymous",
+        "relation": "rel_intc_customer_c",
+        "direction": "downstream"
+      }
+    ]
+  },
+  "run_id": "chip_relation_chain_intc-20261102T011243Z-0913ad2e",
+  "generated_at": "2026-11-02T01:12:44+00:00",
+  "result_hash": "f6948958292c9b1b42eebf2e33882c3043cce8fca5a03cd53c29a5543dad9b5d"
+}

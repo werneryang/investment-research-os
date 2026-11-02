@@ -1,0 +1,132 @@
+{
+  "run_id": "chip_relation_chain_intc-20261102T011243Z-0913ad2e",
+  "study_id": "chip_relation_chain_intc",
+  "study_path": "config/studies/chip_relation_chain_intc.yaml",
+  "study_config": {
+    "study_id": "chip_relation_chain_intc",
+    "title": "Intel 的上下游关系链（2025 财年申报）",
+    "question": "从 Intel 2025 财年年报披露的直接关系出发，按登记的关系向上游、下游各展开两层，需求可能沿哪些公司与业务传导？ 链在哪里断开、为什么断开？Intel 营收变化期间，链上供应方在各自年报中的营收是否同期变化？",
+    "result_type": "descriptive",
+    "branch": "relation_chain",
+    "scope": {
+      "market": "US",
+      "start": "2023-01-01",
+      "end": "2025-12-31",
+      "frequency": "annual",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-11-02T01:12:43+00:00",
+      "data_checked_at": {
+        "relation_chain_evidence": "2026-11-02T01:05:11+00:00"
+      }
+    },
+    "data": {
+      "evidence": "relation_chain_evidence"
+    },
+    "method": {
+      "root": "co_intel",
+      "depth": 2,
+      "as_of": "2026-11-01",
+      "downstream_notes": [
+        "clm_intc25_customer_types",
+        "clm_intc25_ccg_customers",
+        "clm_intc25_dcai_customers",
+        "clm_intc25_foundry_customers"
+      ]
+    },
+    "benchmark": "关系链只来自登记的原文证据；营收与同比取自各公司自己的年报",
+    "evaluation": [
+      "只经过已复核的关系；每个停止展开处都有断点原因",
+      "「已查原文、未披露」与「尚未查阅」分开",
+      "营收同比只在同一申报、同一币种内计算",
+      "固定证据包版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "关系来自公司年报的披露：Intel 称其供应链有数千家供应商，原文只点名 ASML 与台积电，没有点名不等于没有关系",
+      "占比只按原文口径列出（Intel 对三个匿名客户的销售占其净营收），不推算其他公司的份额，也不相乘推算间接敞口；原文没有说明各年的客户 A、B、C 是否为同一家",
+      "Intel 的客户集中度来自 Intel Products；Intel Foundry 的外部客户原文只写「潜在客户」，没有点名任何已有外部客户",
+      "上游第二层只读了 SEC 上的年报（ASML 20-F、台积电 20-F）；Carl Zeiss SMT 不在 SEC 申报，其上游尚未查阅，业务也不在活动清单内",
+      "下游反向检索只查了公司样本中已有的 15 家公司的最新 10-K（含 NVIDIA）；其他服务器、系统厂商与云厂商留待后续",
+      "Intel 的分部营收含分部间销售且有嵌套分部，分部之和不等于合并营收，本研究只用 Intel 的合并营收",
+      "营收为各公司财年口径，财年截止月不同（Intel 12 月下旬、ASML 与台积电 12 月 31 日）；台积电为新台币、ASML 为欧元、Intel 为美元，不换算",
+      "ASML 与台积电的营收来自众多客户，原文没有披露其中来自 Intel 的份额，同期营收对照不衡量 Intel 对它们的影响",
+      "同期营收变化是描述，不说明由 Intel 带动，也不是预测",
+      "美国政府与软银对 Intel 的股权投资不是供应关系，未登记；NVIDIA 的认购只作为合作关系的旁注"
+    ]
+  },
+  "study_config_hash": "813de5fb04300213a4e334e588d11bb369c65e4a30cc9aa90fcc8ee656bee455",
+  "started_at": "2026-11-02T01:12:43+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "f6aa7ec0b82cf5398cebb7e519293b40238fda751e5701fe55c799c8b402fc77",
+    "git_commit": "6e2e1fedd64d9917e5cf4440cd0d2094116607a7",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.13",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "partial",
+  "inputs": [
+    {
+      "role": "evidence",
+      "used": true,
+      "dataset_id": "relation_chain_evidence",
+      "version_id": "v20261102T010511Z-36a14c2f",
+      "content_hash": "36a14c2f84b8525ae43631cb25d30115f5c6988352657b075aa76fe93a0b60ac",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2022-09-01",
+            "2026-06-30"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-31"
+        ]
+      }
+    }
+  ],
+  "result_hash": "f6948958292c9b1b42eebf2e33882c3043cce8fca5a03cd53c29a5543dad9b5d",
+  "warnings": [],
+  "unsupported": [
+    {
+      "item": "链上各公司受影响的金额或比例",
+      "kind": "scope",
+      "reason": "关系链只描述登记的关系；对方收入中来自起点公司的份额大多未披露，各层占比不相乘、不推算间接敞口"
+    },
+    {
+      "item": "因果判断",
+      "kind": "scope",
+      "reason": "同期营收变化不说明由起点公司带动或拉动"
+    },
+    {
+      "item": "Q2b 下游客户资本开支对照",
+      "kind": "data",
+      "reason": "下游链上没有原文点名的公司：起点的直接客户匿名，反向检索的 15 家公司年报都没有点名"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runs/chip_relation_chain_intc-20261102T011243Z-0913ad2e/result.json",
+      "sha256": "3924b837920c279c437f08d3ff157b8d9b4b610053245035961976f4c3b2f364"
+    },
+    {
+      "path": "reports/chip_relation_chain_intc/chip_relation_chain_intc-20261102T011243Z-0913ad2e/report.md",
+      "sha256": "d028b6d64785eec5ff112002f63ed602ac78ae71a68bc9453a3b3f4673ea360d"
+    },
+    {
+      "path": "reports/chip_relation_chain_intc/chip_relation_chain_intc-20261102T011243Z-0913ad2e/report.html",
+      "sha256": "70db2f043aab4ad09291e60e6194c713efcafeeed922d41a2c50178bc87ffd69"
+    }
+  ],
+  "finished_at": "2026-11-02T01:12:44+00:00"
+}
