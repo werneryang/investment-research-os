@@ -162,3 +162,70 @@ reviews:
          limits: "Micron 的化学品、气体与光刻胶来自未点名供应商；份额未知"}
       - {id: rel_mu_substrate_inputs, fingerprint: d6501d19ec8dec3c, result: passed,
          limits: "Micron 的基板来自未点名供应商；原文未区分封装基板与其他基板"}
+  - id: trv_chain_intc_20261101
+    kind: technical
+    reviewer: 模型技术复核（Intel 关系链，沿用 docs/relation-chain-design.md 的步骤；与提取同一会话完成，不是独立复核）
+    reviewed_at: "2026-11-01"
+    method: >-
+      事实核对：Intel 2025 财年 10-K 与 ASML 2025 年 20-F 的 SHA256 与登记一致（下载自 SEC，申报编号与接受时间取自 SEC 申报索引）；
+      13 条新摘录经项目的原文规范化后逐字出现在原文中，并回到前后文确认出处章节；前三大客户占比与原文附注表一致
+      （2025 财年 19%、12%、12%，合计 43%），分部表中合并营收 54,228 百万美元与「分部加分部间抵销」之和一致（2023 财年），
+      因此分部营收含分部间销售的判断有原文支持。14 家样本公司与 NVIDIA 的最新 10-K 全文检索 Intel（不区分大小写、整词）：
+      13 家 0 次，NVIDIA 5 次（均为竞争对手名单与投资收益，不是采购）；台积电 20-F 的 3 次 Intel 均在高管履历中；
+      ASML 20-F 的 4 次 Intel 在摩尔定律叙述、薪酬对标公司名单与术语表中。
+      语义复核：逐条判断证据是否支持关系的方向、类型、业务、产品与占比口径：ASML 只证明 EUV 设备的唯一供应；台积电只证明近年使用其代工产能；
+      前三大客户匿名且原文没有说明各年的 A、B、C 是否为同一家，不推测身份；NVIDIA 的 50 亿美元认购是股权投资，不是供应关系；
+      只有一方披露的关系不推出另一方份额；recipient_activity 为研究判断，写入结论边界。
+    scope: >-
+      13 条证据与 11 条关系（上游 3 条、前三大客户 3 条、合作 1 条、竞争 4 条）。其余登记内容的复核状态不变。
+    basis: 分支 intel-relation-chain 上的登记内容（2026-11-01）；基于已提交 c4492f4 之后的工作树
+    record: 本条记录；各条结论边界见 limits
+    items:
+      - {id: clm_intc25_asml, fingerprint: 774ea20b93c435dc, result: passed,
+         limits: "ASML 是 Intel 当前用于 Intel 4、Intel 3、Intel 18A 与后续领先制程的 EUV 光刻设备的唯一供应商；不证明采购金额、其他类型设备的供应商或份额"}
+      - {id: clm_intc25_tsmc, fingerprint: 99b8defbf57ff62e, result: passed,
+         limits: "支持 Intel 近年使用台积电产能制造部分产品的模块或整个产品；不证明采购量、制程节点、具体产品或当前订单"}
+      - {id: clm_intc25_customers, fingerprint: 2755edb3b413480e, result: passed,
+         limits: "客户 A、B、C 占 Intel 净营收 19%、12%、12%（2025 财年），收入几乎全部来自 Intel Products 分部；匿名，原文没有说明各年的 A、B、C 是否为同一家，不推测身份"}
+      - {id: clm_intc25_customer_types, fingerprint: d3190f7e5168fe9d, result: passed,
+         limits: "Intel 客户类型（OEM、ODM、云服务商与其他制造商、服务商）；类型说明不点名任何公司，不生成具名关系"}
+      - {id: clm_intc25_ccg_customers, fingerprint: 47a58e31ce788108, result: passed,
+         limits: "客户端计算（CCG）的直接客户是分销商与 OEM；不点名公司"}
+      - {id: clm_intc25_dcai_customers, fingerprint: 9eb5ff65a6e27687, result: passed,
+         limits: "数据中心与 AI（DCAI）的直接客户是云服务商/超大规模厂商与 OEM；不点名公司"}
+      - {id: clm_intc25_foundry_customers, fingerprint: dde43f46ac28a2f8, result: passed,
+         limits: "Intel Foundry 的潜在客户类型；是潜在客户而非已有客户，不点名公司"}
+      - {id: clm_intc25_nvidia_partnership, fingerprint: 8e6dff6389f8b131, result: passed,
+         limits: "Intel 与 NVIDIA 宣布共同开发定制的客户端与数据中心产品；意图性表述，不证明已有销量、金额或供应关系"}
+      - {id: clm_intc25_nvidia_investment, fingerprint: 902ab86a722b4743, result: passed,
+         limits: "NVIDIA 以 50 亿美元认购 Intel 215 million 股普通股，2025-12-26 完成；股权投资，不是采购或供应"}
+      - {id: clm_intc25_foundry_competitors, fingerprint: 026c06838aad3210, result: passed,
+         limits: "台积电是 Intel 在领先制程上的主要竞争对手，三星也直接竞争；只描述竞争，不衡量份额"}
+      - {id: clm_intc25_dcai_competitors, fingerprint: 86b03ee2fe3f4f9c, result: passed,
+         limits: "AMD 与 NVIDIA 等是 DCAI 的竞争对手；列举不是完整名单，不衡量份额"}
+      - {id: clm_nvda26_competitors, fingerprint: f4da85669066876e, result: passed,
+         limits: "NVIDIA 在竞争部分把 Intel 列为 AI 与加速计算方案的提供者之一（such as，列举）；只描述竞争"}
+      - {id: clm_asml25_zeiss, fingerprint: e7891738fbb7ac00, result: passed,
+         limits: "Carl Zeiss SMT 是 ASML 镜头、反射镜、照明器、收集器等光学部件的唯一供应商，双方有排他安排；不证明采购金额；只有 ASML 一方披露"}
+      - {id: rel_asml_intc_euv, fingerprint: 11f7b9401c91c69b, result: passed,
+         limits: "ASML 向 Intel 供应 EUV 光刻设备；只有 Intel 一方披露，ASML 20-F 没有点名 Intel，不推出 ASML 的客户集中度；recipient_activity 为研究判断（Intel 同时是自有制造与委外并用的公司）"}
+      - {id: rel_tsmc_intc_foundry, fingerprint: f3969287771fb065, result: passed,
+         limits: "台积电为 Intel 部分产品的模块或整个产品代工；只有 Intel 一方披露，台积电 20-F 没有点名 Intel，不证明份额；recipient_activity 为研究判断"}
+      - {id: rel_zeiss_asml_optics, fingerprint: b41455b96e6a366c, result: passed,
+         limits: "Carl Zeiss SMT 向 ASML 供应光学部件；只有 ASML 一方披露；活动清单没有对应的活动，业务未定，链在此停止"}
+      - {id: rel_intc_customer_a, fingerprint: 1ee492686454f73c, result: passed,
+         limits: "匿名客户 A 占 Intel 2025 财年净营收 19%，主要来自 Intel Products；不推测客户身份，不与其他公司的披露对应"}
+      - {id: rel_intc_customer_b, fingerprint: 3b7679cf71bd9f30, result: passed,
+         limits: "匿名客户 B 占 Intel 2025 财年净营收 12%；不推测客户身份"}
+      - {id: rel_intc_customer_c, fingerprint: b77e44bc577ebf1f, result: passed,
+         limits: "匿名客户 C 占 Intel 2025 财年净营收 12%；不推测客户身份"}
+      - {id: ptn_intel_nvidia, fingerprint: 5dd283e0a797c862, result: passed,
+         limits: "合作为意图性的共同开发，另有 NVIDIA 对 Intel 的股权投资；不是供应关系，不当作传导路径"}
+      - {id: cmp_intel_tsmc, fingerprint: 139da1d32b61cb5c, result: passed,
+         limits: "领先制程晶圆代工的竞争关系；台积电同时是 Intel 的第三方代工方，竞争与供应并存"}
+      - {id: cmp_intel_samsung, fingerprint: dc062c19b063d8a3, result: passed,
+         limits: "领先制程晶圆代工的竞争关系；只描述竞争"}
+      - {id: cmp_amd_intel, fingerprint: a477aa0adc0699cc, result: passed,
+         limits: "DCAI 的竞争关系；竞争覆盖多类产品，只描述竞争"}
+      - {id: cmp_intel_nvidia, fingerprint: 0d4e905c15141e56, result: passed,
+         limits: "双方都披露的 DCAI 竞争关系，与合作并存；只描述竞争"}

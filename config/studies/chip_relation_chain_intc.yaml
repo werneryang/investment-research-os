@@ -1,0 +1,46 @@
+# 关系链研究：Intel 的上游与下游（docs/relation-chain-design.md §9）
+study_id: chip_relation_chain_intc
+title: Intel 的上下游关系链（2025 财年申报）
+question: >-
+  从 Intel 2025 财年年报披露的直接关系出发，按登记的关系向上游、下游各展开两层，需求可能沿哪些公司与业务传导？
+  链在哪里断开、为什么断开？Intel 营收变化期间，链上供应方在各自年报中的营收是否同期变化？
+result_type: descriptive
+branch: relation_chain
+
+scope:
+  market: US
+  # 链上公司三个财年营收覆盖的期间：Intel、ASML、台积电的 2023 财年均始于 2023-01-01（Intel 为 2022-12-31 之后的第一周），
+  # 2025 财年止于 2025-12-31（月份口径）；关系链按 method.as_of 截至 2026-11-01 已公开的原文生成
+  start: 2023-01-01
+  end: 2025-12-31
+  frequency: annual
+  vintage_policy: latest
+
+data:
+  evidence: relation_chain_evidence
+
+method:
+  root: co_intel
+  depth: 2
+  as_of: "2026-11-01"
+  # 下游说明：Intel 原文的客户类型与 Intel Foundry 的潜在客户，不生成具名关系
+  downstream_notes: [clm_intc25_customer_types, clm_intc25_ccg_customers, clm_intc25_dcai_customers, clm_intc25_foundry_customers]
+
+benchmark: 关系链只来自登记的原文证据；营收与同比取自各公司自己的年报
+evaluation:
+  - 只经过已复核的关系；每个停止展开处都有断点原因
+  - 「已查原文、未披露」与「尚未查阅」分开
+  - 营收同比只在同一申报、同一币种内计算
+  - 固定证据包版本可重现（iros verify）
+
+limitations:
+  - 关系来自公司年报的披露：Intel 称其供应链有数千家供应商，原文只点名 ASML 与台积电，没有点名不等于没有关系
+  - 占比只按原文口径列出（Intel 对三个匿名客户的销售占其净营收），不推算其他公司的份额，也不相乘推算间接敞口；原文没有说明各年的客户 A、B、C 是否为同一家
+  - Intel 的客户集中度来自 Intel Products；Intel Foundry 的外部客户原文只写「潜在客户」，没有点名任何已有外部客户
+  - 上游第二层只读了 SEC 上的年报（ASML 20-F、台积电 20-F）；Carl Zeiss SMT 不在 SEC 申报，其上游尚未查阅，业务也不在活动清单内
+  - 下游反向检索只查了公司样本中已有的 15 家公司的最新 10-K（含 NVIDIA）；其他服务器、系统厂商与云厂商留待后续
+  - Intel 的分部营收含分部间销售且有嵌套分部，分部之和不等于合并营收，本研究只用 Intel 的合并营收
+  - 营收为各公司财年口径，财年截止月不同（Intel 12 月下旬、ASML 与台积电 12 月 31 日）；台积电为新台币、ASML 为欧元、Intel 为美元，不换算
+  - ASML 与台积电的营收来自众多客户，原文没有披露其中来自 Intel 的份额，同期营收对照不衡量 Intel 对它们的影响
+  - 同期营收变化是描述，不说明由 Intel 带动，也不是预测
+  - 美国政府与软银对 Intel 的股权投资不是供应关系，未登记；NVIDIA 的认购只作为合作关系的旁注

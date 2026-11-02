@@ -198,6 +198,27 @@ documents:
     accepted_at: "2026-08-18T07:12:07-04:00"
     document_period_end: "2026-06-26"
     retrieved_at: "2026-10-31"
+  # ---- 关系链研究的第二个起点 Intel（2026-11-01 取得）：Intel 2025 财年 10-K，及其点名的 EUV 设备供应商 ASML 的 2025 年 20-F ----
+  - id: doc_intc_10k_fy2025
+    accession: 0000050863-26-000011
+    form: 10-K
+    entity: co_intel
+    url: https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+    file: intc-20251227.htm
+    sha256: ba132c88123cc8be4e1da4773b45e3eb1672c88030b62cf2761430fab254b56e
+    accepted_at: "2026-01-22T18:43:06-05:00"
+    document_period_end: "2025-12-27"
+    retrieved_at: "2026-11-01"
+  - id: doc_asml_20f_fy2025
+    accession: 0001628280-26-011378
+    form: 20-F
+    entity: co_asml
+    url: https://www.sec.gov/Archives/edgar/data/937966/000162828026011378/asml-20251231.htm
+    file: asml-20251231.htm
+    sha256: 9eb674524ee9f42cb744ba1d04e90fa379f22e23ab6ffa2ef097186f7dd224b2
+    accepted_at: "2026-02-25T06:06:02-05:00"
+    document_period_end: "2025-12-31"
+    retrieved_at: "2026-11-01"
 
 claims:
   # ---- NVIDIA 2026 财年 10-K 原文 ----
@@ -462,5 +483,127 @@ claims:
     document: doc_fn_10k_fy2026
     locator: Part I, Item 1A Risk Factors — summary
     excerpt: We purchase some of the critical materials used in certain of our products from a single source or a limited number of suppliers.
+    origin_type: observed
+    review_status: candidate
+
+  # ---- 关系链研究：Intel 2025 财年 10-K（2026-11-01）----
+  - id: clm_intc25_asml
+    type: filing_text
+    document: doc_intc_10k_fy2025
+    locator: Risk Factors — reliance on a limited number of suppliers and third-party foundries
+    excerpt: >-
+      ASML Holding N.V. (ASML) is currently the sole supplier of EUV lithography tools that we are deploying in our Intel 4,
+      Intel 3, Intel 18A and planned future leading-edge manufacturing process nodes.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_intc25_tsmc
+    type: filing_text
+    document: doc_intc_10k_fy2025
+    locator: Our Business — Disaggregated Architecture and Supply Chain
+    excerpt: >-
+      we have also strategically utilized third-party foundry manufacturing capacity, including at one of our key foundry
+      competitors, TSMC, for various tiles or an entire product where advantageous for cost, performance, schedule or other
+      considerations.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_intc25_customers
+    type: filing_text
+    document: doc_intc_10k_fy2025
+    locator: Notes to Consolidated Financial Statements — Note 3 Operating Segments, Concentration of Revenue
+    excerpt: >-
+      In 2025, substantially all of the revenue from our three largest customers was generated from the sale of platforms and
+      other components by our Intel Products operating segments. Our three largest customers accounted for the following
+      percentages of our net revenue: Years Ended Dec 27, 2025 Dec 28, 2024 Dec 30, 2023 Customer A 19 % 19 % 19 % Customer B
+      12 % 14 % 11 % Customer C 12 % 12 % 10 % Total percentage of net revenue 43 % 45 % 40 %
+    origin_type: observed
+    review_status: candidate
+  - id: clm_intc25_customer_types
+    type: filing_text
+    document: doc_intc_10k_fy2025
+    locator: Our Business — Overview
+    excerpt: >-
+      Our customers primarily include OEMs, ODMs, CSPs, and other manufacturers and service providers, such as industrial and
+      communication equipment manufacturers.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_intc25_ccg_customers
+    type: filing_text
+    document: doc_intc_10k_fy2025
+    locator: Our Business — CCG Overview
+    excerpt: Our direct customers include distributors and OEMs that design and sell PCs and related devices.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_intc25_dcai_customers
+    type: filing_text
+    document: doc_intc_10k_fy2025
+    locator: Our Business — DCAI Overview
+    excerpt: Our direct customers include global CSP/hyperscalers and OEMs.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_intc25_foundry_customers
+    type: filing_text
+    document: doc_intc_10k_fy2025
+    locator: Our Business — Intel Foundry
+    excerpt: >-
+      Potential customers include traditional fabless semiconductor companies in the computing, smartphone, cloud services,
+      automotive, communications, aerospace and defense markets, as well as hyperscalers and the U.S. government.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_intc25_nvidia_partnership
+    type: filing_text
+    document: doc_intc_10k_fy2025
+    locator: Our Strategy — x86 product portfolio
+    excerpt: >-
+      We also announced a strategic partnership with NVIDIA to co-develop custom client and data center products combining our
+      x86 CPU technologies with NVIDIA's AI and accelerated computing capabilities.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_intc25_nvidia_investment
+    type: filing_text
+    document: doc_intc_10k_fy2025
+    locator: MD&A — Private Placement Share Sale Agreements
+    excerpt: >-
+      on September 15, 2025, we entered into an agreement with NVIDIA to issue and sell to NVIDIA 215 million shares of our
+      common stock at $23.28 per share for an aggregate cash purchase price of $5.0 billion. The issuance and sale of the
+      shares was completed on December 26, 2025.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_intc25_foundry_competitors
+    type: filing_text
+    document: doc_intc_10k_fy2025
+    locator: Our Business — Intel Foundry, Competition
+    excerpt: >-
+      Our primary competitor in leading-edge semiconductor process technology is TSMC, which holds a leading position in
+      manufacturing at scale for the most advanced nodes. We also compete directly with Samsung in this market.
+    origin_type: observed
+    review_status: candidate
+  - id: clm_intc25_dcai_competitors
+    type: filing_text
+    document: doc_intc_10k_fy2025
+    locator: Our Business — DCAI, Competition
+    excerpt: >-
+      DCAI competitors include AMD, which utilizes the x86 architecture and competes with us across the full spectrum of CPUs,
+      GPUs, accelerators and other products; providers of GPU systems such as NVIDIA, whose GPU systems have experienced the
+      highest demand in the market as AI workloads have become the dominant source of compute demand;
+    origin_type: observed
+    review_status: candidate
+  # ---- 关系链研究：NVIDIA 与 ASML 的原文（Intel 链上） ----
+  - id: clm_nvda26_competitors
+    type: filing_text
+    document: doc_nvda_10k_fy2026
+    locator: Business — Competition
+    excerpt: >-
+      integrated GPUs, custom chips and other accelerated computing solutions, including solutions offered for AI, such as
+      Advanced Micro Devices, Inc., or AMD, Huawei Technologies Co. Ltd., or Huawei, and Intel Corporation, or Intel;
+    origin_type: observed
+    review_status: candidate
+  - id: clm_asml25_zeiss
+    type: filing_text
+    document: doc_asml_20f_fy2025
+    locator: Risk Factors — dependence on suppliers (optics)
+    excerpt: >-
+      The number of lithography systems we are able to produce is limited by the production capacity of one of our key
+      suppliers, Carl Zeiss SMT, our sole supplier of lenses, mirrors, illuminators, collectors and other critical optical
+      components (which we refer to as optics). We have an exclusive arrangement with Carl Zeiss SMT.
     origin_type: observed
     review_status: candidate

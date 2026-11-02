@@ -1,4 +1,6 @@
 """Relationship-chain pages: layered chain graph (SVG), per-edge evidence, breakpoints and same-filing revenue."""
+import re
+
 from .common import e, stat
 from .i18n import L, has_cjk, te, tx
 from .visuals import zh_mark
@@ -19,6 +21,11 @@ SEGMENTS = {'nvda:ComputeAndNetworkingSegmentMember': ('计算与网络分部', 
             'mu:MCBUMember': ('移动与客户端业务单元（MCBU）', 'Mobile and Client BU (MCBU)'),
             'mu:AEBUMember': ('汽车与嵌入式业务单元（AEBU）', 'Automotive and Embedded BU (AEBU)'),
             'us-gaap:AllOtherSegmentsMember': ('其他', 'All other')}
+
+
+def _short(name):
+    """起点公司的简称（去掉公司类型后缀），用于页面标题与说明：NVIDIA Corporation → NVIDIA。"""
+    return re.sub(r'(,? (Corporation|Inc\.|Corp\.|Limited|Ltd\.|N\.V\.|Holding))+$', '', name or '') or name
 
 
 def _reason(key):
@@ -152,8 +159,8 @@ def _graph_nodes(res):
         cols.append((L(f'下游第 {i} 层', f'Downstream layer {i}'), list(nodes)))
     if res['reverse_search']:
         searched, found = res['summary']['reverse_searched'], res['summary']['reverse_found']
-        counts = L(f'{searched} 家样本公司年报，{found} 家点名 {tx(res["root_name"])}',
-                   f"{found} of {searched} sample companies' filings name {res['root_name']}")
+        counts = L(f'{searched} 家样本公司年报，{found} 家点名 {tx(_short(res["root_name"]))}',
+                   f"{found} of {searched} sample companies' filings name {_short(res['root_name'])}")
         rev = _node(('reverse',), counts, [(L('反向检索', 'Reverse search'), 'cg-link', NAME, 1), (counts, 'cg-meta', META, 3)],
                     ['cg-node', 'anon'], href='#chain-reverse-search')
         if len(cols) == len(up_layers) + 1:
@@ -273,16 +280,17 @@ def _breakpoints(res):
 
 
 def _downstream(res):
+    root = _short(res['root_name'])
     notes = ''.join(f'<li><a href="{e(n["url"])}">10-K</a> · {e(n["locator"])}<blockquote>{e(n["excerpt"])}</blockquote>'
                     f'<p class="small muted">{te(n.get("limits") or "")}</p></li>' for n in res['downstream_notes'])
     rows = ''.join(f'<tr><td>{te(q["subject"])}</td><td><a href="{e(q["url"])}">{e(q["form"])}</a> · {e(q["period_end"])}</td>'
                    f'<td>{L("点名", "Named") if q["result"] == "found" else L("未点名", "Not named")}</td><td>{te(q["method"])}</td></tr>'
                    for q in res['reverse_search'])
-    heads = [L('公司', 'Company'), L('年报（财年末）', 'Annual report (fiscal year end)'), L('是否点名 NVIDIA', 'Names NVIDIA?'),
+    heads = [L('公司', 'Company'), L('年报（财年末）', 'Annual report (fiscal year end)'), L(f'是否点名 {root}', f'Names {root}?'),
              L('方法', 'Method')]
-    return (_edge_table(res['downstream'], 'chain-downstream', L('下游：NVIDIA 的客户', 'Downstream: NVIDIA customers'))
-            + f'<h4>{L("NVIDIA 原文中的客户类型（不生成具名关系）", "Customer types in NVIDIA filing (no named relationships)")}</h4><ul>{notes}</ul>'
-            + f'<h4 id="chain-reverse-search">{L("反向检索：客户自己的年报是否点名 NVIDIA", "Reverse search: do customers name NVIDIA in their own filings?")}</h4>'
+    return (_edge_table(res['downstream'], 'chain-downstream', L(f'下游：{root} 的客户', f'Downstream: {root} customers'))
+            + f'<h4>{L(f"{root} 原文中的客户类型（不生成具名关系）", f"Customer types in {root} filing (no named relationships)")}</h4><ul>{notes}</ul>'
+            + f'<h4 id="chain-reverse-search">{L(f"反向检索：客户自己的年报是否点名 {root}", f"Reverse search: do customers name {root} in their own filings?")}</h4>'
             + '<div class="scroll"><table><thead><tr>' + ''.join(f'<th>{h}</th>' for h in heads) + f'</tr></thead><tbody>{rows}</tbody></table></div>')
 
 
@@ -308,21 +316,31 @@ def _revenue(res):
             for seg, series in rev['segments'].items():
                 rows.append(line('&nbsp;&nbsp;' + L(*SEGMENTS.get(seg, (seg, seg))), series))
     missing = ', '.join(te(x['name']) for x in res['revenue_missing'])
+    root = _short(res['root_name'])
     heads = [L('公司与链上位置', 'Company and position'), L('单位', 'Unit'), L('财年 1', 'Fiscal year 1'),
              L('财年 2', 'Fiscal year 2'), L('财年 3', 'Fiscal year 3')]
     note = L('每家公司只用自己的一份年报（三个财年），同比只在同一申报、同一币种内计算；财年截止月不同，不按日历年对齐；不计算相关系数，'
-             '同期变化不说明由 NVIDIA 带动。', 'Each company uses one of its own annual reports (three fiscal years); growth is computed '
+             f'同期变化不说明由 {root} 带动。', 'Each company uses one of its own annual reports (three fiscal years); growth is computed '
              'within one filing and currency only. Fiscal years end in different months and are not aligned to calendar years; no '
-             'correlations are computed, and co-movement does not show that NVIDIA drove it.')
-    return (f'<h3 id="chain-revenue">{L("同期营收：NVIDIA 与上游第 1 层", "Same-period revenue: NVIDIA and upstream layer 1")}</h3><p>{note}</p>'
+             f'correlations are computed, and co-movement does not show that {root} drove it.')
+    return (f'<h3 id="chain-revenue">{L(f"同期营收：{root} 与上游第 1 层", f"Same-period revenue: {root} and upstream layer 1")}</h3><p>{note}</p>'
             '<div class="scroll"><table><thead><tr>' + ''.join(f'<th>{h}</th>' for h in heads) + '</tr></thead><tbody>' + ''.join(rows)
             + '</tbody></table></div>' + (f'<p class="small muted">{L("尚未取得年报：", "Annual reports not yet obtained: ")}{missing}</p>' if missing else ''))
 
 
+SIDE = {'competition': ('竞争', 'Competition'), 'partnership': ('合作', 'Partnership'), 'substitution': ('替代', 'Substitution')}
+
+
 def _side(res):
-    items = ''.join(f'<li>{" ↔ ".join(te(n) for n in s["party_names"])} · {te(s.get("market") or "")}</li>'
-                    for s in res['upstream']['side_relations'] + res['downstream']['side_relations'])
-    return (f'<details><summary>{L("竞争关系（旁注，不当作传导路径）", "Competition (side note; not a transmission path)")}</summary><ul>{items}</ul></details>'
+    seen, items = set(), []
+    for s in res['upstream']['side_relations'] + res['downstream']['side_relations']:
+        if s['relation'] in seen:  # 上下游两条链都可能列出同一条旁注关系
+            continue
+        seen.add(s['relation'])
+        label = L(*SIDE.get(s['type'], (s['type'], s['type'])))
+        items.append(f'<li>{" ↔ ".join(te(n) for n in s["party_names"])} · {label}'
+                     + (f' · {te(s["market"])}' if s.get('market') else '') + '</li>')
+    return (f'<details><summary>{L("竞争与合作关系（旁注，不当作传导路径）", "Competition and partnership (side notes; not a transmission path)")}</summary><ul>{"".join(items)}</ul></details>'
             if items else '')
 
 
@@ -343,14 +361,20 @@ def _stats(r):
 
 
 def _summary(r):
-    s = r['results']['summary']
+    res = r['results']
+    s, root = res['summary'], _short(res['root_name'])
     b = s['breakpoints']['upstream']
+    layer2 = res['upstream']['layers'][1] if len(res['upstream']['layers']) > 1 else []
+    anon = sum(x['counterparty_type'] == 'anonymous' for x in layer2)
+    named = len(layer2) - anon
+    two_zh = '；'.join(x for x in (f'点名 {named} 家公司' if named else '', f'{anon} 项为未点名的投入类别' if anon else '') if x)
+    two_en = '; '.join(x for x in (f'{named} named companies' if named else '', f'{anon} unnamed input categories' if anon else '') if x)
     return L(f"上游第 1 层点名 {s['upstream_named']} 家供应方，其中 {b.get('activity_unknown', 0)} 家业务未定、"
-             f"{b.get('not_searched', 0)} 处尚未查阅；第 2 层只得到未点名的投入类别；下游客户匿名，"
-             f"{s['reverse_searched']} 家样本公司年报有 {s['reverse_found']} 家点名 NVIDIA",
+             f"{b.get('not_searched', 0)} 处尚未查阅；第 2 层{two_zh or '没有关系'}；下游具名客户 {s['downstream_named']} 家，"
+             f"{s['reverse_searched']} 家样本公司年报有 {s['reverse_found']} 家点名 {root}",
              f"Upstream layer 1 names {s['upstream_named']} suppliers ({b.get('activity_unknown', 0)} with business not stated, "
-             f"{b.get('not_searched', 0)} not yet read); layer 2 yields only unnamed input categories; customers are anonymous, "
-             f"and {s['reverse_found']} of {s['reverse_searched']} sample companies' filings name NVIDIA")
+             f"{b.get('not_searched', 0)} not yet read); layer 2: {two_en or 'no relationships'}; {s['downstream_named']} named downstream "
+             f"customers, and {s['reverse_found']} of {s['reverse_searched']} sample companies' filings name {root}")
 
 
 def make_renderer(Renderer):

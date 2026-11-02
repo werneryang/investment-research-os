@@ -77,3 +77,46 @@ relations:
      activity: act_process_chemicals, recipient_activity: act_memory_production, product: 化学品、气体与光刻胶, claims: [clm_mu25_supply_sources, clm_mu25_materials]}
   - {id: rel_mu_substrate_inputs, type: supply, provider: anon_mu_fy2025_substrate_suppliers, recipient: co_micron,
      activity: act_package_substrate, recipient_activity: act_memory_production, product: 基板, claims: [clm_mu25_supply_sources, clm_mu25_materials]}
+
+  # ---- 关系链第二个起点 Intel（2026-11-01）：Intel 2025 财年 10-K 的上游与下游 ----
+  # 上游：Intel 点名的唯一 EUV 设备供应商 ASML 与第三方晶圆代工方台积电；ASML 又点名了光学部件的唯一供应商 Carl Zeiss SMT（第二层）
+  - {id: rel_asml_intc_euv, type: supply, provider: co_asml, recipient: co_intel, activity: act_semi_equipment,
+     recipient_activity: act_idm_manufacturing, product: EUV 光刻设备, claims: [clm_intc25_asml],
+     note: 只有 Intel 一方披露；ASML 2025 年 20-F 没有点名 Intel 为客户（Intel 只出现在摩尔定律的叙述、薪酬对标公司名单与术语表中）}
+  - {id: rel_tsmc_intc_foundry, type: foundry, provider: co_tsmc, recipient: co_intel, activity: act_wafer_foundry,
+     recipient_activity: act_idm_manufacturing, product: 半导体晶圆（部分芯片模块或整个产品）, claims: [clm_intc25_tsmc],
+     note: 只有 Intel 一方披露；Intel 的产品主要在自有工厂制造，台积电用于部分产品的某些模块或整个产品；台积电 2025 年 20-F 中 Intel 只出现在高管履历里，没有披露为客户}
+  - {id: rel_zeiss_asml_optics, type: supply, provider: co_zeiss_smt, recipient: co_asml, activity: null,
+     activity_gap: 镜头、反射镜、照明器与收集器等光学部件不在活动清单内，未另设活动,
+     recipient_activity: act_semi_equipment, product: 镜头、反射镜、照明器、收集器等光学部件, claims: [clm_asml25_zeiss],
+     note: 只有 ASML 一方披露；ASML 称 Carl Zeiss SMT 是这类光学部件的唯一供应商并有排他安排}
+
+  # ---- Intel 的前三大客户：占比为原文披露，名称未披露 ----
+  - {id: rel_intc_customer_a, type: supply, provider: co_intel, recipient: anon_intc_fy2025_customer_a, activity: null,
+     activity_gap: 原文只说收入主要来自 Intel Products 各经营分部销售的平台与其他部件，未说明经营方式,
+     product: 平台与其他部件（Intel Products 分部）,
+     share: {value: 0.19, numerator: 对该客户的销售, denominator: 净营收, period: FY2025（截至 2025-12-27）, of: co_intel},
+     claims: [clm_intc25_customers], note: 2024、2023 财年的客户 A 分别占 19%、19%；原文没有说明各年的客户 A 是否为同一家}
+  - {id: rel_intc_customer_b, type: supply, provider: co_intel, recipient: anon_intc_fy2025_customer_b, activity: null,
+     activity_gap: 同上，原文未说明经营方式, product: 平台与其他部件（Intel Products 分部）,
+     share: {value: 0.12, numerator: 对该客户的销售, denominator: 净营收, period: FY2025（截至 2025-12-27）, of: co_intel},
+     claims: [clm_intc25_customers], note: 2024、2023 财年的客户 B 分别占 14%、11%；原文没有说明各年的客户 B 是否为同一家}
+  - {id: rel_intc_customer_c, type: supply, provider: co_intel, recipient: anon_intc_fy2025_customer_c, activity: null,
+     activity_gap: 同上，原文未说明经营方式, product: 平台与其他部件（Intel Products 分部）,
+     share: {value: 0.12, numerator: 对该客户的销售, denominator: 净营收, period: FY2025（截至 2025-12-27）, of: co_intel},
+     claims: [clm_intc25_customers], note: 2024、2023 财年的客户 C 分别占 12%、10%；原文没有说明各年的客户 C 是否为同一家}
+
+  # ---- Intel 的合作与竞争（旁注，不当作传导路径） ----
+  - {id: ptn_intel_nvidia, type: partnership, parties: [co_intel, co_nvidia],
+     activity: null, activity_gap: 合作为共同开发定制的客户端与数据中心产品，不属于活动清单中的单一经营机制,
+     claims: [clm_intc25_nvidia_partnership, clm_intc25_nvidia_investment],
+     note: 另有 NVIDIA 以 50 亿美元认购 Intel 普通股（2025-12-26 完成），这是股权投资，不是供应关系；只有 Intel 一方在摘录中说明合作内容}
+  - {id: cmp_intel_tsmc, type: competition, parties: [co_intel, co_tsmc], market: 领先制程的晶圆代工, activity: act_wafer_foundry,
+     claims: [clm_intc25_foundry_competitors], note: 同时又是 Intel 的第三方晶圆代工方（见 rel_tsmc_intc_foundry）}
+  - {id: cmp_intel_samsung, type: competition, parties: [co_intel, co_samsung], market: 领先制程的晶圆代工, activity: act_wafer_foundry,
+     claims: [clm_intc25_foundry_competitors]}
+  - {id: cmp_amd_intel, type: competition, parties: [co_amd, co_intel], market: 数据中心与 AI 计算（DCAI）, activity: null,
+     activity_gap: 竞争覆盖 CPU、GPU 与加速器等多类产品，不对应单一活动, claims: [clm_intc25_dcai_competitors]}
+  - {id: cmp_intel_nvidia, type: competition, parties: [co_intel, co_nvidia], market: 数据中心与 AI 计算（DCAI）, activity: null,
+     activity_gap: 竞争覆盖 GPU 系统与 CPU 等多类产品，不对应单一活动, claims: [clm_intc25_dcai_competitors, clm_nvda26_competitors],
+     note: 双方都披露；与同一对主体的合作（ptn_intel_nvidia）并存}

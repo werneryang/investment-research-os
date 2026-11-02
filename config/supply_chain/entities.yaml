@@ -20,6 +20,11 @@ entities:
   - {id: co_sandisk, type: company, name: "Sandisk Corporation", country: US}
   - {id: co_cxmt, type: company, name: "ChangXin Memory Technologies, Inc.", country: CN}
   - {id: co_ymtc, type: company, name: "Yangtze Memory Technologies Co., Ltd.", country: CN}
+  # 关系链第二个起点 Intel（2026-11-01）：ASML 为 Intel 点名的唯一 EUV 设备供应商，Carl Zeiss SMT 为 ASML 点名的光学部件唯一供应商
+  - {id: co_intel, type: company, name: "Intel Corporation", cik: 50863, country: US}
+  - {id: co_asml, type: company, name: "ASML Holding N.V.", cik: 937966, country: NL}
+  - {id: co_zeiss_smt, type: company, name: "Carl Zeiss SMT", country: DE}
+  - {id: co_amd, type: company, name: "Advanced Micro Devices, Inc.", cik: 2488, country: US}
 
   # ---- NVIDIA 分部：两个分部的 XBRL 成员在 2025 年 2 月的 10-K 起加了 Segment 后缀 ----
   - id: seg_nvda_compute_networking
@@ -67,3 +72,7 @@ entities:
   - {id: anon_mu_fy2025_wafer_suppliers, type: anonymous, name: "Micron 2025 财年硅片供应商（未点名）", parent: co_micron}
   - {id: anon_mu_fy2025_chemical_suppliers, type: anonymous, name: "Micron 2025 财年化学品、气体与光刻胶供应商（未点名）", parent: co_micron}
   - {id: anon_mu_fy2025_substrate_suppliers, type: anonymous, name: "Micron 2025 财年基板供应商（未点名）", parent: co_micron}
+  # Intel 2025 财年：前三大客户只写 Customer A / B / C，原文没有说明各年的客户 A、B、C 是否为同一家
+  - {id: anon_intc_fy2025_customer_a, type: anonymous, name: "Intel 2025 财年客户 A（占净营收 19%）", parent: co_intel}
+  - {id: anon_intc_fy2025_customer_b, type: anonymous, name: "Intel 2025 财年客户 B（占净营收 12%）", parent: co_intel}
+  - {id: anon_intc_fy2025_customer_c, type: anonymous, name: "Intel 2025 财年客户 C（占净营收 12%）", parent: co_intel}
