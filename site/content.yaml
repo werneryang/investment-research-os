@@ -15,6 +15,7 @@ study_order:
 - us_refining_utilization_2025
 - us_refining_throughput_scenarios_2025
 - chip_relation_chain_nvda
+- chip_relation_chain_intc
 collections:
   company_filings:
     name: 公司年度财报
@@ -858,6 +859,44 @@ studies:
     - co_hon_hai
     - co_wistron
     - co_fabrinet
+  chip_relation_chain_intc:
+    label: 关系链研究
+    routes:
+    - object: industry
+      subject: chips
+      question: structure
+      topic: relationships
+      target: chain-upstream
+      scope:
+        zh: 以 Intel 为起点的上游两层；关系来自登记的年报原文，不是完整的产业链
+        en: Two upstream layers from Intel; relationships come from registered filing text and are not a complete supply chain
+      primary: true
+    - object: company
+      subject: issuer
+      question: structure
+      topic: relationships
+      target: chain-downstream
+      scope:
+        zh: Intel 的匿名前三大客户与 15 家样本公司年报的反向检索
+        en: Intel's three anonymous largest customers and a reverse search of 15 sample companies' filings
+      primary: false
+    - object: industry
+      subject: chips
+      question: exposure
+      topic: association
+      target: chain-revenue
+      scope:
+        zh: Intel 与上游第 1 层公司在各自年报中的三个财年营收；只描述同期变化
+        en: Three fiscal years of revenue for Intel and upstream layer-1 companies from their own filings; co-movement only
+      primary: false
+    entity_ids:
+    - co_intel
+    - co_asml
+    - co_tsmc
+    - co_zeiss_smt
+    - co_nvidia
+    - co_samsung
+    - co_amd
   company_alphabet:
     routes:
     - object: company
@@ -1699,6 +1738,17 @@ classification:
     - rel_mu_wafer_inputs
     - rel_mu_chemical_inputs
     - rel_mu_substrate_inputs
+    - rel_asml_intc_euv
+    - rel_tsmc_intc_foundry
+    - rel_zeiss_asml_optics
+    - rel_intc_customer_a
+    - rel_intc_customer_b
+    - rel_intc_customer_c
+    - ptn_intel_nvidia
+    - cmp_intel_tsmc
+    - cmp_intel_samsung
+    - cmp_amd_intel
+    - cmp_intel_nvidia
     href: sources.html#business-relations
     routes:
     - object: industry
@@ -1999,6 +2049,20 @@ entity_aliases:
   co_ymtc:
   - YMTC
   - 长江存储
+  co_intel:
+  - Intel
+  - INTC
+  - 英特尔
+  co_asml:
+  - ASML
+  - 阿斯麦
+  co_zeiss_smt:
+  - Carl Zeiss SMT
+  - Zeiss
+  - 蔡司
+  co_amd:
+  - AMD
+  - 超威
   cik_320193:
   - Apple
   - 苹果

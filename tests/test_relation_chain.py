@@ -153,6 +153,37 @@ def test_inline_revenue_keeps_annual_consolidated_and_business_segments_only():
                    ("us-gaap:Revenues", "", "USD", 1_234.5e6), ("us-gaap:Revenues", "x:AMember", "USD", 1_000e6)]
 
 
+def test_inline_revenue_prefers_the_most_precise_fact_and_rejects_conflicts():
+    # ASML 年报表格里的 32,667.3 百万欧元，与叙述中按十亿取整的 32.7 同属一个事实：取小数位多的
+    head = ('<xbrli:context id="c1"><xbrli:entity></xbrli:entity><xbrli:period><xbrli:startDate>2025-01-01</xbrli:startDate>'
+            '<xbrli:endDate>2025-12-31</xbrli:endDate></xbrli:period></xbrli:context>')
+    rounded = '<ix:nonFraction unitRef="eur" contextRef="c1" decimals="-8" name="us-gaap:Revenues" scale="9">32.7</ix:nonFraction>'
+    precise = '<ix:nonFraction unitRef="eur" contextRef="c1" decimals="-5" name="us-gaap:Revenues" scale="6">32,667.3</ix:nonFraction>'
+    for text in (head + rounded + precise, head + precise + rounded):
+        assert [r["value"] for r in inline_revenue(text)] == [pytest.approx(32_667.3e6)]
+    other = precise.replace("32,667.3", "32,000.0")
+    with pytest.raises(ValueError, match="不一致"):
+        inline_revenue(head + precise + other)
+
+
+def test_site_names_the_root_and_lists_partnerships_with_competition():
+    from investment_os.site.relation_chain import _short, _side, _summary
+
+    assert [_short(n) for n in ("NVIDIA Corporation", "Intel Corporation", "Micron Technology, Inc.", "Fabrinet")] == \
+        ["NVIDIA", "Intel", "Micron Technology", "Fabrinet"]
+    side = {"relation": "ptn", "type": "partnership", "party_names": ["Intel", "NVIDIA"], "market": None}
+    rival = {"relation": "cmp", "type": "competition", "party_names": ["AMD", "Intel"], "market": "DCAI"}
+    html = _side({"upstream": {"side_relations": [rival, side]}, "downstream": {"side_relations": [side]}})
+    assert html.count("<li>") == 2 and "合作" in html and "竞争 · DCAI" in html  # 两条链都列出的旁注只显示一次
+    named = {"counterparty_type": "company"}
+    res = {"root_name": "Intel Corporation",
+           "summary": {"upstream_named": 2, "downstream_named": 0, "reverse_searched": 15, "reverse_found": 0,
+                       "breakpoints": {"upstream": {"activity_unknown": 1}}},
+           "upstream": {"layers": [[], [named, {"counterparty_type": "anonymous"}, {"counterparty_type": "anonymous"}]]}}
+    text = _summary({"results": res})
+    assert "点名 1 家公司；2 项为未点名的投入类别" in text and "15 家样本公司年报有 0 家点名 Intel" in text
+
+
 def _bundle(searched=True):
     relations = dict([rel("r_sup", "co_s", "co_root", "act_foundry", disclosed_by=["co_root"],
                           share=None, limits="列举"),

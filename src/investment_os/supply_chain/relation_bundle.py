@@ -29,9 +29,14 @@ from .classification import ClassificationStore
 BUNDLE_SCHEMA = "industry-evidence.v1"
 DATASET_ID = "relation_chain_evidence"
 UNIT = "mixed"
-# 首例（NVIDIA）链上有年报原文的公司：营收取自这份年报（三星、SK 海力士、鸿海、纬创不在 SEC 申报，尚未取得）
+# 链上有年报原文的公司：营收取自这份年报（三星、SK 海力士、鸿海、纬创不在 SEC 申报，尚未取得）。
+# 首例 NVIDIA 的链上公司，以及第二个起点 Intel 与它的上游 ASML；台积电为两条链共用
 REVENUE_DOCUMENTS = {"co_nvidia": "doc_nvda_10k_fy2026", "co_tsmc": "doc_tsmc_20f_fy2025",
-                     "co_micron": "doc_mu_10k_fy2025", "co_fabrinet": "doc_fn_10k_fy2026"}
+                     "co_micron": "doc_mu_10k_fy2025", "co_fabrinet": "doc_fn_10k_fy2026",
+                     "co_intel": "doc_intc_10k_fy2025", "co_asml": "doc_asml_20f_fy2025"}
+# 只取合并营收的公司：业务分部营收含分部间销售且有嵌套分部（Intel Products 含 CCG 与 DCAI，Intel Foundry 的大部分收入是分部间销售），
+# 分部之和不等于合并营收，不能与合并营收互相核对
+CONSOLIDATED_ONLY = {"co_intel": "分部营收含分部间销售，且有嵌套分部"}
 # 营收科目：按原文实际使用的科目，逐份年报列出
 REVENUE_TAGS = ("us-gaap:Revenues", "us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax",
                 "ifrs-full:RevenueFromContractsWithCustomers", "ifrs-full:Revenue")
@@ -52,7 +57,7 @@ def inline_revenue(text: str) -> list[dict[str, Any]]:
         start, end = re.search(r"<xbrli:startDate>([^<]+)", body), re.search(r"<xbrli:endDate>([^<]+)", body)
         if start and end:
             contexts[cid] = (start.group(1), end.group(1), dict(_MEMBER.findall(body)))
-    out, seen = [], set()
+    found: dict[tuple, dict[str, Any]] = {}
     for attrs, body in _FACT.findall(text):
         a = dict(_ATTR.findall(attrs))
         if a.get("name") not in REVENUE_TAGS or a.get("contextRef") not in contexts:
@@ -67,13 +72,17 @@ def inline_revenue(text: str) -> list[dict[str, Any]]:
         if not raw or raw == "-":
             continue
         value = float(raw) * 10 ** int(a.get("scale", "0")) * (-1 if a.get("sign") == "-" else 1)
-        key = (a["name"], start, end, dims.get(SEGMENT_AXIS), a.get("unitRef"), value)
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append({"tag": a["name"], "start": start, "end": end, "segment": dims.get(SEGMENT_AXIS),
-                    "unit": (a.get("unitRef") or "").upper(), "value": value})
-    return out
+        # 同一事实在年报中可重复出现，也可能另有按十亿取整的叙述性数字（ASML 的「32.7 bn」与表中的 32,667.3 百万）：
+        # 取小数位最多（最精确）的一个；同样精确却不一致时报错，不择一
+        decimals = int(a["decimals"]) if re.fullmatch(r"-?\d+", a.get("decimals", "")) else -99
+        key = (a["name"], start, end, dims.get(SEGMENT_AXIS), a.get("unitRef"))
+        prev = found.get(key)
+        if prev is None or decimals > prev["decimals"]:
+            found[key] = {"decimals": decimals, "value": value}
+        elif decimals == prev["decimals"] and value != prev["value"]:
+            raise ValueError(f"年报中同一营收事实有两个同样精确却不一致的数值：{key}（{prev['value']}、{value}）")
+    return [{"tag": k[0], "start": k[1], "end": k[2], "segment": k[3], "unit": (k[4] or "").upper(), "value": v["value"]}
+            for k, v in found.items()]
 
 
 def _claim_owner(cat: Catalog, c: dict[str, Any]) -> str | None:
@@ -124,8 +133,8 @@ def snapshot(cat: Catalog, rep: Report) -> dict[str, Any]:
 
 
 def build_bundle(root: Path, companies: dict[str, str] = REVENUE_DOCUMENTS, cat: Catalog | None = None,
-                 clock=now_utc) -> dict[str, Any]:
-    """companies：{主体 ID: 原文 ID}，营收取自这份年报。登记核对有错误或未核对项时拒绝。"""
+                 clock=now_utc, consolidated_only: dict[str, str] = CONSOLIDATED_ONLY) -> dict[str, Any]:
+    """companies：{主体 ID: 原文 ID}，营收取自这份年报；consolidated_only 中的公司只取合并营收。登记核对有错误或未核对项时拒绝。"""
     root = Path(root)
     cat = cat or load_catalog(root)
     facts = EdgarStore(root).query("segment_facts")
@@ -143,6 +152,8 @@ def build_bundle(root: Path, companies: dict[str, str] = REVENUE_DOCUMENTS, cat:
         if hashlib.sha256(data).hexdigest() != doc["sha256"]:
             raise ValueError(f"原文 {doc_id} 的 SHA256 与登记不一致")
         rows = inline_revenue(data.decode("utf-8", errors="replace"))
+        if entity in consolidated_only:
+            rows = [r for r in rows if not r["segment"]]
         if not rows:
             raise ValueError(f"原文 {doc_id} 中没有年度营收")
         for r in rows:
@@ -158,6 +169,7 @@ def build_bundle(root: Path, companies: dict[str, str] = REVENUE_DOCUMENTS, cat:
     return {"schema": BUNDLE_SCHEMA, "unit": UNIT, "records": sorted(records, key=lambda x: x["id"]),
             "metadata": {"purpose": "relationship chain study", "built_at": clock().isoformat(),
                          "catalog_files": files, "revenue_documents": companies,
+                         "consolidated_only": {k: v for k, v in consolidated_only.items() if k in companies},
                          "catalog_check": {"errors": rep.errors, "warnings": rep.warnings, "verified": rep.verified},
                          "snapshot": snap}}
 

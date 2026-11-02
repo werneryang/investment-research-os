@@ -6,6 +6,34 @@
 # patterns：运行时带日期、数字生成的句子。zh 是整句匹配的正则，命名分组在 en 中以 {name} 引用；
 #   分组内容本身再查 phrases（列表中的「、」换成英文逗号）。
 phrases:
+  "Intel 的上下游关系链（2025 财年申报）": "Intel's upstream and downstream relationship chain (fiscal 2025 filings)"
+  "从 Intel 2025 财年年报披露的直接关系出发，按登记的关系向上游、下游各展开两层，需求可能沿哪些公司与业务传导？ 链在哪里断开、为什么断开？Intel 营收变化期间，链上供应方在各自年报中的营收是否同期变化？": "Starting from the direct relationships disclosed in Intel's fiscal 2025 annual report and expanding two layers upstream and downstream along registered relationships, through which companies and businesses could demand pass? Where does the chain stop, and why? While Intel's revenue changed, did the revenue of suppliers on the chain change over the same period in their own annual reports?"
+  "关系来自公司年报的披露：Intel 称其供应链有数千家供应商，原文只点名 ASML 与台积电，没有点名不等于没有关系": "Relationships come from annual-report disclosures: Intel says its supply chain has thousands of suppliers, and the filing names only ASML and TSMC; not being named does not mean no relationship exists"
+  "占比只按原文口径列出（Intel 对三个匿名客户的销售占其净营收），不推算其他公司的份额，也不相乘推算间接敞口；原文没有说明各年的客户 A、B、C 是否为同一家": "Shares are shown only as disclosed (Intel's sales to three anonymous customers as a share of its net revenue). Other companies' shares are not inferred, and shares are not multiplied to infer indirect exposure; the filing does not say whether customers A, B and C are the same companies from year to year"
+  "Intel 的客户集中度来自 Intel Products；Intel Foundry 的外部客户原文只写「潜在客户」，没有点名任何已有外部客户": "Intel's customer concentration comes from Intel Products; for Intel Foundry the filing speaks only of \"potential customers\" and names no existing external customer"
+  "上游第二层只读了 SEC 上的年报（ASML 20-F、台积电 20-F）；Carl Zeiss SMT 不在 SEC 申报，其上游尚未查阅，业务也不在活动清单内": "Upstream layer 2 covers only SEC annual reports (ASML 20-F, TSMC 20-F); Carl Zeiss SMT does not file with the SEC, its own suppliers have not been read, and its business is not in the activity list"
+  "下游反向检索只查了公司样本中已有的 15 家公司的最新 10-K（含 NVIDIA）；其他服务器、系统厂商与云厂商留待后续": "The downstream reverse search covers only the latest 10-Ks of the 15 companies already in the company sample (including NVIDIA); other server makers, system makers and cloud providers are left for later"
+  "Intel 的分部营收含分部间销售且有嵌套分部，分部之和不等于合并营收，本研究只用 Intel 的合并营收": "Intel's segment revenue includes intersegment sales and has nested segments, so segments do not sum to consolidated revenue; this study uses only Intel's consolidated revenue"
+  "营收为各公司财年口径，财年截止月不同（Intel 12 月下旬、ASML 与台积电 12 月 31 日）；台积电为新台币、ASML 为欧元、Intel 为美元，不换算": "Revenue is on each company's fiscal-year basis (Intel ends in late December, ASML and TSMC on 31 December); TSMC is in New Taiwan dollars, ASML in euros and Intel in US dollars, and none is converted"
+  "ASML 与台积电的营收来自众多客户，原文没有披露其中来自 Intel 的份额，同期营收对照不衡量 Intel 对它们的影响": "ASML's and TSMC's revenue comes from many customers and their filings do not disclose the share from Intel, so the same-period revenue comparison does not measure Intel's effect on them"
+  "同期营收变化是描述，不说明由 Intel 带动，也不是预测": "Same-period revenue changes are descriptive; they do not show that Intel drove them and are not forecasts"
+  "美国政府与软银对 Intel 的股权投资不是供应关系，未登记；NVIDIA 的认购只作为合作关系的旁注": "The US government's and SoftBank's equity investments in Intel are not supply relationships and are not registered; NVIDIA's share purchase appears only as a note on the partnership"
+  "Intel 2025 财年客户 A（占净营收 19%）": "Intel fiscal 2025 customer A (19% of net revenue)"
+  "Intel 2025 财年客户 B（占净营收 12%）": "Intel fiscal 2025 customer B (12% of net revenue)"
+  "Intel 2025 财年客户 C（占净营收 12%）": "Intel fiscal 2025 customer C (12% of net revenue)"
+  "EUV 光刻设备": "EUV lithography tools"
+  "半导体晶圆（部分芯片模块或整个产品）": "Semiconductor wafers (some chip tiles or entire products)"
+  "镜头、反射镜、照明器、收集器等光学部件": "Optical components: lenses, mirrors, illuminators and collectors"
+  "平台与其他部件（Intel Products 分部）": "Platforms and other components (Intel Products segments)"
+  "净营收": "Net revenue"
+  "FY2025（截至 2025-12-27）": "FY2025 (ended 2025-12-27)"
+  "全文检索 Intel（不区分大小写、整词）": "Full-text search for Intel (case-insensitive, whole word)"
+  "领先制程的晶圆代工": "Leading-edge foundry"
+  "数据中心与 AI 计算（DCAI）": "Data center and AI computing (DCAI)"
+  "镜头、反射镜、照明器与收集器等光学部件不在活动清单内，未另设活动": "Lenses, mirrors, illuminators and collectors are not in the activity list and have no activity of their own"
+  "下游链上没有原文点名的公司：起点的直接客户匿名，反向检索的 15 家公司年报都没有点名": "No company on the downstream chain is named in the filings: the starting company's direct customers are anonymous, and none of the 15 companies' filings in the reverse search names it"
+  "关系链只描述登记的关系；对方收入中来自起点公司的份额大多未披露，各层占比不相乘、不推算间接敞口": "The chain describes only registered relationships; the share of a counterparty's revenue coming from the starting company is mostly undisclosed, and shares across layers are not multiplied or used to infer indirect exposure"
+  "同期营收变化不说明由起点公司带动或拉动": "Same-period revenue changes do not show that the starting company drove or pulled them"
   对 NVIDIA 的销售: Sales to NVIDIA
   Fabrinet 总营收: Fabrinet total revenue
   FY2026（截至 2026-06-26）: FY2026 (ended 2026-06-26)
