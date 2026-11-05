@@ -1,0 +1,38 @@
+# 提取记录模板。分层规则见 README.md。
+id: source-ticker-yyyymmdd
+status: draft                # draft / source_checked（全部事实与判断已回原文核对）
+
+source:
+  type: structured           # official / structured / commentary
+  title: ""
+  author: ""
+  published_on: ""
+  data_as_of: ""             # 材料使用的数据截止日
+  locator: ""                # 公开地址、申报编号或私有文件名
+  sha256: ""                 # 有文件时填写
+  outcome_known: false       # 提取时是否已知事后结果；为 true 时注意后见偏差
+
+extraction:
+  extracted_on: ""
+  method: manual             # manual / ai_assisted
+  tool: ""                   # ai_assisted 时写明模型或工具
+
+# 下列每一项都是条目列表，条目格式：
+#   - layer: source_fact     # source_fact / author_judgment / ai_inference / own_extension
+#     text: ""               # 用自己的话
+#     location: ""           # 页码、表格或时间戳；前两层必填
+#     verified: false        # 只有前两层可以为 true
+research_question: []        # 作者研究什么问题
+thesis: []                   # 核心假设
+evidence: []                 # 支撑事实与数据类型
+causal_mechanism: []         # 事实如何影响收入、利润或现金流
+analytical_method: []        # 使用的分析方法
+assumptions: []              # 模型参数与前提
+valuation_logic: []          # 如何转换成估值；只记结构，不记目标价
+counterarguments: []         # 作者考虑过的反方观点
+falsification: []            # 什么情况说明判断错误
+transferability: []          # 适用于哪些行业或公司；只能是后两层
+
+links:
+  methods: []                # 对应 methods/ 中的方法 id
+  claims: []                 # 登记到 playbooks/ 的说法 id
