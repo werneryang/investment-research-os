@@ -16,6 +16,7 @@ extraction:
   extracted_on: ""
   method: manual             # manual / ai_assisted
   tool: ""                   # ai_assisted 时写明模型或工具
+  review: ""                 # 技术复核或人工核对，如实填写
 
 # 下列每一项都是条目列表，条目格式：
 #   - layer: source_fact     # source_fact / author_judgment / ai_inference / own_extension
@@ -36,3 +37,7 @@ transferability: []          # 适用于哪些行业或公司；只能是后两�
 links:
   methods: []                # 对应 methods/ 中的方法 id
   claims: []                 # 登记到 playbooks/ 的说法 id
+
+# 可选：把方法用到本案例时的计算结果，字段按方法卡的“输出格式”。
+# 披露值、推算值、估算值分开放；估算值标 estimate: true。
+method_output: {}

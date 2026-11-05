@@ -20,7 +20,7 @@
 
 | 文件 | 方法 | 问题分类 | 主要来源 |
 |---|---|---|---|
-| [unit-economics-take-rate.md](unit-economics-take-rate.md) | 交易平台单位经济拆解 | 分解与归因 | CFA 2026 LSPD 报告（structured） |
+| [unit-economics-take-rate.md](unit-economics-take-rate.md) | 交易平台单位经济拆解 | 分解与归因 | Toast、Block SEC 申报（official）；CFA 2026 LSPD 报告（structured） |
 | [inventory-decomposition.md](inventory-decomposition.md) | 库存结构拆解 | 基本面与经营 | Ryan 对谈（commentary） |
 | [peer-layer-comparison.md](peer-layer-comparison.md) | 供应链分层与同业比较 | 结构与关联 | Ryan 对谈（commentary） |
 | [earnings-quality-checklist.md](earnings-quality-checklist.md) | 财报质量检查清单 | 基本面与经营 | 財女珍妮 11/05 直播（commentary） |
