@@ -3,6 +3,7 @@ id: policy-shock-stock-vs-flow
 name_zh: 政策冲击：存量与增量、时间分层
 name_en: Policy Shock — Stock vs Flow, Time Layering
 question: 情景与敏感性
+kind: scenario
 object: [industry, company]
 status: draft
 sources:

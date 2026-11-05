@@ -1,5 +1,6 @@
 # 提取记录模板。分层规则见 README.md。
 id: source-ticker-yyyymmdd
+record_type: extraction      # extraction（提取论证）/ application（应用方法）
 status: draft                # draft / source_checked（全部事实与判断已回原文核对）
 
 source:
@@ -16,12 +17,15 @@ extraction:
   extracted_on: ""
   method: manual             # manual / ai_assisted
   tool: ""                   # ai_assisted 时写明模型或工具
+  review: ""                 # 技术复核或人工核对，如实填写
+  quality_notes: ""          # 人工对照或重复提取的差异
 
 # 下列每一项都是条目列表，条目格式：
 #   - layer: source_fact     # source_fact / author_judgment / ai_inference / own_extension
 #     text: ""               # 用自己的话
 #     location: ""           # 页码、表格或时间戳；前两层必填
 #     verified: false        # 只有前两层可以为 true
+#     verifiability: ""      # evidence 必填：public_filing / third_party / unverifiable
 research_question: []        # 作者研究什么问题
 thesis: []                   # 核心假设
 evidence: []                 # 支撑事实与数据类型
@@ -34,5 +38,9 @@ falsification: []            # 什么情况说明判断错误
 transferability: []          # 适用于哪些行业或公司；只能是后两层
 
 links:
-  methods: []                # 对应 methods/ 中的方法 id
+  methods: []                # 条目：{id: 方法 id, fit: match / extends / conflicts / new}
   claims: []                 # 登记到 playbooks/ 的说法 id
+
+# 可选：把方法用到本案例时的计算结果，字段按方法卡的“输出格式”。
+# 披露值、推算值、估算值分开放；估算值标 estimate: true。
+method_output: {}

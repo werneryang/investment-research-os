@@ -2,7 +2,8 @@
 id: forensic-red-flags
 name_zh: 财务异常排查
 name_en: Forensic Accounting Red Flags
-question: 数据可得性与口径
+question: 基本面与经营
+kind: checklist
 object: [company]
 status: draft
 sources:

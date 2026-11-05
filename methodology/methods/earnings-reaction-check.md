@@ -3,6 +3,7 @@ id: earnings-reaction-check
 name_zh: 财报发布后的市场反应检验
 name_en: Post-Earnings Reaction Check
 question: 价格、收益率与价差
+kind: measurement
 object: [company]
 status: draft
 sources:
@@ -32,7 +33,7 @@ related: [expectations-revision, guidance-tracking-playbook]
 2. 计算超额收益：个股收益 − 同业组或基准指数收益，窗口取第 0 天、第 0–1 天、第 0–5 天、第 0–20 天。
 3. 判断反应是否持续：第 0–20 天的超额收益与第 0 天同号且幅度未大幅回吐？
 4. 记录市场关注点：从次日新闻中归纳 2–3 个被反复提及的点（例如指引、毛利率、资本支出）。
-5. 与 earnings-quality-checklist 的结论对照：市场关注点和你的检查结果是否一致？
+5. 与 earnings-quality-checklist 的结论对照：市场关注点和检查结果是否一致？
 
 ## 输出格式
 ```yaml
@@ -60,4 +61,4 @@ consistent_with_checklist: null
 Ryan 的例子：某公司在电话会上给出很高的下一年营收增长指引，次日股价大涨，之后又回到公布前的水平。他因此除了读财报，还会收集当天和次日的市场新闻。具体涨幅为口述，未核实。
 
 ## 待验证事项
-- 用你网站已有的 15 家公司，回溯最近 4 次财报，建立反应数据，检验"初始反应持续性"的比例。
+- 用项目已有的 15 家公司，回溯最近 4 次财报，建立反应数据，检验"初始反应持续性"的比例。

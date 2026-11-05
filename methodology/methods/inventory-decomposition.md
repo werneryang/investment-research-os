@@ -3,6 +3,7 @@ id: inventory-decomposition
 name_zh: 库存结构拆解
 name_en: Inventory Composition Analysis
 question: 基本面与经营
+kind: decomposition
 object: [company]
 status: draft
 sources:

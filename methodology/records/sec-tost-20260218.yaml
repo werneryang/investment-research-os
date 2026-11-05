@@ -1,0 +1,139 @@
+# take-rate 方法卡的走通案例，不是投资结论。数字来自 SEC 申报；计算过程见 method_output。
+id: sec-tost-20260218
+record_type: application
+status: source_checked
+
+source:
+  type: official
+  title: Toast, Inc. 年报与业绩 8-K
+  author: Toast, Inc.（CIK 1650164）
+  published_on: "2026-02-18"
+  data_as_of: "2025-12-31"
+  locator: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=1650164&type=10-K
+  sha256: ""
+  outcome_known: true
+  filings:
+    - {id: 10K-FY2025, form: 10-K, accession: 0001650164-26-000057, filed: "2026-02-18"}
+    - {id: 10K-FY2024, form: 10-K, accession: 0001650164-25-000072, filed: "2025-02-26"}
+    - {id: 10K-FY2023, form: 10-K, accession: 0001650164-24-000084, filed: "2024-02-27"}
+    - {id: 8K-Q425, form: 8-K Ex.99.1, accession: 0001650164-26-000050, filed: "2026-02-12"}
+    - {id: 8K-Q424, form: 8-K Ex.99.1, accession: 0001650164-25-000066, filed: "2025-02-19"}
+    - {id: 8K-Q423, form: 8-K Ex.99.1, accession: 0001650164-24-000069, filed: "2024-02-15"}
+
+extraction:
+  extracted_on: "2026-11-05"
+  method: ai_assisted
+  tool: Claude Opus 5.5
+  review: 技术复核；未经人工核对
+
+research_question:
+  - layer: own_extension
+    text: 交易额增长时，每 1 美元交易额留下的毛利是否改善？
+    location: ""
+    verified: false
+
+thesis: []
+
+evidence:
+  - layer: source_fact
+    text: GPV 是 Toast 支付平台处理的总金额；FY2025 为 195.1 十亿美元，FY2024 为 159.1。
+    location: 10K-FY2025，MD&A 关键业务指标；8K-Q425 指标汇总表
+    verified: true
+  - layer: source_fact
+    text: 金融科技解决方案收入按总额确认，公司判定自己是托管支付服务的委托人。
+    location: 10K-FY2025，MD&A 收入说明；Item 8 收入确认附注
+    verified: true
+  - layer: source_fact
+    text: 金融科技收入还包含 Toast Capital 贷款的营销与服务费，没有单独列示。
+    location: 10K-FY2025，MD&A 收入说明
+    verified: true
+  - layer: source_fact
+    text: 支付处理成本包括交换费、卡组织费和付给收单处理商的费用，记入营业成本；没有拆出金额。
+    location: 10K-FY2025，Item 8 附注 Costs of Revenue
+    verified: true
+  - layer: source_fact
+    text: 公司依赖第三方支付处理商接入卡组织，可自行决定使用哪家收单处理商；没有披露自有处理比例。
+    location: 10K-FY2025，Item 1A 风险因素；Item 8 收入确认附注
+    verified: true
+  - layer: source_fact
+    text: 业绩 8-K 把金融科技毛利拆成支付与非支付两部分；这是非 GAAP 数字，且只拆毛利，不拆收入。
+    location: 8K-Q425、8K-Q424、8K-Q423，Non-Payments Financial Technology Solutions Gross Profit 调节表
+    verified: true
+  - layer: source_fact
+    text: Toast Capital 的预期信用损失记入一般及行政费用，不在金融科技成本里。
+    location: 10K-FY2025，Item 8 贷款服务义务附注
+    verified: true
+
+causal_mechanism:
+  - layer: author_judgment
+    text: 管理层把 FY2025 金融科技成本的增加归因于 GPV 增长，把收入增加主要归因于网点增长。
+    location: 10K-FY2025，MD&A 经营结果
+    verified: true
+  - layer: ai_inference
+    text: FY2024 到 FY2025，毛利增加的约四分之三来自交易额增长，其余几乎全部来自抽成率上升，成本率基本不变。
+    location: ""
+    verified: false
+
+analytical_method:
+  - layer: own_extension
+    text: 用 unit-economics-take-rate 方法卡第 3、4 步计算；公式写在 method_output.attribution_formula。
+    location: ""
+    verified: false
+
+assumptions:
+  - layer: own_extension
+    text: 把金融科技收入和成本都除以 GPV。这是近似值，因为分子含 Toast Capital 等非支付业务。
+    location: ""
+    verified: false
+
+valuation_logic: []
+counterarguments: []
+
+falsification:
+  - layer: own_extension
+    text: 如果公司日后披露非支付收入，且剔除后抽成率没有上升，本例“抽成率提升”的读法就不成立。
+    location: ""
+    verified: false
+
+transferability:
+  - layer: ai_inference
+    text: 第 3、4 步适用于按总额确认收入、同时披露交易额和交易相关收入与成本的平台。
+    location: ""
+    verified: false
+
+links:
+  methods:
+    - {id: unit-economics-take-rate, fit: extends}
+  claims: []
+
+method_output:
+  unit: "金额为百万美元，比率为 bps（占 GPV）；GPV 原始精度为一位小数的十亿美元，比率误差约 0.1 bps"
+  attribution_formula: >-
+    毛利变化 = 交易额贡献 + 抽成率贡献 + 成本率贡献。
+    交易额贡献 = (V1 − V0) × (t0 − c0)；抽成率贡献 = V1 × (t1 − t0)；成本率贡献 = −V1 × (c1 − c0)
+  disclosed:
+    - {period: 2022FY, gpv: 91700, fintech_revenue: 2268, fintech_cost: 1792, payments_gross_profit: 418, non_payments_gross_profit: 58}
+    - {period: 2023FY, gpv: 126100, fintech_revenue: 3189, fintech_cost: 2503, payments_gross_profit: 561, non_payments_gross_profit: 125}
+    - {period: 2024FY, gpv: 159100, fintech_revenue: 4053, fintech_cost: 3175, payments_gross_profit: 726, non_payments_gross_profit: 152}
+    - {period: 2025FY, gpv: 195100, fintech_revenue: 5037, fintech_cost: 3891, payments_gross_profit: 950, non_payments_gross_profit: 196}
+  derived:
+    - {period: 2022FY, take_rate_bps: 247.3, processing_cost_bps: 195.4, unit_contribution_bps: 51.9, payments_gp_bps: 45.6}
+    - {period: 2023FY, take_rate_bps: 252.9, processing_cost_bps: 198.5, unit_contribution_bps: 54.4, payments_gp_bps: 44.5}
+    - {period: 2024FY, take_rate_bps: 254.7, processing_cost_bps: 199.6, unit_contribution_bps: 55.2, payments_gp_bps: 45.6}
+    - {period: 2025FY, take_rate_bps: 258.2, processing_cost_bps: 199.4, unit_contribution_bps: 58.7, payments_gp_bps: 48.7}
+  growth_attribution:
+    - {from: 2022FY, to: 2023FY, gross_profit_change: 210, volume: 178.6, take_rate: 70.2, cost_rate: -38.8}
+    - {from: 2023FY, to: 2024FY, gross_profit_change: 192, volume: 179.5, take_rate: 29.4, cost_rate: -17.0}
+    - {from: 2024FY, to: 2025FY, gross_profit_change: 268, volume: 198.7, take_rate: 66.9, cost_rate: 2.4}
+  estimates:
+    - metric: processing_cost_bps
+      estimate: true
+      note: 分子是金融科技成本整行，含人员、分摊和 Toast Capital 相关成本，不等于纯支付处理成本
+  not_available:
+    - 交易笔数与平均交易金额
+    - 第三方处理费、自有处理成本的拆分
+    - 自有处理比例
+    - 客户规模组合
+  checks:
+    - 2022–2025 财年的收入与成本已和本地 FSDS 的 ProductOrService=TechnologyService 事实逐值一致
+    - 四个年度的支付与非支付毛利之和都等于金融科技毛利

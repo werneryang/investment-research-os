@@ -1,0 +1,145 @@
+# take-rate 方法卡的走通案例，不是投资结论。数字来自 SEC 申报；计算过程见 method_output。
+id: sec-xyz-20260226
+record_type: application
+status: source_checked
+
+source:
+  type: official
+  title: Block, Inc. 年报与业绩 8-K
+  author: Block, Inc.（CIK 1512673）
+  published_on: "2026-02-26"
+  data_as_of: "2025-12-31"
+  locator: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=1512673&type=10-K
+  sha256: ""
+  outcome_known: true
+  filings:
+    - {id: 10K-FY2025, form: 10-K, accession: 0001628280-26-012254, filed: "2026-02-26"}
+    - {id: 10K-FY2024, form: 10-K, accession: 0001628280-25-007376, filed: "2025-02-24"}
+    - {id: 10K-FY2023, form: 10-K, accession: 0001628280-24-006354, filed: "2024-02-22"}
+    - {id: 8K-Q425, form: 8-K Ex.99.1, accession: 0001193125-26-076557, filed: "2026-02-26"}
+    - {id: 8K-Q424, form: 8-K Ex.99.1, accession: 0001193125-25-030738, filed: "2025-02-20"}
+
+extraction:
+  extracted_on: "2026-11-05"
+  method: ai_assisted
+  tool: Claude Opus 5.5
+  review: 技术复核；未经人工核对
+
+research_question:
+  - layer: own_extension
+    text: 交易额增长时，每 1 美元交易额留下的毛利是否改善？
+    location: ""
+    verified: false
+
+thesis: []
+
+evidence:
+  - layer: source_fact
+    text: FY2024 及以前，公司单列交易收入和交易成本；交易收入按总额确认，公司判定自己是委托人。
+    location: 10K-FY2024，利润表与 Item 8 收入附注；10K-FY2025，收入确认附注
+    verified: true
+  - layer: source_fact
+    text: 交易成本主要是付给第三方处理商和金融机构的交换费、卡组织费、处理费和清算费；没有按分部列示。
+    location: 10K-FY2024，MD&A 成本说明
+    verified: true
+  - layer: source_fact
+    text: FY2025 起收入改为商业赋能、金融解决方案、比特币生态三类，旧的交易收入和交易成本不再列示。
+    location: 10K-FY2025，Item 1 分部与收入类别；Item 8 重分类说明
+    verified: true
+  - layer: source_fact
+    text: FY2025 文字披露 Square 处理收入增加 541.2 百万美元，但没有给出当年水平。
+    location: 10K-FY2025，MD&A 收入讨论
+    verified: true
+  - layer: source_fact
+    text: 交易损失是单独的费用项，FY2024 为 198.0 百万美元，FY2025 为 202.0 百万美元，不在营业成本里。
+    location: 10K-FY2025，MD&A 交易、贷款及消费者应收款损失表
+    verified: true
+  - layer: source_fact
+    text: 业绩信披露 Square 商业赋能（不含硬件）货币化率，但只有 Q4 2024 到 Q4 2025 五个季度，且是毛利口径。
+    location: 8K-Q425，Square 季度指标表及脚注 20
+    verified: true
+  - layer: source_fact
+    text: 卖家笔数披露为 FY2023 4.0、FY2024 5.2、FY2025 5.9 十亿笔，都是 Item 1 里的取整文字。
+    location: 10K-FY2023、10K-FY2024、10K-FY2025，Item 1 Square 卖家
+    verified: true
+
+causal_mechanism:
+  - layer: author_judgment
+    text: 管理层说 FY2024 交易收入增长与 GPV 增长大致同步，FY2025 Square 处理成本增长与 Square GPV 增长同步。
+    location: 10K-FY2024 与 10K-FY2025，MD&A
+    verified: true
+  - layer: ai_inference
+    text: FY2022 到 FY2024，抽成率和成本率以相近幅度同步下降，所以单位贡献基本持平，毛利增长几乎全部来自交易额。
+    location: ""
+    verified: false
+
+analytical_method:
+  - layer: own_extension
+    text: 用 unit-economics-take-rate 方法卡第 3、4 步计算；公式写在 method_output.attribution_formula。
+    location: ""
+    verified: false
+
+assumptions:
+  - layer: own_extension
+    text: 用合并交易收入和成本除以合并 GPV。成本没有分部数字，所以不能算纯 Square 的单位贡献。
+    location: ""
+    verified: false
+  - layer: own_extension
+    text: FY2025 估算假设“Square 处理收入”等于旧口径的 Square 交易收入。申报没有说明两者相同。
+    location: ""
+    verified: false
+
+valuation_logic: []
+counterarguments: []
+
+falsification:
+  - layer: own_extension
+    text: 如果公司披露新旧分类的对照表，且 FY2025 的 Square 处理收入不能这样衔接，下面的估算就要作废。
+    location: ""
+    verified: false
+
+transferability:
+  - layer: ai_inference
+    text: 本例说明收入重分类会让方法在单个公司上断档，方法卡要先确认分类是否连续。
+    location: ""
+    verified: false
+
+links:
+  methods:
+    - {id: unit-economics-take-rate, fit: extends}
+  claims: []
+
+method_output:
+  unit: "金额为百万美元，比率为 bps（占 GPV）"
+  attribution_formula: >-
+    毛利变化 = 交易额贡献 + 抽成率贡献 + 成本率贡献。
+    交易额贡献 = (V1 − V0) × (t0 − c0)；抽成率贡献 = V1 × (t1 − t0)；成本率贡献 = −V1 × (c1 − c0)
+  disclosed:
+    - {period: 2022FY, total_gpv: 203536, transaction_revenue: 5701.540, transaction_cost: 3364.028}
+    - {period: 2023FY, total_gpv: 227699, square_gpv: 209606, cash_app_gpv: 18093, transaction_revenue: 6315.301, square_transaction_revenue: 5817.125, transaction_cost: 3702.016}
+    - {period: 2024FY, total_gpv: 240812, square_gpv: 227607, cash_app_gpv: 13205, transaction_revenue: 6613.680, square_transaction_revenue: 6260.981, transaction_cost: 3881.013, transaction_losses: 198.010}
+    - {period: 2025FY, total_gpv: 259631, square_gpv: 250461, cash_app_gpv: 9170, transaction_revenue: null, transaction_cost: null, transaction_losses: 202.014}
+  derived:
+    - {period: 2022FY, take_rate_bps: 280.1, processing_cost_bps: 165.3, unit_contribution_bps: 114.8}
+    - {period: 2023FY, take_rate_bps: 277.4, processing_cost_bps: 162.6, unit_contribution_bps: 114.8}
+    - {period: 2024FY, take_rate_bps: 274.6, processing_cost_bps: 161.2, unit_contribution_bps: 113.5, transaction_loss_bps: 8.2, after_loss_bps: 105.3}
+  growth_attribution:
+    - {from: 2022FY, to: 2023FY, gross_profit_change: 275.8, volume: 277.5, take_rate: -63.1, cost_rate: 61.4}
+    - {from: 2023FY, to: 2024FY, gross_profit_change: 119.4, volume: 150.5, take_rate: -65.3, cost_rate: 34.2}
+  estimates:
+    - metric: square_take_rate_bps
+      period: 2025FY
+      value: 271.6
+      estimate: true
+      note: (6260.981 + 541.2) ÷ Square GPV 250461；依赖上面的口径假设，不与披露值并列使用
+  not_available:
+    - FY2025 的交易收入、交易成本，因此 FY2024 到 FY2025 无法做增长归因
+    - 纯 Square 的交易成本
+    - 第三方处理费、自有处理成本的拆分
+    - 自有处理比例
+  checks:
+    - 2022–2024 财年的交易收入与成本已和本地 FSDS 的 ProductOrService=Transaction 事实逐值一致
+    - Square GPV 与 Cash App GPV 之和等于合并 GPV（FY2023–FY2025）
+  open_questions:
+    - 笔数从 4.0 跳到 5.2 十亿笔，同期 Square GPV 只增长约 9%，隐含平均金额由约 52 美元降到约 44 美元；申报没有解释，暂不用于价量拆分
+    - 业绩信提到 2025 年二季度收到一笔卡组织补偿款和一项处理流程调整，金额未在已读段落中出现，会影响当年比率

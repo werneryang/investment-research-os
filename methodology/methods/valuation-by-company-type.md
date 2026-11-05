@@ -3,6 +3,7 @@ id: valuation-by-company-type
 name_zh: 按公司属性选择估值指标
 name_en: Valuation Metric Selection by Company Type
 question: 估值
+kind: routing
 object: [company]
 status: draft
 sources:

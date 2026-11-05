@@ -2,7 +2,8 @@
 id: guidance-tracking-playbook
 name_zh: 管理层指引与论点追踪
 name_en: Guidance and Thesis Tracking Playbook
-question: 数据可得性与口径
+question: 基本面与经营
+kind: tracking
 object: [company, industry, macro]
 status: draft
 sources:
@@ -65,5 +66,5 @@ claims:
 Ryan 的理由：管理层给出增长指引，一年后很少有人记得；他用一个 Playbook 文件让 AI 记录，宏观数据（例如每月 CPI）也可以这样延续追踪。这个想法可以直接替代"用少量研报检验目标价准确率"的做法，样本量更大，也能用官方数据核对。
 
 ## 待验证事项
-- 先为你网站已有的 15 家公司，登记最近一季的管理层年度指引，到期自动核对。
+- 先为项目已有的 15 家公司，登记最近一季的管理层年度指引，到期自动核对。
 - 在 CI 中加入检查：到期未核对的条目报警。
