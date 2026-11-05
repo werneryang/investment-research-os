@@ -3,6 +3,7 @@ id: peer-layer-comparison
 name_zh: 供应链分层与同业比较
 name_en: Supply Chain Layering and Peer Comparison
 question: 结构与关联
+kind: routing
 object: [industry, company]
 status: draft
 sources:
@@ -65,5 +66,5 @@ layers:
 Ryan 的理由：如果把化学材料公司和晶圆代工放在同一组，毛利率和估值无法直接比较；把同类材料公司放在一起才可比。他提到不同机构的分法不同（例如美国半导体行业协会的分段、GICS 的子类），分层取决于投资者视角。
 
 ## 待验证事项
-- 先为你网站已有的「芯片」「炼油」两个行业建立分层文件。
+- 先为项目已有的「芯片」「炼油」两个行业建立分层文件。
 - 检验分层后，同层公司毛利率的离散度是否明显低于按 SIC 分组。

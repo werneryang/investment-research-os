@@ -3,6 +3,7 @@ id: expectations-revision
 name_zh: 市场隐含预期与预期修正
 name_en: Market-Implied Expectations and Revisions
 question: 估值
+kind: scenario
 object: [company]
 status: draft
 sources:
@@ -63,5 +64,5 @@ revision_direction_last_2q: "上修 / 下修 / 持平"
 直播中的说法（成长率从高位回落即被视为不及格）与预期投资法的核心一致：价格变化来自预期修正，而非绝对水平。
 
 ## 待验证事项
-- 用你网站已有的 15 家公司，各做一次隐含增速反推，检验结果是否稳定。
+- 用项目已有的 15 家公司，各做一次隐含增速反推，检验结果是否稳定。
 - 引入 Mauboussin 关于企业增长基准率的论文数据，作为第 2 步的参照。

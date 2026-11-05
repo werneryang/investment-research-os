@@ -10,6 +10,20 @@
 | `validated` | 已有多个案例，步骤可用公开数据复现 | 有历史检验记录（见 guidance-tracking-playbook） |
 | `retired` | 发现方法有系统性缺陷 | — |
 
+## 方法类型
+
+类型决定验收方式，用 `kind` 标记：
+
+| `kind` | 含义 | 主要看什么 |
+| --- | --- | --- |
+| `decomposition` | 把指标拆成可计算的部分 | 能否用公开数据算出来 |
+| `checklist` | 逐项检查并产生问题 | 能否发现值得追问的问题 |
+| `routing` | 决定比较对象或使用的指标 | 分组或选择是否改善比较 |
+| `measurement` | 测量一个事件的结果 | 口径是否稳定 |
+| `scenario` | 推演假设或反推隐含预期 | 假设是否写明，结果对假设是否敏感 |
+| `argument` | 提取和对照论证 | 不同人提取的结果是否一致 |
+| `tracking` | 登记判断并到期核对 | 能否核对，核对率多高 |
+
 ## 来源可信度标记
 
 - `official`：SEC、BLS、FRED 等官方一手数据
@@ -29,9 +43,9 @@
 | [event-value-chain-exposure.md](event-value-chain-exposure.md) | 事件对产业链的暴露映射 | 暴露与关联 | 財女珍妮 11/05 直播（commentary） |
 | [policy-shock-stock-vs-flow.md](policy-shock-stock-vs-flow.md) | 政策冲击：存量与增量、时间分层 | 情景与敏感性 | 財女珍妮 11/05 直播（commentary） |
 | [earnings-reaction-check.md](earnings-reaction-check.md) | 财报发布后的市场反应检验 | 价格、收益率与价差 | Ryan 对谈（commentary） |
-| [guidance-tracking-playbook.md](guidance-tracking-playbook.md) | 管理层指引与论点追踪 | 数据可得性与口径 | Ryan 对谈（commentary） |
+| [guidance-tracking-playbook.md](guidance-tracking-playbook.md) | 管理层指引与论点追踪 | 基本面与经营 | Ryan 对谈（commentary） |
 | [activist-proxy-contest.md](activist-proxy-contest.md) | 代理权争夺的正反论证对照 | 结构与关联 | SEC DFAN14A（official） |
-| [forensic-red-flags.md](forensic-red-flags.md) | 财务异常排查 | 数据可得性与口径 | 做空研究报告（structured，需独立核实） |
+| [forensic-red-flags.md](forensic-red-flags.md) | 财务异常排查 | 基本面与经营 | 做空研究报告（structured，需独立核实） |
 
 ## 方法之间的关系
 
@@ -51,4 +65,6 @@ earnings-reaction-check ──► guidance-tracking-playbook ◄── 所有方
 
 ## 新增方法
 
-复制 [_template.md](_template.md)，状态设为 `draft`，至少填写「推翻条件」和「来源」两节。
+复制 [_template.md](_template.md)，状态设为 `draft`，至少填写「推翻条件」和「来源」两节。「方法失效条件」在方法第一次走通时补上，目前只有 take-rate 卡已填写。
+
+部分方法卡提到的 `peers/` 目录在初版不建，用到时再新增。

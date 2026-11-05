@@ -3,6 +3,7 @@ id: unit-economics-take-rate
 name_zh: 交易平台单位经济拆解
 name_en: Transaction Platform Unit Economics
 question: 分解与归因
+kind: decomposition
 object: [company, industry]
 status: draft
 sources:
@@ -81,6 +82,10 @@ peer_gap:
 - 公司提高自有处理比例，处理成本率连续两季下降。
 - 客户组合改善（小商户占比上升）带动抽成率上升，且没有被成本抵消。
 - 新披露的非支付收入说明抽成率变化来自非支付业务，而不是支付业务。
+
+## 方法失效条件
+- 交易额或交易相关收入、成本无法分离时，第 3 步无法运行，方法不适用。
+- 多个案例都缺第 2、6 步所需披露时，只保留单位贡献与增长归因，不再声称能判断差距是否结构性。
 
 ## 走通结果（2026-11-05，技术复核）
 

@@ -1,5 +1,6 @@
 # take-rate 方法卡的走通案例，不是投资结论。数字来自 SEC 申报；计算过程见 method_output。
 id: sec-xyz-20260226
+record_type: application
 status: source_checked
 
 source:
@@ -104,7 +105,8 @@ transferability:
     verified: false
 
 links:
-  methods: [unit-economics-take-rate]
+  methods:
+    - {id: unit-economics-take-rate, fit: extends}
   claims: []
 
 method_output:

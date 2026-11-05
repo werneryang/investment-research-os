@@ -3,6 +3,7 @@ id: event-value-chain-exposure
 name_zh: 事件对产业链的暴露映射
 name_en: Event-to-Value-Chain Exposure Map
 question: 暴露与关联
+kind: scenario
 object: [industry, company]
 status: draft
 sources:

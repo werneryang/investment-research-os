@@ -3,6 +3,7 @@ id: earnings-quality-checklist
 name_zh: 财报质量检查清单
 name_en: Earnings Quality Checklist
 question: 基本面与经营
+kind: checklist
 object: [company]
 status: draft
 sources:

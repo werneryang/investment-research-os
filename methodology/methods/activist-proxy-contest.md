@@ -3,6 +3,7 @@ id: activist-proxy-contest
 name_zh: 代理权争夺的正反论证对照
 name_en: Activist Proxy Contest — Bull/Bear Argument Comparison
 question: 结构与关联
+kind: argument
 object: [company]
 status: draft
 sources:
