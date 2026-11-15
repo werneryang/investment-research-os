@@ -113,21 +113,26 @@ def cmd_fetch(args: argparse.Namespace) -> int:
     return 1 if result.status == "failed" else 0
 
 
-# 同一来源连续这么多个数据集因超时失败，就跳过该来源剩下的数据集：来源整体不响应时，
-# 每个数据集都要等满重试（约 3 分钟），不跳过会拖垮整次定时取得。取 2：CI 取得步骤限时 8 分钟，
-# 取 3 要等约 9 分钟才触发，来不及（2026-11-15 的运行即如此）
-TIMEOUT_SKIP_AFTER = 2
+# 同一来源连续这么多个数据集因来源不响应（超时或连接被重置）失败，就跳过该来源剩下的数据集：
+# 来源整体不响应时，每个数据集都要走完重试（超时约 3 分钟），不跳过会拖垮整次定时取得。取 2：
+# CI 取得步骤限时 8 分钟，取 3 要等约 9 分钟才触发，来不及（2026-11-15 的运行即如此）。
+# 连接被重置同样计入：2026-11-15 起 Ken French 服务器对所有访问者重置连接，22 个数据集各重试 3 次
+UNRESPONSIVE_SKIP_AFTER = 2
 
 
-def _is_timeout(message: str) -> bool:
-    return "TimeoutError" in message or "timed out" in message
+def _is_unresponsive(message: str) -> bool:
+    """失败信息是否表明来源整体不响应：超时，或连接被对方重置（Errno 104 / ECONNRESET）。
+
+    404、解析失败等只关乎单个数据集的错误不算。"""
+    return any(s in message for s in ("TimeoutError", "timed out", "Connection reset by peer",
+                                      "ConnectionResetError"))
 
 
 def _fetch_all(root: Path) -> int:
     """逐个取得登记了 scheduled_fetch 的数据集；一个失败不影响其他，任一失败或跳过时返回 1。
 
-    同一来源连续 ``TIMEOUT_SKIP_AFTER`` 个数据集超时，视为该来源当前不响应，跳过它剩下的数据集
-    并标为 skipped；已有版本保留，不生成虚假的更新。每行立即输出，便于在中途看出卡在哪里。
+    同一来源连续 ``UNRESPONSIVE_SKIP_AFTER`` 个数据集超时或连接被重置，视为该来源当前不响应，
+    跳过它剩下的数据集并标为 skipped；已有版本保留，不生成虚假的更新。每行立即输出，便于在中途看出卡在哪里。
     """
     reg, store = Registry.load(root), DataStore(root)
     scheduled = [d for d in reg.datasets.values() if d.scheduled_fetch is not None]
@@ -136,22 +141,23 @@ def _fetch_all(root: Path) -> int:
         return 0
     today = datetime.now(timezone.utc).date()
     failed = 0
-    timeouts: dict[str, int] = {}
+    unresponsive: dict[str, int] = {}
     print(f"定时取得 {datetime.now(timezone.utc).replace(microsecond=0).isoformat()}：{len(scheduled)} 个数据集",
           flush=True)
     for d in scheduled:
-        if timeouts.get(d.source_id, 0) >= TIMEOUT_SKIP_AFTER:
-            print(f"[skipped] {d.id}：来源 {d.source_id} 已连续 {TIMEOUT_SKIP_AFTER} 个数据集超时，本次跳过",
-                  flush=True)
+        if unresponsive.get(d.source_id, 0) >= UNRESPONSIVE_SKIP_AFTER:
+            print(f"[skipped] {d.id}：来源 {d.source_id} 已连续 {UNRESPONSIVE_SKIP_AFTER} 个数据集"
+                  "超时或连接被重置，本次跳过", flush=True)
             failed += 1
             continue
         result = ingest(reg, store, d.id, scheduled_request(d, today))
         print(f"[{result.status}] {d.id}：{result.message}", flush=True)
         if result.status == "failed":
             failed += 1
-            timeouts[d.source_id] = timeouts.get(d.source_id, 0) + 1 if _is_timeout(result.message) else 0
+            unresponsive[d.source_id] = (unresponsive.get(d.source_id, 0) + 1
+                                         if _is_unresponsive(result.message) else 0)
         else:
-            timeouts[d.source_id] = 0
+            unresponsive[d.source_id] = 0
     return 1 if failed else 0
 
 

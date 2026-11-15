@@ -369,7 +369,7 @@ def test_fetch_all_skips_a_source_after_consecutive_timeouts(project, monkeypatc
     scheduled = [d for d in reg.datasets.values() if d.scheduled_fetch is not None]
     fred = [d.id for d in scheduled if d.source_id == "fred_api"]
     others = [d.id for d in scheduled if d.source_id != "fred_api"]
-    assert len(fred) > cli.TIMEOUT_SKIP_AFTER and others
+    assert len(fred) > cli.UNRESPONSIVE_SKIP_AFTER and others
     calls = []
 
     def fake_ingest(reg, store, dataset_id, request):
@@ -382,9 +382,33 @@ def test_fetch_all_skips_a_source_after_consecutive_timeouts(project, monkeypatc
     assert cli.main(["--root", str(project), "fetch", "--all"]) == 1
     out = capsys.readouterr().out
     attempted = [c for c in calls if c in fred]
-    assert attempted == fred[:cli.TIMEOUT_SKIP_AFTER]  # 连续超时后不再请求该来源
+    assert attempted == fred[:cli.UNRESPONSIVE_SKIP_AFTER]  # 连续超时后不再请求该来源
     assert set(others) <= set(calls)  # 其他来源照常取得
-    assert out.count("[skipped] fred_") == len(fred) - cli.TIMEOUT_SKIP_AFTER
+    assert out.count("[skipped] fred_") == len(fred) - cli.UNRESPONSIVE_SKIP_AFTER
+
+
+def test_fetch_all_skips_a_source_after_consecutive_connection_resets(project, monkeypatch, capsys):
+    import investment_os.cli as cli
+    from investment_os.data.ingest import IngestResult
+
+    reg = Registry.load(project)
+    scheduled = [d for d in reg.datasets.values() if d.scheduled_fetch is not None]
+    french = [d.id for d in scheduled if d.source_id == "ken_french"]
+    assert len(french) > cli.UNRESPONSIVE_SKIP_AFTER
+    calls = []
+
+    def fake_ingest(reg, store, dataset_id, request):
+        calls.append(dataset_id)
+        if dataset_id in french:  # 2026-11-15 起 Ken French 服务器的实际失败信息
+            return IngestResult(dataset_id, "failed", "fetch 阶段失败：FetchError: 3 次尝试后仍无法取得 x："
+                                "URLError: <urlopen error [Errno 104] Connection reset by peer>", None)
+        return IngestResult(dataset_id, "unchanged", "x", None)
+
+    monkeypatch.setattr(cli, "ingest", fake_ingest)
+    assert cli.main(["--root", str(project), "fetch", "--all"]) == 1
+    out = capsys.readouterr().out
+    assert [c for c in calls if c in french] == french[:cli.UNRESPONSIVE_SKIP_AFTER]
+    assert out.count("[skipped] french_") == len(french) - cli.UNRESPONSIVE_SKIP_AFTER
 
 
 def test_fetch_all_timeout_count_resets_and_ignores_other_failures(project, monkeypatch):
