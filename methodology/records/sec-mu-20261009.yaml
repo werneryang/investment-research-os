@@ -1,0 +1,560 @@
+# 方法库执行题 20261114-execute-mu-first-batch 的走查记录：照四张方法卡的首批范围在 Micron 上走一遍，
+# 逐步记录能不能照做。只检验能否照做，不判断方法对错，不是投资结论。
+# 方法卡以私有方法库 research-method-extraction 提交 fa5dea6 为准；本文件只写卡的 id、步骤编号和自己的说明，
+# 不含卡的正文。本目录 ../methods/ 里同名的旧卡是 2026-11-05 的副本，本记录没有使用。
+id: sec-mu-20261009
+record_type: application
+status: draft
+
+source:
+  type: official
+  title: Micron Technology, Inc. 年报、季报与业绩新闻稿
+  author: Micron Technology, Inc.（CIK 723125）
+  published_on: "2026-10-09"
+  data_as_of: "2026-09-03"
+  locator: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=723125&type=10-K
+  sha256: ""
+  outcome_known: true
+  filings:
+    - {id: 10K-FY2026, form: 10-K, accession: 0000723125-26-000023, filed: "2026-10-09"}
+    - {id: 10K-FY2025, form: 10-K, accession: 0000723125-25-000028, filed: "2025-10-03"}
+    - {id: 10K-FY2024, form: 10-K, accession: 0000723125-24-000027, filed: "2024-10-04"}
+    - {id: 10K-FY2023, form: 10-K, accession: 0000723125-23-000054, filed: "2023-10-06"}
+    - {id: 10K-FY2022, form: 10-K, accession: 0000723125-22-000048, filed: "2022-10-07"}
+    - {id: 10Q-FQ3-26, form: 10-Q, accession: 0000723125-26-000015, filed: "2026-06-25"}
+    - {id: 10Q-FQ2-26, form: 10-Q, accession: 0000723125-26-000006, filed: "2026-03-19"}
+    - {id: 10Q-FQ1-26, form: 10-Q, accession: 0000723125-25-000046, filed: "2025-12-18"}
+    - {id: 10Q-FQ3-25, form: 10-Q, accession: 0000723125-25-000021, filed: "2025-06-26"}
+    - {id: 8K-FQ4-26, form: 8-K Item 2.02, accession: 0000723125-26-000018, filed: "2026-09-30"}
+    - {id: 8K-FQ3-26, form: 8-K Item 2.02, accession: 0000723125-26-000013, filed: "2026-06-24"}
+    - {id: 8K-FQ2-26, form: 8-K Item 2.02, accession: 0000723125-26-000004, filed: "2026-03-18"}
+    - {id: 8K-FQ1-26, form: 8-K Item 2.02, accession: 0000723125-25-000044, filed: "2025-12-17"}
+    - {id: 8K-FQ4-25, form: 8-K Item 2.02, accession: 0000723125-25-000024, filed: "2025-09-23"}
+    - {id: 8K-FQ3-25, form: 8-K Item 2.02, accession: 0000723125-25-000019, filed: "2025-06-25"}
+  retrieval:
+    retrieved_on: "2026-11-14"
+    note: >-
+      没有登记新的来源或数据集，原始文件没有进入本项目的版本存储，只留在仓库外的临时目录。
+      请求都用项目的通用请求标识，不含联系邮箱。
+    files:
+      - what: Company Facts API（data.sec.gov，CIK 723125），合并口径的全部 XBRL 事实
+        via: 项目的 SecClient，一次性脚本调用
+        sha256: 162439f31208eaf4cd1a33939d80fd40479a559735b9488d32ac43d5516ff7bf
+      - what: Submissions API（data.sec.gov），用来取 8-K 的申报编号与日期
+        via: 项目的 SecClient，一次性脚本调用
+      - what: 本地已保存的分部事实 data/edgar/segment_facts（FSDS，到 2026q3 分区）
+        via: 直接读取本地 parquet
+      - what: 本地已保存的 FY2025 10-K 原文 data/supply_chain/filings/mu-20250828.htm
+        via: 直接读取
+      - what: 六份业绩新闻稿，取自公司投资者关系网站（已登记来源 company_ir 的渠道）
+        via: 项目的通用取数函数，一次性脚本调用
+        sha256:
+          FQ3-25: 43771eedb774fa181e9f759d8480dabc1279faacaacd5584fbf36d7675cca817
+          FQ4-25: 23aff21ce6d31850f36c81947a8a5e196fad4d33dd73c1078ae27295d94021df
+          FQ1-26: e535d99e96be5c6ee1fd7d3459390503fef420a21ec1b09c54b8bbb8a75b566e
+          FQ2-26: 802968f91cef84e184272f5100324a259cab43d884df85ac1dd084703521e3d4
+          FQ3-26: bb905b36cc30c462e8922f35abdb465b32fc897e2ff53346db8f5b78488f932f
+          FQ4-26: 5c5fa096161b086ecb37ea3a067d1615ac8d3bfc97d290a4cb2d06e95312eeb1
+        caveat: 读的是公司网站上的新闻稿页面；对应的 8-K 编号来自 Submissions API，没有和 8-K 附件逐字比对。
+
+extraction:
+  extracted_on: "2026-11-14"
+  method: ai_assisted
+  tool: Claude Fable 5.2
+  review: 只做了下面 checks 列出的技术核对；未经人工核对
+  quality_notes: 单次执行，没有重复执行或人工对照
+
+method_library:
+  repo: research-method-extraction（私有）
+  commit: fa5dea6
+  test: 20261114-execute-mu-first-batch
+  cards:
+    - {id: dupont-return-decomposition, steps: [1, 3]}
+    - {id: working-capital-forecast, steps: [1, 2, 3], note: 第 3 步只和自身历史比}
+    - {id: earnings-quality-checklist, steps: [1, 5, 6, 7]}
+    - {id: guidance-tracking-playbook, steps: [1, 2, 3], note: 只登记已量化的指引}
+
+research_question:
+  - layer: own_extension
+    text: 只凭方法卡写明的步骤和公开数据，四张卡的首批范围各能走到哪一步，第一处必须自己定的地方在哪？
+    location: ""
+    verified: false
+
+thesis: []
+
+evidence:
+  - layer: source_fact
+    text: 财年是 52 或 53 周，结束于最接近 8 月 31 日的星期四；FY2023–FY2025 都是 52 周。
+    location: 10K-FY2025，正文开头的期间说明
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: FY2026 从 2025-08-29 到 2026-09-03，共 53 周；第四季度从 2026-05-29 到 2026-09-03，共 14 周。
+    location: 10K-FY2026 的 XBRL 期间起止（Company Facts）；10Q-FQ3-26 的期末日
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 资产负债表上应付项只有“应付账款及应计费用”一行；应收一行除贸易应收外还含政府补助、所得税及其他税项等。贸易应收和贸易应付在附注里。
+    location: 10K-FY2025，合并资产负债表；附注 Receivables
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: FY2022–FY2026 的现金流量表事实里没有收购企业支付的现金科目；FY2021、FY2022 归属少数股东的净利润为 0，之后不再列报。
+    location: Company Facts，us-gaap 的 PaymentsToAcquireBusinesses* 与 NetIncomeLossAttributableToNoncontrollingInterest
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 公司按四个业务单元报告分部收入（CMBU、CDBU、MCBU、AEBU），另按产品（DRAM、NAND、其他）和地区披露收入。
+    location: 10K-FY2025 与 10Q-FQ3-26 的分部事实（本地 segment_facts）
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 每份业绩新闻稿都有一张下季指引表，含营收、毛利率、营业费用、稀释每股收益四项，GAAP 与非 GAAP 各一列；FQ3-26 起毛利率和营业费用改为只给一个约数，不带区间。
+    location: 8K-FQ3-25 至 8K-FQ4-26 对应的新闻稿，Business Outlook 表
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 新闻稿没有有机增长或剔除收购、汇率的增长口径。
+    location: 8K-FQ3-25 至 8K-FQ4-26 对应的新闻稿全文
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 第四季度的单季数字不在 XBRL 里直接列报；新闻稿列有单季数字。
+    location: Company Facts；8K-FQ4-25、8K-FQ4-26 对应的新闻稿，Quarterly Financial Results 表
+    verified: true
+    verifiability: public_filing
+
+causal_mechanism: []
+
+analytical_method:
+  - layer: own_extension
+    text: 按 method_library 列出的卡和步骤编号执行；每一步的归类、出处和临时决定写在 method_output.walkthrough。
+    location: ""
+    verified: false
+
+assumptions:
+  - layer: own_extension
+    text: 四张卡共用的临时决定：同一期间在多份申报中出现时取最新一份的数值（本例各份数值相同）；53 周财年和 14 周季度不做折算；第四季度单季 = 全年 − 前三季累计。
+    location: ""
+    verified: false
+  - layer: own_extension
+    text: 各卡用年度还是季度由执行时定：第 1、2 张卡用年度（FY2022–FY2026），第 3 张卡第 1、5、7 步用季度（FQ4-25 至 FQ4-26）并附年度，第 6 步用 FY2026 全年，第 4 张卡用季度指引。
+    location: ""
+    verified: false
+
+valuation_logic: []
+counterarguments: []
+
+falsification:
+  - layer: own_extension
+    text: 换一个人或换一次执行，如果在标为“临时定”的地方选了别的选项而结果差异不大，说明该处不算真正挡路；差异大的几处见各卡 sensitivity。
+    location: ""
+    verified: false
+
+transferability:
+  - layer: ai_inference
+    text: 本次只测了一家财年不按日历年、无收购、无少数股东、持续给季度量化指引的公司；题目要求再用一家业务差别大的公司测同一条路径。
+    location: ""
+    verified: false
+
+links:
+  methods:
+    - {id: dupont-return-decomposition, fit: match, library: research-method-extraction@fa5dea6}
+    - {id: working-capital-forecast, fit: match, library: research-method-extraction@fa5dea6}
+    - {id: earnings-quality-checklist, fit: match, library: research-method-extraction@fa5dea6}
+    - {id: guidance-tracking-playbook, fit: match, library: research-method-extraction@fa5dea6}
+  claims: []   # 指引登记放在下面 method_output，没有写入 ../playbooks/
+
+method_output:
+  unit: 金额为百万美元（每股收益为美元）；比率为小数，利润率和占比为百分数，周转为天
+  periods:
+    annual: FY2022–FY2026（期末 2022-09-01、2023-08-31、2024-08-29、2025-08-28、2026-09-03）；平均余额另用到 FY2021 期末（2021-09-02）
+    quarterly: FQ4-25、FQ1-26、FQ2-26、FQ3-26、FQ4-26（期末 2025-08-28、2025-11-27、2026-02-26、2026-05-28、2026-09-03）；同比另用到 FQ4-24 至 FQ3-25
+    latest_available: 截至 2026-11-14，最新的定期报告是 FY2026 10-K（2026-10-09 申报）；FQ1-27 尚未公布
+  classification_terms: [已完成, 因数据不足未执行, 需人工判断]
+  provenance_terms:
+    material: 卡里写有材料来源
+    added: 卡里标为整理时补充
+    ad_hoc: 执行时临时定的
+
+  walkthrough:
+    - card: dupont-return-decomposition
+      reached: 第 1、3 步都走完（第 3 步只做历史年份）
+      first_guess: {step: 3, what: 平均余额怎样算, note: 第 1 步在本例不需要猜}
+      steps:
+        - step: 1
+          did: 三因子分解
+          classification: 已完成
+          provenance: {material: [三因子公式], added: [], ad_hoc: [净利润与权益取 GAAP 归属母公司口径]}
+          guesses:
+            - what: 余额用期末还是平均
+              status: 不算猜。所需数据一栏两种都列了，第 3 步写明用平均值，照第 3 步做
+            - what: 净利润、权益含不含少数股东，GAAP 还是非 GAAP
+              options: [GAAP 归属母公司, 含少数股东, 非 GAAP 净利润]
+              chosen: GAAP 归属母公司
+              impact: 本例没有少数股东，前两种没有差别；非 GAAP 净利润只在新闻稿里有，未使用
+        - step: 3
+          did: 五个财年并列，余额取平均
+          classification: 已完成
+          provenance: {material: [多年并列, 余额用平均值], added: [], ad_hoc: [平均 = 年初年末两点平均, 多取 FY2021 期末余额, 53 周财年不折算]}
+          guesses:
+            - what: 平均值怎样算
+              options: [年初年末两点平均, 五个季末平均]
+              chosen: 年初年末两点平均
+            - what: 首年的平均余额需要再往前一年的期末余额，超出“最近 5 个财年”
+              options: [多取一年期末余额, 首年改用期末余额, 首年不算]
+              chosen: 多取一年期末余额
+            - what: 净利润为负的年份（FY2023）
+              status: 三个因子照算，净利率和 ROE 为负；怎样读属于范围外的第 4 步
+      not_in_scope: 预测年、ROIC 版本、同业比较、变化原因
+    - card: working-capital-forecast
+      reached: 第 1、2 步走完；第 3 步算出了与自身上年的差异，找原因没有做
+      first_guess: {step: 1, what: 用期末还是平均余额；同一步还要定应收、应付取哪一行，以及一年按多少天}
+      steps:
+        - step: 1
+          did: 应收对营收、存货和应付对销货成本，换成天数
+          classification: 已完成
+          provenance: {material: [应收对销售, 存货和应付对销货成本, 换成天数], added: [], ad_hoc: [期末余额, 资产负债表表面行, 365 天, 用年度数据]}
+          guesses:
+            - what: 期末还是平均余额
+              options: [期末余额, 年初年末平均]
+              chosen: 期末余额
+              impact: 见 sensitivity.average_balance
+            - what: 应收、应付取哪一行
+              options: [资产负债表表面行（应收合计、应付账款及应计费用）, 附注里的贸易应收与贸易应付]
+              chosen: 资产负债表表面行
+              impact: 差别很大，见 sensitivity.trade_lines；FY2026 应付天数 321 对 50，现金周期 −75 对 +185
+            - what: 一年按多少天
+              options: [365, 期间实际天数（FY2026 为 371）]
+              chosen: 365
+            - what: 用年度还是季度数据
+              options: [年度, 季度年化]
+              chosen: 年度
+        - step: 2
+          did: 营业周期 = 收款天数 + 存货天数；现金周期 = 营业周期 − 应付天数
+          classification: 已完成
+          provenance: {material: [两个周期的算式], added: [], ad_hoc: []}
+          guesses: []
+          note: 客户预付款（合同负债）不在这两步的算式里，属于范围外的第 5 步；FY2026 末 XBRL 的合同负债余额为 13,000
+        - step: 3
+          did: 只和自身历史比
+          classification: 差异已完成；找原因需人工判断
+          provenance: {material: [与历史比较并找原因], added: [], ad_hoc: [历史基准取上一年]}
+          guesses:
+            - what: 和哪一段历史比
+              options: [上一年, 五年平均, 五年区间]
+              chosen: 上一年
+          note: 每项差异的原因要读管理层说明并作判断，本次不解释
+      not_in_scope: 第 4–7 步的预测
+    - card: earnings-quality-checklist
+      reached: 第 1、5、6、7 步都有结果；第 5 步的同比原因和第 6 步的冲击影响没有做
+      first_guess: {step: 1, what: 公司不披露有机增长、期间也没有收购时这一项怎样填；同一步还要定用季度还是年度}
+      steps:
+        - step: 1
+          did: 增长来源
+          classification: 已完成（按临时口径）
+          provenance: {material: [检查有机与收购各占多少], added: [], ad_hoc: [没有收购现金流出时把全部增长记为有机, 用最近一季同比并附全年, GAAP 营收]}
+          guesses:
+            - what: 公司不披露有机增长时怎样填
+              options: [没有收购现金流出就把全部增长记为有机, 记为不适用, 记为因数据不足未执行]
+              chosen: 没有收购现金流出就把全部增长记为有机
+              impact: 没有读 FY2026 10-K 正文确认无收购，只看了现金流量表的 XBRL 科目
+            - what: 增长按哪个期间算
+              options: [最近一季同比, 最近财年同比, 最近一季环比]
+              chosen: 最近一季同比，附最近财年同比
+              impact: FQ4-26 是 14 周，对比的 FQ4-25 是 13 周；FY2026 是 53 周
+        - step: 5
+          did: 最近 5 季的毛利率和营业利润率
+          classification: 方向已完成；同比变化的原因需人工判断
+          provenance: {material: [最近 5 季的毛利率与营业利润率方向, 同比变化的原因], added: [], ad_hoc: [GAAP 口径, 方向按逐季环比的正负记, 同比每季都算]}
+          guesses:
+            - what: GAAP 还是非 GAAP
+              options: [GAAP, 非 GAAP（新闻稿）]
+              chosen: GAAP
+              impact: 两种口径 FQ4-26 毛利率 86.8 对 87.0，营业利润率 80.7 对 82.3
+            - what: “方向”怎样判定
+              options: [逐季环比的正负, 首尾比较, 线性趋势]
+              chosen: 逐季环比的正负
+          note: 同比变化归因到产品组合、成本、定价要读 MD&A 并作判断；FY2026 10-K 正文没有取，本次不解释
+        - step: 6
+          did: 最大终端市场占比
+          classification: 占比已完成（按临时口径）；单一市场受冲击的影响需人工判断
+          provenance: {material: [最大终端市场占比, 冲击影响], added: [], ad_hoc: [终端市场 = 业务单元分部, 期间取 FY2026 全年]}
+          guesses:
+            - what: “终端市场”用哪个口径
+              options: [业务单元分部, 产品（DRAM、NAND）, 地区, 主要客户]
+              chosen: 业务单元分部
+              impact: 口径不同结果差别大：FY2026 最大业务单元占 32.3%，前三季最大产品占 77.1%
+            - what: 取哪个期间
+              options: [最近财年, 最近一季]
+              chosen: 最近财年
+              impact: FY2026 全年最大的是 CMBU，FQ4-26 单季最大的是 CDBU
+            - what: 冲击多大、怎样传到公司
+              status: 卡没有给参数，没有做
+        - step: 7
+          did: 经营现金流 ÷ 净利润
+          classification: 已完成（按临时口径）
+          provenance: {material: [经营现金流除以净利润, 是否持续低于 1], added: [], ad_hoc: [“持续”= 窗口内每一期都低于 1, 季度和年度都算, 净利润为负的年份不计比值]}
+          guesses:
+            - what: “持续”指几期
+              options: [窗口内每一期, 连续两期及以上, 多数期间]
+              chosen: 窗口内每一期
+              impact: 选“连续两期及以上”结果会由否变为是（FQ2-26、FQ3-26 连续低于 1）
+            - what: 净利润为负时比值怎样处理
+              options: [不计比值, 照算并标注]
+              chosen: 不计比值
+            - what: 按季度还是年度
+              options: [季度, 年度, 两者]
+              chosen: 两者
+      not_in_scope: 第 2、3、4、8 步和第 9–11 步
+    - card: guidance-tracking-playbook
+      reached: 第 1–3 步都走到；第 3 步只标了实际值相对区间的位置，达成与否的判定是临时规则
+      first_guess: {step: 1, what: 检查日怎样定；同一步还要定 GAAP 与非 GAAP 两套指引登记哪一套}
+      steps:
+        - step: 1
+          did: 登记六份新闻稿指引表里的全部量化指引，共 48 条
+          classification: 已完成
+          provenance: {material: [按“谁、何时、数值、指标、检查日”登记], added: [区间同时记中点], ad_hoc: [检查日 = 下一份业绩新闻稿的发布日, GAAP 与非 GAAP 都登记, 只登记新闻稿指引表]}
+          guesses:
+            - what: 检查日怎样定
+              options: [实际值首次公布日, 对应 10-Q 或 10-K 的申报日, 目标期末日]
+              chosen: 实际值首次公布日（下一份业绩新闻稿）
+            - what: 两套口径登记哪一套
+              options: [都登记, 只登记 GAAP, 只登记非 GAAP]
+              chosen: 都登记
+            - what: 约数指引（不带区间）算不算已量化
+              options: [算，按点值登记, 不登记]
+              chosen: 算，按点值登记
+          note: 电话会讲稿和演示材料里的其他指引（资本开支等）没有取，不在登记范围
+        - step: 2
+          did: 确认每个指标能用官方数据核对
+          classification: 已完成（按临时口径）
+          provenance: {material: [], added: [口径确认整步], ad_hoc: [非 GAAP 实际值以公司 8-K 新闻稿为准, GAAP 营业费用 = 毛利 − 营业利润]}
+          guesses:
+            - what: 非 GAAP 实际值只在公司自己的新闻稿里，算不算“官方数据”
+              options: [算（8-K 是申报文件）, 不算，记为无法核对]
+              chosen: 算
+            - what: GAAP 营业费用没有对应的 XBRL 科目
+              options: [毛利减营业利润, 取新闻稿列示值]
+              chosen: 毛利减营业利润（与新闻稿列示值一致）
+        - step: 3
+          did: 已到期的 40 条取实际值并标位置；未到期的 8 条留空
+          classification: 位置已完成；达成与否需人工判断
+          provenance: {material: [], added: [到期核对整步, 三种标记], ad_hoc: [区间内 = 达成，区间外 = 未达成并注明方向, 约数指引只记差值不判定]}
+          guesses:
+            - what: 怎样算达成
+              options: [落在区间内, 不低于下限（费用为不高于上限）, 与中点比]
+              chosen: 落在区间内
+              impact: 32 条区间指引里 29 条实际值高于上限，按这条规则都记为未达成；换成第二种规则，营收、毛利率、每股收益的 26 条会变成达成
+            - what: 约数指引没有区间，怎样判定
+              options: [不判定只记差值, 自定容差, 按四舍五入位数]
+              chosen: 不判定只记差值
+            - what: 实际值取几位小数
+              options: [新闻稿列示精度, XBRL 精确值]
+              chosen: 新闻稿列示精度
+      not_in_scope: 第 4、5 步的统计和反馈；定性承诺
+
+  results:
+    dupont-return-decomposition:
+      disclosed:
+        - {period: FY2021, total_assets: 58849, equity: 43933}
+        - {period: FY2022, revenue: 30758, net_income: 8687, total_assets: 66283, equity: 49907}
+        - {period: FY2023, revenue: 15540, net_income: -5833, total_assets: 64254, equity: 44120}
+        - {period: FY2024, revenue: 25111, net_income: 778, total_assets: 69416, equity: 45131}
+        - {period: FY2025, revenue: 37378, net_income: 8539, total_assets: 82798, equity: 54165}
+        - {period: FY2026, revenue: 133188, net_income: 84969, total_assets: 195888, equity: 138378}
+      derived:
+        - {period: FY2022, roe: 0.1851, factors: {net_margin: 0.2824, asset_turnover: 0.4916, leverage: 1.3335}}
+        - {period: FY2023, roe: -0.1241, factors: {net_margin: -0.3754, asset_turnover: 0.2381, leverage: 1.3883}}
+        - {period: FY2024, roe: 0.0174, factors: {net_margin: 0.0310, asset_turnover: 0.3757, leverage: 1.4977}}
+        - {period: FY2025, roe: 0.1720, factors: {net_margin: 0.2284, asset_turnover: 0.4911, leverage: 1.5329}}
+        - {period: FY2026, roe: 0.8826, factors: {net_margin: 0.6380, asset_turnover: 0.9558, leverage: 1.4474}}
+      sensitivity:
+        ending_balance_roe: {FY2022: 0.1741, FY2023: -0.1322, FY2024: 0.0172, FY2025: 0.1576, FY2026: 0.6140}
+        note: 仅用来显示平均与期末的差别；卡写明用平均值
+    working-capital-forecast:
+      disclosed:
+        - {period: FY2022, revenue: 30758, cogs: 16860, receivables: 5130, inventory: 6663, payables_and_accrued: 6090, trade_receivables: 4765, trade_payables: 2142}
+        - {period: FY2023, revenue: 15540, cogs: 16956, receivables: 2443, inventory: 8387, payables_and_accrued: 3958, trade_receivables: 2048, trade_payables: 1725}
+        - {period: FY2024, revenue: 25111, cogs: 19498, receivables: 6615, inventory: 8875, payables_and_accrued: 7299, trade_receivables: 5419, trade_payables: 2726}
+        - {period: FY2025, revenue: 37378, cogs: 22505, receivables: 9265, inventory: 8355, payables_and_accrued: 9649, trade_receivables: 7163, trade_payables: 3132}
+        - {period: FY2026, revenue: 133188, cogs: 25684, receivables: 36197, inventory: 10372, payables_and_accrued: 22605, trade_receivables: 31793, trade_payables: 3518}
+      derived:
+        - {period: FY2022, days: {receivable: 60.9, inventory: 144.2, payable: 131.8}, operating_cycle_days: 205.1, cash_cycle_days: 73.3}
+        - {period: FY2023, days: {receivable: 57.4, inventory: 180.5, payable: 85.2}, operating_cycle_days: 237.9, cash_cycle_days: 152.7}
+        - {period: FY2024, days: {receivable: 96.2, inventory: 166.1, payable: 136.6}, operating_cycle_days: 262.3, cash_cycle_days: 125.7}
+        - {period: FY2025, days: {receivable: 90.5, inventory: 135.5, payable: 156.5}, operating_cycle_days: 226.0, cash_cycle_days: 69.5}
+        - {period: FY2026, days: {receivable: 99.2, inventory: 147.4, payable: 321.2}, operating_cycle_days: 246.6, cash_cycle_days: -74.6}
+      change_vs_prior_year:
+        - {period: FY2023, receivable: -3.5, inventory: 36.3, payable: -46.6, operating_cycle: 32.8, cash_cycle: 79.4}
+        - {period: FY2024, receivable: 38.8, inventory: -14.4, payable: 51.4, operating_cycle: 24.4, cash_cycle: -27.1}
+        - {period: FY2025, receivable: -5.7, inventory: -30.6, payable: 19.9, operating_cycle: -36.3, cash_cycle: -56.2}
+        - {period: FY2026, receivable: 8.7, inventory: 11.9, payable: 164.8, operating_cycle: 20.6, cash_cycle: -144.1}
+      sensitivity:
+        trade_lines:
+          note: 应收、应付改用附注里的贸易应收与贸易应付，其余不变
+          receivable_days: {FY2022: 56.5, FY2023: 48.1, FY2024: 78.8, FY2025: 69.9, FY2026: 87.1}
+          payable_days: {FY2022: 46.4, FY2023: 37.1, FY2024: 51.0, FY2025: 50.8, FY2026: 50.0}
+          cash_cycle_days: {FY2022: 154.4, FY2023: 191.5, FY2024: 193.9, FY2025: 154.7, FY2026: 184.5}
+        average_balance:
+          note: 表面行不变，余额改用年初年末平均
+          cash_cycle_days: {FY2022: 59.1, FY2023: 142.8, FY2024: 122.0, FY2025: 79.8, FY2026: -33.8}
+    earnings-quality-checklist:
+      period: FQ4-26（年度项为 FY2026）
+      checks:
+        organic_growth:
+          result: 不适用（临时口径：全部记为有机）
+          revenue_growth_yoy: {FQ4-26: 3.793, FY2026: 2.563}
+          note: 公司不披露有机增长；FY2022–FY2026 现金流量表没有收购支付科目
+        margin_trend_5q:
+          result: 毛利率与营业利润率逐季环比均为正
+          gaap:
+            - {period: FQ4-25, revenue: 11315, gross_margin_pct: 44.67, operating_margin_pct: 32.29, gm_yoy_pt: 9.35, om_yoy_pt: 12.65}
+            - {period: FQ1-26, revenue: 13643, gross_margin_pct: 56.04, operating_margin_pct: 44.98, gm_yoy_pt: 17.60, om_yoy_pt: 20.01}
+            - {period: FQ2-26, revenue: 23860, gross_margin_pct: 74.41, operating_margin_pct: 67.62, gm_yoy_pt: 37.62, om_yoy_pt: 45.61}
+            - {period: FQ3-26, revenue: 41456, gross_margin_pct: 84.56, operating_margin_pct: 80.37, gm_yoy_pt: 46.85, om_yoy_pt: 57.05}
+            - {period: FQ4-26, revenue: 54229, gross_margin_pct: 86.76, operating_margin_pct: 80.68, gm_yoy_pt: 42.09, om_yoy_pt: 48.38}
+          yoy_driver: 未做（需人工判断）
+        diversification:
+          result: 已算占比；冲击影响未做（需人工判断）
+          largest_end_market_share: 0.3235
+          basis: FY2026 业务单元分部收入，最大为 CMBU
+          business_unit_revenue:
+            FY2026: {CMBU: 43085, CDBU: 37592, MCBU: 36601, AEBU: 15886, other: 24, total: 133188}
+            FQ4-26: {CMBU: 16283, CDBU: 18002, MCBU: 13114, AEBU: 6824, other: 6, total: 54229}
+            FY2025: {CMBU: 13524, CDBU: 7229, MCBU: 11859, AEBU: 4753, other: 13, total: 37378}
+          share_pct:
+            FY2026: {CMBU: 32.35, CDBU: 28.22, MCBU: 27.48, AEBU: 11.93}
+            FQ4-26: {CMBU: 30.03, CDBU: 33.20, MCBU: 24.18, AEBU: 12.58}
+            FY2025: {CMBU: 36.18, CDBU: 19.34, MCBU: 31.73, AEBU: 12.72}
+          other_bases_pct: {dram_share_9m_fy2026: 77.14, dram_share_fy2025: 76.46, us_share_fy2025: 64.51}
+          note: FY2026 分部 = 前三季累计（10Q-FQ3-26）+ 第四季度（新闻稿）；FY2026 10-K 的分部事实要等 FSDS 2026q4 发布
+        cash_conversion:
+          result: 否（临时口径：窗口内每一期都低于 1 才算持续）
+          quarterly:
+            - {period: FQ4-25, operating_cash_flow: 5730, net_income: 3201, ratio: 1.79}
+            - {period: FQ1-26, operating_cash_flow: 8411, net_income: 5240, ratio: 1.61}
+            - {period: FQ2-26, operating_cash_flow: 11903, net_income: 13785, ratio: 0.86}
+            - {period: FQ3-26, operating_cash_flow: 25388, net_income: 28243, ratio: 0.90}
+            - {period: FQ4-26, operating_cash_flow: 43973, net_income: 37701, ratio: 1.17}
+          annual:
+            - {period: FY2022, operating_cash_flow: 15181, net_income: 8687, ratio: 1.75}
+            - {period: FY2023, operating_cash_flow: 1559, net_income: -5833, ratio: null}
+            - {period: FY2024, operating_cash_flow: 8507, net_income: 778, ratio: 10.93}
+            - {period: FY2025, operating_cash_flow: 17525, net_income: 8539, ratio: 2.05}
+            - {period: FY2026, operating_cash_flow: 89675, net_income: 84969, ratio: 1.06}
+      not_done: [beat_consensus, guidance_change, backlog_trend, 估值对照]
+    guidance-tracking-playbook:
+      ticker: MU
+      made_by: management
+      position_terms: {within: 实际值在区间内, above: 高于区间上限, below: 低于区间下限, point: 约数指引，只记实际值减指引值}
+      claims:
+        - target: FQ4-25
+          made_on: "2025-06-25"
+          source: 8K-FQ3-25 对应的新闻稿，Business Outlook 表
+          check_on: "2025-09-23"
+          check_source: 8K-FQ4-25 对应的新闻稿；GAAP 项另用 10K-FY2025 减前三季累计核对
+          items:
+            - {metric: revenue, gaap: {mid: 10700, half: 300, actual: 11315, position: above}, non_gaap: {mid: 10700, half: 300, actual: 11315, position: above}}
+            - {metric: gross_margin_pct, gaap: {mid: 41.0, half: 1.0, actual: 44.7, position: above}, non_gaap: {mid: 42.0, half: 1.0, actual: 45.7, position: above}}
+            - {metric: operating_expenses, gaap: {mid: 1350, half: 20, actual: 1400, position: above}, non_gaap: {mid: 1200, half: 20, actual: 1214, position: within}}
+            - {metric: diluted_eps, gaap: {mid: 2.29, half: 0.15, actual: 2.83, position: above}, non_gaap: {mid: 2.50, half: 0.15, actual: 3.03, position: above}}
+        - target: FQ1-26
+          made_on: "2025-09-23"
+          source: 8K-FQ4-25 对应的新闻稿，Business Outlook 表
+          check_on: "2025-12-17"
+          check_source: 8K-FQ1-26 对应的新闻稿；GAAP 项另用 10Q-FQ1-26 核对
+          items:
+            - {metric: revenue, gaap: {mid: 12500, half: 300, actual: 13643, position: above}, non_gaap: {mid: 12500, half: 300, actual: 13643, position: above}}
+            - {metric: gross_margin_pct, gaap: {mid: 50.5, half: 1.0, actual: 56.0, position: above}, non_gaap: {mid: 51.5, half: 1.0, actual: 56.8, position: above}}
+            - {metric: operating_expenses, gaap: {mid: 1490, half: 20, actual: 1510, position: within}, non_gaap: {mid: 1340, half: 20, actual: 1334, position: within}}
+            - {metric: diluted_eps, gaap: {mid: 3.56, half: 0.15, actual: 4.60, position: above}, non_gaap: {mid: 3.75, half: 0.15, actual: 4.78, position: above}}
+        - target: FQ2-26
+          made_on: "2025-12-17"
+          source: 8K-FQ1-26 对应的新闻稿，Business Outlook 表
+          check_on: "2026-03-18"
+          check_source: 8K-FQ2-26 对应的新闻稿；GAAP 项另用 10Q-FQ2-26 核对
+          items:
+            - {metric: revenue, gaap: {mid: 18700, half: 400, actual: 23860, position: above}, non_gaap: {mid: 18700, half: 400, actual: 23860, position: above}}
+            - {metric: gross_margin_pct, gaap: {mid: 67.0, half: 1.0, actual: 74.4, position: above}, non_gaap: {mid: 68.0, half: 1.0, actual: 74.9, position: above}}
+            - {metric: operating_expenses, gaap: {mid: 1560, half: 20, actual: 1620, position: above}, non_gaap: {mid: 1380, half: 20, actual: 1421, position: above}}
+            - {metric: diluted_eps, gaap: {mid: 8.19, half: 0.20, actual: 12.07, position: above}, non_gaap: {mid: 8.42, half: 0.20, actual: 12.20, position: above}}
+        - target: FQ3-26
+          made_on: "2026-03-18"
+          source: 8K-FQ2-26 对应的新闻稿，Business Outlook 表
+          check_on: "2026-06-24"
+          check_source: 8K-FQ3-26 对应的新闻稿；GAAP 项另用 10Q-FQ3-26 核对
+          items:
+            - {metric: revenue, gaap: {mid: 33500, half: 750, actual: 41456, position: above}, non_gaap: {mid: 33500, half: 750, actual: 41456, position: above}}
+            - {metric: gross_margin_pct, gaap: {mid: 81, half: null, actual: 84.6, position: point, diff: 3.6}, non_gaap: {mid: 81, half: null, actual: 84.9, position: point, diff: 3.9}}
+            - {metric: operating_expenses, gaap: {mid: 1600, half: null, actual: 1738, position: point, diff: 138}, non_gaap: {mid: 1400, half: null, actual: 1518, position: point, diff: 118}}
+            - {metric: diluted_eps, gaap: {mid: 18.90, half: 0.40, actual: 24.67, position: above}, non_gaap: {mid: 19.15, half: 0.40, actual: 25.11, position: above}}
+        - target: FQ4-26
+          made_on: "2026-06-24"
+          source: 8K-FQ3-26 对应的新闻稿，Business Outlook 表
+          check_on: "2026-09-30"
+          check_source: 8K-FQ4-26 对应的新闻稿；GAAP 项另用 10K-FY2026 减前三季累计核对
+          items:
+            - {metric: revenue, gaap: {mid: 50000, half: 1000, actual: 54229, position: above}, non_gaap: {mid: 50000, half: 1000, actual: 54229, position: above}}
+            - {metric: gross_margin_pct, gaap: {mid: 86, half: null, actual: 86.8, position: point, diff: 0.8}, non_gaap: {mid: 86, half: null, actual: 87.0, position: point, diff: 1.0}}
+            - {metric: operating_expenses, gaap: {mid: 1860, half: null, actual: 3296, position: point, diff: 1436}, non_gaap: {mid: 1650, half: null, actual: 2568, position: point, diff: 918}}
+            - {metric: diluted_eps, gaap: {mid: 30.73, half: 1.00, actual: 32.87, position: above}, non_gaap: {mid: 31.00, half: 1.00, actual: 33.42, position: above}}
+        - target: FQ1-27
+          made_on: "2026-09-30"
+          source: 8K-FQ4-26 对应的新闻稿，Business Outlook 表
+          check_on: FQ1-27 业绩新闻稿发布日（尚未公布）
+          check_source: 下一份业绩新闻稿与 10-Q
+          items:
+            - {metric: revenue, gaap: {mid: 61500, half: 1500, actual: null, position: null}, non_gaap: {mid: 61500, half: 1500, actual: null, position: null}}
+            - {metric: gross_margin_pct, gaap: {mid: 85.95, half: null, actual: null, position: null}, non_gaap: {mid: 86.25, half: null, actual: null, position: null}}
+            - {metric: operating_expenses, gaap: {mid: 2310, half: null, actual: null, position: null}, non_gaap: {mid: 2060, half: null, actual: null, position: null}}
+            - {metric: diluted_eps, gaap: {mid: 37.84, half: 1.00, actual: null, position: null}, non_gaap: {mid: 38.15, half: 1.00, actual: null, position: null}}
+      summary:
+        registered: 48
+        due: 40
+        not_due: 8
+        range_claims_due: {total: 32, within: 3, above: 29, below: 0}
+        point_claims_due: {total: 8, actual_above_point: 8}
+        by_ad_hoc_rule: {met: 3, missed_above_range: 29, not_judged: 8, unverifiable: 0}
+        note: 这里只是位置计数，不是兑现率统计；统计属于范围外的第 4 步
+
+  summary_by_class:
+    已完成:
+      - dupont-return-decomposition 第 1、3 步
+      - working-capital-forecast 第 1、2 步，第 3 步的差异计算
+      - earnings-quality-checklist 第 1、7 步，第 5 步的趋势，第 6 步的占比
+      - guidance-tracking-playbook 第 1、2 步，第 3 步的取实际值与位置
+    因数据不足未执行:
+      - 没有哪一个范围内步骤整步落在这一类
+      - 局部：FY2026 10-K 正文和分部事实本地没有（FSDS 2026q4 未发布），第 6 步的全年分部改用季报加新闻稿拼出
+      - 局部：新闻稿指引表之外的指引（电话会讲稿、演示材料）没有取
+    需人工判断:
+      - working-capital-forecast 第 3 步的差异原因
+      - earnings-quality-checklist 第 5 步的同比变化原因，第 6 步的冲击影响
+      - guidance-tracking-playbook 第 3 步的达成判定规则，以及约数指引的判定
+
+  handover_gaps:
+    - “所需数据”只写到科目类别。应收、应付取报表表面行还是附注里的贸易项，卡和交接都没有写，而这一处对结果影响最大。
+    - 没有写每张卡用年度还是季度。题目只给了“5 个财年、5 个季度”，哪张卡用哪种由下游定；平均余额和同比还各要多取一期，超出题目写的期间。
+    - 没有写 GAAP 还是非 GAAP，第 3、4 张卡都碰到。
+    - 没有写财年不按日历年、53 周财年、14 周季度怎样处理，也没有写单季数字要推算时（第四季度）能不能用。
+    - 只交 id、提交号、步骤编号和所需数据不够执行。判定一步的出处要读卡里的来源说明、判断规则和待补充，等于要能读到私有库的全文；公开的下游记录因此无法单独复核。
+    - 出处的三分法在卡里是按段落写的，不是按步骤或参数标的；第 3 张卡注明清单各项并非都由来源逐项列出，下游分不清哪一步有材料来源。
+    - 三类归类按整步用不够细。多个步骤是“计算做完、原因或判定要人工判断”，本记录只能拆成半步来归类。
+    - 第 4 张卡的三种核对标记放不下“实际值高于区间上限”和“约数指引”两种情况。
+    - 第 4 张卡的输出是一家公司一个登记文件。本项目 ../playbooks/ 的说明指向本目录的旧卡，登记该落在哪里没有约定，本次只写在本记录里。
+    - 本项目 ../methods/ 里有两张同名旧卡（earnings-quality-checklist、guidance-tracking-playbook），links.methods 只写 id 会分不清指哪一份，本记录加了 library 字段。
+    - 试点取数没有登记来源和数据集，原始文件不在版本存储里，这次执行不能用 iros 命令复现；交接没有约定试点的原始文件放哪里。
+
+  checks:
+    - FQ4-24、FQ4-25、FQ4-26 的推算单季营收、毛利、营业利润、净利润与新闻稿列示的单季数字逐值一致
+    - 新闻稿列示的 FQ1-26 至 FQ3-26 GAAP 营收、毛利、营业利润、净利润、稀释每股收益与 Company Facts 的单季事实逐值一致
+    - FQ3-26 的四个业务单元收入，本地 segment_facts 与新闻稿一致；FY2026 四个业务单元加其他之和等于合并营收 133,188
+    - FY2025 的应收合计、贸易应收、应付账款及应计费用与本地 FY2025 10-K 原文一致
+    - 三因子乘积等于净利润除以平均权益
+    - 各期间在多份申报中出现的数值相同，没有重述差异
+  not_available:
+    - 一致预期（按题目不使用）
+    - FY2026 10-K 正文与其分部、地区、主要客户事实（本地 FSDS 尚无 2026q4）
+    - 电话会讲稿与演示材料中的指引
+    - 订单、积压订单（不在本题范围）
