@@ -1,0 +1,859 @@
+# Intel 2026 年第三季度财报的走查记录：照方法库四张卡的首批范围（与 Micron、Danaher 两次走查相同）在 Intel 上走一遍，
+# 逐步记录取数、计算、归类和执行时的临时决定。这是一次财报后的更新，不是方法库的测试题；只记录照卡能算出什么，不是投资结论。
+# 本文件只写卡 id、方法库版本、步骤编号、数据来源、期间和数值，以及每一步的归类和执行时的临时决定；
+# 不含卡的正文、来源案例和出处判定。本目录 ../methods/ 里同名的旧卡是 2026-11-05 的副本，本记录没有使用。
+id: sec-intc-20261029
+record_type: application
+status: draft
+
+source:
+  type: official
+  title: Intel Corporation 年报、季报与业绩新闻稿（8-K 附件 99.1）
+  author: Intel Corporation（CIK 50863）
+  published_on: "2026-10-29"
+  data_as_of: "2026-09-26"
+  locator: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=50863&type=10-Q
+  sha256: ""
+  outcome_known: true
+  filings:
+    - {id: 10Q-Q3-26, form: 10-Q, accession: 0000050863-26-000191, filed: "2026-10-30"}
+    - {id: 10Q-Q2-26, form: 10-Q, accession: 0000050863-26-000157, filed: "2026-07-24"}
+    - {id: 10Q-Q1-26, form: 10-Q, accession: 0000050863-26-000079, filed: "2026-04-24"}
+    - {id: 10Q-Q3-25, form: 10-Q, accession: 0000050863-25-000179, filed: "2025-11-06"}
+    - {id: 10K-FY2025, form: 10-K, accession: 0000050863-26-000011, filed: "2026-01-23"}
+    - {id: 10K-FY2024, form: 10-K, accession: 0000050863-25-000009, filed: "2025-01-31"}
+    - {id: 10K-FY2023, form: 10-K, accession: 0000050863-24-000010, filed: "2024-01-26", note: 只经 Company Facts 使用}
+    - {id: 10K-FY2022, form: 10-K, accession: 0000050863-23-000006, filed: "2023-01-27", note: 只经 Company Facts 使用}
+    - {id: 10K-FY2021, form: 10-K, accession: 0000050863-22-000007, filed: "2022-01-27", note: 只经 Company Facts 使用}
+    - {id: 10K-FY2020, form: 10-K, accession: 0000050863-21-000010, filed: "2021-01-22", note: 只经 Company Facts 使用}
+    - {id: 8K-Q3-26, form: 8-K Item 2.02, accession: 0000050863-26-000188, filed: "2026-10-29"}
+    - {id: 8K-Q2-26, form: 8-K Item 2.02, accession: 0000050863-26-000155, filed: "2026-07-23"}
+    - {id: 8K-Q1-26, form: 8-K Item 2.02, accession: 0000050863-26-000077, filed: "2026-04-23"}
+    - {id: 8K-Q4-25, form: 8-K Item 2.02, accession: 0000050863-26-000009, filed: "2026-01-22"}
+    - {id: 8K-Q3-25, form: 8-K Item 2.02, accession: 0000050863-25-000169, filed: "2025-10-23"}
+    - {id: 8K-Q2-25, form: 8-K Item 2.02, accession: 0000050863-25-000107, filed: "2025-07-24"}
+    - {id: 8K-Q1-25, form: 8-K Item 2.02, accession: 0000050863-25-000070, filed: "2025-04-24"}
+    - {id: 8K-Q4-24, form: 8-K Item 2.02, accession: 0000050863-25-000004, filed: "2025-01-30"}
+    - {id: 8K-Q3-24, form: 8-K Item 2.02, accession: 0000050863-24-000147, filed: "2024-10-31"}
+    - {id: 8K-Q2-24, form: 8-K Item 2.02, accession: 0000050863-24-000122, filed: "2024-08-01"}
+    - {id: 8K-Q1-24, form: 8-K Item 2.02, accession: 0000050863-24-000074, filed: "2024-04-25"}
+    - {id: 8K-Q4-23, form: 8-K Item 2.02, accession: 0000050863-24-000008, filed: "2024-01-25"}
+  retrieval:
+    retrieved_on: "2026-11-14"
+    note: >-
+      没有登记新的来源或数据集，原始文件没有进入本项目的版本存储，只留在仓库外的临时目录。
+      Company Facts 和 Submissions 用项目的通用请求标识取自 data.sec.gov；10-K、10-Q 和 8-K 附件 99.1 按方法库交接约定的取数范围，
+      用本项目已配置的 SEC 请求标识向 www.sec.gov 取得（标识只用于这些请求，不在本记录中写出）。
+      新闻稿读的是 8-K 附件 99.1 本身，不是公司网站页面。电话会讲稿和演示材料没有取。
+    files:
+      - what: Company Facts API（data.sec.gov，CIK 50863），合并口径的全部 XBRL 事实
+        via: 项目的 SecClient，一次性脚本调用
+        sha256: 9c568557a91cfbc234c999183d6434f8bbf7b8ebf2f29577f28d761a9becb59d
+      - what: Submissions API（data.sec.gov），用来取 10-K、10-Q、8-K 的申报编号与日期
+        via: 项目的 SecClient，一次性脚本调用
+        sha256: d756db2711dece646e16a1dbe262a56158e4ff9f8b0524a823e4bfc541a3a096
+      - what: 10-K、10-Q 原文与 8-K 附件 99.1（www.sec.gov/Archives）
+        via: 项目的 SecClient，一次性脚本调用
+        sha256:
+          10Q-Q3-26: b1c13a8f20a018b26adb4789c61e83b4c6cf60f08fcb6095750cdef0fbcab407
+          10Q-Q2-26: be4bfbd4b035417eacf95d3f6402251189eb282d8d4e709e7389057867fd2ce6
+          10Q-Q1-26: 254fa91748de4b95ce579533007f37bb9cce43894e244987bdb5e5fe2143cc55
+          10Q-Q3-25: 1b4a3f83ff7289c7d2a6138d693b8e36fc157ce11ddd6a362e765838db4296b6
+          10K-FY2025: 8891e84fd2c96f301db47db661492b73f1e6de15962d50302b8c5773a7869b70
+          10K-FY2024: ba4eaa136879b19939fb1ba3f7227dd91ffa7a8984b66bab2954306da467429f
+          8K-Q3-26: 908b5c152190eca7c8e37a19abceb9308dc777617f58b6601826aaafc8053b91
+          8K-Q2-26: 576764c09076dbfea8a5f3e049736bea52e6c8009426862201a2aef16c2de8f2
+          8K-Q1-26: 0f4cf3e6221530ae0fb0cd0c44323a881c1f5a58278bb6cfa8d4b6c0ecac0631
+          8K-Q4-25: 99d134b9dab08a4c348983bbf01a57246dc46c6c37a0c06f5bce1280fcc0f3bc
+          8K-Q3-25: 926ee3fa1560e8c46ca55e1b239503a78bd772b3cf38ded2631b3f8a4ca9b146
+          8K-Q2-25: 9cd00480e424d3747e18d1c9a096efdbbce5c05df54292f517caef431e7d00b3
+          8K-Q1-25: e2ded7ed36e10e30ab50ceee0ac18c46aff40de7f1f85241f7926524a446c7b2
+          8K-Q4-24: b53e365021d0156fb19a5a74b139a1afbd95ac203b92c261c3fca39d4712971e
+          8K-Q3-24: b065a426d8d3eaa404c3fd58061eb630263a253c273ccd99e7461e162c4ce583
+          8K-Q2-24: 081c5dc74c2615d241bce324508f6e8d28f97e75995441c9285a9c373d58d123
+          8K-Q1-24: 8ec17ce08daee2b104aedde815ac88378e5163f84679624ee3d92d7a05b9c17d
+          8K-Q4-23: 2440673c3e4bf3facd22d41069c5b0e8078aa26e22a392b5da84f6c83b83c796
+        caveat: 8K-Q1-24、8K-Q4-23 只用来确认 2024 年的全年指引从哪一份开始给（这两份没有全年指引表）。
+
+extraction:
+  extracted_on: "2026-11-14"
+  method: ai_assisted
+  tool: Claude Opus 5.5
+  review: 只做了下面 checks 列出的技术核对；未经人工核对
+  quality_notes: 单次执行，没有重复执行或人工对照
+
+method_library:
+  repo: research-method-extraction（私有）
+  version: research-method-extraction＠22e688d（已提交，工作区无改动）
+  test: none   # 不是方法库测试题；是一次财报后的更新
+  compared_with: [sec-mu-20261009, sec-dhr-20261021]
+  cards:
+    - {id: dupont-return-decomposition, steps: [1, 3]}
+    - {id: working-capital-forecast, steps: [1, 2, 3], note: 第 3 步只和自身历史比}
+    - {id: earnings-quality-checklist, steps: [1, 5, 6, 7]}
+    - {id: guidance-tracking-playbook, steps: [1, 2, 3], note: 只登记已量化的指引}
+
+research_question:
+  - layer: own_extension
+    text: Intel 2026 年第三季度财报发布后，照四张卡的首批范围能算出什么；Micron、Danaher 两次走查临时定的口径能不能沿用？
+    location: ""
+    verified: false
+
+thesis: []
+
+evidence:
+  - layer: source_fact
+    text: 财年是 52/53 周制，结束于 12 月最后一个星期六附近：FY2020 至 FY2025 的期末为 2020-12-26、2021-12-25、2022-12-31、2023-12-30、2024-12-28、2025-12-27；FY2022 为 53 周（371 天），其余为 52 周。窗口内的季度都是 13 周。
+    location: Company Facts 各期间起止日；Submissions 的 reportDate
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 2025-09-12 出售 Altera 51% 股权并出表，此前 Altera 的经营结果计入“All Other”；出表后按权益法核算剩余 49%，Altera 成为外部客户（Q3-26 向其提供晶圆制造服务确认收入 126，前九个月 446）。Q3-25 确认出售收益 5,546（在营业外）。公司没有披露 Altera 在 Q3-25 的季度收入；10K-FY2025 只写了 FY2024 Altera 收入 1.5 十亿美元。
+    location: 10Q-Q3-26 第 9 号附注（Acquisitions and Divestitures）与关联方段落、营业外收支表；10K-FY2025 MD&A 分部收入小结
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 2026-02-03 Mobileye 完成收购 Mentee Robotics，对价 637（现金净额 596）。期间内没有其他收购现金流出；公司不披露剔除收购和剥离的有机增长。
+    location: 10Q-Q3-26 第 9 号附注；Company Facts 的 PaymentsToAcquireBusinessesNetOfCashAcquired
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 归属 Intel 的净利润在窗口内多次被营业外项目主导：Q3-25 含 Altera 出售收益 5,546；Q2-26、9M-26 含托管股份（Escrowed Shares）按市值计量的损失（9M-26 合计 12,614），Q3-26 为收益 1,005。公司在非 GAAP 调节表中剔除这两项。
+    location: 8K-Q3-25、8K-Q2-26、8K-Q3-26 的非 GAAP 调节表；10Q-Q3-26 营业外收支表
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 资产负债表的应付账款是单独一行（应计薪酬、其他应计负债另列），但其中含资本开支的应付款：公司与部分设备供应商约定超过 90 天的付款期，FY2025、FY2024 末这类未付款分别为 1.5、3.2 十亿美元，计入“应付账款和其他应计负债”，没有拆出应付账款中的部分。
+    location: 10K-FY2025 财务报表附注（现金流补充说明段）；10Q-Q3-26 现金流量表脚注
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 少数股东权益在窗口内明显上升（FY2021 末为 0，FY2025 末 12,079，Q3-26 末 16,642），来自 Mobileye、IMS、爱尔兰和亚利桑那的 SCIP 合资。Q2-26 公司以 14.2 十亿美元买回爱尔兰 SCIP 的少数股东权益。
+    location: Company Facts 的 MinorityInterest；10K-FY2025 MD&A 少数股东权益段；10Q-Q3-26 流动性段落
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 公司每份业绩新闻稿给下一季度的 GAAP 和非 GAAP 两套指引（收入区间、毛利率、税率、每股收益），并写明毛利率和每股收益指引以收入区间中点为前提；另有一张全年表（资本开支、政府补助、合作方出资、净资本开支、研发和管理费用或营业费用）。全年表的指标名称在窗口内改过两次：8K-Q2-25 起“R&D and MG&A”改为“operating expenses”（GAAP 口径因此含重组费用），“net capital spending”改为“net capital expenditures”。
+    location: 各期新闻稿 Business Outlook 段、GAAP 与非 GAAP 指引调节表
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 公司在 10K-FY2025 说明，Q3-25 10-Q 中与美国政府协议有关的会计处理在征询 SEC 意见后作了调整，公司认定不重大。本次用到的 Q3-25 收入、毛利、营业利润、净利润在 Company Facts 中只有一个值，各份申报一致。
+    location: 10K-FY2025 MD&A；Company Facts 中 Q3-25 各期间的 n_vals
+    verified: true
+    verifiability: public_filing
+
+causal_mechanism: []
+
+analytical_method:
+  - layer: own_extension
+    text: 按 method_library 列出的卡和步骤编号执行；每一步的归类和临时决定写在 method_output.walkthrough，Micron、Danaher 两次走查的同类决定是沿用还是改了，写在每条 vs_prior。
+    location: ""
+    verified: false
+
+assumptions:
+  - layer: own_extension
+    text: 四张卡共用的临时决定（沿用 Micron、Danaher）：同一期间在多份申报中出现时取最新一份的数值；53 周年度不折算；第四季度单季 = 全年 − 前三季累计；季度经营现金流 = 年初至今累计相减；分部数字取各季新闻稿的分部信息表（与 10-Q 分部附注同源），同比对比期取最新一份新闻稿的上年同期列。
+    location: ""
+    verified: false
+  - layer: own_extension
+    text: 期间：年度取 FY2021–FY2025，平均余额另用 FY2020 期末；季度取 Q3-25 至 Q3-26，同比另用 Q3-24 至 Q2-25。截至 2026-11-14，最新的定期报告是 10Q-Q3-26（2026-10-30 申报），Q4-26 和 FY2026 尚未公布。指引追踪：季度指引看目标期为 Q3-25 至 Q3-26 的 5 份，另登记新发的 Q4-26；全年指引看 FY2024、FY2025 两个已结束的财年，加 FY2026。
+    location: ""
+    verified: false
+
+valuation_logic: []
+counterarguments: []
+
+falsification:
+  - layer: own_extension
+    text: 换一个人或换一次执行，在标为临时决定的地方选别的选项而结论差异不大，说明该处不算真正挡路；差异大的几处见各卡 sensitivity。
+    location: ""
+    verified: false
+
+transferability:
+  - layer: ai_inference
+    text: 结果只适用于 Intel 的这一期间和所选口径。Intel 与前两家的差别：净利润多期为负或接近零、被营业外项目主导；少数股东权益大；应付账款含资本开支应付；出售了一项业务但不披露它的季度收入；指引是季度 GAAP 与非 GAAP 两套加全年费用和资本开支表。
+    location: ""
+    verified: false
+
+links:
+  methods:
+    - {id: dupont-return-decomposition, fit: match, library: research-method-extraction@22e688d}
+    - {id: working-capital-forecast, fit: match, library: research-method-extraction@22e688d}
+    - {id: earnings-quality-checklist, fit: match, library: research-method-extraction@22e688d}
+    - {id: guidance-tracking-playbook, fit: match, library: research-method-extraction@22e688d}
+  claims: []   # 指引登记放在下面 method_output，没有写入 ../playbooks/
+
+method_output:
+  unit: 金额为百万美元（每股收益为美元；全年指引表为十亿美元）；比率为小数，利润率、增长和占比为百分数，周转为天
+  periods:
+    annual: FY2021–FY2025（期末 2021-12-25、2022-12-31、2023-12-30、2024-12-28、2025-12-27）；平均余额另用 FY2020 期末 2020-12-26
+    quarterly: Q3-25、Q4-25、Q1-26、Q2-26、Q3-26（期末 2025-09-27、2025-12-27、2026-03-28、2026-06-27、2026-09-26）；同比另用 Q3-24 至 Q2-25
+    latest_available: 截至 2026-11-14，最新的定期报告是 10Q-Q3-26；Q4-26 尚未公布
+  classification_terms: [已完成, 因数据不足未执行, 需人工判断]
+
+  walkthrough:
+    - card: dupont-return-decomposition
+      reached: 第 1、3 步都走完（只做历史年份）
+      first_guess: {step: 1, what: 净利润和权益取归属 Intel 还是含少数股东——本例少数股东权益在 FY2025 末占总权益约一成，且 FY2025 归属 Intel 为负、合并口径为正，两种取法正负相反}
+      steps:
+        - step: 1
+          did: 三因子分解，FY2021–FY2025
+          classification: 已完成
+          guesses:
+            - what: 净利润和权益口径
+              options: [归属 Intel 的净利润 ÷ Intel 股东权益, 合并净利润（含少数股东）÷ 总权益, 非 GAAP 净利润]
+              chosen: 归属 Intel 的净利润 ÷ Intel 股东权益
+              vs_prior: 沿用（Micron、Danaher 都取归属母公司）。前两家少数股东可以忽略，本例不能
+              impact: FY2025 ROE −0.25% 对合并口径 +0.02%，正负相反；其余年份差别在 0.7 个百分点以内。见 sensitivity.total_equity_profitloss
+            - what: 净利润为负或接近零的年份（FY2024、FY2025）
+              options: [照算并标注, 不算]
+              chosen: 照算并标注
+              vs_prior: 沿用 Micron（FY2023 为负时三个因子照算）
+            - what: 净利润被营业外项目主导（FY2024 递延所得税资产估值准备、FY2025 Altera 出售收益和托管股份市值变动）
+              options: [照 GAAP 算, 改用非 GAAP 净利润]
+              chosen: 照 GAAP 算，不调整
+              vs_prior: 新碰到（前两家没有这么大的营业外项目）
+              impact: 没有量化；净利率因子的变化有一部分不是经营带来的，解读属于范围外的第 4 步
+            - what: FY2020 Intel 股东权益在 Company Facts 有两个值（首次 81,038，后来 81,073）
+              options: [取最新申报, 取首次申报]
+              chosen: 取最新申报（共用规则）
+              vs_prior: 沿用
+              impact: 只影响 FY2021 的平均权益，差 17.5，ROE 不变到小数点后四位
+        - step: 3
+          did: 五个财年并列，余额取平均
+          classification: 已完成
+          guesses:
+            - what: 平均值怎样算
+              options: [年初年末两点平均, 五个季末平均]
+              chosen: 年初年末两点平均
+              vs_prior: 沿用
+            - what: 首年的平均余额要多取一期
+              options: [多取 FY2020 期末余额, 首年改用期末余额, 首年不算]
+              chosen: 多取 FY2020 期末余额
+              vs_prior: 沿用
+            - what: 53 周的 FY2022
+              options: [不折算, 按 52/53 折算]
+              chosen: 不折算
+              vs_prior: 沿用 Micron
+              impact: FY2022 资产周转率按 52/53 折算后约低 1.9%
+      not_in_scope: 预测年、ROIC 版本、同业比较、变化原因
+    - card: working-capital-forecast
+      reached: 第 1、2 步走完；第 3 步算出了与自身上年的差异，找原因没有做
+      first_guess: {step: 1, what: 应付账款表面行含资本开支应付（设备供应商的延长账期），分母是销货成本，取表面行会高估应付天数；公司只披露了延长账期那一部分的金额，而且是与其他应计负债的合计}
+      steps:
+        - step: 1
+          did: 应收对营收、存货和应付对销货成本，换成天数，FY2021–FY2025
+          classification: 已完成
+          guesses:
+            - what: 期末还是平均余额
+              options: [期末余额, 年初年末平均]
+              chosen: 期末余额
+              vs_prior: 沿用
+              impact: 见 sensitivity.average_balance；现金周期最多差 22.5 天（FY2022），FY2025 由 44.9 天变为 32.6 天
+            - what: 应付取表面行还是剔除资本开支应付
+              options: [表面行, 表面行减去披露的延长账期资本开支应付（上限调整）, 附注里的贸易应付（公司没有单列）]
+              chosen: 表面行；另列减去延长账期资本开支应付的结果
+              vs_prior: Micron 选表面行（它的表面行含应计费用）；Danaher 的表面行就是贸易应付。本例的表面行是第三种情况：不含应计费用，但含资本开支应付
+              impact: 只有 FY2024、FY2025 有披露。减去后应付天数 128.2→95.5、104.6→88.7，现金周期 20.2→52.9、44.9→60.8 天；FY2024 对 FY2025 的方向由“延长 24.7 天”变为“延长 7.9 天”。披露额含其他应计负债里的部分，所以这是上限调整；普通账期的资本开支应付没有披露，表面行里还有多少无法知道
+            - what: 一年按多少天
+              options: [365, 期间实际天数]
+              chosen: 365
+              vs_prior: 沿用
+              impact: 只有 53 周的 FY2022 不同；按 371 天，现金周期 60.5→61.5 天
+            - what: 用年度还是季度数据
+              options: [年度, 季度年化]
+              chosen: 年度
+              vs_prior: 沿用
+            - what: Altera 出表当年（FY2025）的余额和收入
+              options: [照算, 剔除 Altera 后再算]
+              chosen: 照算
+              vs_prior: 新碰到（Danaher 是收购当年，这里是出售当年）
+              impact: FY2025 期末余额已不含 Altera，全年收入和成本含 Altera 约 8 个半月；公司没有披露 Altera 的期间收入和成本，无法量化
+        - step: 2
+          did: 营业周期 = 收款天数 + 存货天数；现金周期 = 营业周期 − 应付天数
+          classification: 已完成
+          guesses: []
+          note: 合同负债不在这两步的算式里；Intel 的客户预付款没有单列在资产负债表上
+        - step: 3
+          did: 只和自身历史比
+          classification: 差异已完成；找原因需人工判断
+          guesses:
+            - what: 和哪一段历史比
+              options: [上一年, 五年平均, 五年区间]
+              chosen: 上一年
+              vs_prior: 沿用
+          note: >-
+            三处大的变化要读管理层说明并作判断，本次不解释：FY2022 收款天数由 43.7 降到 23.9；
+            FY2024 应付天数升到 128.2、FY2025 回落到 104.6（与资本开支应付有关，见上）；FY2022 存货天数升到 133.4 之后维持在 123–125。
+      not_in_scope: 第 4–7 步的预测
+    - card: earnings-quality-checklist
+      reached: 第 1、5、6、7 步都有结果；第 1 步出售业务的影响只能给出范围；第 7 步多数期间净利润为负，比值算不出；同比原因和冲击影响没有做
+      first_guess: {step: 1, what: 公司不披露有机增长，期间有一项出售（Altera 出表）但不披露它的季度收入，剔除剥离的影响怎样填}
+      steps:
+        - step: 1
+          did: 增长来源。总增长用 GAAP 营收同比；按分部拆贡献；收购和剥离逐项判断
+          classification: 已完成（按临时口径）；剥离贡献的金额因数据不足未执行
+          guesses:
+            - what: 有机增长用什么
+              options: [不剔除，总增长全部记为有机（Micron 的做法）, 用分部拆贡献，把含被出售业务的“All Other”单列, 自己按外部资料估 Altera 收入再剔除, 记为不适用]
+              chosen: 用分部拆贡献，“All Other”单列；Intel Products（CCPG + DCAI）期间内没有收购和出售，它的增长当作有机增长的近似
+              vs_prior: 改了。Micron 没有收购也没有出售，全记为有机；Danaher 有公司自报的核心增长。本例两样都没有
+              impact: Q3-26 总增长 20.95%；Intel Products 增长 21.84%；“All Other”贡献 −2.20 个百分点，是剥离影响的近似上限（同一类别里 Mobileye 增长、Altera 改为外部客户后向 Intel Foundry 采购，方向相反，公司不分拆）
+            - what: Mentee Robotics 收购（2026-02，对价 637）
+              options: [忽略, 剔除]
+              chosen: 忽略，记为“有收购但规模小”
+              vs_prior: 新碰到
+              impact: 公司没有披露被收购方收入；对价约为 Q1-26 营收的 5%，收入影响应远小于此（推导，未核对）
+            - what: 增长按哪个期间算
+              options: [最近一季同比, 最近财年同比, 最近一季环比]
+              chosen: 最近一季同比，附最近财年同比；另列五季和五年
+              vs_prior: 沿用
+            - what: 分部贡献的分母和抵销项
+              options: [各分部收入变动 ÷ 上年合并收入，分部间抵销单列, 只算 Intel Products 两个分部]
+              chosen: 各分部收入变动 ÷ 上年合并收入，分部间抵销单列
+              vs_prior: 新碰到（Intel Foundry 收入大部分是对 Intel Products 的内部收入，分部贡献相加远超总增长）
+              impact: Q3-26 DCAI +23.45、Intel Foundry +18.03、CCPG −3.21、All Other −2.20、抵销 −15.12 个百分点
+        - step: 5
+          did: 最近 5 季的毛利率和营业利润率，GAAP 与非 GAAP 分开列，公司和分部分开列
+          classification: GAAP 与非 GAAP 公司层面、分部五季已完成；同比变化的原因需人工判断
+          guesses:
+            - what: GAAP 还是非 GAAP
+              options: [只列 GAAP, 两者都列]
+              chosen: 两者都列（沿用 Danaher）
+              vs_prior: 沿用 Danaher。本例每份新闻稿都列实际的非 GAAP 毛利率和营业利润率，五季和对比期都取得到；Danaher 取不到
+            - what: 非 GAAP 数字的精度
+              options: [用公司公布的一位小数, 用调节表金额自己重算]
+              chosen: 用公司公布的一位小数
+              vs_prior: 新碰到
+            - what: 分部五季取哪里
+              options: [各季新闻稿的分部信息表, 10-Q 分部附注, 10-K 全年 − 10-Q 前三季]
+              chosen: 各季新闻稿的分部信息表；对比期取最新一份新闻稿的上年同期列
+              vs_prior: Danaher 读 10-Q 分部附注；本例新闻稿直接给三个月的分部表，Q4 也有单季列，不用相减
+              impact: 9 个季度的分部收入加抵销等于合并收入，分部营业利润加公司未分配项和抵销等于合并营业利润，逐季一致
+            - what: 分部的非 GAAP 营业利润
+              options: [只列分部表的营业利润, 自己推算]
+              chosen: 只列分部表的营业利润（公司分部口径本身已把股权激励、重组等放在“公司未分配”）
+              vs_prior: 沿用 Danaher 的“不推算”
+            - what: “方向”怎样判定
+              options: [逐季环比的正负, 首尾比较, 线性趋势]
+              chosen: 逐季环比的正负
+              vs_prior: 沿用
+              impact: GAAP 毛利率环比 Q4-25 下降、其余上升；GAAP 营业利润率 Q4-25、Q1-26 下降；非 GAAP 毛利率和营业利润率只有 Q4-25 下降。按规则都不是单一方向。首尾比较（Q3-25→Q3-26）：GAAP 毛利率 +4.75、营业利润率 +10.27 个百分点；非 GAAP 毛利率 +4.1、营业利润率 +8.4 个百分点
+            - what: 季度天数
+              status: 本例窗口内各季都是 13 周，不用定
+        - step: 6
+          did: 最大终端市场占比
+          classification: 占比已完成（按临时口径）；单一市场受冲击的影响需人工判断
+          guesses:
+            - what: “终端市场”用哪个口径
+              options: [业务分部, 按开票地的地区, 主要客户]
+              chosen: 业务分部为主；地区和主要客户并列
+              vs_prior: 沿用（Micron、Danaher 都取业务分部）
+              impact: FY2025 最大分部 CCG（现名 CCPG）占合并营收 60.98%；最大地区美国 29.81%，中国 24.02%；前三大客户合计 43%
+            - what: 分部占比的分母
+              options: [合并营收（各分部占比相加超过 100%）, 各分部收入之和（含内部收入）]
+              chosen: 合并营收；Intel Foundry 的收入大部分是内部收入，单列不作为“终端市场”
+              vs_prior: 新碰到（前两家没有大额分部间收入）
+            - what: 地区口径
+              status: 公司按开票地披露，不是最终使用地；照实记录
+              vs_prior: 新碰到
+            - what: 取哪个期间
+              options: [最近财年, 最近一季]
+              chosen: 最近财年（FY2025）；附 Q3-26 单季的分部占比
+              vs_prior: 沿用
+              impact: Q3-26 CCPG 49.03%、DCAI 44.32%，两者差距比 FY2025 小很多
+            - what: 冲击多大、怎样传到公司
+              status: 没有做
+        - step: 7
+          did: 经营现金流 ÷ 净利润
+          classification: 已完成（按临时口径）；按合并口径五季中三季、五年中一年（FY2024）净利润为负，这些期间比值算不出；归属口径下 FY2025 也为负
+          guesses:
+            - what: 分子分母的口径
+              options: [经营现金流 ÷ 合并净利润（含少数股东）, 经营现金流 ÷ 归属 Intel 的净利润, 经营现金流 ÷ 非 GAAP 归属净利润]
+              chosen: 经营现金流 ÷ 合并净利润（两者都含少数股东）
+              vs_prior: 改了。Micron 用归属净利润；Danaher 改成同口径相除（持续经营）。本例按 Danaher 的“同口径”原则，选合并净利润，因为经营现金流含少数股东的部分
+              impact: 能算出的两季 Q3-25 0.60、Q3-26 1.44；归属口径 0.63、1.53。见 sensitivity
+            - what: 净利润为负时比值怎样处理
+              options: [不计比值, 照算并标注]
+              chosen: 不计比值（沿用 Micron）
+              vs_prior: 沿用
+              impact: 五季中 Q4-25、Q1-26、Q2-26 为负，五年中 FY2024 为负，比值都不计；“是否持续低于 1”只剩 Q3-25、Q3-26 两季可判断
+            - what: 净利润接近零时比值怎样处理（FY2025 合并净利润 26）
+              options: [照算并标注, 视同不可比不计]
+              chosen: 照算并标注（372.96），不用来判断
+              vs_prior: 新碰到
+            - what: 净利润被营业外项目主导（Q3-25 Altera 出售收益，Q2-26、Q3-26 托管股份市值变动）
+              options: [照 GAAP 算, 另列非 GAAP 净利润口径]
+              chosen: 主结果照 GAAP；另列经营现金流 ÷ 非 GAAP 归属净利润
+              vs_prior: 新碰到
+              impact: 非 GAAP 口径五季都能算：2.49、5.59、0.74、3.19、1.84；只有 Q1-26 低于 1
+            - what: “持续”指几期
+              options: [窗口内每一期, 连续两期及以上, 多数期间]
+              chosen: 窗口内每一期
+              vs_prior: 沿用
+              impact: 主口径只有两季可判断，Q3-25 低于 1、Q3-26 高于 1，三种定义都得“否”
+            - what: 按季度还是年度
+              options: [季度, 年度, 两者]
+              chosen: 两者
+              vs_prior: 沿用
+      not_in_scope: 第 2、3、4、8 步和第 9–11 步
+    - card: guidance-tracking-playbook
+      reached: 第 1–3 步都走到；登记 98 条，到期 75 条；第 3 步只标了实际值相对指引的位置，达成与否按临时规则
+      first_guess: {step: 3, what: 毛利率和每股收益指引以收入区间中点为前提，而 5 季里有 3 季收入高于区间上限；比较时要不要按实际收入调整，卡里没有写；同一步还要定“达成”的定义}
+      steps:
+        - step: 1
+          did: 登记 13 份新闻稿的下季指引表和全年指引表。季度：目标期 Q3-25 至 Q3-26 共 35 条（到期）、Q4-26 共 9 条（未到期）；全年：FY2024 共 10 条、FY2025 共 30 条（到期）、FY2026 共 14 条（未到期）
+          classification: 已完成
+          guesses:
+            - what: GAAP 与非 GAAP 两套指引登记哪一套
+              options: [都登记, 只登记 GAAP, 只登记非 GAAP]
+              chosen: 都登记
+              vs_prior: 沿用 Micron（Danaher 只有非 GAAP）
+            - what: 约数指引（“约 36.0%”“约 18.0”）
+              options: [按点值登记, 不登记]
+              chosen: 按点值登记
+              vs_prior: 沿用
+            - what: 登记哪几张表
+              options: [只登记下季指引表, 下季指引表 + 全年指引表（资本开支、补助、合作方出资、净资本开支、费用）, 再加上调节表里的分项]
+              chosen: 下季指引表 + 全年指引表的每一行（含 Q4-26 的单季费用行）；调节表分项不登记
+              vs_prior: 改了。前两家“只登记主指引表”；本例全年指引只在第二张表里，不登记就没有全年指引可追踪
+            - what: 全年指引多次发布怎样登记
+              options: [每次发布单独登记，重申也登记并标明, 只登记有变化的]
+              chosen: 每次发布单独登记，重申也登记并标明
+              vs_prior: 沿用 Danaher
+            - what: 全年表指标改名（8K-Q2-25 起 R&D and MG&A → operating expenses；net capital spending → net capital expenditures）
+              options: [当作同一指标连续登记，标注改名, 当作新指标]
+              chosen: 非 GAAP 费用当作同一指标（公司调节表显示两者只差重组费用，非 GAAP 口径不含重组）；GAAP 口径改名后含重组费用，当作新指标 gaap_opex
+              vs_prior: 新碰到（Danaher 碰到的是核心增长定义改了）
+            - what: 检查日怎样定
+              options: [实际值首次公布日（下一份业绩新闻稿）, 对应 10-Q 或 10-K 的申报日, 目标期末日]
+              chosen: 实际值首次公布日；全年指引取第四季度新闻稿日
+              vs_prior: 沿用
+            - what: 窗口：季度看几份，全年看几年
+              chosen: 季度看目标期在最近 5 个季度的 5 份，加新发的 Q4-26；全年看 FY2024、FY2025 加 FY2026（按交接约定）
+              note: FY2024 的全年表从 8K-Q2-24 才开始出现；8K-Q4-23、8K-Q1-24 没有全年表（已读确认）
+        - step: 2
+          did: 确认每个指标能用官方数据核对
+          classification: 已完成（按临时口径）
+          guesses:
+            - what: 非 GAAP 实际值只在公司自己的新闻稿里，算不算官方数据
+              options: [算（新闻稿是 8-K 附件）, 不算]
+              chosen: 算
+              vs_prior: 沿用
+            - what: 实际值用一位小数的公布值，还是用金额重算
+              options: [公司公布的百分比和每股收益, 用金额重算]
+              chosen: 收入用百万美元金额；毛利率、税率、每股收益用公司公布值
+              vs_prior: 新碰到
+            - what: FY2024 资本开支各分项的实际值
+              options: [8K-Q4-24（只列净资本开支）, 8K-Q4-25 调节表的上年列（四项都有）]
+              chosen: 净资本开支取 8K-Q4-24；其余三项取 8K-Q4-25 的上年列，并标注首次完整公布晚了一年
+              vs_prior: 新碰到
+              impact: 净资本开支在两份里都是 10,515
+            - what: 合作方出资的指引写“Partner contributions”，实际值是“net”（扣除分配）
+              options: [用 net 实际值比较, 用现金流量表的总额]
+              chosen: 用 net 实际值（公司调节表的口径），另记现金流量表总额
+              vs_prior: 新碰到
+              impact: FY2024 net 12,671，现金流量表总额 12,714
+        - step: 3
+          did: 已到期的 75 条取实际值并标位置；未到期的 23 条留空
+          classification: 位置已完成；达成与否需人工判断
+          guesses:
+            - what: 怎样算达成
+              options: [落在区间内, 不低于下限, 与中点比]
+              chosen: 落在区间内；另记与中点的差
+              vs_prior: 沿用
+              impact: 25 条区间指引里 9 条在区间内、6 条高于上限、10 条低于下限；换成“不低于下限”为 15 条
+            - what: 以收入中点为前提的毛利率、每股收益指引，在收入高于区间时怎样比
+              options: [直接与指引值比, 按实际收入调整指引后再比, 只在收入落在区间内的季度比]
+              chosen: 直接与指引值比，并在同一条标注当季收入相对区间的位置
+              vs_prior: 新碰到（Micron 的毛利率指引是否以中点为前提，记录里没有写；Danaher 没有毛利率指引）
+              impact: Q3-25、Q1-26、Q2-26 收入高于上限，这三季毛利率高于指引的部分有多少来自收入多、多少来自利润率本身，分不出来
+            - what: 约数指引怎样判定
+              options: [不判定只记差值, 自定容差]
+              chosen: 不判定只记差值
+              vs_prior: 沿用
+            - what: GAAP 税率和 GAAP 每股收益受营业外项目主导（出售收益、托管股份市值变动、估值准备）
+              options: [照比, 标注后照比]
+              chosen: 标注后照比
+              vs_prior: 新碰到
+              impact: 例如 Q3-25 GAAP 每股收益指引 −0.24、实际 0.90，差额主要来自 Altera 出售收益（推导，未核对）；Q2-26 指引 0.08、实际 −2.16，托管股份市值损失
+          note: 全年指引一年只到期一次。FY2026 的 14 条要到第四季度新闻稿（未公布，按往年约在次年 1 月下旬）才能核对
+      not_in_scope: 第 4、5 步的统计和反馈；定性承诺
+  results:
+    dupont-return-decomposition:
+      disclosed:
+        - {period: FY2020, total_assets: 153091, intel_equity: 81073, total_equity: 81038, note: "Intel 股东权益取最新申报 81,073（首次 81,038）；总权益只有首次申报值 81,038，两者来自不同申报"}
+        - {period: FY2021, total_assets: 168406, intel_equity: 95391, total_equity: 95391, nci: 0.0, revenue: 79024, net_income: 19868, profit_loss: 19868}
+        - {period: FY2022, total_assets: 182103, intel_equity: 101423, total_equity: 103286, nci: 1863, revenue: 63054, net_income: 8014, profit_loss: 8017}
+        - {period: FY2023, total_assets: 191572, intel_equity: 105590, total_equity: 109965, nci: 4375, revenue: 54228, net_income: 1689, profit_loss: 1675}
+        - {period: FY2024, total_assets: 196485, intel_equity: 99270, total_equity: 105032, nci: 5762, revenue: 53101, net_income: -18756, profit_loss: -19233}
+        - {period: FY2025, total_assets: 211429, intel_equity: 114281, total_equity: 126360, nci: 12079, revenue: 52853, net_income: -267, profit_loss: 26.0}
+      derived:
+        - {period: FY2021, roe: 0.2252, factors: {net_margin: 0.2514, asset_turnover: 0.4916, leverage: 1.8219}}
+        - {period: FY2022, roe: 0.0814, factors: {net_margin: 0.1271, asset_turnover: 0.3598, leverage: 1.7809}}
+        - {period: FY2023, roe: 0.0163, factors: {net_margin: 0.0311, asset_turnover: 0.2902, leverage: 1.8051}}
+        - {period: FY2024, roe: -0.1831, factors: {net_margin: -0.3532, asset_turnover: 0.2737, leverage: 1.8943}}
+        - {period: FY2025, roe: -0.0025, factors: {net_margin: -0.0051, asset_turnover: 0.2591, leverage: 1.9101}}
+      sensitivity:
+        total_equity_profitloss:
+          note: 分子改用合并净利润（含少数股东），分母改用总权益（含少数股东）两点平均
+          FY2021: {roe: 0.2252, net_margin: 0.2514, leverage: 1.8222}
+          FY2022: {roe: 0.0807, net_margin: 0.1271, leverage: 1.7642}
+          FY2023: {roe: 0.0157, net_margin: 0.0309, leverage: 1.7523}
+          FY2024: {roe: -0.1789, net_margin: -0.3622, leverage: 1.8049}
+          FY2025: {roe: 0.0002, net_margin: 0.0005, leverage: 1.7629}
+        ending_balance_roe: {FY2021: 0.2083, FY2022: 0.079, FY2023: 0.016, FY2024: -0.1889, FY2025: -0.0023}
+    working-capital-forecast:
+      disclosed:
+        - {period: FY2021, revenue: 79024, cogs: 35209, receivables: 9457, inventory: 10776, accounts_payable: 5747}
+        - {period: FY2022, revenue: 63054, cogs: 36188, receivables: 4133, inventory: 13224, accounts_payable: 9595}
+        - {period: FY2023, revenue: 54228, cogs: 32517, receivables: 3402, inventory: 11127, accounts_payable: 8578}
+        - {period: FY2024, revenue: 53101, cogs: 35756, receivables: 3478, inventory: 12198, accounts_payable: 12556}
+        - {period: FY2025, revenue: 52853, cogs: 34478, receivables: 3839, inventory: 11618, accounts_payable: 9882}
+      derived:
+        - {period: FY2021, days: {receivable: 43.7, inventory: 111.7, payable: 59.6}, operating_cycle_days: 155.4, cash_cycle_days: 95.8}
+        - {period: FY2022, days: {receivable: 23.9, inventory: 133.4, payable: 96.8}, operating_cycle_days: 157.3, cash_cycle_days: 60.5}
+        - {period: FY2023, days: {receivable: 22.9, inventory: 124.9, payable: 96.3}, operating_cycle_days: 147.8, cash_cycle_days: 51.5}
+        - {period: FY2024, days: {receivable: 23.9, inventory: 124.5, payable: 128.2}, operating_cycle_days: 148.4, cash_cycle_days: 20.2}
+        - {period: FY2025, days: {receivable: 26.5, inventory: 123, payable: 104.6}, operating_cycle_days: 149.5, cash_cycle_days: 44.9}
+      change_vs_prior_year:
+        - {period: FY2022, receivable: -19.8, inventory: 21.7, payable: 37.2, operating_cycle: 1.9, cash_cycle: -35.3}
+        - {period: FY2023, receivable: -1.0, inventory: -8.5, payable: -0.5, operating_cycle: -9.5, cash_cycle: -9.0}
+        - {period: FY2024, receivable: 1.0, inventory: -0.4, payable: 31.9, operating_cycle: 0.6, cash_cycle: -31.3}
+        - {period: FY2025, receivable: 2.6, inventory: -1.5, payable: -23.6, operating_cycle: 1.1, cash_cycle: 24.7}
+      sensitivity:
+        average_balance:
+          note: 余额改用年初年末平均
+          cash_cycle_days: {FY2021: 78.3, FY2022: 83, FY2023: 60, FY2024: 34.8, FY2025: 32.6}
+        ap_ex_extended_term_capex:
+          note: 应付表面行减去 10-K 披露的延长账期资本开支未付款（该披露额是应付账款和其他应计负债的合计，所以是上限调整）；只有 FY2024、FY2025 有披露
+          source: 10K-FY2025 财务报表附注的现金流补充说明段
+          FY2024: {extended_term_capex_payables: 3200, payable_days: 95.5, cash_cycle_days: 52.9}
+          FY2025: {extended_term_capex_payables: 1500, payable_days: 88.7, cash_cycle_days: 60.8}
+          change_fy2025_cash_cycle: 7.9
+        fy2022_371_days: {receivable: 24.3, inventory: 135.6, payable: 98.4, cash_cycle_days: 61.5}
+    earnings-quality-checklist:
+      period: Q3-26（年度项为 FY2025）
+      checks:
+        organic_growth:
+          result: 公司不披露有机增长。Q3-26 总增长 20.95%，其中没有收购和出售的 Intel Products 增长 21.84%；含被出售业务的 All Other 贡献 −2.20 个百分点（剥离影响的近似上限）
+          quarterly_total_yoy_pct: {Q3-25: 2.78, Q4-25: -4.11, Q1-26: 7.18, Q2-26: 25.42, Q3-26: 20.95}
+          annual_total_yoy_pct: {FY2022: -20.21, FY2023: -14.0, FY2024: -2.08, FY2025: -0.47}
+          q3_26_contribution_pt: {ccg: -3.21, dcai: 23.45, foundry: 18.03, all_other: -2.2, intersegment_eliminations: -15.12}
+          q3_26_intel_products_yoy_pct: 21.84
+          divestiture: {item: Altera（2025-09-12 出表）, q3_25_altera_revenue: 公司未披露, all_other_revenue: {Q3-25: 993, Q3-26: 692}, altera_as_external_customer_q3_26: 126}
+          acquisition: {item: Mentee Robotics（Mobileye，2026-02-03）, consideration: 637, revenue: 公司未披露}
+        margin_trend_5q:
+          result: GAAP 与非 GAAP 的毛利率、营业利润率逐季环比都有一季或两季下降，按临时规则没有单一方向；首尾比较都上升
+          gaap:
+            - {period: Q3-25, revenue: 13653, gross_margin_pct: 38.22, operating_margin_pct: 5.0, gm_yoy_pt: 23.19, om_yoy_pt: 73.18, gm_qoq_pt: 10.68, om_qoq_pt: 29.7, revenue_yoy_pct: 2.78}
+            - {period: Q4-25, revenue: 13674, gross_margin_pct: 36.15, operating_margin_pct: 4.24, gm_yoy_pt: -3.01, om_yoy_pt: 1.35, gm_qoq_pt: -2.07, om_qoq_pt: -0.76, revenue_yoy_pct: -4.11}
+            - {period: Q1-26, revenue: 13577, gross_margin_pct: 39.38, operating_margin_pct: -23.1, gm_yoy_pt: 2.5, om_yoy_pt: -20.72, gm_qoq_pt: 3.23, om_qoq_pt: -27.34, revenue_yoy_pct: 7.18}
+            - {period: Q2-26, revenue: 16128, gross_margin_pct: 40.36, operating_margin_pct: 11.14, gm_yoy_pt: 12.82, om_yoy_pt: 35.84, gm_qoq_pt: 0.98, om_qoq_pt: 34.24, revenue_yoy_pct: 25.42}
+            - {period: Q3-26, revenue: 16513, gross_margin_pct: 42.97, operating_margin_pct: 15.27, gm_yoy_pt: 4.75, om_yoy_pt: 10.27, gm_qoq_pt: 2.61, om_qoq_pt: 4.13, revenue_yoy_pct: 20.95}
+          gaap_comparison_quarters:
+            - {period: Q3-24, revenue: 13284, gross_margin_pct: 15.03, operating_margin_pct: -68.18}
+            - {period: Q4-24, revenue: 14260, gross_margin_pct: 39.16, operating_margin_pct: 2.89}
+            - {period: Q1-25, revenue: 12667, gross_margin_pct: 36.88, operating_margin_pct: -2.38}
+            - {period: Q2-25, revenue: 12859, gross_margin_pct: 27.54, operating_margin_pct: -24.7}
+          nongaap:
+            source: 各季新闻稿非 GAAP 调节表（公司公布的一位小数）
+            rows:
+              - {period: Q3-25, gm_pct: 40.0, om_pct: 11.2, gm_yoy_pt: 22.0, om_yoy_pt: 29.0, gm_qoq_pt: 10.3, om_qoq_pt: 15.1}
+              - {period: Q4-25, gm_pct: 37.9, om_pct: 8.8, gm_yoy_pt: -4.2, om_yoy_pt: -0.8, gm_qoq_pt: -2.1, om_qoq_pt: -2.4}
+              - {period: Q1-26, gm_pct: 41.0, om_pct: 12.3, gm_yoy_pt: 1.8, om_yoy_pt: 6.9, gm_qoq_pt: 3.1, om_qoq_pt: 3.5}
+              - {period: Q2-26, gm_pct: 41.8, om_pct: 17.2, gm_yoy_pt: 12.1, om_yoy_pt: 21.1, gm_qoq_pt: 0.8, om_qoq_pt: 4.9}
+              - {period: Q3-26, gm_pct: 44.1, om_pct: 19.6, gm_yoy_pt: 4.1, om_yoy_pt: 8.4, gm_qoq_pt: 2.3, om_qoq_pt: 2.4}
+            comparison_quarters: {Q3-24: {gm_pct: 18.0, om_pct: -17.8}, Q4-24: {gm_pct: 42.1, om_pct: 9.6}, Q1-25: {gm_pct: 39.2, om_pct: 5.4}, Q2-25: {gm_pct: 29.7, om_pct: -3.9}}
+          segments_5q:
+            source: 各季新闻稿的分部信息表（三个月）；对比期取 8K-Q3-25、8K-Q4-25、8K-Q1-26、8K-Q2-26 的上年同期列。CCG 自 Q2-26 起改名 CCPG
+            result: CCPG 营业利润率五季环比有升有降；DCAI 逐季上升；Intel Foundry 仍为亏损，亏损率 Q4-25 扩大、其后收窄
+            rows:
+              - {period: Q3-25, ccg: {revenue: 8535, operating_income: 2694, margin_pct: 31.56, yoy_pt: -4.42, qoq_pt: 5.48, revenue_yoy_pct: 4.6}, dcai: {revenue: 4117, operating_income: 964, margin_pct: 23.42, yoy_pt: 14.21, qoq_pt: 7.35, revenue_yoy_pct: -0.6}, foundry: {revenue: 4235, operating_income: -2321, margin_pct: -54.81, yoy_pt: 78.84, qoq_pt: 16.92, revenue_yoy_pct: -2.4}, all_other: {revenue: 993, operating_income: 100, margin_pct: 10.07, yoy_pt: 9.55, qoq_pt: 3.52, revenue_yoy_pct: 3.0}, corporate_unallocated: -782, eliminations: {revenue: -4227, operating_income: 28}}
+              - {period: Q4-25, ccg: {revenue: 8193, operating_income: 2209, margin_pct: 26.96, yoy_pt: -9.46, qoq_pt: -4.6, revenue_yoy_pct: -6.6}, dcai: {revenue: 4737, operating_income: 1250, margin_pct: 26.39, yoy_pt: 17.79, qoq_pt: 2.97, revenue_yoy_pct: 8.9}, foundry: {revenue: 4507, operating_income: -2509, margin_pct: -55.67, yoy_pt: -3.85, qoq_pt: -0.86, revenue_yoy_pct: 3.8}, all_other: {revenue: 574, operating_income: -8, margin_pct: -1.39, yoy_pt: -15.23, qoq_pt: -11.46, revenue_yoy_pct: -48.4}, corporate_unallocated: -721, eliminations: {revenue: -4337, operating_income: 359}}
+              - {period: Q1-26, ccg: {revenue: 7727, operating_income: 2516, margin_pct: 32.56, yoy_pt: 1.61, qoq_pt: 5.6, revenue_yoy_pct: 1.3}, dcai: {revenue: 5052, operating_income: 1542, margin_pct: 30.52, yoy_pt: 16.59, qoq_pt: 4.13, revenue_yoy_pct: 22.4}, foundry: {revenue: 5421, operating_income: -2437, margin_pct: -44.95, yoy_pt: 4.76, qoq_pt: 10.71, revenue_yoy_pct: 16.2}, all_other: {revenue: 628, operating_income: 102, margin_pct: 16.24, yoy_pt: 5.32, qoq_pt: 17.64, revenue_yoy_pct: -33.4}, corporate_unallocated: -5080, eliminations: {revenue: -5251, operating_income: 221}}
+              - {period: Q2-26, ccg: {revenue: 8877, operating_income: 2343, margin_pct: 26.39, yoy_pt: 0.31, qoq_pt: -6.17, revenue_yoy_pct: 12.8}, dcai: {revenue: 6262, operating_income: 2474, margin_pct: 39.51, yoy_pt: 23.44, qoq_pt: 8.99, revenue_yoy_pct: 59}, foundry: {revenue: 5765, operating_income: -2089, margin_pct: -36.24, yoy_pt: 35.49, qoq_pt: 8.72, revenue_yoy_pct: 30.5}, all_other: {revenue: 701, operating_income: 230, margin_pct: 32.81, yoy_pt: 26.26, qoq_pt: 16.57, revenue_yoy_pct: -33.4}, corporate_unallocated: -1416, eliminations: {revenue: -5477, operating_income: 254}}
+              - {period: Q3-26, ccg: {revenue: 8097, operating_income: 2285, margin_pct: 28.22, yoy_pt: -3.34, qoq_pt: 1.83, revenue_yoy_pct: -5.1}, dcai: {revenue: 7318, operating_income: 3039, margin_pct: 41.53, yoy_pt: 18.11, qoq_pt: 2.02, revenue_yoy_pct: 77.8}, foundry: {revenue: 6697, operating_income: -1853, margin_pct: -27.67, yoy_pt: 27.14, qoq_pt: 8.57, revenue_yoy_pct: 58.1}, all_other: {revenue: 692, operating_income: 179, margin_pct: 25.87, yoy_pt: 15.8, qoq_pt: -6.94, revenue_yoy_pct: -30.3}, corporate_unallocated: -1058, eliminations: {revenue: -6291, operating_income: -70}}
+            checks: 9 个季度的分部收入加抵销等于合并收入，分部营业利润加公司未分配和抵销等于合并营业利润
+          yoy_driver: 未做（需人工判断）
+        diversification:
+          result: 已算占比；冲击影响未做（需人工判断）
+          largest_end_market_share: 0.6098
+          basis: FY2025 业务分部营收 ÷ 合并营收，最大为 CCG（现名 CCPG）；Intel Foundry 收入大部分是内部收入，不作为终端市场
+          segment_revenue: {FY2025: {ccg: 32228, dcai: 16919, intel_foundry: 17826, all_other: 3563, intersegment_eliminations: -17683, total: 52853}}
+          share_of_consolidated_pct: {FY2025: {ccg: 60.98, dcai: 32.01, foundry: 33.73, all_other: 6.74}, Q3-26: {ccg: 49.03, dcai: 44.32, foundry: 40.56, all_other: 4.19}}
+          other_bases:
+            region_by_billing_location:
+              source: 10K-FY2025 收入按开票地附注
+              FY2025: {united_states: 15757, china: 12694, singapore: 9535, taiwan: 7672, other_regions: 7195, total: 52853}
+              FY2025_share_pct: {united_states: 29.81, china: 24.02, singapore: 18.04, taiwan: 14.52, other_regions: 13.61}
+              FY2024_share_pct: {united_states: 24.47, china: 29.25, singapore: 19.18, taiwan: 14.7, other_regions: 12.4}
+            top_three_customers_share_pct: {FY2025: 43, FY2024: 45, FY2023: 40, source: 10K-FY2025 风险因素段，公司没有写客户名称}
+        cash_conversion:
+          result: 否（主口径只有 Q3-25、Q3-26 两季可算，Q3-25 为 0.60、Q3-26 为 1.44；其余三季净利润为负不计比值）
+          basis: 经营现金流 ÷ 合并净利润（含少数股东）；净利润为负不计比值
+          quarterly:
+            - {period: Q3-25, operating_cash_flow: 2546, net_income_consolidated: 4270, net_income_intel: 4063, ratio_consolidated: 0.6}
+            - {period: Q4-25, operating_cash_flow: 4288, net_income_consolidated: -333, net_income_intel: -591, ratio_consolidated: null}
+            - {period: Q1-26, operating_cash_flow: 1096, net_income_consolidated: -4281, net_income_intel: -3728, ratio_consolidated: null}
+            - {period: Q2-26, operating_cash_flow: 7006, net_income_consolidated: -10848, net_income_intel: -11033, ratio_consolidated: null}
+            - {period: Q3-26, operating_cash_flow: 5082, net_income_consolidated: 3520, net_income_intel: 3320, ratio_consolidated: 1.44}
+          annual:
+            - {period: FY2021, operating_cash_flow: 29456, net_income_consolidated: 19868, net_income_intel: 19868, ratio_consolidated: 1.48}
+            - {period: FY2022, operating_cash_flow: 15433, net_income_consolidated: 8017, net_income_intel: 8014, ratio_consolidated: 1.93}
+            - {period: FY2023, operating_cash_flow: 11471, net_income_consolidated: 1675, net_income_intel: 1689, ratio_consolidated: 6.85}
+            - {period: FY2024, operating_cash_flow: 8288, net_income_consolidated: -19233, net_income_intel: -18756, ratio_consolidated: null}
+            - {period: FY2025, operating_cash_flow: 9697, net_income_consolidated: 26.0, net_income_intel: -267, ratio_consolidated: 372.96}
+          sensitivity:
+            over_net_income_intel: {Q3-25: 0.63, Q4-25: null, Q1-26: null, Q2-26: null, Q3-26: 1.53, FY2021: 1.48, FY2022: 1.93, FY2023: 6.79, FY2024: null, FY2025: null}
+            over_nongaap_net_income_intel:
+              note: 分母为新闻稿的非 GAAP 归属净利润（剔除出售收益、托管股份市值变动等），分子含少数股东，口径不完全一致
+              nongaap_net_income_intel: {Q3-25: 1023, Q4-25: 767, Q1-26: 1485, Q2-26: 2197, Q3-26: 2756}
+              ratio: {Q3-25: 2.49, Q4-25: 5.59, Q1-26: 0.74, Q2-26: 3.19, Q3-26: 1.84}
+            note: FY2025 合并净利润只有 26，比值 372.96 不用来判断
+      not_done: [beat_consensus, guidance_change, backlog_trend, 估值对照]
+    guidance-tracking-playbook:
+      ticker: INTC
+      made_by: management
+      basis: 季度指引 GAAP 与非 GAAP 都登记；收入为十亿美元区间（实际值为百万美元换算），毛利率和税率为百分数，每股收益为美元；全年表为十亿美元
+      kind_terms: {range: 数值区间, point: 约数（按点值）}
+      position_terms: {within: 实际值在区间内, above: 高于区间上限, below: 低于区间下限, point: 只记实际值减指引值}
+      conditional_note: 公司写明毛利率和每股收益指引以收入区间中点为前提；每条季度指引的 revenue_position 记当季收入相对区间的位置
+      claims:
+        # ---- 季度指引（目标期 Q3-25 至 Q3-26，均已到期）
+        - target: Q3-25
+          made_on: "2025-07-24"
+          source: 8K-Q2-25 附件 99.1，Business Outlook 表
+          check_on: "2025-10-23"
+          check_source: 8K-Q3-25 附件 99.1
+          revenue_position: above
+          items:
+            - {metric: revenue, kind: range, low: 12.6, high: 13.6, mid: 13.1, actual: 13.653, position: above, diff_vs_mid: 0.553}
+            - {metric: gaap_gross_margin_pct, kind: point, value: 34.1, actual: 38.2, position: point, diff: 4.1}
+            - {metric: nongaap_gross_margin_pct, kind: point, value: 36.0, actual: 40.0, position: point, diff: 4.0}
+            - {metric: gaap_tax_rate_pct, kind: point, value: -23, actual: 6.6, position: point, diff: 29.6}
+            - {metric: nongaap_tax_rate_pct, kind: point, value: 12, actual: 12.0, position: point, diff: 0.0}
+            - {metric: gaap_diluted_eps, kind: point, value: -0.24, actual: 0.90, position: point, diff: 1.14, note: 实际值含 Altera 出售收益}
+            - {metric: nongaap_diluted_eps, kind: point, value: 0.00, actual: 0.23, position: point, diff: 0.23}
+        - target: Q4-25
+          made_on: "2025-10-23"
+          source: 8K-Q3-25 附件 99.1，Business Outlook 表（写明不含 Altera）
+          check_on: "2026-01-22"
+          check_source: 8K-Q4-25 附件 99.1
+          revenue_position: within
+          items:
+            - {metric: revenue, kind: range, low: 12.8, high: 13.8, mid: 13.3, actual: 13.674, position: within, diff_vs_mid: 0.374}
+            - {metric: gaap_gross_margin_pct, kind: point, value: 34.5, actual: 36.1, position: point, diff: 1.6}
+            - {metric: nongaap_gross_margin_pct, kind: point, value: 36.5, actual: 37.9, position: point, diff: 1.4}
+            - {metric: gaap_tax_rate_pct, kind: point, value: 476, actual: 198.5, position: point, diff: -277.5, note: 税前利润接近零，GAAP 税率不稳定}
+            - {metric: nongaap_tax_rate_pct, kind: point, value: 12, actual: 12.0, position: point, diff: 0.0}
+            - {metric: gaap_diluted_eps, kind: point, value: -0.14, actual: -0.12, position: point, diff: 0.02}
+            - {metric: nongaap_diluted_eps, kind: point, value: 0.08, actual: 0.15, position: point, diff: 0.07}
+        - target: Q1-26
+          made_on: "2026-01-22"
+          source: 8K-Q4-25 附件 99.1，Business Outlook 表
+          check_on: "2026-04-23"
+          check_source: 8K-Q1-26 附件 99.1
+          revenue_position: above
+          items:
+            - {metric: revenue, kind: range, low: 11.7, high: 12.7, mid: 12.2, actual: 13.577, position: above, diff_vs_mid: 1.377}
+            - {metric: gaap_gross_margin_pct, kind: point, value: 32.3, actual: 39.4, position: point, diff: 7.1}
+            - {metric: nongaap_gross_margin_pct, kind: point, value: 34.5, actual: 41.0, position: point, diff: 6.5}
+            - {metric: gaap_tax_rate_pct, kind: point, value: -79, actual: -8.5, position: point, diff: 70.5}
+            - {metric: nongaap_tax_rate_pct, kind: point, value: 11, actual: 11.0, position: point, diff: 0.0}
+            - {metric: gaap_diluted_eps, kind: point, value: -0.21, actual: -0.73, position: point, diff: -0.52, note: 实际值含重组费用和托管股份市值变动}
+            - {metric: nongaap_diluted_eps, kind: point, value: 0.00, actual: 0.29, position: point, diff: 0.29}
+        - target: Q2-26
+          made_on: "2026-04-23"
+          source: 8K-Q1-26 附件 99.1，Business Outlook 表
+          check_on: "2026-07-23"
+          check_source: 8K-Q2-26 附件 99.1
+          revenue_position: above
+          items:
+            - {metric: revenue, kind: range, low: 13.8, high: 14.8, mid: 14.3, actual: 16.128, position: above, diff_vs_mid: 1.828}
+            - {metric: gaap_gross_margin_pct, kind: point, value: 37.5, actual: 40.4, position: point, diff: 2.9}
+            - {metric: nongaap_gross_margin_pct, kind: point, value: 39.0, actual: 41.8, position: point, diff: 2.8}
+            - {metric: gaap_tax_rate_pct, kind: point, value: 4, actual: -0.3, position: point, diff: -4.3}
+            - {metric: nongaap_tax_rate_pct, kind: point, value: 11, actual: 11.0, position: point, diff: 0.0}
+            - {metric: gaap_diluted_eps, kind: point, value: 0.08, actual: -2.16, position: point, diff: -2.24, note: 实际值含托管股份市值损失}
+            - {metric: nongaap_diluted_eps, kind: point, value: 0.20, actual: 0.42, position: point, diff: 0.22}
+        - target: Q3-26
+          made_on: "2026-07-23"
+          source: 8K-Q2-26 附件 99.1，Business Outlook 表
+          check_on: "2026-10-29"
+          check_source: 8K-Q3-26 附件 99.1
+          revenue_position: within
+          items:
+            - {metric: revenue, kind: range, low: 15.8, high: 16.8, mid: 16.3, actual: 16.513, position: within, diff_vs_mid: 0.213}
+            - {metric: gaap_gross_margin_pct, kind: point, value: 41.0, actual: 43.0, position: point, diff: 2.0}
+            - {metric: nongaap_gross_margin_pct, kind: point, value: 42.0, actual: 44.1, position: point, diff: 2.1}
+            - {metric: gaap_tax_rate_pct, kind: point, value: 1, actual: 11.6, position: point, diff: 10.6}
+            - {metric: nongaap_tax_rate_pct, kind: point, value: 11, actual: 11.0, position: point, diff: 0.0}
+            - {metric: gaap_diluted_eps, kind: point, value: 0.31, actual: 0.60, position: point, diff: 0.29, note: 实际值含托管股份市值收益}
+            - {metric: nongaap_diluted_eps, kind: point, value: 0.38, actual: 0.52, position: point, diff: 0.14}
+        # ---- 新发的季度指引（未到期）
+        - target: Q4-26
+          made_on: "2026-10-29"
+          source: 8K-Q3-26 附件 99.1，Business Outlook 表与营业费用调节表
+          check_on: 第四季度新闻稿日（未公布，按往年约 2027 年 1 月下旬）
+          check_source: Q4-26 的 8-K 附件 99.1
+          items:
+            - {metric: revenue, kind: range, low: 15.0, high: 16.0, mid: 15.5}
+            - {metric: gaap_gross_margin_pct, kind: point, value: 37.1}
+            - {metric: nongaap_gross_margin_pct, kind: point, value: 38.0}
+            - {metric: gaap_tax_rate_pct, kind: point, value: 31}
+            - {metric: nongaap_tax_rate_pct, kind: point, value: 11}
+            - {metric: gaap_diluted_eps, kind: point, value: 0.10}
+            - {metric: nongaap_diluted_eps, kind: point, value: 0.25}
+            - {metric: gaap_opex_bn, kind: point, value: 4.9}
+            - {metric: nongaap_opex_bn, kind: point, value: 4.4}
+        # ---- FY2024 全年（检查日 2025-01-30，8K-Q4-24）
+        - target: FY2024
+          made_on: "2024-08-01"
+          source: 8K-Q2-24 附件 99.1，全年指引表
+          check_on: "2025-01-30"
+          check_source: 8K-Q4-24 附件 99.1（净资本开支）；8K-Q4-25 附件 99.1 调节表的 FY2024 列（其余各项）
+          items:
+            - {metric: gaap_rd_mga_bn, kind: point, value: 22.9, revision: 首次给出, actual: 22.053, position: point, diff: -0.847}
+            - {metric: nongaap_rd_mga_bn, kind: point, value: 20.0, revision: 首次给出, actual: 19.353, position: point, diff: -0.647}
+            - {metric: gross_capex_bn, kind: range, low: 25.0, high: 27.0, mid: 26.0, revision: 首次给出, actual: 25.122, position: within, diff_vs_mid: -0.878}
+            - {metric: capital_incentives_bn, kind: range, low: 1.5, high: 3.5, mid: 2.5, revision: 首次给出, actual: 1.936, position: within, diff_vs_mid: -0.564}
+            - {metric: partner_contributions_bn, kind: point, value: 12.5, revision: 首次给出, actual: 12.671, position: point, diff: 0.171, note: 指引写 Partner contributions，实际值为 net；现金流量表总额 12.714}
+            - {metric: net_capex_bn, kind: range, low: 11.0, high: 13.0, mid: 12.0, revision: 首次给出, actual: 10.515, position: below, diff_vs_mid: -1.485}
+        - target: FY2024
+          made_on: "2024-10-31"
+          source: 8K-Q3-24 附件 99.1，全年指引表（这份没有 FY2024 的费用行）
+          check_on: "2025-01-30"
+          check_source: 同上
+          items:
+            - {metric: gross_capex_bn, kind: point, value: 25.0, revision: 由区间改为约数, actual: 25.122, position: point, diff: 0.122}
+            - {metric: capital_incentives_bn, kind: point, value: 1.0, revision: 由区间改为约数，下调, actual: 1.936, position: point, diff: 0.936}
+            - {metric: partner_contributions_bn, kind: point, value: 13.0, revision: 上调, actual: 12.671, position: point, diff: -0.329}
+            - {metric: net_capex_bn, kind: point, value: 11.0, revision: 由区间改为约数, actual: 10.515, position: point, diff: -0.485}
+        # ---- FY2025 全年（检查日 2026-01-22，8K-Q4-25）
+        - target: FY2025
+          made_on: "2024-08-01"
+          source: 8K-Q2-24 附件 99.1，全年指引表
+          check_on: "2026-01-22"
+          check_source: 8K-Q4-25 附件 99.1 调节表的 FY2025 列与营业费用调节表
+          items:
+            - {metric: gaap_rd_mga_bn, kind: point, value: 20.1, revision: 首次给出, actual: 18.398, position: point, diff: -1.702}
+            - {metric: nongaap_rd_mga_bn, kind: point, value: 17.5, revision: 首次给出, actual: 16.494, position: point, diff: -1.006}
+            - {metric: gross_capex_bn, kind: range, low: 20.0, high: 23.0, mid: 21.5, revision: 首次给出, actual: 17.672, position: below, diff_vs_mid: -3.828}
+            - {metric: capital_incentives_bn, kind: range, low: 4.0, high: 6.0, mid: 5.0, revision: 首次给出, actual: 1.577, position: below, diff_vs_mid: -3.423}
+            - {metric: partner_contributions_bn, kind: range, low: 4.0, high: 5.0, mid: 4.5, revision: 首次给出, actual: 4.891, position: within, diff_vs_mid: 0.391}
+            - {metric: net_capex_bn, kind: range, low: 12.0, high: 14.0, mid: 13.0, revision: 首次给出, actual: 11.204, position: below, diff_vs_mid: -1.796}
+        - target: FY2025
+          made_on: "2024-10-31"
+          source: 8K-Q3-24 附件 99.1，全年指引表
+          check_on: "2026-01-22"
+          check_source: 同上
+          items:
+            - {metric: gaap_rd_mga_bn, kind: point, value: 20.0, revision: 下调, actual: 18.398, position: point, diff: -1.602}
+            - {metric: nongaap_rd_mga_bn, kind: point, value: 17.5, revision: 重申, actual: 16.494, position: point, diff: -1.006}
+            - {metric: gross_capex_bn, kind: range, low: 20.0, high: 23.0, mid: 21.5, revision: 重申, actual: 17.672, position: below, diff_vs_mid: -3.828}
+            - {metric: capital_incentives_bn, kind: range, low: 4.0, high: 6.0, mid: 5.0, revision: 重申, actual: 1.577, position: below, diff_vs_mid: -3.423}
+            - {metric: partner_contributions_bn, kind: range, low: 4.0, high: 5.0, mid: 4.5, revision: 重申, actual: 4.891, position: within, diff_vs_mid: 0.391}
+            - {metric: net_capex_bn, kind: range, low: 12.0, high: 14.0, mid: 13.0, revision: 重申, actual: 11.204, position: below, diff_vs_mid: -1.796}
+        - target: FY2025
+          made_on: "2025-01-30"
+          source: 8K-Q4-24 附件 99.1，全年指引表
+          check_on: "2026-01-22"
+          check_source: 同上
+          items:
+            - {metric: gaap_rd_mga_bn, kind: point, value: 20.0, revision: 重申, actual: 18.398, position: point, diff: -1.602}
+            - {metric: nongaap_rd_mga_bn, kind: point, value: 17.5, revision: 重申, actual: 16.494, position: point, diff: -1.006}
+            - {metric: gross_capex_bn, kind: point, value: 20.0, revision: 由区间改为约数（区间下端）, actual: 17.672, position: point, diff: -2.328}
+            - {metric: capital_incentives_bn, kind: range, low: 4.0, high: 6.0, mid: 5.0, revision: 重申, actual: 1.577, position: below, diff_vs_mid: -3.423}
+            - {metric: partner_contributions_bn, kind: range, low: 4.0, high: 5.0, mid: 4.5, revision: 重申, actual: 4.891, position: within, diff_vs_mid: 0.391}
+            - {metric: net_capex_bn, kind: range, low: 8.0, high: 11.0, mid: 9.5, revision: 下调, actual: 11.204, position: above, diff_vs_mid: 1.704}
+        - target: FY2025
+          made_on: "2025-04-24"
+          source: 8K-Q1-25 附件 99.1，全年指引表
+          check_on: "2026-01-22"
+          check_source: 同上
+          items:
+            - {metric: gaap_rd_mga_bn, kind: point, value: 19.9, revision: 下调, actual: 18.398, position: point, diff: -1.502}
+            - {metric: nongaap_rd_mga_bn, kind: point, value: 17.0, revision: 下调, actual: 16.494, position: point, diff: -0.506}
+            - {metric: gross_capex_bn, kind: point, value: 18.0, revision: 下调, actual: 17.672, position: point, diff: -0.328}
+            - {metric: capital_incentives_bn, kind: range, low: 3.0, high: 5.0, mid: 4.0, revision: 下调, actual: 1.577, position: below, diff_vs_mid: -2.423}
+            - {metric: partner_contributions_bn, kind: range, low: 4.0, high: 5.0, mid: 4.5, revision: 重申, actual: 4.891, position: within, diff_vs_mid: 0.391}
+            - {metric: net_capex_bn, kind: range, low: 8.0, high: 11.0, mid: 9.5, revision: 重申, actual: 11.204, position: above, diff_vs_mid: 1.704}
+        - target: FY2025
+          made_on: "2025-07-24"
+          source: 8K-Q2-25 附件 99.1，全年指引表（费用行改名为 operating expenses）
+          check_on: "2026-01-22"
+          check_source: 同上
+          items:
+            - {metric: gaap_opex_bn, kind: point, value: 22.1, revision: 新指标（含重组费用 2.5）, actual: 20.6, position: point, diff: -1.5, note: 实际值为公司公布的一位小数}
+            - {metric: nongaap_rd_mga_bn, kind: point, value: 17.0, revision: 重申（改名为 non-GAAP operating expenses）, actual: 16.494, position: point, diff: -0.506}
+            - {metric: gross_capex_bn, kind: point, value: 18.0, revision: 重申, actual: 17.672, position: point, diff: -0.328}
+            - {metric: capital_incentives_bn, kind: range, low: 3.0, high: 5.0, mid: 4.0, revision: 重申, actual: 1.577, position: below, diff_vs_mid: -2.423}
+            - {metric: partner_contributions_bn, kind: range, low: 4.0, high: 5.0, mid: 4.5, revision: 重申, actual: 4.891, position: within, diff_vs_mid: 0.391}
+            - {metric: net_capex_bn, kind: range, low: 8.0, high: 11.0, mid: 9.5, revision: 重申, actual: 11.204, position: above, diff_vs_mid: 1.704}
+          note: 8K-Q3-25 的全年表只有 FY2026，没有 FY2025 的行
+        # ---- FY2026 全年（未到期）
+        - target: FY2026
+          check_on: 第四季度新闻稿日（未公布，按往年约 2027 年 1 月下旬）
+          check_source: Q4-26 的 8-K 附件 99.1
+          releases:
+            - {made_on: "2025-04-24", source: 8K-Q1-25, gaap_rd_mga_bn: 19.0, nongaap_rd_mga_bn: 16.0, revision: 首次给出}
+            - {made_on: "2025-07-24", source: 8K-Q2-25, gaap_opex_bn: 19.0, nongaap_opex_bn: 16.0, revision: 改名，数值重申}
+            - {made_on: "2025-10-23", source: 8K-Q3-25, gaap_opex_bn: 19.0, nongaap_opex_bn: 16.0, revision: 重申}
+            - {made_on: "2026-01-22", source: 8K-Q4-25, gaap_opex_bn: 18.2, nongaap_opex_bn: 16.0, revision: GAAP 下调，非 GAAP 重申}
+            - {made_on: "2026-04-23", source: 8K-Q1-26, gaap_opex_bn: 22.7, nongaap_opex_bn: 16.5, revision: 都上调（GAAP 含重组 4.1）}
+            - {made_on: "2026-07-23", source: 8K-Q2-26, gaap_opex_bn: 23.0, nongaap_opex_bn: 16.5, revision: GAAP 上调，非 GAAP 重申}
+            - {made_on: "2026-10-29", source: 8K-Q3-26, gaap_opex_bn: 22.6, nongaap_opex_bn: 16.3, revision: 都下调}
+          note: 每份发布的 GAAP 和非 GAAP 各算一条，共 14 条；FY2026 没有资本开支指引表
+      counts:
+        registered: 98
+        due: 75
+        not_due: {Q4-26: 9, FY2026: 14}
+        range_due: {total: 25, within: 9, above: 6, below: 10}
+        point_due: 50
+        alternative_rule_not_below_lower: {met: 15, note: 费用和资本开支类指标用“不低于下限”意义相反，这个替代规则只作对照}
+        note: 这里只是位置计数，不是兑现率统计；统计属于范围外的第 4 步
+
+  summary_by_class:
+    已完成:
+      - dupont-return-decomposition 第 1、3 步
+      - working-capital-forecast 第 1、2 步，第 3 步的差异计算
+      - earnings-quality-checklist 第 1 步（按临时口径），第 5 步 GAAP 与非 GAAP 公司层面和分部五季，第 6 步分部、地区、主要客户三种口径的占比，第 7 步（按临时口径，可算的期间）
+      - guidance-tracking-playbook 第 1、2 步，第 3 步的取实际值与位置
+    因数据不足未执行:
+      - 没有哪一个范围内步骤整步落在这一类
+      - 局部：earnings-quality-checklist 第 1 步 Altera 出表的剥离影响（公司不披露 Altera 的季度收入），只给出近似上限
+      - 局部：working-capital-forecast 第 1 步 Altera 出表当年的影响没有量化；应付中普通账期的资本开支应付没有披露，只能做上限调整
+      - 局部：earnings-quality-checklist 第 7 步 Q4-25、Q1-26、Q2-26、FY2024 净利润为负，主口径比值不计
+    需人工判断:
+      - working-capital-forecast 第 3 步的差异原因（FY2022 收款天数骤降，FY2024–FY2025 应付天数的升降）
+      - earnings-quality-checklist 第 5 步的同比变化原因，第 6 步的冲击影响
+      - earnings-quality-checklist 第 7 步净利润被营业外项目主导时，现金转换按哪个利润口径读
+      - guidance-tracking-playbook 第 3 步的达成判定规则；以收入中点为前提的毛利率和每股收益指引在收入超出区间时怎样比
+
+  handover_gaps:
+    - 交接约定的期间（全年指引看最近 2 个已结束的财年加当年）在本例够用：FY2024、FY2025 各有多次发布、都已到期。但 FY2024 的全年表从 8K-Q2-24 才开始出现，要往前多读两份新闻稿才能确认。
+    - 交接和卡都没有说全年指引表这类“第二张表”登记不登记；前两次走查都只登记主表，本例不登记第二张表就没有全年指引。
+    - 净利润为负、接近零或被营业外项目主导时，杜邦和现金转换两张卡的读法都没有约定；本例五季里三季、五年里两年为负。
+    - 少数股东权益大的公司，杜邦的权益口径和现金转换的利润口径要同口径，交接里没有写；前两家可以忽略少数股东。
+    - 应付账款表面行含资本开支应付的情况，营运资本卡和交接都没有写；公司披露只给了延长账期的一部分，而且与其他应计负债合计。
+    - 出售业务（不是终止经营）且不披露被出售业务收入时，增长来源怎样填，卡和交接都没有写。
+    - 本次仍然没有登记来源和数据集，原始文件不在版本存储里，不能用 iros 命令复现；原始文件和脚本留在仓库外的临时目录。
+
+  checks:
+    - 推算的 Q4-24、Q4-25 单季营收、毛利、营业利润（全年 − 前三季）与 8K-Q4-25 的三个月列一致（14,260、13,674；营业利润 412、580）
+    - 季度经营现金流（累计相减）与各季新闻稿调节表列示的 2,546、4,288、1,096、7,006、5,082 一致
+    - 9 个季度的分部收入加分部间抵销等于合并营收，分部营业利润加公司未分配项和抵销等于合并营业利润（Company Facts）
+    - 同一季度在不同新闻稿里的分部数字（如 Q1-25、Q2-25、Q3-25 的原发布值与次年上年同期列）一致，没有发现重分类
+    - 三因子乘积等于净利润除以平均权益
+    - 8K-Q3-26 资产负债表的应收 4,093、存货 13,068、应付 8,831、Intel 股东权益 114,914、总资产 228,574 与 Company Facts 一致
+    - 本次用到的各期营收、成本、营业利润、净利润在 Company Facts 中只有一个值；FY2020、FY2021 的经营现金流和 FY2020 的股东权益各有两个值，取最新申报
+  not_available:
+    - 一致预期（按交接不使用）
+    - Altera 在 Q3-25 及出表前各季的收入和成本（公司未披露）
+    - Mentee Robotics 并入后的收入（公司未披露）
+    - 应付账款中普通账期的资本开支应付；延长账期部分与其他应计负债的拆分
+    - 按最终使用地或客户行业的收入（公司按开票地披露）；前三大客户的名称和各自占比
+    - 电话会讲稿与演示材料中的指引和分部说明
+    - 订单、积压订单（不在本次范围）
