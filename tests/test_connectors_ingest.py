@@ -328,6 +328,55 @@ def test_fetch_all_runs_every_scheduled_dataset_and_reports_failure(project, mon
         cli.main(["--root", str(project), "fetch", "--all", "--start", "2024"])
 
 
+def test_fetch_all_skips_a_source_after_consecutive_timeouts(project, monkeypatch, capsys):
+    import investment_os.cli as cli
+    from investment_os.data.ingest import IngestResult
+
+    reg = Registry.load(project)
+    scheduled = [d for d in reg.datasets.values() if d.scheduled_fetch is not None]
+    fred = [d.id for d in scheduled if d.source_id == "fred_graph"]
+    others = [d.id for d in scheduled if d.source_id != "fred_graph"]
+    assert len(fred) > cli.TIMEOUT_SKIP_AFTER and others
+    calls = []
+
+    def fake_ingest(reg, store, dataset_id, request):
+        calls.append(dataset_id)
+        if dataset_id in fred:
+            return IngestResult(dataset_id, "failed", "FetchError: 3 次尝试后仍无法取得 x：TimeoutError: The read operation timed out", None)
+        return IngestResult(dataset_id, "unchanged", "x", None)
+
+    monkeypatch.setattr(cli, "ingest", fake_ingest)
+    assert cli.main(["--root", str(project), "fetch", "--all"]) == 1
+    out = capsys.readouterr().out
+    attempted = [c for c in calls if c in fred]
+    assert attempted == fred[:cli.TIMEOUT_SKIP_AFTER]  # 连续超时后不再请求该来源
+    assert set(others) <= set(calls)  # 其他来源照常取得
+    assert out.count("[skipped] fred_") == len(fred) - cli.TIMEOUT_SKIP_AFTER
+
+
+def test_fetch_all_timeout_count_resets_and_ignores_other_failures(project, monkeypatch):
+    import investment_os.cli as cli
+    from investment_os.data.ingest import IngestResult
+
+    reg = Registry.load(project)
+    fred = [d.id for d in reg.datasets.values() if d.scheduled_fetch is not None and d.source_id == "fred_graph"]
+    calls = []
+
+    def fake_ingest(reg, store, dataset_id, request):
+        calls.append(dataset_id)
+        if dataset_id in fred:
+            i = fred.index(dataset_id)
+            if i % 2 == 0:  # 超时与成功交替：从不连续达到上限
+                return IngestResult(dataset_id, "failed", "TimeoutError: timed out", None)
+            if i == 1:  # 非超时的失败不计入
+                return IngestResult(dataset_id, "failed", "HTTP Error 404", None)
+        return IngestResult(dataset_id, "unchanged", "x", None)
+
+    monkeypatch.setattr(cli, "ingest", fake_ingest)
+    cli.main(["--root", str(project), "fetch", "--all"])
+    assert set(fred) <= set(calls)
+
+
 def test_env_file_sets_only_missing_variables(tmp_path: Path, monkeypatch):
     from investment_os.cli import load_env_file
     (tmp_path / ".env").write_text("# 注释\nexport FRED_API_KEY='abc'\nIROS_TEST_X=from-file\nNOT_A_PAIR\n",
