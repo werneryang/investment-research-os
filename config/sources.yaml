@@ -141,7 +141,9 @@ sources:
     registration: 无需注册或 key
     rate_limit: 未公布；本项目串行请求，失败有界重试
     revisions: 只返回当前版本，不含历史版本；时点研究需改用 fred_api（ALFRED）
-    maintenance: 图表导出接口非正式 API，格式可能变化；空值以空字符串或 "." 表示
+    maintenance: >-
+      图表导出接口非正式 API，格式可能变化；空值以空字符串或 "." 表示。2026-11-06 起不响应本项目的请求标识
+      （HTTP/1.1 读取超时、HTTP/2 连接被重置），本机与 CI 的定时取得因此全部超时
     alternatives: [fred_api]
     category: macro
     directions: [us_inflation_macro, policy_liquidity, growth_labor, us_treasury_curve, credit_premium, vol_premium, global_assets]
@@ -152,8 +154,10 @@ sources:
     offers:
       - 实际 GDP、工业生产、零售销售等增长序列
       - ICE BofA 期权调整利差（第三方权利与可得历史待核验）
-    notes: 复用 fred_graph_csv 接入器，新增序列只需在 datasets.yaml 登记
-    next_step: 逐个序列确认许可；按研究需要登记实际 GDP 等增长序列
+    notes: >-
+      2026-11-15 起没有数据集经本来源取得：原有 35 个当前版本数据集改经 fred_api（fred_api_current）。
+      下列核验记录是当时经图表导出取得的历史记录，保留备查；fred_graph_csv 接入器保留，供复查与降级
+    next_step: 不再新增序列；新的当前版本序列登记到 fred_api。图表导出恢复响应后，可作为 key 失效时的降级路径
     verification:
       - dataset: fred_dcoilwtico
         status: access_verified
@@ -386,22 +390,25 @@ sources:
 
   - id: fred_api
     name: FRED API / ALFRED
-    publisher: Federal Reserve Bank of St. Louis（ALFRED 历史版本）
-    channel: FRED API series/observations，需免费 API key（环境变量 FRED_API_KEY）
+    publisher: Federal Reserve Bank of St. Louis（上游为各统计机构；ALFRED 历史版本）
+    channel: FRED API series/observations，需免费 API key（环境变量 FRED_API_KEY）。不带 realtime 参数取当前版本（fred_api_current），带 realtime 参数取全部历史版本（fred_api_vintages）
     url: https://fred.stlouisfed.org/docs/api/api_key.html
     license: 同 FRED 使用条款；部分序列含第三方权利
     registration: 免费注册取得 API key；key 不进入 Git
     rate_limit: 以官方说明为准；本项目串行请求
-    revisions: realtime_start 给出每个历史版本的发布日期，可用于时点研究
-    maintenance: key 失效或额度变化时降级到 fred_graph（只限描述性研究）
+    revisions: 当前版本数据集只有当前修订值，按本机取得时间记版本；历史版本数据集以 realtime_start 给出每个版本的发布日期，可用于时点研究
+    maintenance: key 失效或额度变化时，当前版本数据集可降级到 fred_graph（只限描述性研究；fred_graph 自 2026-11-06 起不响应本项目请求，降级前先确认已恢复）
     alternatives: [fred_graph]
     category: macro
-    directions: [us_inflation_macro, policy_liquidity, growth_labor, signal_tests]
+    directions: [us_inflation_macro, policy_liquidity, growth_labor, us_treasury_curve, credit_premium, vol_premium, global_assets, signal_tests]
     access: api
     signup: free_key
     redistribution: per_series
-    coverage: ALFRED 历史版本，按序列不同
-    notes: 时点研究的官方路径；key 放在项目根目录的 .env（不入库），CLI 启动时读取。供应方保留全部历史版本，不需要本机定时快照
+    coverage: 按序列不同；当前版本与 ALFRED 历史版本分别登记为不同数据集
+    notes: >-
+      时点研究的官方路径；key 放在项目根目录的 .env（不入库），CLI 启动时读取；CI 用仓库 secret FRED_API_KEY。
+      历史版本数据集由供应方保留全部版本，不需要本机定时快照。2026-11-15 起，原经 fred_graph 取得的 35 个当前版本
+      数据集改经本来源取得（fred_api_current）；迁移时与图表导出最后一版逐值比对，见各数据集的核验记录
     next_step: 按研究需要登记更多序列的历史版本（如实际 GDP）
     verification:
       - dataset: alfred_cpiaucsl
@@ -440,6 +447,221 @@ sources:
           每个季度的最后发布值与当前修订序列 318 个季度完全一致；抽查 2025Q3：2025-12-23 初值 31095.1（停摆推迟），2026-01-22 修正为 31098.0，
           2026-09-30 年度修订为 31180.5。key 未出现在快照、取得记录与日志中
         scope: 历史版本全量下载（含分页）；发布日期取 realtime_start
+      - dataset: fred_dcoilwtico
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131909Z-54951f60，10660 个观测，最后观测日 2026-11-11）。与 2026-11-05 经图表导出取得的最后一版（v20261105T004511Z-c8e4afa6）逐值比对：重叠 10654 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_rvam
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131910Z-89a76224，86 个观测，最后观测日 2026-04-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004115Z-25f1ae91）逐值比对：重叠 86 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_rvama
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131910Z-5b3113cf，86 个观测，最后观测日 2026-04-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004115Z-811606e1）逐值比对：重叠 86 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_rvar
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131911Z-c1985b8d，86 个观测，最后观测日 2026-04-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004115Z-c25c86a6）逐值比对：重叠 86 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_rvaw
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131911Z-5e991b15，86 个观测，最后观测日 2026-04-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004116Z-bc17ccfc）逐值比对：重叠 86 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_rvai
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131911Z-6d16e61d，86 个观测，最后观测日 2026-04-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004116Z-96320185）逐值比对：重叠 86 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_manemp
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131912Z-cc5d47cf，1054 个观测，最后观测日 2026-10-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004116Z-3e4a85e6）逐值比对：重叠 1053 个观测，2026-08、2026-09 共 2 期不同，其余一致。ALFRED 显示 MANEMP 这几期在 2026-11-06 修订：图表导出值等于 2026-11-05 前有效的版本，API 值等于 11-06 起的版本，差异来自修订，不来自渠道。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_usmine
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131912Z-9becdf98，1054 个观测，最后观测日 2026-10-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004117Z-fdb54ddc）逐值比对：重叠 1053 个观测，2026-08、2026-09 共 2 期不同，其余一致。同一份就业报告的 PAYEMS、MANEMP、AWHAEMAN 已用 ALFRED 确认是 2026-11-06 的修订；本序列未逐一核对 ALFRED。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_ustrade
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131912Z-935d457d，1054 个观测，最后观测日 2026-10-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004117Z-85acf579）逐值比对：重叠 1053 个观测，2026-08、2026-09 共 2 期不同，其余一致。同一份就业报告的 PAYEMS、MANEMP、AWHAEMAN 已用 ALFRED 确认是 2026-11-06 的修订；本序列未逐一核对 ALFRED。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_usinfo
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131913Z-d257032c，1054 个观测，最后观测日 2026-10-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004117Z-96ba6435）逐值比对：重叠 1053 个观测，2026-08、2026-09 共 2 期不同，其余一致。同一份就业报告的 PAYEMS、MANEMP、AWHAEMAN 已用 ALFRED 确认是 2026-11-06 的修订；本序列未逐一核对 ALFRED。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_awhaeman
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131913Z-7a4e8119，248 个观测，最后观测日 2026-10-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004117Z-aff3220e）逐值比对：重叠 247 个观测，2026-09 共 1 期不同，其余一致。ALFRED 显示 AWHAEMAN 这几期在 2026-11-06 修订：图表导出值等于 2026-11-05 前有效的版本，API 值等于 11-06 起的版本，差异来自修订，不来自渠道。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_ces3000000003
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131914Z-5ed5a89d，248 个观测，最后观测日 2026-10-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004117Z-a47d809d）逐值比对：重叠 247 个观测，2026-08、2026-09 共 2 期不同，其余一致。同一份就业报告的 PAYEMS、MANEMP、AWHAEMAN 已用 ALFRED 确认是 2026-11-06 的修订；本序列未逐一核对 ALFRED。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_ipman
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131914Z-91c00778，657 个观测，最后观测日 2026-09-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004118Z-0b8e53f4）逐值比对：重叠 657 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_mcumfn
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131914Z-2a1053ba，657 个观测，最后观测日 2026-09-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004118Z-dd4688fd）逐值比对：重叠 657 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_cpiaucns
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131915Z-c7f503b1，1366 个观测，最后观测日 2026-10-01）。与 2026-11-05 经图表导出取得的最后一版（v20261026T004118Z-861621ea）逐值比对：重叠 1365 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_usrec
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131915Z-532f8100，2063 个观测，最后观测日 2026-10-01）。与 2026-11-05 经图表导出取得的最后一版（v20261103T004533Z-2e8ebbe0）逐值比对：重叠 2063 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_dgs10
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131916Z-c952e724，16923 个观测，最后观测日 2026-11-12）。与 2026-11-05 经图表导出取得的最后一版（v20261105T004544Z-9beccc87）逐值比对：重叠 16916 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_cpiaucsl
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131918Z-5782fbf5，958 个观测，最后观测日 2026-10-01）。与 2026-11-05 经图表导出取得的最后一版（v20261022T222135Z-3ff089d9）逐值比对：重叠 957 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_cpiaucsl
+        status: use_verified
+        use: descriptive
+        date: "2026-11-15"
+        valid_from: "1947-12-01"
+        valid_through: "2025-12-31"
+        evidence: "沿用 2026-10-25 经 fred_graph 登记的用途核验，用途、方法与核验范围不变。2026-11-15 改经 FRED API 取得当前版本，与图表导出最后一版逐值比对，重叠的 957 个观测全部一致，覆盖核验范围 1947-12-01 至 2025-12-31。原记录：基线运行 us_asset_history-20261025T233926Z-d87bb435（1928–2025）与 us_asset_history_last_25y-20261025T233929Z-f28bf9c9（2001–2025），代码 bbc17d1，dirty=false，iros verify 以固定输入重算结果校验值一致；两项研究的四项核对全部通过：标普 500 与 French 市场总收益相关 0.990、0.994（阈值 0.98），French 月度最大回撤深于年度（−83.7% 对 −64.8%，−50.3% 对 −36.6%），Damodaran 国库券与 DTB3 年均值最大差 0.49、0.21 个百分点（阈值 0.5），实际回报与 Shiller 实际总收益同向年份 97.4%、100%（阈值 80%）。原始 CSV 独立解析抽查 12 个点全部一致；1948–2025 年 12 月对 12 月通胀无缺年，最高 13.3%（1979），2022 年 6.4%（季调序列）。核对主要是这几个来源之间的相互比对，未与发布者网页逐值核对。2026-10-25 经用户确认登记。"
+        scope: "CPI-U 年度通胀（12 月对 12 月）的期间描述与名义回报换算为实际回报（如美国主要资产的长期回报与风险），使用最新修订数据；观测日期 1947-12-01 至 2025-12-31。 不包括时点研究（当时公布的值）、预测与交易回测；核验范围之外的日期须先补充核验。"
+      - dataset: fred_dff
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131919Z-f99f1620，26433 个观测，最后观测日 2026-11-12）。与 2026-11-05 经图表导出取得的最后一版（v20261105T004547Z-9ca70e14）逐值比对：重叠 26424 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_dff
+        status: use_verified
+        use: descriptive
+        date: "2026-11-15"
+        valid_from: "2024-01-01"
+        valid_through: "2026-10-22"
+        evidence: "沿用 2026-10-25 经 fred_graph 登记的用途核验，用途、方法与核验范围不变。2026-11-15 改经 FRED API 取得当前版本，与图表导出最后一版逐值比对，重叠的 26424 个观测全部一致，覆盖核验范围 2024-01-01 至 2026-10-22。原记录：基线运行 ust_curve_attribution_2024-20261025T230032Z-b01fed8d（2024-01-02 至 2024-12-31）与 ust_curve_attribution_last_year-20261025T230034Z-d50f7afa（2025-10-27 至 2026-10-22），代码 24f0471，dirty=false，iros verify 以固定输入重算结果校验值一致；两项研究的长端恒等式核对通过（250、248 个共同日期，最大残差 0 bp），Treasury 10Y 与 DGS10 同源一致。原始快照独立解析抽查 24 个点全部一致。2024-01-01 至 2026-10-22 之间 10bp 以上的变动共 7 次，全部在 FOMC 会议次日（会议日期按美联储官网日程核对）：2024-09-19 −50、2024-11-08 −25、2024-12-19 −25、2025-09-18 −25、2025-10-30 −25、2025-12-11 −25、2026-09-17 +25；此外没有 3bp 以上的变动。2026-10-25 经用户确认登记。"
+        scope: "联邦基金有效利率的期间描述与会计分解（如国债曲线变化的分解），使用最新修订数据；观测日期 2024-01-01 至 2026-10-22。 不包括时点研究（当时公布的值）、预测与交易回测；核验范围之外的日期须先补充核验。"
+      - dataset: fred_walcl
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131920Z-185c71b5，1248 个观测，最后观测日 2026-11-11）。与 2026-11-05 经图表导出取得的最后一版（v20261029T234546Z-783f91c1）逐值比对：重叠 1246 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_t10yie
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131921Z-d94dcfce，6227 个观测，最后观测日 2026-11-13）。与 2026-11-05 经图表导出取得的最后一版（v20261105T004550Z-608751a9）逐值比对：重叠 6220 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_t10yie
+        status: use_verified
+        use: descriptive
+        date: "2026-11-15"
+        valid_from: "2024-01-01"
+        valid_through: "2026-10-22"
+        evidence: "沿用 2026-10-25 经 fred_graph 登记的用途核验，用途、方法与核验范围不变。2026-11-15 改经 FRED API 取得当前版本，与图表导出最后一版逐值比对，重叠的 6220 个观测全部一致，覆盖核验范围 2024-01-01 至 2026-10-22。原记录：基线运行 ust_curve_attribution_2024-20261025T230032Z-b01fed8d（2024-01-02 至 2024-12-31）与 ust_curve_attribution_last_year-20261025T230034Z-d50f7afa（2025-10-27 至 2026-10-22），代码 24f0471，dirty=false，iros verify 以固定输入重算结果校验值一致；两项研究的长端恒等式核对通过（250、248 个共同日期，最大残差 0 bp），Treasury 10Y 与 DGS10 同源一致。原始快照独立解析抽查 24 个点全部一致。恒等式 DGS10 = DFII10 + T10YIE 在 2003-01-02 至 2026-10-22 的全部 5956 个共同日期成立（最大残差 0 bp），覆盖研究窗口之间的 2025 年 1–10 月。2026-10-25 经用户确认登记。"
+        scope: "10 年期盈亏平衡通胀率的期间描述与会计分解（如国债曲线变化的分解），使用最新修订数据；观测日期 2024-01-01 至 2026-10-22。 不包括时点研究（当时公布的值）、预测与交易回测；核验范围之外的日期须先补充核验。"
+      - dataset: fred_dfii10
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131922Z-6c031e16，6226 个观测，最后观测日 2026-11-12）。与 2026-11-05 经图表导出取得的最后一版（v20261105T004551Z-7cc9543a）逐值比对：重叠 6219 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_dfii10
+        status: use_verified
+        use: descriptive
+        date: "2026-11-15"
+        valid_from: "2024-01-01"
+        valid_through: "2026-10-22"
+        evidence: "沿用 2026-10-25 经 fred_graph 登记的用途核验，用途、方法与核验范围不变。2026-11-15 改经 FRED API 取得当前版本，与图表导出最后一版逐值比对，重叠的 6219 个观测全部一致，覆盖核验范围 2024-01-01 至 2026-10-22。原记录：基线运行 ust_curve_attribution_2024-20261025T230032Z-b01fed8d（2024-01-02 至 2024-12-31）与 ust_curve_attribution_last_year-20261025T230034Z-d50f7afa（2025-10-27 至 2026-10-22），代码 24f0471，dirty=false，iros verify 以固定输入重算结果校验值一致；两项研究的长端恒等式核对通过（250、248 个共同日期，最大残差 0 bp），Treasury 10Y 与 DGS10 同源一致。原始快照独立解析抽查 24 个点全部一致。恒等式 DGS10 = DFII10 + T10YIE 在 2003-01-02 至 2026-10-22 的全部 5956 个共同日期成立（最大残差 0 bp），覆盖研究窗口之间的 2025 年 1–10 月。2026-10-25 经用户确认登记。"
+        scope: "10 年期 TIPS 实际收益率的期间描述与会计分解（如国债曲线变化的分解），使用最新修订数据；观测日期 2024-01-01 至 2026-10-22。 不包括时点研究（当时公布的值）、预测与交易回测；核验范围之外的日期须先补充核验。"
+      - dataset: fred_unrate
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131922Z-a5089c6d，946 个观测，最后观测日 2026-10-01）。与 2026-11-05 经图表导出取得的最后一版（v20261023T192738Z-a1f1ba56）逐值比对：重叠 945 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_payems
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131923Z-f4a50db2，1054 个观测，最后观测日 2026-10-01）。与 2026-11-05 经图表导出取得的最后一版（v20261023T192739Z-5735c4ff）逐值比对：重叠 1053 个观测，2026-08、2026-09 共 2 期不同，其余一致。ALFRED 显示 PAYEMS 这几期在 2026-11-06 修订：图表导出值等于 2026-11-05 前有效的版本，API 值等于 11-06 起的版本，差异来自修订，不来自渠道。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_vixcls
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131923Z-49c70c5f，9618 个观测，最后观测日 2026-11-12）。与 2026-11-05 经图表导出取得的最后一版（v20261105T004553Z-7c8e7e3b）逐值比对：重叠 9611 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_baa10y
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131924Z-62005898，10661 个观测，最后观测日 2026-11-12）。与 2026-11-05 经图表导出取得的最后一版（v20261105T004554Z-8a56b607）逐值比对：重叠 10654 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_aaa10y
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131925Z-90f532db，11444 个观测，最后观测日 2026-11-12）。与 2026-11-05 经图表导出取得的最后一版（v20261105T004556Z-0df9a69f）逐值比对：重叠 11437 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_dtb3
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131927Z-b48f3ec4，19009 个观测，最后观测日 2026-11-12）。与 2026-11-05 经图表导出取得的最后一版（v20261105T004559Z-d3e44798）逐值比对：重叠 19002 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_dtb3
+        status: use_verified
+        use: descriptive
+        date: "2026-11-15"
+        valid_from: "1954-01-04"
+        valid_through: "2025-12-31"
+        evidence: "沿用 2026-10-25 经 fred_graph 登记的用途核验，用途、方法与核验范围不变。2026-11-15 改经 FRED API 取得当前版本，与图表导出最后一版逐值比对，重叠的 19002 个观测全部一致，覆盖核验范围 1954-01-04 至 2025-12-31。原记录：基线运行 us_asset_history-20261025T233926Z-d87bb435（1928–2025）与 us_asset_history_last_25y-20261025T233929Z-f28bf9c9（2001–2025），代码 bbc17d1，dirty=false，iros verify 以固定输入重算结果校验值一致；两项研究的四项核对全部通过：标普 500 与 French 市场总收益相关 0.990、0.994（阈值 0.98），French 月度最大回撤深于年度（−83.7% 对 −64.8%，−50.3% 对 −36.6%），Damodaran 国库券与 DTB3 年均值最大差 0.49、0.21 个百分点（阈值 0.5），实际回报与 Shiller 实际总收益同向年份 97.4%、100%（阈值 80%）。原始 CSV 独立解析抽查 12 个点全部一致；与 Damodaran 国库券的年度差中位数 0.004 个百分点，最大差集中在 1982–1984 年高利率时期（0.49、0.38、0.33），可能来自年内平均方法不同。核对主要是这几个来源之间的相互比对，未与发布者网页逐值核对。2026-10-25 经用户确认登记。"
+        scope: "3 个月国库券利率年均值的期间描述，以及对其他来源国库券回报的核对（如美国主要资产的长期回报与风险），使用最新修订数据；观测日期 1954-01-04 至 2025-12-31。 不包括时点研究（当时公布的值）、预测与交易回测；核验范围之外的日期须先补充核验。"
+      - dataset: fred_sofr
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131928Z-ef10a456，2248 个观测，最后观测日 2026-11-12）。与 2026-11-05 经图表导出取得的最后一版（v20261105T004600Z-c2ef778e）逐值比对：重叠 2241 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_gdp
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131928Z-f7d298a5，323 个观测，最后观测日 2026-07-01）。与 2026-11-05 经图表导出取得的最后一版（v20261029T234556Z-3f1e2970）逐值比对：重叠 319 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_dexuseu
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131929Z-aa8cee5a，7265 个观测，最后观测日 2026-11-06）。与 2026-11-05 经图表导出取得的最后一版（v20261103T004606Z-742a157a）逐值比对：重叠 7260 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_dexjpus
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131930Z-ed2acf26，14570 个观测，最后观测日 2026-11-06）。与 2026-11-05 经图表导出取得的最后一版（v20261103T004607Z-5efeb9ac）逐值比对：重叠 14565 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_dexchus
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131931Z-65c6fa51，11961 个观测，最后观测日 2026-11-06）。与 2026-11-05 经图表导出取得的最后一版（v20261103T004609Z-2e229ff9）逐值比对：重叠 11956 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_dexusuk
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131932Z-a14ba79f，14570 个观测，最后观测日 2026-11-06）。与 2026-11-05 经图表导出取得的最后一版（v20261103T004611Z-c0af198e）逐值比对：重叠 14565 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
+      - dataset: fred_dtwexbgs
+        status: access_verified
+        date: "2026-11-15"
+        evidence: "经 FRED API series/observations（不带 realtime 参数，只取当前版本）取得，保存原始与标准化版本（版本 v20261115T131933Z-de5ef58f，5440 个观测，最后观测日 2026-11-06）。与 2026-11-05 经图表导出取得的最后一版（v20261103T004612Z-2ff81ee3）逐值比对：重叠 5435 个观测，全部一致。key 未出现在快照、取得记录与日志中。"
+        scope: 当前版本的描述研究输入；不据此认定历史可交易性或时点可用
 
   - id: manual
     name: 人工导入

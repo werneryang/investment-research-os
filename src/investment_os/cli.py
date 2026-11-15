@@ -114,8 +114,9 @@ def cmd_fetch(args: argparse.Namespace) -> int:
 
 
 # 同一来源连续这么多个数据集因超时失败，就跳过该来源剩下的数据集：来源整体不响应时，
-# 每个数据集都要等满重试（约 3 分钟），不跳过会拖垮整次定时取得
-TIMEOUT_SKIP_AFTER = 3
+# 每个数据集都要等满重试（约 3 分钟），不跳过会拖垮整次定时取得。取 2：CI 取得步骤限时 8 分钟，
+# 取 3 要等约 9 分钟才触发，来不及（2026-11-15 的运行即如此）
+TIMEOUT_SKIP_AFTER = 2
 
 
 def _is_timeout(message: str) -> bool:

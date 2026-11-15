@@ -42,7 +42,12 @@ def test_project_registry_loads():
     assert src.status_for("ust_par_yield_curve", Use.DESCRIPTIVE) is VerificationStatus.USE_VERIFIED
     assert src.status_for("ust_par_yield_curve", Use.POINT_IN_TIME) is VerificationStatus.ACCESS_VERIFIED
     assert src.use_record("ust_par_yield_curve", Use.DESCRIPTIVE).date == "2026-10-23"
-    assert reg.sources["fred_graph"].status_for("fred_dgs10", Use.DESCRIPTIVE) is VerificationStatus.ACCESS_VERIFIED
+    # 2026-11-15 起 fred_dgs10 经 fred_api 取得；核验状态按数据集当前所属的来源取
+    assert reg.dataset("fred_dgs10").source_id == "fred_api"
+    assert reg.source_of("fred_dgs10").status_for("fred_dgs10", Use.DESCRIPTIVE) is VerificationStatus.ACCESS_VERIFIED
+    # 迁移时逐值一致的序列沿用原用途核验，范围不变
+    rec = reg.source_of("fred_dtb3").use_record("fred_dtb3", Use.DESCRIPTIVE)
+    assert rec.date == "2026-11-15" and str(rec.valid_through) == "2025-12-31"
     # 没有记录的数据集仍是候选
     assert reg.sources["manual"].status_for("manual_example") is VerificationStatus.CANDIDATE
 
