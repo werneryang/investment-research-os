@@ -2009,6 +2009,15 @@ data_groups:
     name: 信号与预测检验
     planned: true
     needs: 需要时点数据（ALFRED 或持续积累的本地快照），以及预设基准、样本外评估与预登记
+# 关键人物：只作检索入口，把人名指向已登记主体。职务是 as_of 当日出处所载，不表示此人现任；
+# 离任后保留条目（补 until 与出处），旧人名仍应能找到主体。aliases 是检索用通称，不要求出自 document。
+entity_people:
+  co_nvidia:
+  - name: Jen-Hsun Huang
+    aliases: [Jensen Huang, 黄仁勋]
+    role: 联合创始人、总裁兼首席执行官、董事
+    as_of: "2026-02-20"
+    document: doc_nvda_10k_fy2026
 entity_aliases:
   co_nvidia:
   - NVIDIA

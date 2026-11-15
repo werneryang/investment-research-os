@@ -46,10 +46,13 @@ def test_identity_and_direct_records(index):
     assert not any('path' in c['document'] for c in index['evidence'].values())
 
 
-@pytest.mark.parametrize('mutation', ['alias','cik','route','company_route'])
+@pytest.mark.parametrize('mutation', ['alias','person_subject','person_document','person_role','cik','route','company_route'])
 def test_invalid_subject_binding_fails(inputs,mutation):
     content,defs=inputs
     if mutation=='alias':content['entity_aliases']['missing']=['x']
+    if mutation=='person_subject':content['entity_people']['missing']=content['entity_people']['co_nvidia']
+    if mutation=='person_document':content['entity_people']['co_nvidia'][0]['document']='missing'
+    if mutation=='person_role':del content['entity_people']['co_nvidia'][0]['role']
     if mutation=='cik':content['studies']['company_nvidia']['entity_ids']=['co_micron']
     if mutation=='route':content['studies']['company_nvidia']['routes'][0]['entity_ids']=['missing']
     if mutation=='company_route':content['studies']['company_nvidia']['routes'][0]['entity_ids']=['co_micron']
@@ -117,7 +120,10 @@ const idx=JSON.parse(require('node:fs').readFileSync(0,'utf8'));
 for(const query of ['NVDA','英伟达','nvdia'])assert.equal(S.candidates(idx.entities,query)[0].id,'co_nvidia');
 assert.equal(S.candidates(idx.entities,'nvdia')[0].score,2);
 assert.equal(S.candidates(idx.entities,'nvidia jasen huang 辞职事件')[0].id,'co_nvidia');
-assert.equal(S.candidates(idx.entities,'jasen huang 辞职事件').length,0);
+// Key people resolve to their registered subject, including a misspelt name inside a longer query.
+for(const query of ['Jensen Huang','jen-hsun huang','黄仁勋','jasen huang','jasen huang 辞职事件','nvidia jasen huang 辞职事件'])assert.equal(S.candidates(idx.entities,query)[0].id,'co_nvidia',query);
+assert.equal(S.candidates(idx.entities,'jasenhuang')[0].score,2);
+assert.equal(S.candidates(idx.entities,'辞职事件').length,0);
 const row=idx.relations.rel_micron_nvda_memory;
 assert.equal(S.role(row,'co_nvidia'),'upstream');assert.equal(S.role(row,'co_micron'),'downstream');
 assert(S.recordMatch(row,{entity:'co_nvidia'}));assert(!S.recordMatch(row,{entity:'unknown'}));

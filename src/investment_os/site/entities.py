@@ -36,6 +36,16 @@ def build_index(root: Path, content: dict, definitions: dict) -> dict[str, Any]:
         if eid not in entities:
             raise ValueError(f'Unknown alias subject: {eid}')
         entities[eid].setdefault('aliases', []).extend(aliases)
+    # Key people are search entry points only: a person's names resolve to the registered subject.
+    for eid, people in content.get('entity_people', {}).items():
+        if eid not in entities:
+            raise ValueError(f'Unknown key-person subject: {eid}')
+        for person in people:
+            if not person.get('name') or not person.get('role') or not person.get('as_of'):
+                raise ValueError(f'Key person needs name, role and as_of: {eid}')
+            if cat and person.get('document') not in cat.documents:
+                raise ValueError(f"Key person needs a registered document: {eid} {person['name']}")
+            entities[eid].setdefault('aliases', []).extend([person['name'], *person.get('aliases', [])])
     for eid, entity in entities.items():
         entity['aliases'] = list(dict.fromkeys([entity['name'], *entity.get('aliases', [])]))
         if entity.get('parent') and entity['parent'] not in entities:
