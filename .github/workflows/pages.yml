@@ -29,6 +29,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      # 逐行输出：步骤卡住时日志能显示停在哪个数据集
+      PYTHONUNBUFFERED: "1"
     steps:
       - uses: actions/checkout@v7.0.1
 
@@ -48,8 +51,11 @@ jobs:
 
       # FRED：DGS10 用于交叉核验，其余只接入数据，显示在能力地图与资源目录上。
       # CI 中取得的数据随运行环境丢弃，不是快照积累；快照由本机 launchd 保存（scripts/snapshot-agent.sh）
+      # 步骤自己的时限：来源不响应时只让这一步失败，continue-on-error 才生效；
+      # 否则会拖到作业的 30 分钟上限，整次运行被取消、不发布（2026-11-07 起 FRED 图表导出即如此）
       - name: Fetch scheduled datasets (FRED; failures do not block)
         continue-on-error: true
+        timeout-minutes: 8
         run: uv run iros fetch --all
 
       - name: Run studies
