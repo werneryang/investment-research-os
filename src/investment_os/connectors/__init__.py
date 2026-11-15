@@ -8,7 +8,7 @@ from .base import Connector, FetchError, ParsedPayload, RawPayload
 from .damodaran import DamodaranXlsConnector
 from .eia import EiaPetXlsConnector
 from .evidence import EvidenceBundleConnector
-from .fred import FredApiVintagesConnector, FredGraphCsvConnector
+from .fred import FredApiCurrentConnector, FredApiVintagesConnector, FredGraphCsvConnector
 from .french import FrenchLibraryConnector
 from .manual import ManualCsvConnector
 from .sec_graph import SecPerformanceGraphConnector
@@ -17,7 +17,7 @@ from .treasury import TreasuryParCurveConnector
 
 _CONNECTORS = {
     c.name: c
-    for c in (TreasuryParCurveConnector, FredGraphCsvConnector, FredApiVintagesConnector,
+    for c in (TreasuryParCurveConnector, FredGraphCsvConnector, FredApiCurrentConnector, FredApiVintagesConnector,
               FrenchLibraryConnector, DamodaranXlsConnector, ShillerXlsConnector,
               ManualCsvConnector, EvidenceBundleConnector, EiaPetXlsConnector, SecPerformanceGraphConnector)
 }

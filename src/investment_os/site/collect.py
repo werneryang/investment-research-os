@@ -100,13 +100,15 @@ def ordered_studies(by_study: dict[str, Any], content: dict[str, Any]) -> list[s
 def skip_reason(connector: str, signup: str, scheduled: bool) -> str | None:
     """数据集为什么不在 CI 中取得（由登记推出）；None 表示应当取得，没取得才是异常。
 
-    分工：接入核验与快照在本机完成；CI 只取无需凭证、登记了定时取得的数据集。
+    分工：接入核验与快照在本机完成；CI 取登记了定时取得的数据集。需要免费 key 的来源，
+    定时取得的数据集用仓库 secret 在 CI 取得（2026-11-15 起 FRED 当前版本序列）；
+    没有登记定时取得的（如 ALFRED 历史版本）仍只在本机取得。
     """
     if connector == "manual_csv":
         return "manual"
     if connector == "sec_edgar":
         return "contact"
-    if signup == "free_key":
+    if signup == "free_key" and not scheduled:
         return "key"
     if not scheduled:
         return "unscheduled"

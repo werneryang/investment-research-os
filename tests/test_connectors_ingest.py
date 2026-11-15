@@ -6,7 +6,7 @@ import pandas as pd
 import pytest
 
 from investment_os.connectors.base import FetchError, fetch_with_retry
-from investment_os.connectors.fred import FredApiVintagesConnector
+from investment_os.connectors.fred import FredApiCurrentConnector, FredApiVintagesConnector
 from investment_os.connectors.manual import ManualCsvConnector
 from investment_os.contracts import VintageSupport
 from investment_os.data import as_of, ingest, normalize
@@ -232,6 +232,39 @@ def test_alfred_fetches_all_pages(registry, store):
     assert len(r.version.raw_snapshots) == 2
 
 
+CURRENT = [
+    {"realtime_start": "2026-11-15", "realtime_end": "2026-11-15", "date": "2024-01-12", "value": "3.94"},
+    {"realtime_start": "2026-11-15", "realtime_end": "2026-11-15", "date": "2024-01-15", "value": "."},
+    {"realtime_start": "2026-11-15", "realtime_end": "2026-11-15", "date": "2024-01-16", "value": "4.07"},
+]
+
+
+def test_fred_api_current_matches_graph_semantics(registry, store, monkeypatch):
+    monkeypatch.delenv("FRED_API_KEY", raising=False)
+    with pytest.raises(FetchError, match="FRED_API_KEY"):
+        FredApiCurrentConnector().fetch(registry.dataset("fred_dgs10"), {})
+    http = PagedAlfred(CURRENT)
+    conn = FredApiCurrentConnector(http_get=http, api_key="secret-key", page_limit=2, **NO_RETRY)
+    r = ingest(registry, store, "fred_dgs10", {"start": "2024-01-12", "end": "2024-01-16"}, conn)
+    assert r.status == "created" and r.version.rows == 3 and len(http.calls) == 2
+    # 只要当前版本：不带 realtime 参数；日期范围照传；key 只在请求里
+    assert all("realtime_start" not in u and "observation_start=2024-01-12" in u for u in http.calls)
+    assert "secret-key" in http.calls[0]
+    assert "secret-key" not in (store.base / "catalog" / "fetch_log.jsonl").read_text()
+    assert r.version.quality["status_counts"] == {"ok": 2, "missing": 1}  # "." 记为缺失
+    df, _ = store.load("fred_dgs10")
+    assert df["vintage_id"].str.startswith("local:").all()  # 本地快照，不冒充供应方版本
+    assert df["published_at"].isna().all()
+    assert set(df["source_id"]) == {registry.dataset("fred_dgs10").source_id}
+
+
+def test_fred_api_current_truncated_result_fails(registry, store):
+    http = PagedAlfred(CURRENT, count=100_001)
+    conn = FredApiCurrentConnector(http_get=http, api_key="k", page_limit=2, **NO_RETRY)
+    r = ingest(registry, store, "fred_dgs10", {}, conn)
+    assert r.status == "failed" and "不完整" in r.message
+
+
 def test_alfred_truncated_result_fails(registry, store):
     http = PagedAlfred(ALFRED["observations"], count=100_001)
     conn = FredApiVintagesConnector(http_get=http, api_key="k", page_limit=2, **NO_RETRY)
@@ -334,8 +367,8 @@ def test_fetch_all_skips_a_source_after_consecutive_timeouts(project, monkeypatc
 
     reg = Registry.load(project)
     scheduled = [d for d in reg.datasets.values() if d.scheduled_fetch is not None]
-    fred = [d.id for d in scheduled if d.source_id == "fred_graph"]
-    others = [d.id for d in scheduled if d.source_id != "fred_graph"]
+    fred = [d.id for d in scheduled if d.source_id == "fred_api"]
+    others = [d.id for d in scheduled if d.source_id != "fred_api"]
     assert len(fred) > cli.TIMEOUT_SKIP_AFTER and others
     calls = []
 
@@ -359,7 +392,7 @@ def test_fetch_all_timeout_count_resets_and_ignores_other_failures(project, monk
     from investment_os.data.ingest import IngestResult
 
     reg = Registry.load(project)
-    fred = [d.id for d in reg.datasets.values() if d.scheduled_fetch is not None and d.source_id == "fred_graph"]
+    fred = [d.id for d in reg.datasets.values() if d.scheduled_fetch is not None and d.source_id == "fred_api"]
     calls = []
 
     def fake_ingest(reg, store, dataset_id, request):

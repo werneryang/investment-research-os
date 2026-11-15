@@ -53,9 +53,13 @@ jobs:
       # CI 中取得的数据随运行环境丢弃，不是快照积累；快照由本机 launchd 保存（scripts/snapshot-agent.sh）
       # 步骤自己的时限：来源不响应时只让这一步失败，continue-on-error 才生效；
       # 否则会拖到作业的 30 分钟上限，整次运行被取消、不发布（2026-11-07 起 FRED 图表导出即如此）
+      # FRED 当前版本序列 2026-11-15 起经官方 API 取得，key 只传给这一步（仓库 secret FRED_API_KEY）；
+      # secret 没有设置时这些数据集立即失败，不等待超时
       - name: Fetch scheduled datasets (FRED; failures do not block)
         continue-on-error: true
         timeout-minutes: 8
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: uv run iros fetch --all
 
       - name: Run studies
