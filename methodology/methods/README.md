@@ -1,5 +1,7 @@
 # 研究方法库（Research Method Library）
 
+> **2026-11-05 起冻结，不再更新。** 方法卡改在单独的私有仓库 research-method-extraction 维护，以那里为准；本目录的卡是当时的副本，执行时不要用。照方法卡执行的记录只写卡 id、那边的提交号和步骤编号，不复制卡的正文。
+
 每个文件描述一种**可复用的分析方法**，与具体公司无关。单份报告的提取记录放在 [`../records/`](../records/README.md)，可检验判断放在 [`../playbooks/`](../playbooks/README.md)。模块边界见 [methodology/README.md](../README.md)。
 
 ## 状态等级

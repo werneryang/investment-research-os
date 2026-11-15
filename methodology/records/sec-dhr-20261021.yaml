@@ -1,0 +1,954 @@
+# 方法库执行题 20261114-execute-dhr-first-batch 的走查记录：照四张方法卡的首批范围在 Danaher 上走一遍，
+# 逐步记录能不能照做。这是 Micron 走查（sec-mu-20261009.yaml）的复测。只检验能否照做，不判断方法对错，不是投资结论。
+# 本文件只写卡 id、方法库版本、步骤编号、数据来源、期间和数值，以及每一步的归类和执行时的临时决定；
+# 不含卡的正文、来源案例和出处判定。本目录 ../methods/ 里同名的旧卡是 2026-11-05 的副本，本记录没有使用。
+id: sec-dhr-20261021
+record_type: application
+status: draft
+
+source:
+  type: official
+  title: Danaher Corporation 年报、季报与业绩新闻稿
+  author: Danaher Corporation（CIK 313616）
+  published_on: "2026-10-21"
+  data_as_of: "2026-09-25"
+  locator: https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=313616&type=10-K
+  sha256: ""
+  outcome_known: true
+  filings:
+    - {id: 10K-FY2025, form: 10-K, accession: 0000313616-26-000062, filed: "2026-02-24"}
+    - {id: 10K-FY2024, form: 10-K, accession: 0000313616-25-000043, filed: "2025-02-20"}
+    - {id: 10K-FY2023, form: 10-K, accession: 0000313616-24-000052, filed: "2024-02-21"}
+    - {id: 10K-FY2022, form: 10-K, accession: 0000313616-23-000087, filed: "2023-02-22"}
+    - {id: 10K-FY2021, form: 10-K, accession: 0000313616-22-000061, filed: "2022-02-23"}
+    - {id: 10K-FY2020, form: 10-K, accession: 0000313616-21-000045, filed: "2021-02-25"}
+    - {id: 10Q-Q3-26, form: 10-Q, accession: 0000313616-26-000199, filed: "2026-10-21"}
+    - {id: 10Q-Q2-26, form: 10-Q, accession: 0000313616-26-000161, filed: "2026-07-21"}
+    - {id: 10Q-Q1-26, form: 10-Q, accession: 0000313616-26-000107, filed: "2026-04-21"}
+    - {id: 10Q-Q3-25, form: 10-Q, accession: 0000313616-25-000182, filed: "2025-10-21"}
+    - {id: 10Q-Q2-25, form: 10-Q, accession: 0000313616-25-000153, filed: "2025-07-22"}
+    - {id: 10Q-Q1-25, form: 10-Q, accession: 0000313616-25-000088, filed: "2025-04-22"}
+    - {id: 10Q-Q3-24, form: 10-Q, accession: 0000313616-24-000220, filed: "2024-10-22"}
+    - {id: 8K-Q3-26, form: 8-K Item 2.02, accession: 0000313616-26-000201, filed: "2026-10-21"}
+    - {id: 8K-Q2-26, form: 8-K Item 2.02, accession: 0000313616-26-000163, filed: "2026-07-21"}
+    - {id: 8K-Q1-26, form: 8-K Item 2.02, accession: 0000313616-26-000109, filed: "2026-04-21"}
+    - {id: 8K-Q4-25, form: 8-K Item 2.02, accession: 0000313616-26-000004, filed: "2026-01-28"}
+    - {id: 8K-JPM-26, form: 8-K Item 2.02, accession: 0000313616-26-000002, filed: "2026-01-12"}
+    - {id: 8K-Q3-25, form: 8-K Item 2.02, accession: 0000313616-25-000180, filed: "2025-10-21"}
+    - {id: 8K-Q2-25, form: 8-K Item 2.02, accession: 0000313616-25-000152, filed: "2025-07-22"}
+    - {id: 8K-Q1-25, form: 8-K Item 2.02, accession: 0000313616-25-000090, filed: "2025-04-22"}
+    - {id: 8K-Q4-24, form: 8-K Item 2.02, accession: 0000313616-25-000004, filed: "2025-01-29"}
+    - {id: 8K-JPM-25, form: 8-K Item 2.02, accession: 0000313616-25-000002, filed: "2025-01-13"}
+    - {id: 8K-Q4-23, form: 8-K Item 2.02, accession: 0000313616-24-000006, filed: "2024-01-30"}
+    - {id: 8K-Q4-22, form: 8-K Item 2.02, accession: 0000313616-23-000006, filed: "2023-01-24"}
+    - {id: 8K-Q4-21, form: 8-K Item 2.02, accession: 0000313616-22-000005, filed: "2022-01-27"}
+  retrieval:
+    retrieved_on: "2026-11-14"
+    note: >-
+      没有登记新的来源或数据集，原始文件没有进入本项目的版本存储，只留在仓库外的临时目录。
+      首次走查的请求都用项目的通用请求标识，没有请求 www.sec.gov。同日补读时，按方法库交接约定的取数范围，
+      用本项目已配置的 SEC 请求标识向 www.sec.gov 取了 7 份 10-K、10-Q 原文（标识只用于这些请求，不在本记录中写出）。
+      FSDS 没有同步；本地 data/edgar/segment_facts 里没有 Danaher。
+    files:
+      - what: 10-K、10-Q 原文（www.sec.gov/Archives，2026-11-14 补读），读分部附注、收入分解与地区附注、收购附注
+        via: 项目的 SecClient，一次性脚本调用
+        sha256:
+          10K-FY2025: e6d1e5caa973b0bc176909f0284745256733aa45656a337a4398afb3b6fa7729
+          10K-FY2024: 4647072e5ebf8e9944bb6f06e899d58a57b2bac93310e30045b8e17942a20dda
+          10K-FY2023: 5ef14b780a13db55f491372967fd601bfaed0f3f1a390e84a2f87688e08e6236
+          10Q-Q3-25: 681de0df89199266bff5639273bbf3fa023aeb5b7ae6dc3351ede121ff542aa2
+          10Q-Q1-26: c34b1cab10b9356c1f75dc8894e560938ae510d890e4a475927949b8fd9ffffd
+          10Q-Q2-26: ad7dec38fd0544828500d52208c2e29e8279c295acf0879aa006343afe01e86c
+          10Q-Q3-26: 04f1892988d6a725efc8fcba0d4968d1b862ff7e992d0c698dc6f706eba97a81
+      - what: Company Facts API（data.sec.gov，CIK 313616），合并口径的全部 XBRL 事实
+        via: 项目的 SecClient，一次性脚本调用
+        sha256: 490c60712f8b9aafe5ad232e8d053a26205b5517f8f4679432503f7768574efb
+      - what: Submissions API（data.sec.gov），用来取 10-K、10-Q、8-K 的申报编号与日期
+        via: 项目的 SecClient，一次性脚本调用
+        sha256: a1991117f7f40ff31d1e1d81d13f96ba348337077329f1324ad969623cd80279
+      - what: 公司投资者关系网站上的业绩新闻稿和三份交易公告（已登记来源 company_ir 的渠道）
+        via: 项目的通用取数函数，一次性脚本调用
+        sha256:
+          8K-Q4-21: e3c05d31a37d4ba2beba076e8e758ea0bcde4ec20a999930fd3e0ca8fa8ac801
+          8K-Q4-22: 518963853ce8829f9a022aee326ab2b0d370e522fc20b9cd5a54e994ad158394
+          8K-Q4-23: 125bf552689e5f2383a9c358a432c8b78c331e8c1386cf13712bf31c9776d299
+          8K-JPM-25: d69b60dbf82da4128fbd748a4407c1e3b782d34cd4c8cecf1ccf03608f92f149
+          8K-Q4-24: bd6d31c3aa2c963e0d0d86810196e8b76c6675d6f7d49b1f8f368bd91330811e
+          8K-Q1-25: a5203a3616e34e4e3f7b0ef4bef85da9fba71bc19544dbbc2cbbf7a4dde65060
+          8K-Q2-25: 2b18b92a6fd41edc512c00dfaabd864b092be15834c80e04e416ad59e41373f9
+          8K-Q3-25: be2243861b35b16d6c92d1711fb5e5a84ba50d9cb3e9467b1749ac8e06b0bfd7
+          8K-JPM-26: 8ab810cf83ba840d997fc510487700fa4f9fd00d745781d7fbc451af9e5b9f09
+          8K-Q4-25: 00eb5aa3bf0869c57bc8ccc98239dd60a48b0d7cf6d3a01bd9ee2d83a9c36c14
+          8K-Q1-26: 9345598c3514adbb5c4391432f2eb5a651b4b24a854c0fcbb8f1b8bbf032889a
+          8K-Q2-26: 84f72006792039560fbee37291063d377b8a46c594bf6273191bb19e36b19149
+          8K-Q3-26: eb8cc115643f31ca5c6cbc7fa2586f7b8959ebe5d29a7aef5fc0b2aad631adbe
+          veralto_separation_20230930: 0879de4651d45062582ef67f734fa626726ea45980e5b0541a64e261bae0bb27
+          abcam_completion_20231206: 0b5160e545c78e3ae08181a26f062d46b823e2fb8a36a2a29f770142e35242b5
+          masimo_completion_20260610: 9685bebffb50a92fd4d9c3d8a02edd2d093a726670e736d65f9d7ff6dfed13da
+        caveat: 读的是公司网站上的新闻稿页面；对应的 8-K 编号按发布日期从 Submissions API 对上，没有和 8-K 附件逐字比对。
+
+extraction:
+  extracted_on: "2026-11-14"
+  method: ai_assisted
+  tool: Claude Opus 5.5
+  review: 只做了下面 checks 列出的技术核对；未经人工核对
+  quality_notes: 单次执行，没有重复执行或人工对照
+
+method_library:
+  repo: research-method-extraction（私有）
+  version: research-method-extraction＠fa5dea6，加 2026-11-14 未提交的工作区改动
+  test: 20261114-execute-dhr-first-batch
+  compared_with: sec-mu-20261009（同一条路径的 Micron 走查）
+  cards:
+    - {id: dupont-return-decomposition, steps: [1, 3]}
+    - {id: working-capital-forecast, steps: [1, 2, 3], note: 第 3 步只和自身历史比}
+    - {id: earnings-quality-checklist, steps: [1, 5, 6, 7]}
+    - {id: guidance-tracking-playbook, steps: [1, 2, 3], note: 只登记已量化的指引}
+
+research_question:
+  - layer: own_extension
+    text: 照同一条路径换一家有分拆、有收购、披露核心营收增长的公司，四张卡的首批范围各能走到哪一步，Micron 那次临时定的口径还能不能沿用？
+    location: ""
+    verified: false
+
+thesis: []
+
+evidence:
+  # 题目里 AI 凭记忆写的公司特征，取数时逐条对照
+  - layer: source_fact
+    text: 财年按日历年，结束于 12 月 31 日；前三个季度结束于月末附近的星期五（例如 2025-03-28、2025-06-27、2025-09-26、2026-03-27、2026-06-26、2026-09-25），第四季度到 12 月 31 日为止。季度天数因此不等（Q4-25 为 96 天，Q4-24 为 95 天，Q1-26 为 86 天，Q1-25 为 87 天）。
+    location: Company Facts 各期间起止日；Submissions 的 reportDate
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 2023-09-30 完成 Veralto 分拆，此后 Veralto 按终止经营列报；FY2021、FY2022 的营收、成本、营业利润和经营现金流在后来的 10-K 里重述为持续经营口径，归属 Danaher 的净利润仍含终止经营。FY2021 末的资产负债表各项没有被重述过（后来的 10-K 不再列示这一期）；FY2022 末的应收、存货、应付在 10K-FY2023 里重述，Veralto 的资产改列为待处置资产（流动 1,280，非流动 3,501）。
+    location: veralto_separation_20230930 公告；Company Facts 中同一期间在不同申报里的数值（RevenueFromContractWithCustomerExcludingAssessedTax、AccountsReceivableNetCurrent 等）；AssetsOfDisposalGroupIncludingDiscontinuedOperationCurrent、DisposalGroupIncludingDiscontinuedOperationOtherNoncurrentAssets
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 2023-12-06 完成 Abcam 收购（FY2023 收购企业支付现金 5,610）；2026-06-10 完成 Masimo 收购（2026 年前九个月收购企业支付现金 9,881）。期间内另有一处终止经营：FY2025 归属净利润比持续经营利润多 14，Q3-26 多 28。
+    location: abcam_completion_20231206、masimo_completion_20260610 公告；Company Facts 的 PaymentsToAcquireBusinessesNetOfCashAcquired、NetIncomeLoss、IncomeLossFromContinuingOperations
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 公司在每份业绩新闻稿里披露非 GAAP 的核心营收增长，按总增长减去收购和剥离、汇率的影响列出调节表，并分三个分部列示。2026 年第三季度起，核心营收增长另外剔除向客户返还的关税退款（Q3-26 合计影响 1.0 个百分点，Biotechnology 4.0 个百分点）。公司另有两种派生口径：2021–2023 年的“剔除新冠影响的基础业务核心增长”，2026 年起的“剔除呼吸道检测的核心增长”。
+    location: 8K-Q4-21 至 8K-Q3-26 对应新闻稿的 Core Sales Growth 调节表；8K-Q3-26 对应新闻稿调节表下的注释
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: FY2021、FY2022 的核心营收增长是按分拆前的口径公布的（FY2022 的调节表还有第四个分部 Environmental & Applied Solutions），之后没有按持续经营口径重新公布这两年的核心增长。
+    location: 8K-Q4-21、8K-Q4-22 对应新闻稿的调节表
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 指引都是非 GAAP 口径，公司在新闻稿中写明只按核心营收给营收预测，不给 GAAP 营收和 GAAP 每股收益指引。新闻稿正文和附表同时给当季（或下一季）和全年指引：季度指引只有核心营收增长（合计与分部），2026 年起加了当季调整后营业利润率；全年指引有核心营收增长和调整后稀释每股收益区间，2026 年起加了呼吸道检测收入。季度核心增长多数写成“低个位数”“持平”“小幅增长”一类的描述，不给数字。
+    location: 8K-Q4-24 至 8K-Q3-26 对应新闻稿的 Outlook 段和 Forecasted / Forward-Looking Information 表
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 资产负债表上应收一行就是“贸易应收（扣除坏账准备）”，应付一行就是“贸易应付”，应计费用及其他负债另列一行。
+    location: 8K-Q4-25 对应新闻稿所附合并资产负债表；Company Facts 的 AccountsReceivableNetCurrent、AccountsPayableTradeCurrent、AccruedLiabilitiesCurrent
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 第四季度的单季数字不在 XBRL 里直接列报；季度经营现金流只有年初至今累计值。新闻稿列有单季数字。
+    location: Company Facts；8K-Q4-25 对应新闻稿
+    verified: true
+    verifiability: public_filing
+  - layer: source_fact
+    text: 季度新闻稿不列实际的调整后营业利润率和分部营业利润，只有第四季度新闻稿附分部信息表（分部营收、GAAP 与调整后营业利润）。调整后毛利率不披露。
+    location: 8K-Q2-25 至 8K-Q3-26 对应新闻稿的全部附表
+    verified: true
+    verifiability: public_filing
+
+causal_mechanism: []
+
+analytical_method:
+  - layer: own_extension
+    text: 按 method_library 列出的卡和步骤编号执行；每一步的归类和临时决定写在 method_output.walkthrough，Micron 那次的同类决定是沿用还是改了写在每条 vs_mu。
+    location: ""
+    verified: false
+
+assumptions:
+  - layer: own_extension
+    text: 四张卡共用的临时决定：同一期间在多份申报中出现时取最新一份的数值（沿用 Micron；本例重述使这条规则第一次影响结果，各卡分别写明）；季度天数不同不折算（沿用 Micron 的“53 周不折算”）；第四季度单季 = 全年 − 前三季累计；季度经营现金流 = 年初至今累计相减。
+    location: ""
+    verified: false
+  - layer: own_extension
+    text: 期间：年度取 FY2021–FY2025，平均余额和同比另用 FY2020；季度取 Q3-25 至 Q3-26，同比另用 Q3-24 至 Q2-25。截至 2026-11-14，最新的定期报告是 10Q-Q3-26（2026-10-21 申报），Q4-26 和 FY2026 尚未公布。
+    location: ""
+    verified: false
+
+valuation_logic: []
+counterarguments: []
+
+falsification:
+  - layer: own_extension
+    text: 换一个人或换一次执行，在标为临时决定的地方选别的选项而结果差异不大，说明该处不算真正挡路；差异大的几处见各卡 sensitivity。
+    location: ""
+    verified: false
+
+transferability:
+  - layer: ai_inference
+    text: 两家公司差别在财年（53 周对日历年）、有无分拆和收购、有无公司自报的有机增长、指引是季度数字表还是全年为主加季度描述。同一条路径只测了这两家。
+    location: ""
+    verified: false
+
+links:
+  methods:
+    - {id: dupont-return-decomposition, fit: match, library: research-method-extraction@fa5dea6+worktree-20261114}
+    - {id: working-capital-forecast, fit: match, library: research-method-extraction@fa5dea6+worktree-20261114}
+    - {id: earnings-quality-checklist, fit: match, library: research-method-extraction@fa5dea6+worktree-20261114}
+    - {id: guidance-tracking-playbook, fit: match, library: research-method-extraction@fa5dea6+worktree-20261114}
+  claims: []   # 指引登记放在下面 method_output，没有写入 ../playbooks/
+
+method_output:
+  unit: 金额为百万美元（每股收益为美元）；比率为小数，利润率、增长和占比为百分数，周转为天
+  periods:
+    annual: FY2021–FY2025（期末均为 12-31）；平均余额和同比另用 FY2020
+    quarterly: Q3-25、Q4-25、Q1-26、Q2-26、Q3-26（期末 2025-09-26、2025-12-31、2026-03-27、2026-06-26、2026-09-25）；同比另用 Q3-24 至 Q2-25
+    latest_available: 截至 2026-11-14，最新的定期报告是 10Q-Q3-26；Q4-26 尚未公布
+  classification_terms: [已完成, 因数据不足未执行, 需人工判断]
+
+  walkthrough:
+    - card: dupont-return-decomposition
+      reached: 第 1、3 步都走完（只做历史年份）
+      first_guess: {step: 1, what: 净利润取哪个口径——含不含终止经营（Veralto）、扣不扣优先股股利；权益含不含优先股}
+      steps:
+        - step: 1
+          did: 三因子分解，FY2021–FY2025
+          classification: 已完成
+          guesses:
+            - what: 净利润口径
+              options: [GAAP 归属 Danaher 的净利润（含终止经营）, 持续经营利润, 归属普通股的净利润（扣优先股股利）, 非 GAAP 调整后净利润]
+              chosen: GAAP 归属 Danaher 的净利润（含终止经营）
+              vs_mu: 沿用（Micron 取 GAAP 归属母公司）。但 Micron 没有终止经营和优先股，这两个子选项是这次新碰到的
+              impact: FY2021–FY2023 差别明显，见 sensitivity.continuing_income；FY2024 起两者几乎相同
+            - what: 权益口径
+              options: [Danaher 股东权益（含优先股、不含少数股东）, 总权益（含少数股东）, 普通股权益（扣优先股）]
+              chosen: Danaher 股东权益（含优先股、不含少数股东）
+              vs_mu: 沿用（Micron 没有少数股东和优先股）。少数股东 4–12，可以忽略；优先股 FY2020–FY2022 末为 3,268、3,268、1,668，2023 年转换完毕
+              impact: 见 sensitivity.common_equity
+            - what: 营收取最新申报的重述值（持续经营）还是首次申报值（含 Veralto）
+              options: [最新申报（持续经营）, 首次申报（含 Veralto）]
+              chosen: 最新申报（沿用共用规则）
+              vs_mu: 沿用；Micron 各期数值在多份申报中相同，这条规则没有影响，这次第一次影响结果
+              impact: FY2021、FY2022 的净利率分子含 Veralto、分母不含，净利率偏高、周转率偏低；三因子乘积不受影响。见 sensitivity.first_reported_revenue
+        - step: 3
+          did: 五个财年并列，余额取平均
+          classification: 已完成
+          guesses:
+            - what: 平均值怎样算
+              options: [年初年末两点平均, 五个季末平均]
+              chosen: 年初年末两点平均
+              vs_mu: 沿用
+            - what: 首年的平均余额要多取一期
+              options: [多取 FY2020 期末余额, 首年改用期末余额, 首年不算]
+              chosen: 多取 FY2020 期末余额
+              vs_mu: 沿用
+            - what: 分拆当年（FY2023）的平均余额
+              options: [照两点平均（年初含 Veralto、年末不含）, 年初扣除 Veralto 待处置资产后再平均, FY2023 改用期末余额]
+              chosen: 照两点平均
+              vs_mu: 新碰到（Micron 期间没有分拆）
+              impact: 年初总资产 84,350 里有 Veralto 的待处置资产 4,781（XBRL 两项之和：流动 1,280，非流动 3,501；没有读 10-K 附注确认是否就是全部），年末 84,488 已不含 Veralto、但含 12 月并入的 Abcam；扣除后 FY2023 平均总资产为 82,029，资产周转率 0.2912 对 0.2830
+      not_in_scope: 预测年、ROIC 版本、同业比较、变化原因
+    - card: working-capital-forecast
+      reached: 第 1、2 步走完；第 3 步算出了与自身上年的差异，找原因没有做
+      first_guess: {step: 1, what: 用期末还是平均余额（同一步另有重述造成的口径不一致：FY2021 的余额含 Veralto、重述后的营收不含）}
+      steps:
+        - step: 1
+          did: 应收对营收、存货和应付对销货成本，换成天数，FY2021–FY2025
+          classification: 已完成
+          guesses:
+            - what: 期末还是平均余额
+              options: [期末余额, 年初年末平均]
+              chosen: 期末余额
+              vs_mu: 沿用
+              impact: 见 sensitivity.average_balance；现金周期差 −11 到 +8 天，正负不变
+            - what: 应收、应付取资产负债表表面行还是附注里的贸易项
+              status: 本例不用猜。表面行就是贸易应收和贸易应付，应计费用另列一行
+              vs_mu: Micron 影响最大的一处在本例不存在。但两家的“表面行”含义不同：Micron 的应付表面行含应计费用，Danaher 的不含；照“取表面行”这条规则，两家算出的应付天数口径不一致
+            - what: 一年按多少天
+              options: [365, 期间实际天数]
+              chosen: 365
+              vs_mu: 沿用（本例各年都是 365 天，没有差别）
+            - what: 用年度还是季度数据
+              options: [年度, 季度年化]
+              chosen: 年度
+              vs_mu: 沿用
+            - what: 重述后口径不一致：FY2021 末余额从没重述（含 Veralto），FY2021 营收和成本按最新申报是重述后的持续经营口径
+              options: [分子分母取同一份申报（FY2021 用 10K-FY2021 原值，其余年取最新）, 一律取最新申报, FY2021 不算]
+              chosen: 分子分母取同一份申报
+              vs_mu: 改了。Micron 一律取最新申报；本例照那条规则，FY2021 的分子含 Veralto、分母不含，天数偏高
+              impact: FY2021 现金周期 63.7 天，一律取最新申报为 75.7 天，见 sensitivity.latest_filing_all
+            - what: 收购当年（FY2023）期末余额含 12 月 6 日并入的 Abcam，全年营收只含约三周
+              options: [照算, 剔除被收购方的期末余额, 改用平均余额]
+              chosen: 主结果照算；补读 10-K 收购附注后另列剔除被收购方余额的结果
+              vs_mu: 新碰到（Micron 没有收购）
+              impact: 补读后量化：剔除并入的应收 86、存货 94、应付 32 后，FY2023 现金周期 87.0 天对 90.6 天（应收 58.6 对 59.9、存货 92.6 对 96.1、应付 64.2 对 65.4），见 sensitivity.ex_acquired_balances_fy2023。Masimo（2026-06-10 并入）在年度窗口之外；季末存货由 2026-03-27 的 2,608 升到 2026-06-26 的 3,260
+            - what: 收购附注的 2023 年一列是不是全部来自 Abcam
+              options: [当作 Abcam（附注只描述了这一笔 2023 年收购，净现金对价 5,610 与 Abcam 约 56 亿美元的价格一致）, 不能确定，只作上限]
+              chosen: 当作 Abcam
+              vs_mu: 新碰到
+            - what: 用收购日公允价值代替 Abcam 在 12 月 31 日的余额
+              options: [用收购日公允价值（12 月 6 日）, 不量化]
+              chosen: 用收购日公允价值；存货里含公允价值增值，附注没有给增值后余额的拆分
+              vs_mu: 新碰到
+              impact: 收购日到年末约三周的余额变动没有反映
+            - what: 收入分母要不要也调整
+              options: [只剔除余额，分母用报告营收和成本, 分母改用备考营收（2023 年备考营收 24,335，备考成本没有披露）]
+              chosen: 只剔除余额；备考营收只算收款天数作参考
+              vs_mu: 新碰到
+              impact: 余额不剔除、分母改用备考营收时收款天数 58.8 天
+          classification_history:
+            - {on: "2026-11-14", after_filing_read: 归类不变（已完成）。首次走查记的局部数据不足（收购当年被收购方余额的影响没有量化）已补}
+        - step: 2
+          did: 营业周期 = 收款天数 + 存货天数；现金周期 = 营业周期 − 应付天数
+          classification: 已完成
+          guesses: []
+          note: 合同负债（流动）不在这两步的算式里，FY2025 末为 1,353
+        - step: 3
+          did: 只和自身历史比
+          classification: 差异已完成；找原因需人工判断
+          guesses:
+            - what: 和哪一段历史比
+              options: [上一年, 五年平均, 五年区间]
+              chosen: 上一年
+              vs_mu: 沿用
+            - what: FY2022 对 FY2021 跨越重述的口径断点（FY2021 含 Veralto，FY2022 不含）
+              options: [按选定口径直接相减, 两年都用首次申报（都含 Veralto）再相减, 不比这一年]
+              chosen: 按选定口径直接相减，另列两年都用首次申报的差异
+              vs_mu: 新碰到
+              impact: 现金周期变化 +24.3 天对 +17.1 天
+          note: 每项差异的原因要读管理层说明并作判断，本次不解释
+    - card: earnings-quality-checklist
+      reached: 第 1、5、6、7 步都有结果；第 5 步的调整后口径和分部五季只取到一部分，同比原因和第 6 步的冲击影响没有做
+      first_guess: {step: 1, what: 公司自报的核心营收增长是非 GAAP 口径，能不能直接当有机增长用；核心增长有三种派生口径，取哪一种；同一步还要定增长按哪个期间算}
+      steps:
+        - step: 1
+          did: 增长来源，用公司调节表把总增长拆成核心、收购和剥离、汇率、其他
+          classification: 已完成（按临时口径）
+          guesses:
+            - what: 有机增长用什么
+              options: [公司自报的核心营收增长（非 GAAP）, 自己用 GAAP 营收和收购现金流推算, 记为不适用]
+              chosen: 公司自报的核心营收增长，注明是非 GAAP
+              vs_mu: 改了。Micron 不披露有机增长，临时定为“没有收购现金流出就全部记为有机”；本例有公司口径，那条规则用不上
+            - what: 取哪一种核心增长
+              options: [核心营收增长, 剔除呼吸道检测的核心增长（2026 年起）, 剔除新冠影响的基础业务核心增长（2021–2023）]
+              chosen: 核心营收增长（各期都有）
+              vs_mu: 新碰到
+              impact: Q3-26 核心 3.0%，剔除呼吸道 5.5%
+            - what: 不属于收购和汇率的调节项怎样归（Q3-26 的关税退款）
+              options: [单列为其他, 并入有机, 并入收购]
+              chosen: 单列为其他
+              vs_mu: 新碰到
+              impact: Q3-26 有机 3.0 个百分点；若把关税退款并入有机为 2.0
+            - what: 增长按哪个期间算
+              options: [最近一季同比, 最近财年同比, 最近一季环比]
+              chosen: 最近一季同比，附最近财年同比；另列五季和五年
+              vs_mu: 沿用
+            - what: FY2021、FY2022 的核心增长只有分拆前口径
+              options: [照公司当时公布的口径列并标注, 不列这两年]
+              chosen: 照列并标注
+              vs_mu: 新碰到
+            - what: 占比怎样算
+              options: [只列百分点, 各项除以总增长算占比]
+              chosen: 以百分点为主；只对 Q3-26 和 FY2025 算占比（总增长接近 0 或为负的年份占比没有意义）
+              vs_mu: 新碰到（Micron 全记为有机，不需要拆）
+        - step: 5
+          did: 最近 5 季的毛利率和营业利润率，GAAP 与调整后分开列，公司和分部分开列
+          classification: GAAP 公司层面和分部五季已完成；调整后口径因数据不足只做了一部分；同比变化的原因需人工判断
+          classification_history:
+            - {on: "2026-11-14", first_pass: GAAP 公司层面已完成；调整后口径和分部五季因数据不足只做了一部分；同比变化的原因需人工判断}
+            - {on: "2026-11-14", after_filing_read: 分部五季（营收、GAAP 营业利润、利润率）补齐，改为已完成；调整后口径仍因数据不足只做了一部分}
+          guesses:
+            - what: GAAP 还是调整后
+              options: [只列 GAAP, 两者都列]
+              chosen: 两者都列
+              vs_mu: 改了。Micron 只列了 GAAP；这次两者都列，但季度新闻稿不列实际的调整后营业利润率、不披露调整后毛利率，五季里只有 Q4-25（和对比期 Q4-24）取得到调整后营业利润率
+            - what: 分部五季的营收、营业利润和利润率
+              options: [读 10-Q 分部附注, 只用新闻稿里有的, 改列分部核心增长]
+              chosen: 首次走查只用新闻稿里有的（Q4-25 一季）；补读后改为读 10-Q 分部附注
+              vs_mu: 新碰到（Micron 的分部事实本地有）
+              impact: 补读后五季和同比对比期都取到，见 results 的 segments_5q
+            - what: Q4 单季的分部数字（10-K 只有全年）
+              options: [10-K 全年 − 10-Q 前三季累计, 取第四季度新闻稿的分部信息表]
+              chosen: 10-K 全年 − 10Q-Q3-25 前三季累计，再和新闻稿分部信息表核对
+              vs_mu: 沿用“第四季度单季 = 全年 − 前三季累计”
+              impact: 两种取法逐值一致
+            - what: 分部的调整后营业利润
+              options: [只列 GAAP，另列分部表里单独列出的摊销、减值、收购相关项, 按 GAAP + 这三项自己推算调整后营业利润]
+              chosen: 只列 GAAP，三项另列，不推算
+              vs_mu: 新碰到
+              impact: 推算法在 Q4-25 与新闻稿的调整后分部营业利润一致，但 Q2-26 的收购相关项没有在分部表单独列出（新闻稿调节表有 0.15 美元每股），推算会漏项，所以不推算
+            - what: 分部营业利润的口径
+              options: [分部表的营业利润（各分部之和加“其他”等于合并营业利润）, 分部合计不含“其他”]
+              chosen: 分部表的营业利润，另列“其他”
+              vs_mu: 沿用（Micron 取业务单元分部的营业利润）
+            - what: “方向”怎样判定
+              options: [逐季环比的正负, 首尾比较, 线性趋势]
+              chosen: 逐季环比的正负
+              vs_mu: 沿用
+              impact: 本例环比有升有降，按这条规则没有单一方向；首尾比较则毛利率 +0.34 个百分点、营业利润率 −0.06 个百分点。Micron 五季都同向，规则不影响结果，这次影响
+            - what: 季度天数不同（Q4 多出几天，Q1 少一天）
+              options: [不折算, 按天数折算]
+              chosen: 不折算
+              vs_mu: 沿用
+          note: 同比变化归因到产品组合、成本、定价要读 10-Q 的管理层讨论并作判断，本次不解释
+        - step: 6
+          did: 最大终端市场占比
+          classification: 占比已完成（按临时口径）；单一市场受冲击的影响需人工判断
+          classification_history:
+            - {on: "2026-11-14", after_filing_read: 归类不变。首次走查记的局部数据不足（地区和终端行业要读 10-K）已补：地区和国家口径补齐；终端行业 10-K 没有披露金额，改记为公司未披露}
+          guesses:
+            - what: “终端市场”用哪个口径
+              options: [业务分部（三个）, 单一产品线（呼吸道检测）, 地区, 主要客户]
+              chosen: 业务分部（补读 10-K 后，地区、国家、收入类型并列在 results 的 other_bases）
+              vs_mu: 沿用（Micron 取业务单元分部）
+              impact: FY2025 最大分部 Diagnostics 占 40.5%；最大地区 North America 占 42.2%；最大单一国家美国占 40.6%，中国 10.7%；呼吸道检测约占 7.7%（公司按 5,000 万美元取整）
+            - what: 终端行业（客户所在行业）口径
+              status: 补读 FY2025 10-K 后确认，正文和附注只有文字描述（制药、CDMO、学术和政府、临床等客户），没有按客户行业的收入金额或占比；也没有单一客户占比的披露。照实记为公司未披露
+              vs_mu: 新碰到（Micron 用的是业务单元分部，没有找终端行业）
+            - what: 国家口径里“其他国家合计”（48.7%）算不算一个市场
+              options: [不算，只比单一国家, 算]
+              chosen: 不算，只比单一国家
+              vs_mu: 新碰到
+            - what: 收入类型（经常性 / 非经常性）算不算“终端市场”的一种
+              options: [不算，只作参考列出, 算]
+              chosen: 不算，只作参考列出（它分的是收入性质，不是市场）
+              vs_mu: 新碰到
+            - what: 取哪个期间
+              options: [最近财年, 最近一季]
+              chosen: 最近财年（FY2025）
+              vs_mu: 沿用
+              impact: 季度新闻稿不列分部金额，Q3-26 的分部占比算不出；Masimo 2026 年 6 月并入 Diagnostics，FY2026 的占比会变（Q3-26 Diagnostics 总增长 17.0%，其中收购 16.5 个百分点）
+            - what: 冲击多大、怎样传到公司
+              status: 没有做
+        - step: 7
+          did: 经营现金流 ÷ 利润
+          classification: 已完成（按临时口径）
+          guesses:
+            - what: 分子分母的口径
+              options: [持续经营的经营现金流 ÷ 持续经营利润, 总经营现金流 ÷ 归属净利润（都含终止经营）, 持续经营现金流 ÷ 归属净利润]
+              chosen: 持续经营的经营现金流 ÷ 持续经营利润
+              vs_mu: 改了。Micron 用归属净利润，因为没有终止经营；本例最新申报里的经营现金流是持续经营口径（FY2021–FY2023 被重述），归属净利润含 Veralto，混用会不同口径相除
+              impact: 见 sensitivity；各种口径下比值都高于 1
+            - what: “持续”指几期
+              options: [窗口内每一期, 连续两期及以上, 多数期间]
+              chosen: 窗口内每一期
+              vs_mu: 沿用
+              impact: 本例没有一期低于 1，三种定义结果相同；Micron 那次选法会改变结论，这次不会
+            - what: 净利润为负时比值怎样处理
+              status: 本例没有负值，不用定
+            - what: 按季度还是年度
+              options: [季度, 年度, 两者]
+              chosen: 两者
+              vs_mu: 沿用
+      not_in_scope: 第 2、3、4、8 步和第 9–11 步
+    - card: guidance-tracking-playbook
+      reached: 第 1–3 步都走到；第 3 步只标了实际值相对指引的位置，达成与否按临时规则；描述性指引只记实际值不判定
+      first_guess: {step: 1, what: 全年指引一年改四次、季度指引多为“低个位数”一类的描述，哪些算已量化、修订和重申怎样登记；同一步还要定检查日}
+      steps:
+        - step: 1
+          did: 登记 10 份新闻稿主指引表里的全部指引，共 68 条（目标期 FY2025、Q3-25 至 Q4-26、FY2026）
+          classification: 已完成
+          guesses:
+            - what: 描述性指引（“低个位数”“持平”“小幅增长”“中个位数”）算不算已量化
+              options: [按原文登记、不映射成数值、到期只记实际值不判定, 映射成数值区间（例如低个位数 = 1%–3%）, 不登记]
+              chosen: 按原文登记、到期只记实际值不判定
+              vs_mu: 新碰到。Micron 的约数都是“约 81%”一类的点值；这次 68 条里 32 条是描述（区间 17 条、约数 19 条）
+            - what: 约数指引（“约 3.0%”“约 26.5%”）
+              options: [按点值登记, 不登记]
+              chosen: 按点值登记
+              vs_mu: 沿用
+            - what: 全年指引多次发布（初次、上调、重申、改为描述）怎样登记
+              options: [每次发布单独登记，重申也登记并标明, 只登记有变化的, 只登记最后一次]
+              chosen: 每次发布单独登记，重申也登记并标明
+              vs_mu: 新碰到（Micron 只有下季指引，每份一次）
+            - what: 检查日怎样定
+              options: [实际值首次公布日（下一份业绩新闻稿）, 对应 10-Q 或 10-K 的申报日, 目标期末日]
+              chosen: 实际值首次公布日。全年指引取第四季度新闻稿日；1 月 JPM 大会前的预告（8K-JPM-25、8K-JPM-26）只给估计值和“接近区间上端”一类说法，不作检查日
+              vs_mu: 沿用；JPM 预告是新碰到的
+            - what: GAAP 与非 GAAP 两套指引登记哪一套
+              status: 本例不用猜。公司只给非 GAAP 指引
+              vs_mu: Micron 两套都有，这次只有一套
+            - what: 登记哪几张表
+              options: [只登记主指引表（核心增长、调整后营业利润率、调整后每股收益、呼吸道检测收入）, 连同“其他前瞻信息”表（汇率影响、摊销、公司费用、利息、税率、股数）一起登记]
+              chosen: 只登记主指引表
+              vs_mu: 沿用“只登记新闻稿指引表”；Micron 只有一张表，这次有两张，另一张没有登记
+            - what: 分部指引和派生口径（剔除呼吸道）登记不登记
+              options: [都登记, 只登记公司合计]
+              chosen: 都登记
+              vs_mu: 新碰到
+        - step: 2
+          did: 确认每个指标能用官方数据核对
+          classification: 已完成（按临时口径）
+          guesses:
+            - what: 非 GAAP 实际值只在公司自己的新闻稿里，算不算官方数据
+              options: [算（新闻稿是 8-K 附件）, 不算，记为无法核对]
+              chosen: 算
+              vs_mu: 沿用。本例全部指引都是非 GAAP，核心增长的实际值也只在新闻稿里
+            - what: 指引发布后、实际值公布前，公司改了核心增长的定义（Q3-26 起剔除向客户返还的关税退款）
+              options: [用公司新口径的实际值, 按旧口径重算（把关税退款的影响加回）, 记为无法核对]
+              chosen: 用公司新口径的实际值，另列旧口径值
+              vs_mu: 新碰到
+              impact: Q3-26 合计核心增长新口径 3.0%、旧口径 2.0%，都在 2.0%–3.0% 区间内，一个在上端、一个在下端；剔除呼吸道的核心增长对约 5.0% 的点值，新口径 +0.5、旧口径 −0.5
+            - what: 调整后营业利润率的实际值季度新闻稿不列
+              options: [记为无法核对, 用新闻稿调节项自己推算, 读电话会演示材料]
+              chosen: 记为无法核对（因数据不足）
+              vs_mu: 新碰到
+              note: 2026-11-14 补读后确认 10-Q、10-K 正文也没有调整后营业利润率（正文的非 GAAP 说明只涉及核心增长）；电话会演示材料仍没有取
+            - what: 呼吸道检测收入的实际值公司按 5,000 万美元取整
+              options: [照取整值比, 记为无法核对]
+              chosen: 照取整值比，并标注
+              vs_mu: 新碰到
+            - what: 每股收益指引的名称在 8K-Q3-26 改为“持续经营”口径
+              status: 记录在案；FY2026 尚未到期，不影响本次核对
+        - step: 3
+          did: 已到期的 30 条取实际值并标位置；未到期的 38 条留空
+          classification: 位置已完成；达成与否需人工判断
+          guesses:
+            - what: 怎样算达成
+              options: [落在区间内, 不低于下限, 与中点比]
+              chosen: 落在区间内；另记与中点的差
+              vs_mu: 沿用
+              impact: 5 条区间指引里 3 条在区间内、2 条高于上限；换成“不低于下限”，5 条都算达成
+            - what: 约数指引怎样判定
+              options: [不判定只记差值, 自定容差, 按四舍五入位数]
+              chosen: 不判定只记差值
+              vs_mu: 沿用
+            - what: 描述性指引怎样判定
+              options: [不判定只记实际值, 映射成数值区间再判定]
+              chosen: 不判定只记实际值
+              vs_mu: 新碰到
+          note: 全年指引一年只到期一次。窗口内到期的全年指引只有 FY2025 的 7 条；FY2026 的 27 条要到第四季度新闻稿（预计 2027 年 1 月下旬）才能核对
+      not_in_scope: 第 4、5 步的统计和反馈；定性承诺
+
+  results:
+    dupont-return-decomposition:
+      disclosed:
+        - {period: FY2020, total_assets: 76161, equity: 39766, preferred_stock: 3268, noncontrolling: 11}
+        - {period: FY2021, revenue: 24802, revenue_first_reported: 29453, net_income: 6433, continuing_income: 5447, total_assets: 83184, equity: 45167, preferred_stock: 3268, noncontrolling: 10}
+        - {period: FY2022, revenue: 26643, revenue_first_reported: 31471, net_income: 7209, continuing_income: 6328, total_assets: 84350, equity: 50082, preferred_stock: 1668, noncontrolling: 8}
+        - {period: FY2023, revenue: 23890, net_income: 4764, continuing_income: 4221, total_assets: 84488, equity: 53486, preferred_stock: 0, noncontrolling: 4}
+        - {period: FY2024, revenue: 23875, net_income: 3899, continuing_income: 3899, total_assets: 77542, equity: 49543, noncontrolling: 7}
+        - {period: FY2025, revenue: 24568, net_income: 3614, continuing_income: 3600, total_assets: 83464, equity: 52534, noncontrolling: 7}
+      derived:
+        - {period: FY2021, roe: 0.1515, factors: {net_margin: 0.2594, asset_turnover: 0.3113, leverage: 1.8761}}
+        - {period: FY2022, roe: 0.1514, factors: {net_margin: 0.2706, asset_turnover: 0.3181, leverage: 1.7589}}
+        - {period: FY2023, roe: 0.0920, factors: {net_margin: 0.1994, asset_turnover: 0.2830, leverage: 1.6302}}
+        - {period: FY2024, roe: 0.0757, factors: {net_margin: 0.1633, asset_turnover: 0.2947, leverage: 1.5727}}
+        - {period: FY2025, roe: 0.0708, factors: {net_margin: 0.1471, asset_turnover: 0.3052, leverage: 1.5773}}
+      sensitivity:
+        continuing_income:
+          note: 分子改用持续经营利润，其余不变
+          roe: {FY2021: 0.1283, FY2022: 0.1329, FY2023: 0.0815, FY2024: 0.0757, FY2025: 0.0705}
+          net_margin: {FY2021: 0.2196, FY2022: 0.2375, FY2023: 0.1767, FY2024: 0.1633, FY2025: 0.1465}
+        common_equity:
+          note: 分子用归属普通股的净利润，分母用扣除优先股的权益两点平均；FY2024 起没有优先股，与主结果相同
+          roe: {FY2021: 0.1599, FY2022: 0.1573, FY2023: 0.0931}
+        first_reported_revenue:
+          note: FY2021、FY2022 营收改用首次申报值（含 Veralto），与含终止经营的净利润和未重述的资产同口径；ROE 不变
+          net_margin: {FY2021: 0.2184, FY2022: 0.2291}
+          asset_turnover: {FY2021: 0.3697, FY2022: 0.3757}
+        ending_balance_roe: {FY2021: 0.1424, FY2022: 0.1439, FY2023: 0.0891, FY2024: 0.0787, FY2025: 0.0688}
+    working-capital-forecast:
+      disclosed:
+        - {period: FY2021, basis: 10K-FY2021 原值（含 Veralto）, revenue: 29453, cogs: 11501, trade_receivables: 4631, inventory: 2767, trade_payables: 2569}
+        - {period: FY2022, basis: 最新申报（持续经营）, revenue: 26643, cogs: 10455, trade_receivables: 4102, inventory: 2765, trade_payables: 1856}
+        - {period: FY2023, revenue: 23890, cogs: 9856, trade_receivables: 3922, inventory: 2594, trade_payables: 1766}
+        - {period: FY2024, revenue: 23875, cogs: 9669, trade_receivables: 3537, inventory: 2330, trade_payables: 1753}
+        - {period: FY2025, revenue: 24568, cogs: 10045, trade_receivables: 3913, inventory: 2489, trade_payables: 1844}
+        - {period: FY2021, basis: 最新申报, revenue: 24802, cogs: 9563, note: 余额同上，没有重述}
+        - {period: FY2022, basis: 10K-FY2022 原值（含 Veralto）, revenue: 31471, cogs: 12522, trade_receivables: 4918, inventory: 3110, trade_payables: 2296}
+      derived:
+        - {period: FY2021, days: {receivable: 57.4, inventory: 87.8, payable: 81.5}, operating_cycle_days: 145.2, cash_cycle_days: 63.7}
+        - {period: FY2022, days: {receivable: 56.2, inventory: 96.5, payable: 64.8}, operating_cycle_days: 152.7, cash_cycle_days: 87.9}
+        - {period: FY2023, days: {receivable: 59.9, inventory: 96.1, payable: 65.4}, operating_cycle_days: 156.0, cash_cycle_days: 90.6}
+        - {period: FY2024, days: {receivable: 54.1, inventory: 88.0, payable: 66.2}, operating_cycle_days: 142.0, cash_cycle_days: 75.9}
+        - {period: FY2025, days: {receivable: 58.1, inventory: 90.4, payable: 67.0}, operating_cycle_days: 148.6, cash_cycle_days: 81.6}
+      change_vs_prior_year:
+        - {period: FY2022, receivable: -1.2, inventory: 8.7, payable: -16.7, operating_cycle: 7.5, cash_cycle: 24.3, note: 跨越重述口径断点}
+        - {period: FY2023, receivable: 3.7, inventory: -0.5, payable: 0.6, operating_cycle: 3.3, cash_cycle: 2.7}
+        - {period: FY2024, receivable: -5.8, inventory: -8.1, payable: 0.8, operating_cycle: -14.0, cash_cycle: -14.7}
+        - {period: FY2025, receivable: 4.1, inventory: 2.5, payable: 0.8, operating_cycle: 6.5, cash_cycle: 5.7}
+      sensitivity:
+        latest_filing_all:
+          note: 各年分子分母一律取最新申报（Micron 的共用规则）；只有 FY2021 不同
+          cash_cycle_days: {FY2021: 75.7}
+        first_reported_all:
+          note: 各年分子分母一律取首次申报；FY2022 改为含 Veralto 的口径，FY2023 起相同
+          cash_cycle_days: {FY2021: 63.7, FY2022: 80.8}
+          change_fy2022: 17.1
+        average_balance:
+          note: 余额改用年初年末平均，分母取最新申报；FY2021 的年初年末余额都含 Veralto、营收不含
+          cash_cycle_days: {FY2021: 72.3, FY2022: 79.1, FY2023: 93.5, FY2024: 83.5, FY2025: 77.5}
+        ex_acquired_balances_fy2023:
+          added_on: "2026-11-14 补读 10K-FY2023、10K-FY2024 收购附注"
+          source: 10K-FY2023 收购附注的收购日公允价值表（2023 年一列）；10K-FY2024 同表的 2023 年一列数值相同
+          acquired_at_2023_12_06: {trade_receivables: 86, inventory: 94, trade_payables: 32, net_cash_consideration: 5610}
+          note: 余额剔除被收购方，分母仍用报告营收 23,890 和成本 9,856
+          balances: {trade_receivables: 3836, inventory: 2500, trade_payables: 1734}
+          days: {receivable: 58.6, inventory: 92.6, payable: 64.2}
+          operating_cycle_days: 151.2
+          cash_cycle_days: 87.0
+          vs_reported: {receivable: -1.3, inventory: -3.5, payable: -1.2, cash_cycle: -3.6}
+          change_vs_prior_year: {FY2023: {receivable: 2.4, inventory: -3.9, payable: -0.6, cash_cycle: -0.9}, FY2024: {receivable: -4.5, inventory: -4.6, payable: 2.0, cash_cycle: -11.1}}
+          pro_forma_revenue_2023: {value: 24335, receivable_days_on_reported_balance: 58.8, note: 备考营收假设 2022 年及 2023 年收购都在 2022-01-01 完成；备考成本没有披露}
+    earnings-quality-checklist:
+      period: Q3-26（年度项为 FY2025）
+      checks:
+        organic_growth:
+          result: Q3-26 核心增长 3.0%，收购贡献 6.5 个百分点；FY2025 核心增长 2.0%，没有收购贡献
+          sign_note: contribution 为对总增长的贡献（百分点），等于公司调节表“Impact of”一行取反
+          quarterly:
+            - {period: Q3-25, total_growth: 4.5, core: 3.0, acquisitions_divestitures: 0.0, currency: 1.5, other: 0.0}
+            - {period: Q4-25, total_growth: 4.5, core: 2.5, acquisitions_divestitures: -0.5, currency: 2.5, other: 0.0}
+            - {period: Q1-26, total_growth: 3.5, core: 0.5, acquisitions_divestitures: 0.0, currency: 3.0, other: 0.0}
+            - {period: Q2-26, total_growth: 5.5, core: 3.0, acquisitions_divestitures: 1.5, currency: 1.0, other: 0.0}
+            - {period: Q3-26, total_growth: 8.5, core: 3.0, acquisitions_divestitures: 6.5, currency: 0.0, other: -1.0, other_item: 向客户返还的关税退款}
+          annual:
+            - {period: FY2021, total_growth: 32.0, core: 23.0, acquisitions_divestitures: 7.5, currency: 1.5, basis: 分拆前口径（含 Veralto）}
+            - {period: FY2022, total_growth: 7.0, core: 9.5, acquisitions_divestitures: 1.5, currency: -4.0, basis: 分拆前口径（含 Veralto）}
+            - {period: FY2023, total_growth: -10.5, core: -10.0, acquisitions_divestitures: 0.5, currency: -1.0}
+            - {period: FY2024, total_growth: 0.0, core: -1.5, acquisitions_divestitures: 2.0, currency: -0.5}
+            - {period: FY2025, total_growth: 3.0, core: 2.0, acquisitions_divestitures: 0.0, currency: 1.0}
+          share_of_total_growth_pct:
+            Q3-26: {core: 35.3, acquisitions_divestitures: 76.5, currency: 0.0, other: -11.8}
+            FY2025: {core: 66.7, acquisitions_divestitures: 0.0, currency: 33.3}
+          core_by_segment:
+            - {period: Q3-25, biotechnology: 6.5, life_sciences: -1.0, diagnostics: 3.5}
+            - {period: Q4-25, biotechnology: 6.0, life_sciences: 0.5, diagnostics: 2.0}
+            - {period: Q1-26, biotechnology: 7.0, life_sciences: 0.5, diagnostics: -4.0}
+            - {period: Q2-26, biotechnology: 2.5, life_sciences: 5.5, diagnostics: 2.0}
+            - {period: Q3-26, biotechnology: 5.0, life_sciences: 4.5, diagnostics: 0.5}
+          core_ex_respiratory: {Q3-25: 2.5, Q4-25: 4.0, Q1-26: 3.0, Q2-26: 4.5, Q3-26: 5.5}
+          gaap_revenue_growth_xbrl: {Q3-26: 8.28, FY2025: 2.90, note: 由 Company Facts 计算；公司调节表按 0.5 个百分点取整}
+          note: 公司调节表按 0.5 个百分点取整，各项相加可能差 0.5
+        margin_trend_5q:
+          result: GAAP 毛利率和营业利润率逐季环比有升有降，按临时规则没有单一方向
+          gaap:
+            - {period: Q3-25, revenue: 6053, gross_margin_pct: 58.20, operating_margin_pct: 19.06, gm_yoy_pt: -0.46, om_yoy_pt: 2.54, gm_qoq_pt: -1.15, om_qoq_pt: 6.26}
+            - {period: Q4-25, revenue: 6838, gross_margin_pct: 58.00, operating_margin_pct: 21.97, gm_yoy_pt: -1.50, om_yoy_pt: 0.17, gm_qoq_pt: -0.20, om_qoq_pt: 2.90}
+            - {period: Q1-26, revenue: 5951, gross_margin_pct: 60.34, operating_margin_pct: 22.58, gm_yoy_pt: -0.81, om_yoy_pt: 0.39, gm_qoq_pt: 2.34, om_qoq_pt: 0.62}
+            - {period: Q2-26, revenue: 6265, gross_margin_pct: 57.64, operating_margin_pct: 17.99, gm_yoy_pt: -1.71, om_yoy_pt: 5.19, gm_qoq_pt: -2.71, om_qoq_pt: -4.60}
+            - {period: Q3-26, revenue: 6554, gross_margin_pct: 58.54, operating_margin_pct: 19.00, gm_yoy_pt: 0.34, om_yoy_pt: -0.07, gm_qoq_pt: 0.91, om_qoq_pt: 1.01}
+          gaap_comparison_quarters:
+            - {period: Q3-24, revenue: 5798, gross_margin_pct: 58.66, operating_margin_pct: 16.52}
+            - {period: Q4-24, revenue: 6538, gross_margin_pct: 59.50, operating_margin_pct: 21.80}
+            - {period: Q1-25, revenue: 5741, gross_margin_pct: 61.16, operating_margin_pct: 22.19}
+            - {period: Q2-25, revenue: 5936, gross_margin_pct: 59.35, operating_margin_pct: 12.80}
+          adjusted:
+            - {period: Q4-25, adjusted_operating_profit: 1934, adjusted_operating_margin_pct: 28.28}
+            - {period: Q4-24, adjusted_operating_profit: 1932, adjusted_operating_margin_pct: 29.55}
+            - {period: [Q3-25, Q1-26, Q2-26, Q3-26], status: 季度新闻稿不列实际值，因数据不足未执行}
+            - {item: 调整后毛利率, status: 公司不披露}
+          segments_q4_25_adjusted:
+            note: 只有第四季度新闻稿列分部调整后营业利润
+            rows:
+            - {segment: Biotechnology, adjusted_operating_profit: 770}
+            - {segment: Life Sciences, adjusted_operating_profit: 501}
+            - {segment: Diagnostics, adjusted_operating_profit: 750}
+            - {segment: Other, adjusted_operating_profit: -87}
+          segments_5q:
+            added_on: "2026-11-14 补读 10-Q、10-K 分部附注"
+            source: 10Q-Q3-25、10Q-Q1-26、10Q-Q2-26、10Q-Q3-26 分部附注的三个月表；Q4-24、Q4-25 = 10K-FY2025 全年 − 10Q-Q3-25 前三季累计
+            result: GAAP 分部利润率逐季环比三个分部都有升有降，按临时规则都没有单一方向
+            rows:
+              - {period: Q3-25, biotechnology: {revenue: 1798, operating_profit: 352, margin_pct: 19.58, yoy_pt: -4.01, qoq_pt: -9.12}, life_sciences: {revenue: 1792, operating_profit: 222, margin_pct: 12.39, yoy_pt: 10.43, qoq_pt: 25.84}, diagnostics: {revenue: 2463, operating_profit: 665, margin_pct: 27.00, yoy_pt: 0.97, qoq_pt: 3.01}, other_operating_profit: -85}
+              - {period: Q4-25, biotechnology: {revenue: 2033, operating_profit: 540, margin_pct: 26.56, yoy_pt: -0.62, qoq_pt: 6.98}, life_sciences: {revenue: 2085, operating_profit: 336, margin_pct: 16.12, yoy_pt: -2.38, qoq_pt: 3.73}, diagnostics: {revenue: 2720, operating_profit: 713, margin_pct: 26.21, yoy_pt: 2.55, qoq_pt: -0.79}, other_operating_profit: -87}
+              - {period: Q1-26, biotechnology: {revenue: 1797, operating_profit: 534, margin_pct: 29.72, yoy_pt: 2.36, qoq_pt: 3.16}, life_sciences: {revenue: 1737, operating_profit: 225, margin_pct: 12.95, yoy_pt: 0.99, qoq_pt: -3.17}, diagnostics: {revenue: 2417, operating_profit: 674, margin_pct: 27.89, yoy_pt: -1.43, qoq_pt: 1.68}, other_operating_profit: -89}
+              - {period: Q2-26, biotechnology: {revenue: 1920, operating_profit: 556, margin_pct: 28.96, yoy_pt: 0.26, qoq_pt: -0.76}, life_sciences: {revenue: 1879, operating_profit: 244, margin_pct: 12.99, yoy_pt: 26.44, qoq_pt: 0.04}, diagnostics: {revenue: 2466, operating_profit: 416, margin_pct: 16.87, yoy_pt: -7.12, qoq_pt: -11.02}, other_operating_profit: -89}
+              - {period: Q3-26, biotechnology: {revenue: 1807, operating_profit: 477, margin_pct: 26.40, yoy_pt: 6.82, qoq_pt: -2.56}, life_sciences: {revenue: 1865, operating_profit: 259, margin_pct: 13.89, yoy_pt: 1.50, qoq_pt: 0.90}, diagnostics: {revenue: 2882, operating_profit: 614, margin_pct: 21.30, yoy_pt: -5.70, qoq_pt: 4.43}, other_operating_profit: -105}
+            comparison_quarters:
+              - {period: Q3-24, biotechnology: {revenue: 1653, operating_profit: 390}, life_sciences: {revenue: 1782, operating_profit: 35}, diagnostics: {revenue: 2363, operating_profit: 615}, other_operating_profit: -82}
+              - {period: Q4-24, biotechnology: {revenue: 1869, operating_profit: 508}, life_sciences: {revenue: 2032, operating_profit: 376}, diagnostics: {revenue: 2637, operating_profit: 624}, other_operating_profit: -83}
+              - {period: Q1-25, biotechnology: {revenue: 1612, operating_profit: 441}, life_sciences: {revenue: 1680, operating_profit: 201}, diagnostics: {revenue: 2449, operating_profit: 718}, other_operating_profit: -86}
+              - {period: Q2-25, biotechnology: {revenue: 1850, operating_profit: 531}, life_sciences: {revenue: 1777, operating_profit: -239}, diagnostics: {revenue: 2309, operating_profit: 554}, other_operating_profit: -86}
+            separately_listed_items:
+              note: 分部表里单独列出的项目（营业利润已扣除）；本次不据此推算调整后营业利润
+              rows:
+              - {period: Q3-25, amortization: {biotechnology: 231, life_sciences: 154, diagnostics: 48}, impairments: {biotechnology: 86, diagnostics: 15}}
+              - {period: Q4-25, amortization: {biotechnology: 230, life_sciences: 151, diagnostics: 47}, impairments: {life_sciences: 14}}
+              - {period: Q1-26, amortization: {biotechnology: 234, life_sciences: 152, diagnostics: 48}}
+              - {period: Q2-26, amortization: {biotechnology: 231, life_sciences: 151, diagnostics: 81}}
+              - {period: Q3-26, amortization: {biotechnology: 227, life_sciences: 153, diagnostics: 133}, impairments: {biotechnology: 52}, acquisition_related_items: {diagnostics: 84}}
+              - {period: Q2-25, impairments: {life_sciences: 432}}
+              - {period: Q3-24, impairments: {life_sciences: 222}}
+            checks: 各季三个分部营收之和、分部营业利润加“其他”之和与 Company Facts 的合并营收和营业利润一致；Q4-24、Q4-25 的推算值与 8K-Q4-25 对应新闻稿的分部信息表一致
+          yoy_driver: 未做（需人工判断）
+        diversification:
+          result: 已算占比；冲击影响未做（需人工判断）
+          largest_end_market_share: 0.4046
+          basis: FY2025 业务分部营收，最大为 Diagnostics
+          segment_revenue:
+            FY2025: {biotechnology: 7293, life_sciences: 7334, diagnostics: 9941, total: 24568}
+            Q4-25: {biotechnology: 2033, life_sciences: 2085, diagnostics: 2720, total: 6838}
+            FY2024: {biotechnology: 6759, life_sciences: 7329, diagnostics: 9787, total: 23875}
+          share_pct:
+            FY2025: {biotechnology: 29.68, life_sciences: 29.85, diagnostics: 40.46}
+            Q4-25: {biotechnology: 29.73, life_sciences: 30.49, diagnostics: 39.78}
+          other_bases:
+            respiratory_testing: {fy2025: 1900, share_pct: 7.73, note: 公司按 5,000 万美元取整}
+            added_on: "2026-11-14 补读 10K-FY2025 收入分解附注和地区信息附注"
+            geographic_region:
+              note: 公司定义：North America 为美国和加拿大；high-growth markets 为东欧、中东、非洲、拉美（含墨西哥）和亚洲（不含日本、澳大利亚、新西兰）；other developed markets 为其余
+              FY2025: {north_america: 10356, western_europe: 5938, other_developed: 1252, high_growth: 7022, total: 24568}
+              FY2025_share_pct: {north_america: 42.15, western_europe: 24.17, other_developed: 5.10, high_growth: 28.58}
+              FY2024: {north_america: 10295, western_europe: 5457, other_developed: 1253, high_growth: 6870, total: 23875}
+              FY2024_share_pct: {north_america: 43.12, western_europe: 22.86, other_developed: 5.25, high_growth: 28.77}
+              FY2025_by_segment:
+                biotechnology: {north_america: 2418, western_europe: 2558, other_developed: 341, high_growth: 1976}
+                life_sciences: {north_america: 3018, western_europe: 1674, other_developed: 518, high_growth: 2124}
+                diagnostics: {north_america: 4920, western_europe: 1706, other_developed: 393, high_growth: 2922}
+            country:
+              FY2025: {united_states: 9981, china: 2631, all_other: 11956}
+              FY2025_share_pct: {united_states: 40.63, china: 10.71, all_other: 48.66}
+              FY2024_share_pct: {united_states: 41.58, china: 11.75, all_other: 46.67}
+              note: 其他国家各自低于合并营收的 5%
+            revenue_type:
+              note: 只作参考，不作为终端市场口径
+              FY2025: {recurring: 20127, nonrecurring: 4441}
+              FY2025_share_pct: {recurring: 81.92, nonrecurring: 18.08}
+            end_industry: 公司未披露按客户行业的收入金额或占比
+            largest_by_basis_fy2025: {segment: "Diagnostics 40.46%", region: "North America 42.15%", country: "United States 40.63%"}
+        cash_conversion:
+          result: 否（各期比值都高于 1；三种“持续”的定义结果相同）
+          basis: 持续经营的经营现金流 ÷ 持续经营利润
+          quarterly:
+            - {period: Q3-25, operating_cash_flow: 1662, continuing_income: 908, net_income: 908, ratio: 1.83}
+            - {period: Q4-25, operating_cash_flow: 2117, continuing_income: 1183, net_income: 1197, ratio: 1.79}
+            - {period: Q1-26, operating_cash_flow: 1322, continuing_income: 1029, net_income: 1029, ratio: 1.28}
+            - {period: Q2-26, operating_cash_flow: 1534, continuing_income: 870, net_income: 870, ratio: 1.76}
+            - {period: Q3-26, operating_cash_flow: 1886, continuing_income: 1207, net_income: 1235, ratio: 1.56}
+          annual:
+            - {period: FY2021, operating_cash_flow: 7423, operating_cash_flow_total: 8358, continuing_income: 5447, net_income: 6433, ratio: 1.36}
+            - {period: FY2022, operating_cash_flow: 7613, operating_cash_flow_total: 8519, continuing_income: 6328, net_income: 7209, ratio: 1.20}
+            - {period: FY2023, operating_cash_flow: 6490, operating_cash_flow_total: 7164, continuing_income: 4221, net_income: 4764, ratio: 1.54}
+            - {period: FY2024, operating_cash_flow: 6688, operating_cash_flow_total: 6688, continuing_income: 3899, net_income: 3899, ratio: 1.72}
+            - {period: FY2025, operating_cash_flow: 6416, operating_cash_flow_total: 6416, continuing_income: 3600, net_income: 3614, ratio: 1.78}
+          sensitivity:
+            total_over_net_income: {FY2021: 1.30, FY2022: 1.18, FY2023: 1.50, FY2024: 1.72, FY2025: 1.78}
+            continuing_ocf_over_net_income: {FY2021: 1.15, FY2022: 1.06, FY2023: 1.36}
+      not_done: [beat_consensus, guidance_change, backlog_trend, 估值对照]
+    guidance-tracking-playbook:
+      ticker: DHR
+      made_by: management
+      basis: 全部为非 GAAP；核心增长为同比百分数，营业利润率为百分数，每股收益为美元，呼吸道检测收入为百万美元
+      kind_terms: {range: 数值区间, point: 约数（按点值）, band: 描述性指引（原文照录，不判定）}
+      position_terms: {within: 实际值在区间内, above: 高于区间上限, below: 低于区间下限, point: 只记实际值减指引值, band: 只记实际值, unverifiable: 新闻稿没有实际值}
+      claims:
+        # ---- FY2025 全年（检查日 2026-01-28，8K-Q4-25 对应新闻稿）
+        - target: FY2025
+          made_on: "2025-01-29"
+          source: 8K-Q4-24 对应新闻稿，Outlook 段与 Forecasted Core Sales 表
+          check_on: "2026-01-28"
+          items:
+            - {metric: core_growth_total, kind: point, guidance: "~3.0%", value: 3.0, actual: 2.0, position: point, diff: -1.0}
+        - target: FY2025
+          made_on: "2025-04-22"
+          source: 8K-Q1-25 对应新闻稿
+          check_on: "2026-01-28"
+          items:
+            - {metric: core_growth_total, kind: point, guidance: "~3.0%", value: 3.0, revision: 重申, actual: 2.0, position: point, diff: -1.0}
+            - {metric: adjusted_diluted_eps, kind: range, low: 7.60, high: 7.75, mid: 7.675, revision: 首次给出, actual: 7.80, position: above, diff_vs_mid: 0.125}
+        - target: FY2025
+          made_on: "2025-07-22"
+          source: 8K-Q2-25 对应新闻稿
+          check_on: "2026-01-28"
+          items:
+            - {metric: core_growth_total, kind: point, guidance: "3.0%", value: 3.0, revision: 重申, actual: 2.0, position: point, diff: -1.0}
+            - {metric: adjusted_diluted_eps, kind: range, low: 7.70, high: 7.80, mid: 7.75, revision: 上调, actual: 7.80, position: within, diff_vs_mid: 0.05}
+        - target: FY2025
+          made_on: "2025-10-21"
+          source: 8K-Q3-25 对应新闻稿
+          check_on: "2026-01-28"
+          items:
+            - {metric: core_growth_total, kind: band, guidance: "+Low-single digit", revision: 由约 3% 改为描述, actual: 2.0, position: band}
+            - {metric: adjusted_diluted_eps, kind: range, low: 7.70, high: 7.80, mid: 7.75, revision: 重申, actual: 7.80, position: within, diff_vs_mid: 0.05}
+          note: 8K-JPM-26（2026-01-12）预告全年调整后每股收益接近 7.70–7.80 的上端，没有作为单独一条登记
+        # ---- 季度
+        - target: Q3-25
+          made_on: "2025-07-22"
+          source: 8K-Q2-25 对应新闻稿
+          check_on: "2025-10-21"
+          items:
+            - {metric: core_growth_total, kind: band, guidance: "+Low-single digit", actual: 3.0, position: band}
+        - target: Q4-25
+          made_on: "2025-10-21"
+          source: 8K-Q3-25 对应新闻稿，Forecasted Core Sales Growth by Segment 表
+          check_on: "2026-01-28"
+          items:
+            - {metric: core_growth_total, kind: band, guidance: "+Low-single digit", actual: 2.5, position: band}
+            - {metric: core_growth_biotechnology, kind: point, guidance: "~+5%", value: 5.0, actual: 6.0, position: point, diff: 1.0}
+            - {metric: core_growth_life_sciences, kind: band, guidance: "-Low-single digit", actual: 0.5, position: band}
+            - {metric: core_growth_diagnostics, kind: band, guidance: "Flat", actual: 2.0, position: band}
+          note: 8K-JPM-26 预告第四季度核心增长接近“低个位数”的上端，没有作为单独一条登记
+        - target: Q1-26
+          made_on: "2026-01-28"
+          source: 8K-Q4-25 对应新闻稿，Forecasted Core Sales Growth 表与 Supplemental Forward-Looking Information 表
+          check_on: "2026-04-21"
+          items:
+            - {metric: core_growth_total, kind: band, guidance: "+Low-single digit", actual: 0.5, position: band}
+            - {metric: core_growth_biotechnology, kind: band, guidance: "+High-single digit", actual: 7.0, position: band}
+            - {metric: core_growth_life_sciences, kind: band, guidance: "Flat/ -Low-single digit", actual: 0.5, position: band}
+            - {metric: core_growth_diagnostics, kind: band, guidance: "-Low-single digit", actual: -4.0, position: band}
+            - {metric: adjusted_operating_margin, kind: point, guidance: "~28.5%", value: 28.5, actual: null, position: unverifiable}
+        - target: Q2-26
+          made_on: "2026-04-21"
+          source: 8K-Q1-26 对应新闻稿，Forward-Looking Information 表
+          check_on: "2026-07-21"
+          items:
+            - {metric: core_growth_total, kind: band, guidance: "+Low-single digit", actual: 3.0, position: band}
+            - {metric: core_growth_biotechnology, kind: band, guidance: "+Mid-single digit", actual: 2.5, position: band}
+            - {metric: core_growth_life_sciences, kind: band, guidance: "+Up slightly", actual: 5.5, position: band}
+            - {metric: core_growth_diagnostics, kind: band, guidance: "Flat", actual: 2.0, position: band}
+            - {metric: adjusted_operating_margin, kind: point, guidance: "~26.5%", value: 26.5, actual: null, position: unverifiable}
+        - target: Q3-26
+          made_on: "2026-07-21"
+          source: 8K-Q2-26 对应新闻稿，Non-GAAP Forward-Looking Information 表与呼吸道检测收入表
+          check_on: "2026-10-21"
+          items:
+            - {metric: core_growth_total, kind: range, low: 2.0, high: 3.0, mid: 2.5, actual: 3.0, position: within, diff_vs_mid: 0.5, actual_old_definition: 2.0, position_old_definition: within}
+            - {metric: core_growth_biotechnology, kind: band, guidance: "+Mid-single digit", actual: 5.0, actual_old_definition: 1.0, position: band}
+            - {metric: core_growth_life_sciences, kind: range, low: 3.0, high: 4.0, mid: 3.5, actual: 4.5, position: above, diff_vs_mid: 1.0}
+            - {metric: core_growth_diagnostics, kind: band, guidance: "Flat", actual: 0.5, position: band}
+            - {metric: respiratory_impact_pt, kind: point, guidance: "+2.5%", value: 2.5, actual: 2.5, position: point, diff: 0.0}
+            - {metric: core_growth_ex_respiratory, kind: point, guidance: "~+5.0%", value: 5.0, actual: 5.5, position: point, diff: 0.5, actual_old_definition: 4.5}
+            - {metric: adjusted_operating_margin, kind: point, guidance: "~26.5%", value: 26.5, actual: null, position: unverifiable}
+            - {metric: respiratory_revenue, kind: point, guidance: "~$325", value: 325, actual: 350, position: point, diff: 25, note: 实际值按 5,000 万美元取整}
+          note: 实际值公布时核心增长的定义已改为剔除向客户返还的关税退款；actual_old_definition 是把该项影响加回后的值
+        # ---- 未到期
+        - target: Q4-26
+          made_on: "2026-07-21"
+          source: 8K-Q2-26 对应新闻稿
+          check_on: Q4-26 业绩新闻稿发布日（尚未公布）
+          items:
+            - {metric: core_growth_total, kind: band, guidance: "+Mid-single digit", actual: null}
+            - {metric: respiratory_impact_pt, kind: band, guidance: "Flat", actual: null}
+            - {metric: core_growth_ex_respiratory, kind: band, guidance: "+Mid-single digit", actual: null}
+        - target: Q4-26
+          made_on: "2026-10-21"
+          source: 8K-Q3-26 对应新闻稿
+          check_on: Q4-26 业绩新闻稿发布日（尚未公布）
+          items:
+            - {metric: core_growth_total, kind: point, guidance: "~+3.0%", value: 3.0, actual: null}
+            - {metric: core_growth_biotechnology, kind: band, guidance: "+Mid-single digit", actual: null}
+            - {metric: core_growth_life_sciences, kind: range, low: 4.0, high: 5.0, mid: 4.5, actual: null}
+            - {metric: core_growth_diagnostics, kind: band, guidance: "+Up slightly", actual: null}
+            - {metric: respiratory_impact_pt, kind: point, guidance: "~+150 basis points", value: 1.5, actual: null}
+            - {metric: core_growth_ex_respiratory, kind: range, low: 4.0, high: 5.0, mid: 4.5, actual: null}
+            - {metric: adjusted_operating_margin, kind: point, guidance: "~29.5%", value: 29.5, actual: null}
+            - {metric: respiratory_revenue, kind: point, guidance: "~$400", value: 400, actual: null}
+        - target: FY2026
+          made_on: "2026-01-28"
+          source: 8K-Q4-25 对应新闻稿
+          check_on: FY2026 第四季度业绩新闻稿发布日（尚未公布）
+          items:
+            - {metric: core_growth_total, kind: range, low: 3.0, high: 6.0, mid: 4.5, actual: null}
+            - {metric: core_growth_biotechnology, kind: point, guidance: "~+6.0%", value: 6.0, actual: null}
+            - {metric: core_growth_life_sciences, kind: band, guidance: "Flat", actual: null}
+            - {metric: core_growth_diagnostics, kind: band, guidance: "+Low-single digit", actual: null}
+            - {metric: adjusted_diluted_eps, kind: range, low: 8.35, high: 8.50, mid: 8.425, revision: 首次给出, actual: null}
+        - target: FY2026
+          made_on: "2026-04-21"
+          source: 8K-Q1-26 对应新闻稿
+          check_on: FY2026 第四季度业绩新闻稿发布日（尚未公布）
+          items:
+            - {metric: core_growth_total, kind: range, low: 3.0, high: 6.0, mid: 4.5, revision: 重申, actual: null}
+            - {metric: core_growth_biotechnology, kind: point, guidance: "~+6.0%", value: 6.0, actual: null}
+            - {metric: core_growth_life_sciences, kind: band, guidance: "+Up slightly", actual: null}
+            - {metric: core_growth_diagnostics, kind: band, guidance: "+Low-single digit", actual: null}
+            - {metric: adjusted_diluted_eps, kind: range, low: 8.35, high: 8.55, mid: 8.45, revision: 上调, actual: null}
+            - {metric: respiratory_revenue, kind: range, low: 1600, high: 1700, mid: 1650, actual: null}
+        - target: FY2026
+          made_on: "2026-07-21"
+          source: 8K-Q2-26 对应新闻稿
+          check_on: FY2026 第四季度业绩新闻稿发布日（尚未公布）
+          items:
+            - {metric: core_growth_total, kind: range, low: 3.0, high: 4.0, mid: 3.5, revision: 收窄, actual: null}
+            - {metric: core_growth_biotechnology, kind: band, guidance: "+Mid-single digit", actual: null}
+            - {metric: core_growth_life_sciences, kind: range, low: 3.0, high: 4.0, mid: 3.5, actual: null}
+            - {metric: core_growth_diagnostics, kind: band, guidance: "+Up slightly", actual: null}
+            - {metric: respiratory_impact_pt, kind: band, guidance: "+Low-single digit", actual: null}
+            - {metric: core_growth_ex_respiratory, kind: band, guidance: "+Mid-single digit", actual: null}
+            - {metric: adjusted_diluted_eps, kind: range, low: 8.45, high: 8.60, mid: 8.525, revision: 上调, actual: null}
+            - {metric: respiratory_revenue, kind: point, guidance: "~$1,600", value: 1600, actual: null}
+        - target: FY2026
+          made_on: "2026-10-21"
+          source: 8K-Q3-26 对应新闻稿
+          check_on: FY2026 第四季度业绩新闻稿发布日（尚未公布）
+          items:
+            - {metric: core_growth_total, kind: point, guidance: "~+2.5%", value: 2.5, revision: 由区间改为约数, actual: null}
+            - {metric: core_growth_biotechnology, kind: band, guidance: "+Mid-single digit", actual: null}
+            - {metric: core_growth_life_sciences, kind: range, low: 3.0, high: 4.0, mid: 3.5, actual: null}
+            - {metric: core_growth_diagnostics, kind: band, guidance: "~Flat", actual: null}
+            - {metric: respiratory_impact_pt, kind: band, guidance: "+Low-single digit", actual: null}
+            - {metric: core_growth_ex_respiratory, kind: band, guidance: "+Mid-single digit", actual: null}
+            - {metric: adjusted_diluted_eps_continuing, kind: range, low: 8.57, high: 8.62, mid: 8.595, revision: 上调，名称改为持续经营口径, actual: null}
+            - {metric: respiratory_revenue, kind: point, guidance: "~$1,500", value: 1500, actual: null}
+      not_registered:
+        - 各新闻稿的“其他前瞻信息”或“补充前瞻信息”表：汇率对营收的影响、无形资产摊销、公司费用、净利息费用、实际税率、平均调整后稀释股数
+        - 8K-JPM-25、8K-JPM-26 对已结束季度的预告
+        - 电话会讲稿和演示材料里的指引（没有取）
+        - 目标期在 Q3-25 之前的季度指引（Q1-25、Q2-25），不在 5 季窗口内
+      summary:
+        registered: 68
+        by_kind: {range: 17, point: 19, band: 32}
+        due: 30
+        not_due: 38
+        due_by_kind: {range: 5, point: 10, band: 15}
+        range_claims_due: {total: 5, within: 3, above: 2, below: 0}
+        point_claims_due: {total: 10, with_actual: 7, unverifiable: 3}
+        band_claims_due: {total: 15, judged: 0}
+        full_year_due: {FY2025: 7}
+        full_year_not_due: {FY2026: 27}
+        by_ad_hoc_rule: {met: 3, missed_above_range: 2, not_judged: 22, unverifiable: 3}
+        alternative_rule_not_below_lower: {met: 5, missed: 0}
+        note: 这里只是位置计数，不是兑现率统计；统计属于范围外的第 4 步
+
+  summary_by_class:
+    已完成:
+      - dupont-return-decomposition 第 1、3 步
+      - working-capital-forecast 第 1、2 步，第 3 步的差异计算
+      - earnings-quality-checklist 第 1、7 步，第 5 步 GAAP 公司层面和分部的五季趋势（分部于补读后补齐），第 6 步的分部、地区、国家占比（地区、国家于补读后补齐）
+      - working-capital-forecast 第 1 步收购当年剔除被收购方余额的量化（补读后补齐）
+      - guidance-tracking-playbook 第 1、2 步，第 3 步的取实际值与位置
+    因数据不足未执行:
+      - 没有哪一个范围内步骤整步落在这一类
+      - 局部：earnings-quality-checklist 第 5 步的调整后营业利润率（五季只有 Q4-25）、调整后毛利率（公司不披露）；补读 10-Q、10-K 正文后仍没有
+      - 局部：guidance-tracking-playbook 第 3 步三条调整后营业利润率指引没有实际值（新闻稿和 10-Q 正文都没有）；电话会和演示材料里的指引没有取
+      - 公司未披露（不是没取到）：earnings-quality-checklist 第 6 步按客户行业的收入口径
+    补读前后的变化（2026-11-14）:
+      - earnings-quality-checklist 第 5 步：分部五季由“因数据不足只做了一部分”改为已完成；调整后口径不变
+      - earnings-quality-checklist 第 6 步：归类不变；地区和国家口径补齐，终端行业改记为公司未披露
+      - working-capital-forecast 第 1 步：归类不变（已完成）；收购影响由“没有量化”改为已量化
+    需人工判断:
+      - working-capital-forecast 第 3 步的差异原因
+      - earnings-quality-checklist 第 5 步的同比变化原因，第 6 步的冲击影响
+      - guidance-tracking-playbook 第 3 步的达成判定规则，约数指引和 15 条描述性指引的判定
+
+  handover_gaps:
+    - 题目写“5 个财年、5 个季度”，但重述让“取最新申报”这条共用规则在本例第一次影响结果：FY2021 的余额从没重述、营收重述过，两张卡各自定了不同的处理（杜邦沿用，营运资本改为同一份申报取分子分母）。交接里没有约定重述和终止经营怎样处理。
+    - 首次走查时卡和交接都没有说取数要不要读 10-K、10-Q 正文，因为 www.sec.gov 要求联系邮箱而没有取，分部五季、地区口径、收购附注都缺。同日交接约定补上了取数范围（可以读正文和附注、可以用已配置的 SEC 请求标识），补读后这三处都补上了。
+    - 收购附注只给收购日的公允价值，按年列合计，不按被收购方分列；年末余额里被收购方占多少、被收购方的成本，正文也没有，量化只能近似。
+    - 第 4 张卡的检查日和期间窗口没有对上全年指引：题目的“最近 5 个季度”能覆盖的全年指引只有一年，FY2026 的 27 条都未到期。题目没有写全年指引要回看几年。
+    - 描述性指引的处理没有约定，本例占登记条目的近一半。
+    - 指引发布后公司改了非 GAAP 指标的定义（关税退款），交接和卡都没有写遇到口径变更时用哪个实际值。
+    - 本次仍然没有登记来源和数据集，原始文件不在版本存储里，不能用 iros 命令复现；交接没有约定试点的原始文件放哪里（本次放在仓库外的临时目录，没有另存）。
+    - 下游记录不再写出处判定后，记录里只剩临时决定，“来自材料”的部分只能在最后一条消息里给；公开记录单独看不出哪些步骤是照卡做的、哪些是自己定的以外的部分。
+
+  checks:
+    - 推算的 Q4-24、Q4-25 单季营收、毛利和营业利润（全年 − 前三季）与 8K-Q4-25 对应新闻稿分部信息表的合计（6,538、6,838；1,425、1,502）一致
+    - 季度经营现金流（累计相减）与各季新闻稿列示的 1.7、2.1、1.3、1.5、1.9（十亿美元）一致；Q3-26 为持续经营口径 1,886，与新闻稿现金流表一致
+    - FY2025 分部营收之和等于合并营收 24,568；新闻稿资产负债表的贸易应收 3,913、存货 2,489、贸易应付 1,844、Danaher 股东权益 52,534、总资产 83,464 与 Company Facts 一致
+    - 三因子乘积等于净利润除以平均权益
+    - 核心增长调节表的各项相加等于总增长（取整到 0.5 个百分点）；Q3-26、FY2025 的 GAAP 营收增长按 Company Facts 计算为 8.28%、2.90%，与新闻稿的 8.5%、3.0% 一致到取整
+    - FY2021、FY2022 的营收、成本、营业利润和经营现金流在不同申报中数值不同（重述）；其余各期在多份申报中数值相同
+  not_available:
+    - 一致预期（按题目不使用）
+    - 季度实际的调整后营业利润率、调整后毛利率（新闻稿和 10-Q、10-K 正文都没有）
+    - 按客户行业的收入金额或占比（10-K 只有文字描述）
+    - Abcam 在 2023-12-31 的余额和 2023 年并表期间的成本（附注只有收购日公允价值和备考营收）
+    - 电话会讲稿与演示材料中的指引
+    - 订单、积压订单（不在本题范围）
