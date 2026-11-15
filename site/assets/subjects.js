@@ -10,11 +10,16 @@
     }
     return previous[b.length];
   };
+  const cjk=/[\u3400-\u9fff\uf900-\ufaff]/;
+  const parts = query => query.toLowerCase().split(/[\s,，、;；]+/).flatMap(p=>p.match(/[\u3400-\u9fff\uf900-\ufaff]+|[^\u3400-\u9fff\uf900-\ufaff]+/g)||[]);
+  const rate = (names, q) => names.some(n=>n===q)?0:names.some(n=>n.includes(q))?1:q.length>=4&&names.some(n=>distance(n,q)<=2)?2:9;
+  // The whole query is tried first; in a multi-word query each word may also name a subject.
   const candidates = (entities, query) => {
     const q=normalize(query); if(!q) return [];
+    const words=parts(query).map(normalize).filter(w=>w!==q&&w.length>=(cjk.test(w)?2:3));
     return Object.entries(entities).map(([id,e])=>{
       const names=[e.name,...(e.aliases||[])].map(normalize);
-      const score=names.some(n=>n===q)?0:names.some(n=>n.includes(q))?1:q.length>=4&&names.some(n=>distance(n,q)<=2)?2:9;
+      const score=Math.min(rate(names,q),...words.map(w=>rate(names,w)));
       return {id,name:e.name,score};
     }).filter(x=>x.score<9).sort((a,b)=>a.score-b.score||a.name.localeCompare(b.name)).slice(0,6);
   };

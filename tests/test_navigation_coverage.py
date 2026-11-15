@@ -179,6 +179,17 @@ for(const en of [false,true]) {
  const industry=model.studies.find(s=>s.id==='us_industry_12');
  assert(!Q.match(industry,{search:'PE'},vocab,en).show);
  assert(Q.match(dossier,{search:'PE'},vocab,en).show);
+ // Multi-word search: words are matched separately; words found nowhere are reported and ignored.
+ const sentence='nvidia jasen huang 辞职事件',words=Q.searchTerms(sentence,all,vocab,en);
+ assert.deepEqual(Q.terms(sentence),['nvidia','jasen','huang','辞职事件']);
+ assert.deepEqual(words,{known:['nvidia'],unknown:['jasen','huang','辞职事件']});
+ const ids=q=>all.filter(r=>Q.match(r,q,vocab,en).show).map(r=>r.id).sort();
+ assert.equal(ids({search:sentence}).length,0);
+ assert(ids({search:'nvidia'}).length>0);
+ assert.deepEqual(ids({search:sentence,ignore:words.unknown}),ids({search:'nvidia'}));
+ assert.deepEqual(Q.searchTerms('辞职事件',all,vocab,en),{known:[],unknown:['辞职事件']});
+ assert.equal(ids({search:'辞职事件'}).length,0);
+ assert(ids({search:'nvidia pe'}).every(id=>ids({search:'pe'}).includes(id)&&ids({search:'nvidia'}).includes(id)));
 }
 for(const [key,counts] of Object.entries({results:{published:1},unavailable:{missing:1},references:{references:2},capabilities:{capabilities:1},filtered:{base:1},unassessed:{}})) {
  assert.equal(Q.state(counts,{},model.entities),key);

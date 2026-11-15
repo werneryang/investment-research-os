@@ -29,6 +29,8 @@
   }
   function update(save=true, mode='push') {
     const query=Object.fromEntries(fields.map(f=>[f.name,f.value]));
+    const words=Q.searchTerms(query.search,records.map(r=>r.data),vocab,en);
+    if(words.known.length)query.ignore=words.unknown;
     const counts={published:0,missing:0,capabilities:0,references:0,base:0};
     for (const {el,data} of records) {
       const {show,baseMatch,routes:matched}=Q.match(data,query,vocab,en);
@@ -66,6 +68,14 @@
     });
     const empty=host.querySelector('.empty-state'),state=Q.state(counts,query,vocab.entities);
     empty.hidden=state==='results';empty.textContent=Q.emptyText(state,en);empty.dataset.state=state;
+    const note=host.querySelector('.search-terms');
+    if(note){
+      const list=x=>x.join(en?', ':'、');
+      note.hidden=!words.unknown.length;
+      note.textContent=!words.unknown.length?'':words.known.length
+        ?(en?`Filtered by: ${list(words.known)}. Ignored, because no registered subject, study or category matches: ${list(words.unknown)}.`:`已按「${list(words.known)}」筛选。以下词没有对应的已登记主体、研究或分类，已忽略：${list(words.unknown)}。`)
+        :(en?`No registered subject, study or category matches any of: ${list(words.unknown)}.`:`以下词都没有对应的已登记主体、研究或分类：${list(words.unknown)}。`);
+    }
     host.querySelector('.reference-filter-note').hidden=!Q.studyFilters.some(k=>query[k]);
     host.querySelector('.query-status').textContent=en?`${published} studies with matching results · ${missing} unavailable or unpublished · ${capabilities} data/planning entries · ${references} reference entries`:`${published} 项研究有匹配结果 · ${missing} 项内容缺失或未发布 · ${capabilities} 项数据或规划 · ${references} 项参照`;
     const subject=val('entity'), entry=host.querySelector('.subject-reference');
