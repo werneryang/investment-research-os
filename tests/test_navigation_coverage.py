@@ -182,11 +182,14 @@ for(const en of [false,true]) {
  // Multi-word search: words are matched separately; words found nowhere are reported and ignored.
  const sentence='nvidia jasen huang 辞职事件',words=Q.searchTerms(sentence,all,vocab,en);
  assert.deepEqual(Q.terms(sentence),['nvidia','jasen','huang','辞职事件']);
- assert.deepEqual(words,{known:['nvidia'],unknown:['jasen','huang','辞职事件']});
+ assert.deepEqual(words,{known:['nvidia','huang'],unknown:['jasen','辞职事件']});
  const ids=q=>all.filter(r=>Q.match(r,q,vocab,en).show).map(r=>r.id).sort();
  assert.equal(ids({search:sentence}).length,0);
  assert(ids({search:'nvidia'}).length>0);
- assert.deepEqual(ids({search:sentence,ignore:words.unknown}),ids({search:'nvidia'}));
+ const found=ids({search:sentence,ignore:words.unknown});
+ assert(found.length>0&&found.every(id=>ids({search:'nvidia'}).includes(id)));
+ // A key person's name finds the records of the registered subject.
+ for(const name of ['jensen huang','黄仁勋'])assert.deepEqual(ids({search:name}),found);
  assert.deepEqual(Q.searchTerms('辞职事件',all,vocab,en),{known:[],unknown:['辞职事件']});
  assert.equal(ids({search:'辞职事件'}).length,0);
  assert(ids({search:'nvidia pe'}).every(id=>ids({search:'pe'}).includes(id)&&ids({search:'nvidia'}).includes(id)));
