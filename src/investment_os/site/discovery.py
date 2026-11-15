@@ -222,7 +222,7 @@ def browser(content, model, latest, build, frequency=None):
 <form class="research-filters" hidden>{basic}<button type="reset">{L('重置','Reset')}</button><details class="advanced-filters"><summary>{L('更多筛选：成果类型、市场与日期','More filters: result type, market and dates')}</summary><div>{controls}</div></details></form>
 <noscript><p>{L('下方目录可直接展开阅读；启用 JavaScript 后可组合筛选。','The catalog below is readable without JavaScript; enable it for combined filters.')}</p></noscript>
 <p class="subject-reference" hidden></p>
-<section id="research-results"><h2>{L('研究目录','Study catalog')}</h2><p class="query-status" role="status" aria-live="polite"></p>
+<section id="research-results"><h2>{L('研究目录','Study catalog')}</h2><p class="query-status" role="status" aria-live="polite"></p><p class="search-terms" role="status" aria-live="polite" hidden></p>
 <p class="reference-filter-note" hidden>{L('成果类型、市场、频率与日期只筛选研究；参照资料与规划仍按对象、问题及关键词列出。','Result type, market, frequency and date filters apply only to studies; references and plans still match the object, question and search.')}</p>
 <p class="empty-state" hidden>{L('当前无已发布的匹配研究。未登记的对象与问题组合尚未评估；已有数据或规划见下方。','No published studies match. Unregistered object–question combinations have not been assessed; see data and plans below.')}</p>
 {''.join(groups)}</section>

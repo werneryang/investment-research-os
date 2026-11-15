@@ -5,16 +5,31 @@
   const synonyms={'pe':['valuation','multiples'],'p/e':['valuation','multiples'],'市盈率':['valuation','multiples'],'估值':['valuation'],'valuation':['valuation'],'相关性':['returns','correlation'],'correlation':['returns','correlation']};
   const routeMatch=(route,q)=>axes.every(k=>!q[k]||route[k]===q[k])&&(!q.entity||(route.entity_ids||[]).includes(q.entity));
   const endDate=x=>x.length===4?x+'-12-31':x.length===7?x+'-31':x;
-  function match(record,q,vocab,en=false) {
-    const query=(q.search||'').trim().toLowerCase(),alias=synonyms[query];
-    const base=record.routes.filter(r=>routeMatch(r,q));
-    const routes=base.filter(r=>!alias||(r.question===alias[0]&&(!alias[1]||r.topic===alias[1])));
-    const baseMatch=record.routes.length?base.length>0:!axes.some(k=>q[k])&&!q.entity;
-    let show=baseMatch&&(!record.routes.length||routes.length>0);
+  // Split on whitespace, list punctuation and CJK/non-CJK boundaries; CJK runs stay whole (no dictionary).
+  const terms=search=>[...new Set((search||'').toLowerCase().split(/[\s,，、;；]+/).flatMap(p=>p.match(/[\u3400-\u9fff\uf900-\ufaff]+|[^\u3400-\u9fff\uf900-\ufaff]+/g)||[]))];
+  function textOf(record,routes,vocab,en) {
     const subjects=routes.flatMap(r=>r.entity_ids||[]).flatMap(id=>[vocab.entities[id]?.name,...(vocab.entities[id]?.aliases||[])]).join(' ');
     const title=typeof record.title==='object'?record.title[en?'en':'zh']:record.title||'';
-    const text=subjects+' '+title+' '+routes.map(r=>[vocab.objects[r.object].name,vocab.objects[r.object].children[r.subject],vocab.questions[r.question].name,vocab.questions[r.question].children[r.topic],r.scope[en?'en':'zh']].join(' ')).join(' ');
-    show &&= !query||(alias?routes.length>0:text.toLowerCase().includes(query));
+    return (subjects+' '+title+' '+routes.map(r=>[vocab.objects[r.object].name,vocab.objects[r.object].children[r.subject],vocab.questions[r.question].name,vocab.questions[r.question].children[r.topic],r.scope[en?'en':'zh']].join(' ')).join(' ')).toLowerCase();
+  }
+  // Words found in no record are reported, not silently dropped: the caller passes them back as q.ignore.
+  function searchTerms(search,records,vocab,en=false) {
+    const query=(search||'').trim().toLowerCase();
+    if(!query||synonyms[query])return {known:query?[query]:[],unknown:[]};
+    const texts=records.map(r=>textOf(r,r.routes,vocab,en)),known=[],unknown=[];
+    for(const t of terms(query))(synonyms[t]||texts.some(x=>x.includes(t))?known:unknown).push(t);
+    return {known,unknown};
+  }
+  function match(record,q,vocab,en=false) {
+    const query=(q.search||'').trim().toLowerCase(),ignore=q.ignore||[];
+    const words=synonyms[query]?[query]:terms(query).filter(t=>!ignore.includes(t));
+    const aliases=words.map(t=>synonyms[t]).filter(Boolean),plain=words.filter(t=>!synonyms[t]);
+    const base=record.routes.filter(r=>routeMatch(r,q));
+    const routes=base.filter(r=>aliases.every(a=>r.question===a[0]&&(!a[1]||r.topic===a[1])));
+    const baseMatch=record.routes.length?base.length>0:!axes.some(k=>q[k])&&!q.entity;
+    let show=baseMatch&&(!record.routes.length||routes.length>0);
+    const text=textOf(record,routes,vocab,en);
+    show &&= !query||((!aliases.length||routes.length>0)&&(plain.every(t=>text.includes(t))||text.includes(query)));
     if(record.kind==='study') {
       show &&= !(q.start&&q.end&&q.start>q.end);
       show &&= (!q.result_type||record.result_type===q.result_type)&&(!q.market||record.scope.market===q.market)&&(!q.frequency||record.scope.frequency===q.frequency);
@@ -43,7 +58,7 @@
     };
     return words[key][en?1:0];
   }
-  const api={routeMatch,match,state,emptyText,studyFilters};
+  const api={routeMatch,match,terms,searchTerms,state,emptyText,studyFilters};
   if(typeof module!=='undefined')module.exports=api;
   if(typeof window!=='undefined')window.IROSDiscovery=api;
 })();

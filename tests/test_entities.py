@@ -116,6 +116,8 @@ const assert=require('node:assert/strict'),S=require('./site/assets/subjects.js'
 const idx=JSON.parse(require('node:fs').readFileSync(0,'utf8'));
 for(const query of ['NVDA','英伟达','nvdia'])assert.equal(S.candidates(idx.entities,query)[0].id,'co_nvidia');
 assert.equal(S.candidates(idx.entities,'nvdia')[0].score,2);
+assert.equal(S.candidates(idx.entities,'nvidia jasen huang 辞职事件')[0].id,'co_nvidia');
+assert.equal(S.candidates(idx.entities,'jasen huang 辞职事件').length,0);
 const row=idx.relations.rel_micron_nvda_memory;
 assert.equal(S.role(row,'co_nvidia'),'upstream');assert.equal(S.role(row,'co_micron'),'downstream');
 assert(S.recordMatch(row,{entity:'co_nvidia'}));assert(!S.recordMatch(row,{entity:'unknown'}));
