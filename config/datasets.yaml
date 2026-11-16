@@ -1366,6 +1366,19 @@ datasets:
     timezone: America/New_York
     availability: {type: unknown}
     vintages: none
+  # ---- 事件证据包（2026-11-15）：config/events 登记的事实与原文接受时间，由 iros event bundle 生成 ----
+  # 每条记录的值是相对事件日的日历天数；摘录在生成前逐字对照 SHA256 固定的原文
+  event_evidence:
+    source_id: sec_edgar
+    upstream_id: "config/events 登记的事实摘录与 SEC 申报原文（8-K、年报）的接受时间"
+    connector: evidence_bundle
+    params: {replace_snapshot: true}
+    description: "事件研究证据包（docs/study-events.md）：登记事件的事实时间线、原文接受时间与「原文未提及」检查项"
+    frequency: daily
+    unit: days
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
   chip_segment_evidence:
     source_id: sec_edgar
     upstream_id: "FSDS 分部事实（产业链登记的 NVIDIA、Micron）与 config/supply_chain 登记状态"

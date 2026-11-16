@@ -38,6 +38,19 @@ phrases:
   Fabrinet 总营收: Fabrinet total revenue
   FY2026（截至 2026-06-26）: FY2026 (ended 2026-06-26)
   关系链研究: Relationship chain
+  事件研究: Event study
+  NVIDIA 首席执行官离任：事实与时间线: 'NVIDIA chief executive resignation: facts and timeline'
+  2026 年 11 月 NVIDIA 首席执行官离任，公司申报原文写明了哪些事实、按什么顺序发生、何时披露？ 原文没有写明什么？截至查阅日，公司公布了哪些后续日程？: In November 2026 NVIDIA's chief executive resigned. What facts do the company's filings state, in what order did they happen and when were they disclosed? What do the filings not say? Which later dates had the company announced as of the check date?
+  离任原因与事件的影响: Reason for the resignation and its impact
+  本研究只整理原文写明的事实；原因原文没有写，影响需要另做判断，不在公开研究范围内: This study only organises what the filings state; they give no reason, and judging the impact is outside the scope of public research
+  事件窗口的价格反应: Event-window price reaction
+  属于「事件窗口的价格反应」子类，需要日度个股价格与基准，尚未接入: Belongs to the event-window price reaction topic, which needs daily stock prices and a benchmark that are not yet ingested
+  只使用公司申报原文；媒体报道、访谈和社交媒体上的说法不进入时间线: Company filings only; media reports, interviews and social media are not in the timeline
+  「原文未提及」只说明所列原文中没有这些检索词，不说明事情不存在，也不排除公司日后另行披露: '"Not mentioned" only means the search terms do not appear in the listed filings; it does not mean the thing did not happen, nor rule out later disclosure'
+  截至查阅日（2026-11-15）的申报；之后的申报（如继任者任命、10-Q 中的说明）需要更新登记后重跑: Filings as of the check date (2026-11-15); later filings (such as a successor appointment or notes in a 10-Q) need the registration updated and the study rerun
+  2026 年 6 至 7 月的全球销售负责人更替列为同期的其他高管变动，原文没有说明它与本次离任有关: The June–July 2026 change of the worldwide sales head is listed as another officer change in the same period; the filings do not link it to this resignation
+  相对事件日的天数按日历日计算，不是交易日: Days from the event are calendar days, not trading days
+  不判断离任原因、对经营或股价的影响，也不作投资建议: No judgment of the reason or the impact on operations or the share price; not investment advice
   NVIDIA 的上下游关系链（2026 财年申报）: NVIDIA's upstream and downstream relationship chain (fiscal 2026 filings)
   从 NVIDIA 2026 财年年报披露的直接关系出发，按登记的关系向上游、下游各展开两层，需求可能沿哪些公司与业务传导？ 链在哪里断开、为什么断开？NVIDIA 营收上升期间，链上供应方在各自年报中的营收是否同期上升？: Starting from the direct relationships disclosed in NVIDIA's fiscal 2026 annual report and expanding two layers upstream and downstream along registered relationships, through which companies and businesses could demand pass? Where does the chain stop, and why? While NVIDIA's revenue rose, did the revenue of suppliers on the chain rise in their own annual reports over the same period?
   关系来自公司年报的披露：「such as」等列举不是完整名单，没有披露不等于没有关系: 'Relationships come from companies'' annual-report disclosures: lists introduced by "such as" are not complete, and the absence of a disclosure does not mean no relationship exists'

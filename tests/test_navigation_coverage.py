@@ -62,6 +62,7 @@ def test_all_study_families_keep_their_reader_paths(navigation):
     add(['chip_relation_chain_intc'],'industry','chips','structure','relationships','chain-upstream')
     add(['chip_relation_chain_intc'],'company','issuer','structure','relationships','chain-downstream')
     add(['chip_relation_chain_intc'],'industry','chips','exposure','association','chain-revenue')
+    add(['event_nvda_ceo_transition_2026'],'company','issuer','events','timeline','event-timeline')
     companies=yaml.safe_load((PROJECT_ROOT/'config/company-research.yaml').read_text())['companies']
     for sid in ['company_sample', *['company_'+c['slug'] for c in companies]]:
         add([sid],'company','issuer','fundamentals','financials','company-overview' if sid=='company_sample' else 'company-annual')
@@ -84,7 +85,6 @@ def test_data_and_planning_paths_are_preserved(navigation):
         ('fund','product','structure','holdings'):(set(),'planned'),
         ('security','bond','returns','history'):(set(),'planned'),
         ('fund','bond_fund','returns','history'):(set(),'planned'),
-        ('company','issuer','events','timeline'):(set(),'planned'),
         ('security','stock','events','reaction'):(set(),'planned'),
     }
     actual={tuple(r[k] for k in ('object','subject','question','topic')):(set(m['datasets']),m['state'])
@@ -200,12 +200,14 @@ for(const en of [false,true]) {
  assert.deepEqual(Q.terms('估值倍数'),['估值','倍数']);
  assert.deepEqual(event,{known:['nvidia','huang','辞职','事件'],unknown:['jasen'],classes:['辞职','事件']});
  assert.equal(Q.className('事件',vocab),vocab.questions.events.name);
- const planned=all.filter(r=>r.routes.some(x=>x.question==='events')).map(r=>r.id).sort();
- assert.equal(planned.length,2);
- for(const word of ['事件','events','辞职事件'])assert.deepEqual(ids({search:word}),planned);
- assert.deepEqual(ids({question:'events'}),planned);
- // No event study exists for the subject, so the sentence matches nothing rather than its other studies.
- assert.equal(ids({search:sentence,ignore:event.unknown}).length,0);
+ const eventRecords=all.filter(r=>r.routes.some(x=>x.question==='events')).map(r=>r.id).sort();
+ assert.equal(eventRecords.length,2);assert(eventRecords.includes('event_nvda_ceo_transition_2026'));
+ assert(model.capabilities.some(c=>eventRecords.includes(c.id)&&c.routes[0].topic==='reaction'));
+ for(const word of ['事件','events','辞职事件'])assert.deepEqual(ids({search:word}),eventRecords);
+ assert.deepEqual(ids({question:'events'}),eventRecords);
+ // The sentence in the screenshot finds the NVIDIA event study and nothing else.
+ assert.deepEqual(ids({search:sentence,ignore:event.unknown}),['event_nvda_ceo_transition_2026']);
+ assert.deepEqual(ids({search:'kress'}),ids({search:'nvidia'}));
 }
 for(const [key,counts] of Object.entries({results:{published:1},unavailable:{missing:1},references:{references:2},capabilities:{capabilities:1},filtered:{base:1},unassessed:{}})) {
  assert.equal(Q.state(counts,{},model.entities),key);

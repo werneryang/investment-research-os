@@ -46,13 +46,14 @@ def test_identity_and_direct_records(index):
     assert not any('path' in c['document'] for c in index['evidence'].values())
 
 
-@pytest.mark.parametrize('mutation', ['alias','person_subject','person_document','person_role','cik','route','company_route'])
+@pytest.mark.parametrize('mutation', ['alias','person_subject','person_document','person_role','person_until','cik','route','company_route'])
 def test_invalid_subject_binding_fails(inputs,mutation):
     content,defs=inputs
     if mutation=='alias':content['entity_aliases']['missing']=['x']
     if mutation=='person_subject':content['entity_people']['missing']=content['entity_people']['co_nvidia']
     if mutation=='person_document':content['entity_people']['co_nvidia'][0]['document']='missing'
     if mutation=='person_role':del content['entity_people']['co_nvidia'][0]['role']
+    if mutation=='person_until':del content['entity_people']['co_nvidia'][0]['until_document']
     if mutation=='cik':content['studies']['company_nvidia']['entity_ids']=['co_micron']
     if mutation=='route':content['studies']['company_nvidia']['routes'][0]['entity_ids']=['missing']
     if mutation=='company_route':content['studies']['company_nvidia']['routes'][0]['entity_ids']=['co_micron']

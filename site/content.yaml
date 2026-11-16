@@ -16,6 +16,7 @@ study_order:
 - us_refining_throughput_scenarios_2025
 - chip_relation_chain_nvda
 - chip_relation_chain_intc
+- event_nvda_ceo_transition_2026
 collections:
   company_filings:
     name: 公司年度财报
@@ -897,6 +898,20 @@ studies:
     - co_nvidia
     - co_samsung
     - co_amd
+  event_nvda_ceo_transition_2026:
+    label: 事件研究
+    routes:
+    - object: company
+      subject: issuer
+      question: events
+      topic: timeline
+      target: event-timeline
+      scope:
+        zh: NVIDIA 首席执行官离任：申报原文写明的事实、披露时间与原文未提及的事项
+        en: 'NVIDIA chief executive resignation: facts stated in filings, filing times and items the filings do not mention'
+      primary: true
+    entity_ids:
+    - co_nvidia
   company_alphabet:
     routes:
     - object: company
@@ -1665,15 +1680,6 @@ classification:
       en: Fund prices and total returns required; NAV is not a traded price
     datasets: []
     planned: true
-  - object: company
-    subject: issuer
-    question: events
-    topic: timeline
-    scope:
-      zh: 尚无事件研究；需按事件接入公司的一手披露（如 SEC 8-K）
-      en: No event study yet; primary disclosures (such as SEC 8-K) must be ingested per event
-    datasets: []
-    planned: true
   - object: security
     subject: stock
     question: events
@@ -2042,7 +2048,8 @@ data_groups:
     planned: true
     needs: 需要时点数据（ALFRED 或持续积累的本地快照），以及预设基准、样本外评估与预登记
 # 关键人物：只作检索入口，把人名指向已登记主体。职务是 as_of 当日出处所载，不表示此人现任；
-# 离任后保留条目（补 until 与出处），旧人名仍应能找到主体。aliases 是检索用通称，不要求出自 document。
+# 离任后保留条目（补 until 与 until_document），旧人名仍应能找到主体。aliases 是检索用通称，不要求出自 document。
+# document 与 until_document 可以是产业链登记或事件登记（config/events）中的原文。
 entity_people:
   co_nvidia:
   - name: Jen-Hsun Huang
@@ -2050,6 +2057,13 @@ entity_people:
     role: 联合创始人、总裁兼首席执行官、董事
     as_of: "2026-02-20"
     document: doc_nvda_10k_fy2026
+    until: "2026-11-11"
+    until_document: doc_nvda_8k_20261111
+  - name: Colette M. Kress
+    aliases: [Colette Kress]
+    role: 临时首席执行官、执行副总裁兼首席财务官
+    as_of: "2026-11-11"
+    document: doc_nvda_8k_20261111
 entity_aliases:
   co_nvidia:
   - NVIDIA

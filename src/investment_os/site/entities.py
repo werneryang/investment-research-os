@@ -7,6 +7,7 @@ from typing import Any
 
 import yaml
 
+from ..events import event_documents
 from ..supply_chain.catalog import fingerprint, load_catalog
 
 
@@ -43,8 +44,12 @@ def build_index(root: Path, content: dict, definitions: dict) -> dict[str, Any]:
         for person in people:
             if not person.get('name') or not person.get('role') or not person.get('as_of'):
                 raise ValueError(f'Key person needs name, role and as_of: {eid}')
-            if cat and person.get('document') not in cat.documents:
+            known = (set(cat.documents) if cat else set()) | set(event_documents(root))
+            if (cat or known) and person.get('document') not in known:
                 raise ValueError(f"Key person needs a registered document: {eid} {person['name']}")
+            if bool(person.get('until')) != bool(person.get('until_document')) or (
+                    person.get('until_document') and person['until_document'] not in known):
+                raise ValueError(f"Key person end date needs a registered document: {eid} {person['name']}")
             entities[eid].setdefault('aliases', []).extend([person['name'], *person.get('aliases', [])])
     for eid, entity in entities.items():
         entity['aliases'] = list(dict.fromkeys([entity['name'], *entity.get('aliases', [])]))

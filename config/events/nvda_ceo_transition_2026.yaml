@@ -1,0 +1,190 @@
+# 事件登记：NVIDIA 首席执行官离任（docs/study-events.md）
+#
+# 只登记原文写明的事实：每条事实有日期、中英文陈述和逐字摘录，摘录由 iros event check 对照本地原文（SHA256 固定）核对。
+# 原文没有写的，登记为 not_mentioned：列出检查过的原文和检索词，核对时确认这些词确实不在原文中。
+# 检索词没出现只说明原文没有提及，不说明事情不存在。
+schema_version: event.v1
+event_id: nvda_ceo_transition_2026
+entity: co_nvidia
+title:
+  zh: NVIDIA 首席执行官离任
+  en: NVIDIA chief executive resignation
+event_date: "2026-11-11"
+# 截至这一天查阅了 EDGAR 的申报列表：2026-11-12 之后没有新的 8-K
+as_of: "2026-11-15"
+filings_checked:
+  list: https://data.sec.gov/submissions/CIK0001045810.json
+  checked_at: "2026-11-15"
+  note: 2026 年 6 月以来的 8-K、10-Q 与 10-K；第 5.02 项（高管与董事变动）共两份，均已登记
+
+documents:
+  - id: doc_nvda_8k_20261111
+    accession: 0001045810-26-000082
+    form: 8-K
+    items: ["5.02", "9.01"]
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvda-20261111.htm
+    file: nvda-20261111.htm
+    sha256: 4dcddf29286d36505dbba134e026b7065ba56c96a9bc719482ab75e99bdc7221
+    accepted_at: "2026-11-12T08:52:41-05:00"
+    retrieved_at: "2026-11-15"
+  - id: doc_nvda_8k_20261111_ex991
+    accession: 0001045810-26-000082
+    form: 8-K EX-99.1
+    items: []
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvidiaannouncesceotransiti.htm
+    file: nvidiaannouncesceotransiti.htm
+    sha256: 6acaa6477c01ca817ed1065f10bd2666c51a9bfdcce613243e51c5c86568b8ae
+    accepted_at: "2026-11-12T08:52:41-05:00"
+    retrieved_at: "2026-11-15"
+  - id: doc_nvda_8k_20260628
+    accession: 0001045810-26-000060
+    form: 8-K
+    items: ["5.02"]
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000060/nvda-20260628.htm
+    file: nvda-20260628.htm
+    sha256: 7ded7313c04731e78c422ea16d6bb3f6b1b6bffd9998c0023d1c2fc76e7c336f
+    accepted_at: "2026-07-02T09:23:16-04:00"
+    retrieved_at: "2026-11-15"
+  # 已在产业链登记（config/supply_chain/claims.yaml）的年报，复用那里的出处与 SHA256
+  - id: doc_nvda_10k_fy2026
+    catalog: supply_chain
+
+# kind：context 事件前的状态；related 同一时期的其他高管变动（不是同一事件）；event 事件本身；scheduled 公司已公布、尚未发生的日程
+facts:
+  - id: f_huang_tenure
+    date: "2026-02-20"
+    kind: context
+    document: doc_nvda_10k_fy2026
+    locator: Part I, Information About Our Executive Officers
+    excerpt: >-
+      Jen-Hsun Huang co-founded NVIDIA in 1993 and has served as our President, Chief Executive Officer, and a member of the
+      Board of Directors since our inception.
+    statement:
+      zh: 年报所列截至 2026 年 2 月 20 日的高管：黄仁勋 1993 年共同创立 NVIDIA，自公司成立起任总裁、首席执行官和董事
+      en: "Executive officers as of 20 February 2026: Jen-Hsun Huang co-founded NVIDIA in 1993 and has been President, CEO and a director since its inception"
+  - id: f_puri_retire
+    date: "2026-06-28"
+    kind: related
+    document: doc_nvda_8k_20260628
+    locator: Item 5.02(b)
+    excerpt: >-
+      On June 28, 2026, Ajay K. Puri, Executive Vice President, Worldwide Field Operations of NVIDIA Corporation, or the
+      Company, notified the Company of his intention to retire from his role effective upon the employment commencement date
+      of his successor.
+    statement:
+      zh: 全球销售执行副总裁 Ajay K. Puri 通知公司，将在继任者入职时退休
+      en: Ajay K. Puri, EVP of Worldwide Field Operations, notified the company that he will retire when his successor starts
+  - id: f_parker_appointed
+    date: "2026-07-01"
+    kind: related
+    document: doc_nvda_8k_20260628
+    locator: Item 5.02(c)
+    excerpt: >-
+      On July 1, 2026, the Company appointed Nicholas Parker, age 55, as Executive Vice President, Worldwide Field Operations
+      of the Company, effective upon the commencement of his employment with the Company, which is anticipated to be on
+      August 24, 2026.
+    statement:
+      zh: 公司任命 Nicholas Parker 为全球销售执行副总裁，预计 2026 年 8 月 24 日入职
+      en: The company appointed Nicholas Parker as EVP of Worldwide Field Operations, expected to start on 24 August 2026
+  - id: f_huang_resigns
+    date: "2026-11-11"
+    kind: event
+    document: doc_nvda_8k_20261111
+    locator: Item 5.02
+    excerpt: >-
+      On November 11, 2026, the Board of Directors, or the Board, of NVIDIA Corporation accepted the resignation of
+      Jen-Hsun Huang, as NVIDIA’s President, Chief Executive Officer and member of the Board, effective immediately.
+    statement:
+      zh: 董事会接受黄仁勋辞去总裁、首席执行官和董事职务，即时生效
+      en: The board accepted Jen-Hsun Huang's resignation as President, CEO and director, effective immediately
+  - id: f_kress_interim
+    date: "2026-11-11"
+    kind: event
+    document: doc_nvda_8k_20261111
+    locator: Item 5.02
+    excerpt: >-
+      Following Mr. Huang’s resignation, the Board appointed NVIDIA’s Executive Vice President and Chief Financial Officer
+      Colette M. Kress, age 59, to serve as interim Chief Executive Officer, while the Board conducts a search for a new Chief
+      Executive Officer.
+    statement:
+      zh: 董事会任命执行副总裁兼首席财务官 Colette M. Kress 为临时首席执行官，同时寻找新的首席执行官
+      en: The board appointed EVP and CFO Colette M. Kress interim CEO while it searches for a new CEO
+  - id: f_kress_keeps_cfo
+    date: "2026-11-11"
+    kind: event
+    document: doc_nvda_8k_20261111
+    locator: Item 5.02
+    excerpt: >-
+      Ms. Kress has served as NVIDIA’s Executive Vice President and Chief Financial Officer since 2013 and will continue in
+      that role while she serves as the interim Chief Executive Officer.
+    statement:
+      zh: Kress 自 2013 年起任首席财务官，任临时首席执行官期间继续兼任
+      en: Kress has been CFO since 2013 and keeps that role while serving as interim CEO
+  - id: f_jones_chair
+    date: "2026-11-11"
+    kind: event
+    document: doc_nvda_8k_20261111
+    locator: Item 5.02
+    excerpt: >-
+      On November 11, 2026, the Board appointed Harvey C. Jones, age 73, as Chair of the Board. Mr. Jones has served on the
+      Board since 1993.
+    statement:
+      zh: 董事会任命 1993 年起任董事的 Harvey C. Jones 为董事会主席
+      en: The board appointed Harvey C. Jones, a director since 1993, as Chair of the Board
+  - id: f_first_chair
+    date: "2026-11-12"
+    kind: event
+    document: doc_nvda_8k_20261111_ex991
+    locator: Exhibit 99.1
+    excerpt: The Board of Directors appointed Harvey C. Jones as its first-ever Chair of the Board.
+    statement:
+      zh: 新闻稿说明这是公司首次设董事会主席
+      en: The press release says this is the board's first-ever chair
+  - id: f_search_scope
+    date: "2026-11-12"
+    kind: event
+    document: doc_nvda_8k_20261111_ex991
+    locator: Exhibit 99.1
+    excerpt: >-
+      The Board is initiating a search for a permanent Chief Executive Officer and will consider internal and external
+      candidates.
+    statement:
+      zh: 董事会开始寻找正式的首席执行官，内部和外部人选都会考虑
+      en: The board is starting a search for a permanent CEO and will consider internal and external candidates
+  - id: f_q3_results
+    date: "2026-11-17"
+    kind: scheduled
+    document: doc_nvda_8k_20261111_ex991
+    locator: Exhibit 99.1
+    excerpt: >-
+      NVIDIA will report its third-quarter fiscal 2027 financial results on Tuesday, November 17, at approximately 1:20 p.m.
+      PT, as previously scheduled, followed by its earnings call at 2 p.m. PT.
+    statement:
+      zh: 公司按原定日程于 11 月 17 日公布 2027 财年第三季度业绩并召开电话会
+      en: The company will report fiscal 2027 third-quarter results and hold its call on 17 November, as previously scheduled
+
+not_mentioned:
+  - id: n_reason
+    item:
+      zh: 离任原因
+      en: Reason for the resignation
+    documents: [doc_nvda_8k_20261111, doc_nvda_8k_20261111_ex991]
+    terms: [reason, because, due to]
+  - id: n_disagreement
+    item:
+      zh: 是否与公司存在分歧
+      en: Whether there was a disagreement with the company
+    documents: [doc_nvda_8k_20261111, doc_nvda_8k_20261111_ex991]
+    terms: [disagree]
+  - id: n_role_after
+    item:
+      zh: 离任后是否留任顾问或其他职务
+      en: Whether he stays on as an adviser or in another role
+    documents: [doc_nvda_8k_20261111, doc_nvda_8k_20261111_ex991]
+    terms: [advis, consult]
+  - id: n_separation
+    item:
+      zh: 离职补偿或其他安排
+      en: Severance or other separation arrangements
+    documents: [doc_nvda_8k_20261111, doc_nvda_8k_20261111_ex991]
+    terms: [severance, separation]
