@@ -63,7 +63,7 @@ def details(r):
     res = r['results']
     ev = res['event']
     checked = ev.get('filings_checked') or {}
-    note = (f'<p class="small muted">{L("截至", "Filings checked as of ")}{e(ev["as_of"])}{L(" 查阅 EDGAR 申报列表", " on the EDGAR filing list")}'
+    note = (f'<p class="small muted">{L("截至 ", "Filings checked as of ")}{e(ev["as_of"])}{L(" 查阅 EDGAR 申报列表", " on the EDGAR filing list")}'
             + (f'（{e(checked.get("note"))}）' if checked.get('note') and not is_en() else '') + '</p>')
     return _timeline(res) + note + _not_mentioned(res) + _scheduled(res)
 
@@ -73,7 +73,7 @@ def _stats(r):
     d, s = res.get('disclosure') or {}, res['summary']
     return ('<div class="stats">' + stat(L('事件日', 'Event date'), e(res['event']['event_date']))
             + stat(L('首份披露', 'First filing'), e(d.get('date', '—')),
-                   L(f'事件后 {d["lag_days"]} 天', f'{d["lag_days"]} days after the event') if d else '')
+                   L(f'事件后 {d["lag_days"]} 天', f'{d["lag_days"]} day{"" if d["lag_days"] == 1 else "s"} after the event') if d else '')
             + stat(L('原文写明的事实', 'Facts stated in filings'), str(s['counts']['event']),
                    L(f'另有事件前 {s["counts"]["context"]} 条、同期 {s["counts"]["related"]} 条',
                      f'plus {s["counts"]["context"]} before and {s["counts"]["related"]} same-period'))
@@ -85,7 +85,7 @@ def _summary(r):
     d, s = res.get('disclosure') or {}, res['summary']
     return L(f"事件日 {res['event']['event_date']}，事件后 {d.get('lag_days', '—')} 天由 {d.get('form', '—')} 披露；原文写明 {s['counts']['event']} 条事件事实，"
              f"{s['not_mentioned']} 项未提及（含离任原因）",
-             f"Event on {res['event']['event_date']}, disclosed by {d.get('form', '—')} {d.get('lag_days', '—')} days later; the filings state "
+             f"Event on {res['event']['event_date']}, disclosed by {d.get('form', '—')} {d.get('lag_days', '—')} day(s) later; the filings state "
              f"{s['counts']['event']} event facts and do not mention {s['not_mentioned']} items, including the reason")
 
 
