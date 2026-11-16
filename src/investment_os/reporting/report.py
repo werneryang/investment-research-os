@@ -28,6 +28,7 @@ from .company import sections as company_sections
 from .palette import PALETTE  # noqa: E402
 from .industry import figures as industry_figures, sections as industry_sections  # noqa: E402
 from .chip import check_line as chip_check_line, figures as chip_figures, sections as chip_sections  # noqa: E402
+from .events import sections as event_sections  # noqa: E402
 from .refining import (baseline_line, figures as refining_figures, investment_figures, investment_sections,  # noqa: E402
                        overlap_line, ratio_line, sections as refining_sections, sp500_line)
 
@@ -506,7 +507,7 @@ _BRANCH_SECTIONS = {"rates_curve": _curve_sections, "par_bond_scenarios": _bond_
                     "curve_attribution": _attribution_sections, "asset_history": _asset_sections,
                     "industry": industry_sections, "company": company_sections,
                     "refining_throughput": refining_sections, "refining_investment": investment_sections,
-                    "chip_operations": chip_sections}
+                    "chip_operations": chip_sections, "event_timeline": event_sections}
 
 
 def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
@@ -551,7 +552,8 @@ def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:
                  "cross_check_real": "实际回报方向核对", "monthly_drawdown": "月度回撤核对",
                  "ratio_check": "利用率区间复算", "baseline_check": "基准情景核对",
                  "segment_total": "分部营收合计核对", "gross_profit": "分部毛利核对",
-                 "overlap_check": "重叠申报收益核对", "sp500_cross_issuer": "标普 500 跨公司核对"}.get(name.split(":")[0], name)
+                 "overlap_check": "重叠申报收益核对", "sp500_cross_issuer": "标普 500 跨公司核对",
+                 "evidence_check": "证据核对"}.get(name.split(":")[0], name)
         if ":" in name:
             label += f"（{name.split(':', 1)[1]}）"
         line = f"**{label}：** {STATUS_LABEL.get(v.get('status'), v.get('status'))}"

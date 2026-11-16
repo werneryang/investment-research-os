@@ -350,6 +350,29 @@ def cmd_edgar(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_event(args: argparse.Namespace) -> int:
+    from . import events as ev
+
+    root = _root(args.root)
+    if args.action == "fetch":
+        got = ev.fetch(root, os.environ.get("SEC_USER_AGENT", ""))
+        print(f"下载事件原文 {len(got)} 份" + (f"：{'、'.join(got)}" if got else "（本地已齐全）"))
+        args.action = "check"
+    rep = ev.check(root)
+    c = rep.checked
+    print(f"事件登记核对：原文 {c['documents']} 份校验值一致，摘录 {c['excerpts']} 条逐字核对，未提及检索词 {c['absent_terms']} 项")
+    for err in rep.errors:
+        print("  错误：" + err)
+    if rep.errors or args.action == "check":
+        return 1 if rep.errors else 0
+    doc = ev.build_bundle(root)
+    path = ev.write_bundle(root, doc)
+    result = ingest(Registry.load(root), DataStore(root), ev.DATASET_ID, {"path": str(path)})
+    print(f"事件证据包 {path.name}：事件 {len(doc['metadata']['events'])} 个，记录 {len(doc['records'])} 条")
+    print(f"[{result.status}] {ev.DATASET_ID}：{result.message}")
+    return 1 if result.status == "failed" else 0
+
+
 def cmd_chain(args: argparse.Namespace) -> int:
     from .data.fundamentals import EdgarStore, extract_segments
     from .supply_chain.catalog import check, load_catalog
@@ -467,6 +490,10 @@ def build_parser() -> argparse.ArgumentParser:
     e.add_argument("--refresh", action="store_true", help="sync：不论文件头如何都重新下载 FSDS（全面复核用）")
     e.add_argument("--as-of", help="annual：只用该日期（UTC）之前已公布的申报")
     e.set_defaults(func=cmd_edgar)
+
+    v = sub.add_parser("event", help="事件登记：下载原文、核对摘录、生成并导入事件证据包")
+    v.add_argument("action", choices=["fetch", "check", "bundle"])
+    v.set_defaults(func=cmd_event)
 
     s = sub.add_parser("chain", help="产业链登记：导入 NAICS、提取分部事实、核对证据、生成芯片与关系链证据包")
     s.add_argument("action", choices=["naics", "segments", "check", "bundle", "relations"])

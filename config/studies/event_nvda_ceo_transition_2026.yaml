@@ -1,0 +1,37 @@
+# 事件研究：事件事实与时间线（docs/study-events.md）。首例为 NVIDIA 首席执行官离任
+study_id: event_nvda_ceo_transition_2026
+title: NVIDIA 首席执行官离任：事实与时间线
+question: >-
+  2026 年 11 月 NVIDIA 首席执行官离任，公司申报原文写明了哪些事实、按什么顺序发生、何时披露？
+  原文没有写明什么？截至查阅日，公司公布了哪些后续日程？
+result_type: descriptive
+branch: event_timeline
+
+scope:
+  market: US
+  # 时间线覆盖的期间：年报所列高管的截至日（2026-02-20）到公司公布的下一个日程（2026-11-17）
+  start: 2026-02-20
+  end: 2026-11-17
+  frequency: daily
+  vintage_policy: latest
+
+data:
+  evidence: event_evidence
+
+method:
+  event: nvda_ceo_transition_2026
+
+benchmark: 事实只来自登记的公司申报原文（8-K 及其附件、年报）；不使用媒体报道
+evaluation:
+  - 每条事实的摘录逐字出现在 SHA256 固定的原文中
+  - 「原文未提及」的检索词确实不在所列原文中
+  - 披露时间取原文在 EDGAR 的接受时间，按美东时间计日
+  - 固定证据包版本可重现（iros verify）
+
+limitations:
+  - 只使用公司申报原文；媒体报道、访谈和社交媒体上的说法不进入时间线
+  - 「原文未提及」只说明所列原文中没有这些检索词，不说明事情不存在，也不排除公司日后另行披露
+  - 截至查阅日（2026-11-15）的申报；之后的申报（如继任者任命、10-Q 中的说明）需要更新登记后重跑
+  - 2026 年 6 至 7 月的全球销售负责人更替列为同期的其他高管变动，原文没有说明它与本次离任有关
+  - 相对事件日的天数按日历日计算，不是交易日
+  - 不判断离任原因、对经营或股价的影响，也不作投资建议
