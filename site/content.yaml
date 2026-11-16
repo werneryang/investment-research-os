@@ -1542,6 +1542,20 @@ classification:
         strategy:
           zh: 策略模拟表现
           en: Strategy simulations
+    events:
+      name:
+        zh: 事件与反应
+        en: Events and reactions
+      children:
+        timeline:
+          zh: 事件事实与时间线
+          en: Event facts and timeline
+        reaction:
+          zh: 事件窗口的价格反应
+          en: Event-window price reaction
+        analogs:
+          zh: 同类事件的历史比较
+          en: Comparison with similar past events
     data:
       name:
         zh: 数据可得性与口径
@@ -1649,6 +1663,24 @@ classification:
     scope:
       zh: 需基金价格与总收益，净值不替代成交价
       en: Fund prices and total returns required; NAV is not a traded price
+    datasets: []
+    planned: true
+  - object: company
+    subject: issuer
+    question: events
+    topic: timeline
+    scope:
+      zh: 尚无事件研究；需按事件接入公司的一手披露（如 SEC 8-K）
+      en: No event study yet; primary disclosures (such as SEC 8-K) must be ingested per event
+    datasets: []
+    planned: true
+  - object: security
+    subject: stock
+    question: events
+    topic: reaction
+    scope:
+      zh: 尚无事件研究；需日度个股价格与基准
+      en: No event study yet; daily stock prices and a benchmark are required
     datasets: []
     planned: true
   references:

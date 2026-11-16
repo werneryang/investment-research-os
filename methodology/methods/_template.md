@@ -2,7 +2,7 @@
 id: method-id
 name_zh: 方法中文名
 name_en: Method English Name
-question: 分解与归因   # 收益与风险 / 价格、收益率与价差 / 估值 / 基本面与经营 / 结构与关联 / 暴露与关联 / 分解与归因 / 情景与敏感性 / 预测与信号 / 数据可得性与口径
+question: 分解与归因   # 收益与风险 / 价格、收益率与价差 / 估值 / 基本面与经营 / 结构与关联 / 暴露与关联 / 分解与归因 / 情景与敏感性 / 预测与信号 / 事件与反应 / 数据可得性与口径
 kind: decomposition      # decomposition / checklist / routing / measurement / scenario / argument / tracking
 object: [company]      # macro / assets / industry / company / security / fund / portfolio
 status: draft

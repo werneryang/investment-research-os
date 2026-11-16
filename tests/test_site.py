@@ -53,7 +53,7 @@ def test_build_site_from_runs(loaded):
     assert (site / "browse" / "assets" / "index.html").exists() and (site / "en" / "browse" / "macro" / "index.html").exists()
     page = (site / "research.html").read_text(encoding="utf-8")
     assert '<h2>按对象找</h2>' in page and '<h2>按问题找</h2>' in page
-    assert page.count('data-filter="object"') == 7 and page.count('data-filter="question"') == 10
+    assert page.count('data-filter="object"') == 7 and page.count('data-filter="question"') == 11
     assert '尚未分类' in page and '研究目录' in page
     assert '10 年期收益率由 3.95% 升至 4.05%' in page
     assert 'href="studies/ust_curve_test/"' in page
