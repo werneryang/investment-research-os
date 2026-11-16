@@ -85,7 +85,7 @@ def test_data_and_planning_paths_are_preserved(navigation):
         ('fund','product','structure','holdings'):(set(),'planned'),
         ('security','bond','returns','history'):(set(),'planned'),
         ('fund','bond_fund','returns','history'):(set(),'planned'),
-        ('security','stock','events','reaction'):(set(),'planned'),
+        ('security','stock','events','reaction'):({'fred_sp500','fred_nasdaqcom','fred_nasdaq100'},'planned'),
     }
     actual={tuple(r[k] for k in ('object','subject','question','topic')):(set(m['datasets']),m['state'])
             for m in model['capabilities'] for r in m['routes']}

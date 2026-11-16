@@ -1685,9 +1685,12 @@ classification:
     question: events
     topic: reaction
     scope:
-      zh: 尚无事件研究；需日度个股价格与基准
-      en: No event study yet; daily stock prices and a benchmark are required
-    datasets: []
+      zh: 尚无事件研究；已有标普 500 与纳斯达克指数日收盘值作基准，尚缺日度个股价格
+      en: No event study yet; daily S&P 500 and Nasdaq index closes are available as benchmarks, daily stock prices are not
+    datasets:
+    - fred_sp500
+    - fred_nasdaqcom
+    - fred_nasdaq100
     planned: true
   references:
   - id: chip-business-definitions
@@ -1889,7 +1892,7 @@ data_groups:
     - 冲击发生的概率或未来利率走势（需要预测模型与样本外验证）
   - id: equity_risk
     name: 股票
-    summary: 美国股票市场与 Fama/French 因子的月度收益，以及标普综合指数 1871 年起的价格、股息、盈利与 CAPE 估值
+    summary: 美国股票市场与 Fama/French 因子的月度收益，标普综合指数 1871 年起的价格、股息、盈利与 CAPE 估值，以及标普 500 与纳斯达克指数的日收盘值
     risk:
     - equity
     datasets:
@@ -1901,9 +1904,12 @@ data_groups:
     - shiller_fundamentals
     - shiller_cape
     - shiller_real
+    - fred_sp500
+    - fred_nasdaqcom
+    - fred_nasdaq100
     can_answer: []
     cannot_answer:
-    - 个股或具体指数基金的回报（只有组合层面的因子收益）
+    - 个股或具体指数基金的回报（只有组合层面的因子收益；指数日收盘值是价格指数，不含股息）
     - 行业或个股层面的估值（只有标普综合指数整体的 CAPE 与市盈率）
     - 美国以外的股票市场
   - id: credit_premium
