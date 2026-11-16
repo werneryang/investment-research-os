@@ -84,6 +84,8 @@ def test_data_and_planning_paths_are_preserved(navigation):
         ('fund','product','structure','holdings'):(set(),'planned'),
         ('security','bond','returns','history'):(set(),'planned'),
         ('fund','bond_fund','returns','history'):(set(),'planned'),
+        ('company','issuer','events','timeline'):(set(),'planned'),
+        ('security','stock','events','reaction'):(set(),'planned'),
     }
     actual={tuple(r[k] for k in ('object','subject','question','topic')):(set(m['datasets']),m['state'])
             for m in model['capabilities'] for r in m['routes']}
@@ -180,19 +182,30 @@ for(const en of [false,true]) {
  assert(!Q.match(industry,{search:'PE'},vocab,en).show);
  assert(Q.match(dossier,{search:'PE'},vocab,en).show);
  // Multi-word search: words are matched separately; words found nowhere are reported and ignored.
- const sentence='nvidia jasen huang 辞职事件',words=Q.searchTerms(sentence,all,vocab,en);
- assert.deepEqual(Q.terms(sentence),['nvidia','jasen','huang','辞职事件']);
- assert.deepEqual(words,{known:['nvidia','huang'],unknown:['jasen','辞职事件']});
  const ids=q=>all.filter(r=>Q.match(r,q,vocab,en).show).map(r=>r.id).sort();
- assert.equal(ids({search:sentence}).length,0);
- assert(ids({search:'nvidia'}).length>0);
- const found=ids({search:sentence,ignore:words.unknown});
- assert(found.length>0&&found.every(id=>ids({search:'nvidia'}).includes(id)));
+ const nvidia=ids({search:'nvidia'});assert(nvidia.length>0);
+ const plain='nvidia jasen huang',words=Q.searchTerms(plain,all,vocab,en);
+ assert.deepEqual(words,{known:['nvidia','huang'],unknown:['jasen'],classes:[]});
+ assert.equal(ids({search:plain}).length,0);
+ const found=ids({search:plain,ignore:words.unknown});
+ assert(found.length>0&&found.every(id=>nvidia.includes(id)));
  // A key person's name finds the records of the registered subject.
  for(const name of ['jensen huang','黄仁勋'])assert.deepEqual(ids({search:name}),found);
- assert.deepEqual(Q.searchTerms('辞职事件',all,vocab,en),{known:[],unknown:['辞职事件']});
- assert.equal(ids({search:'辞职事件'}).length,0);
- assert(ids({search:'nvidia pe'}).every(id=>ids({search:'pe'}).includes(id)&&ids({search:'nvidia'}).includes(id)));
+ assert.deepEqual(Q.searchTerms('zzzz',all,vocab,en),{known:[],unknown:['zzzz'],classes:[]});
+ assert(ids({search:'nvidia pe'}).every(id=>ids({search:'pe'}).includes(id)&&nvidia.includes(id)));
+ // Event words select the event class; a CJK run is split only around class words.
+ const sentence='nvidia jasen huang 辞职事件',event=Q.searchTerms(sentence,all,vocab,en);
+ assert.deepEqual(Q.terms(sentence),['nvidia','jasen','huang','辞职','事件']);
+ assert.deepEqual(Q.terms('黄仁勋辞职'),['黄仁勋','辞职']);
+ assert.deepEqual(Q.terms('估值倍数'),['估值','倍数']);
+ assert.deepEqual(event,{known:['nvidia','huang','辞职','事件'],unknown:['jasen'],classes:['辞职','事件']});
+ assert.equal(Q.className('事件',vocab),vocab.questions.events.name);
+ const planned=all.filter(r=>r.routes.some(x=>x.question==='events')).map(r=>r.id).sort();
+ assert.equal(planned.length,2);
+ for(const word of ['事件','events','辞职事件'])assert.deepEqual(ids({search:word}),planned);
+ assert.deepEqual(ids({question:'events'}),planned);
+ // No event study exists for the subject, so the sentence matches nothing rather than its other studies.
+ assert.equal(ids({search:sentence,ignore:event.unknown}).length,0);
 }
 for(const [key,counts] of Object.entries({results:{published:1},unavailable:{missing:1},references:{references:2},capabilities:{capabilities:1},filtered:{base:1},unassessed:{}})) {
  assert.equal(Q.state(counts,{},model.entities),key);

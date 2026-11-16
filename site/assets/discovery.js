@@ -70,11 +70,17 @@
     empty.hidden=state==='results';empty.textContent=Q.emptyText(state,en);empty.dataset.state=state;
     const note=host.querySelector('.search-terms');
     if(note){
-      const list=x=>x.join(en?', ':'、');
-      note.hidden=!words.unknown.length;
-      note.textContent=!words.unknown.length?'':words.known.length
-        ?(en?`Filtered by: ${list(words.known)}. Ignored, because no registered subject, study or category matches: ${list(words.unknown)}.`:`已按「${list(words.known)}」筛选。以下词没有对应的已登记主体、研究或分类，已忽略：${list(words.unknown)}。`)
-        :(en?`No registered subject, study or category matches any of: ${list(words.unknown)}.`:`以下词都没有对应的已登记主体、研究或分类：${list(words.unknown)}。`);
+      const list=x=>x.join(en?', ':'、'),lines=[];
+      const text=words.known.filter(w=>!words.classes.includes(w)),shown=published+missing+capabilities+references;
+      // A class word plus other words that match nothing together: say so, and how to see the rest.
+      if(!shown&&words.classes.length&&text.length){
+        const names=list([...new Set(words.classes.map(w=>Q.className(w,vocab)))]);
+        lines.push(en?`Nothing under ${names} matches: ${list(text)}. Remove ${list(words.classes)} to see the other matches.`:`「${names}」类下没有与「${list(text)}」匹配的内容。去掉「${list(words.classes)}」可查看其余匹配。`);
+      }
+      if(words.unknown.length)lines.push(words.known.length
+        ?(en?`Ignored, because no registered subject, study or category matches: ${list(words.unknown)}.`:`以下词没有对应的已登记主体、研究或分类，已忽略：${list(words.unknown)}。`)
+        :(en?`No registered subject, study or category matches any of: ${list(words.unknown)}.`:`以下词都没有对应的已登记主体、研究或分类：${list(words.unknown)}。`));
+      note.hidden=!lines.length;note.textContent=lines.join(' ');
     }
     host.querySelector('.reference-filter-note').hidden=!Q.studyFilters.some(k=>query[k]);
     host.querySelector('.query-status').textContent=en?`${published} studies with matching results · ${missing} unavailable or unpublished · ${capabilities} data/planning entries · ${references} reference entries`:`${published} 项研究有匹配结果 · ${missing} 项内容缺失或未发布 · ${capabilities} 项数据或规划 · ${references} 项参照`;

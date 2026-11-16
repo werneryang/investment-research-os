@@ -2,11 +2,14 @@
 (() => {
   const axes=['object','subject','question','topic'];
   const studyFilters=['result_type','market','frequency','start','end','cutoff'];
-  const synonyms={'pe':['valuation','multiples'],'p/e':['valuation','multiples'],'市盈率':['valuation','multiples'],'估值':['valuation'],'valuation':['valuation'],'相关性':['returns','correlation'],'correlation':['returns','correlation']};
+  const synonyms={'pe':['valuation','multiples'],'p/e':['valuation','multiples'],'市盈率':['valuation','multiples'],'估值':['valuation'],'valuation':['valuation'],'相关性':['returns','correlation'],'correlation':['returns','correlation'],'事件':['events'],'event':['events'],'events':['events'],'辞职':['events'],'离任':['events']};
   const routeMatch=(route,q)=>axes.every(k=>!q[k]||route[k]===q[k])&&(!q.entity||(route.entity_ids||[]).includes(q.entity));
   const endDate=x=>x.length===4?x+'-12-31':x.length===7?x+'-31':x;
-  // Split on whitespace, list punctuation and CJK/non-CJK boundaries; CJK runs stay whole (no dictionary).
-  const terms=search=>[...new Set((search||'').toLowerCase().split(/[\s,，、;；]+/).flatMap(p=>p.match(/[\u3400-\u9fff\uf900-\ufaff]+|[^\u3400-\u9fff\uf900-\ufaff]+/g)||[]))];
+  // Split on whitespace, list punctuation and CJK/non-CJK boundaries. There is no dictionary: a CJK run is
+  // only split around the class words in `synonyms`, so "辞职事件" yields two class words and "估值倍数" keeps "倍数".
+  const cjkRun=/^[\u3400-\u9fff\uf900-\ufaff]+$/;
+  const classWords=new RegExp('('+Object.keys(synonyms).filter(k=>cjkRun.test(k)).sort((a,b)=>b.length-a.length).join('|')+')');
+  const terms=search=>[...new Set((search||'').toLowerCase().split(/[\s,，、;；]+/).flatMap(p=>p.match(/[\u3400-\u9fff\uf900-\ufaff]+|[^\u3400-\u9fff\uf900-\ufaff]+/g)||[]).flatMap(t=>cjkRun.test(t)?t.split(classWords).filter(Boolean):[t]))];
   function textOf(record,routes,vocab,en) {
     const subjects=routes.flatMap(r=>r.entity_ids||[]).flatMap(id=>[vocab.entities[id]?.name,...(vocab.entities[id]?.aliases||[])]).join(' ');
     const title=typeof record.title==='object'?record.title[en?'en':'zh']:record.title||'';
@@ -15,10 +18,11 @@
   // Words found in no record are reported, not silently dropped: the caller passes them back as q.ignore.
   function searchTerms(search,records,vocab,en=false) {
     const query=(search||'').trim().toLowerCase();
-    if(!query||synonyms[query])return {known:query?[query]:[],unknown:[]};
+    if(!query||synonyms[query])return {known:query?[query]:[],unknown:[],classes:synonyms[query]?[query]:[]};
     const texts=records.map(r=>textOf(r,r.routes,vocab,en)),known=[],unknown=[];
     for(const t of terms(query))(synonyms[t]||texts.some(x=>x.includes(t))?known:unknown).push(t);
-    return {known,unknown};
+    // `classes` are the known words that select a question class rather than match text.
+    return {known,unknown,classes:known.filter(t=>synonyms[t])};
   }
   function match(record,q,vocab,en=false) {
     const query=(q.search||'').trim().toLowerCase(),ignore=q.ignore||[];
@@ -58,7 +62,8 @@
     };
     return words[key][en?1:0];
   }
-  const api={routeMatch,match,terms,searchTerms,state,emptyText,studyFilters};
+  const className=(word,vocab)=>vocab.questions[synonyms[word]?.[0]]?.name||word;
+  const api={routeMatch,match,terms,searchTerms,className,state,emptyText,studyFilters};
   if(typeof module!=='undefined')module.exports=api;
   if(typeof window!=='undefined')window.IROSDiscovery=api;
 })();
