@@ -702,6 +702,51 @@ datasets:
     value_range: [0, 200]
     scheduled_fetch: {}
 
+  # 股票指数日收盘值（价格指数，不含股息）：事件研究的市场基准。标普 500 在 FRED 只提供最近 10 年（与 S&P Dow Jones Indices 的协议）；
+  # 纳斯达克两个指数为完整历史。均标注有版权：只在本机使用，不进公开存档
+  fred_sp500:
+    source_id: fred_api
+    upstream_id: "S&P Dow Jones Indices via FRED: SP500（有版权，只提供最近 10 年）"
+    connector: fred_api_current
+    description: 标普 500 指数日收盘值（价格指数，不含股息）
+    params: {series: SP500}
+    frequency: daily
+    unit: index
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 4}
+    vintages: none
+    value_range: [100, 100000]
+    scheduled_fetch: {}
+  fred_nasdaqcom:
+    source_id: fred_api
+    upstream_id: "Nasdaq via FRED: NASDAQCOM（有版权）"
+    connector: fred_api_current
+    description: 纳斯达克综合指数日收盘值（1971-02-05 = 100，价格指数，不含股息）
+    params: {series: NASDAQCOM}
+    frequency: daily
+    unit: index
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 4}
+    vintages: none
+    value_range: [10, 1000000]
+    scheduled_fetch: {}
+  fred_nasdaq100:
+    source_id: fred_api
+    upstream_id: "Nasdaq via FRED: NASDAQ100（有版权）"
+    connector: fred_api_current
+    description: 纳斯达克 100 指数日收盘值（价格指数，不含股息）
+    params: {series: NASDAQ100}
+    frequency: daily
+    unit: index
+    currency: USD
+    timezone: America/New_York
+    availability: {type: period_end_lag_days, days: 4}
+    vintages: none
+    value_range: [10, 1000000]
+    scheduled_fetch: {}
+
   fred_baa10y:
     source_id: fred_api
     upstream_id: "Moody's via FRED: BAA10Y（有版权，需注明出处）"
