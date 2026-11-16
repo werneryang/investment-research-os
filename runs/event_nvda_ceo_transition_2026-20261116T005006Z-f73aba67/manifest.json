@@ -1,0 +1,102 @@
+{
+  "run_id": "event_nvda_ceo_transition_2026-20261116T005006Z-f73aba67",
+  "study_id": "event_nvda_ceo_transition_2026",
+  "study_path": "config/studies/event_nvda_ceo_transition_2026.yaml",
+  "study_config": {
+    "study_id": "event_nvda_ceo_transition_2026",
+    "title": "NVIDIA 首席执行官离任：事实与时间线",
+    "question": "2026 年 11 月 NVIDIA 首席执行官离任，公司申报原文写明了哪些事实、按什么顺序发生、何时披露？ 原文没有写明什么？截至查阅日，公司公布了哪些后续日程？",
+    "result_type": "descriptive",
+    "branch": "event_timeline",
+    "scope": {
+      "market": "US",
+      "start": "2026-02-20",
+      "end": "2026-11-17",
+      "frequency": "daily",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-11-16T00:50:06+00:00",
+      "data_checked_at": {
+        "event_evidence": "2026-11-16T00:50:05+00:00"
+      }
+    },
+    "data": {
+      "evidence": "event_evidence"
+    },
+    "method": {
+      "event": "nvda_ceo_transition_2026"
+    },
+    "benchmark": "事实只来自登记的公司申报原文（8-K 及其附件、年报）；不使用媒体报道",
+    "evaluation": [
+      "每条事实的摘录逐字出现在 SHA256 固定的原文中",
+      "「原文未提及」的检索词确实不在所列原文中",
+      "披露时间取原文在 EDGAR 的接受时间，按美东时间计日",
+      "固定证据包版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "只使用公司申报原文；媒体报道、访谈和社交媒体上的说法不进入时间线",
+      "「原文未提及」只说明所列原文中没有这些检索词，不说明事情不存在，也不排除公司日后另行披露",
+      "截至查阅日（2026-11-15）的申报；之后的申报（如继任者任命、10-Q 中的说明）需要更新登记后重跑",
+      "2026 年 6 至 7 月的全球销售负责人更替列为同期的其他高管变动，原文没有说明它与本次离任有关",
+      "相对事件日的天数按日历日计算，不是交易日",
+      "不判断离任原因、对经营或股价的影响，也不作投资建议"
+    ]
+  },
+  "study_config_hash": "8d363dd9b50c734f3b8fa510409449e6d02cd256b4edee7aa77236e92f9b5e71",
+  "started_at": "2026-11-16T00:50:06+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "9c1dc716f414043b3ebabe5f73a8650f59220c8d004dac2fd7e198aba37c2412",
+    "git_commit": "cd1a704666562bbcf2308ee83d34406ce00f8780",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.13",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "partial",
+  "inputs": [
+    {
+      "role": "evidence",
+      "used": true,
+      "dataset_id": "event_evidence",
+      "version_id": "v20261116T005005Z-92efe7d6",
+      "content_hash": "92efe7d68b60b18f5fa656e55cd1a9f8269b469487b7f7374d05b0cf18080e4d",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    }
+  ],
+  "result_hash": "b012bb26d6fbaae752e22ee23ac3bd887dd1933b51210b7d7b612e8e131009b9",
+  "warnings": [],
+  "unsupported": [
+    {
+      "item": "离任原因与事件的影响",
+      "kind": "scope",
+      "reason": "本研究只整理原文写明的事实；原因原文没有写，影响需要另做判断，不在公开研究范围内"
+    },
+    {
+      "item": "事件窗口的价格反应",
+      "kind": "scope",
+      "reason": "属于「事件窗口的价格反应」子类，需要日度个股价格与基准，尚未接入"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runs/event_nvda_ceo_transition_2026-20261116T005006Z-f73aba67/result.json",
+      "sha256": "cfff99ac8748b064d132f8cd626ad18a65ec4b1f3248d17753a04a27494ae58d"
+    },
+    {
+      "path": "reports/event_nvda_ceo_transition_2026/event_nvda_ceo_transition_2026-20261116T005006Z-f73aba67/report.md",
+      "sha256": "4c7b7ee40e1f5226ec401ccf7da60f35cc708d069ac801f1c77ff28a2ec452e2"
+    },
+    {
+      "path": "reports/event_nvda_ceo_transition_2026/event_nvda_ceo_transition_2026-20261116T005006Z-f73aba67/report.html",
+      "sha256": "53645259732b140968f59b41471374eb9c1a65f4ff8a8fe46a6e1e9ebedad7b1"
+    }
+  ],
+  "finished_at": "2026-11-16T00:50:07+00:00"
+}

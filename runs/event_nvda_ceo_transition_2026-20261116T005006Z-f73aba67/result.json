@@ -1,0 +1,561 @@
+{
+  "study_id": "event_nvda_ceo_transition_2026",
+  "title": "NVIDIA 首席执行官离任：事实与时间线",
+  "question": "2026 年 11 月 NVIDIA 首席执行官离任，公司申报原文写明了哪些事实、按什么顺序发生、何时披露？ 原文没有写明什么？截至查阅日，公司公布了哪些后续日程？",
+  "result_type": "descriptive",
+  "branch": "event_timeline",
+  "scope": {
+    "market": "US",
+    "start": "2026-02-20",
+    "end": "2026-11-17",
+    "frequency": "daily",
+    "vintage_policy": "latest",
+    "evaluated_at": "2026-11-16T00:50:06+00:00",
+    "data_checked_at": {
+      "event_evidence": "2026-11-16T00:50:05+00:00"
+    }
+  },
+  "data_cutoff": "2026-11-12",
+  "methods": {
+    "description": "从固定的事件证据包读取登记事实，按日期排成时间线：每条事实带原文逐字摘录与出处，相对事件日的天数按日历日计算；原文接受时间（美东）另列为披露。原文没有写的事项列出检查过的原文与检索词，只说明原文未提及。不推断原因、影响或市场反应。",
+    "parameters": {
+      "event": "nvda_ceo_transition_2026"
+    },
+    "bundle": {
+      "built_at": "2026-11-16T00:50:05+00:00",
+      "event_files": {
+        "nvda_ceo_transition_2026.yaml": "c60750ab9c69ccd8a79afd662f03f251d427c21b6b8baff4c380ef41b700bbae"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "role": "evidence",
+      "dataset_id": "event_evidence",
+      "version_id": "v20261116T005005Z-92efe7d6",
+      "content_hash": "92efe7d68b60b18f5fa656e55cd1a9f8269b469487b7f7374d05b0cf18080e4d",
+      "source_id": "sec_edgar",
+      "source_status": "access_verified"
+    }
+  ],
+  "results": {
+    "event": {
+      "id": "nvda_ceo_transition_2026",
+      "entity": "co_nvidia",
+      "title": {
+        "zh": "NVIDIA 首席执行官离任",
+        "en": "NVIDIA chief executive resignation"
+      },
+      "event_date": "2026-11-11",
+      "as_of": "2026-11-15",
+      "filings_checked": {
+        "list": "https://data.sec.gov/submissions/CIK0001045810.json",
+        "checked_at": "2026-11-15",
+        "note": "2026 年 6 月以来的 8-K、10-Q 与 10-K；第 5.02 项（高管与董事变动）共两份，均已登记"
+      }
+    },
+    "timeline": [
+      {
+        "date": "2026-02-20",
+        "t": -264,
+        "kind": "context",
+        "fact": "f_huang_tenure",
+        "order": 0,
+        "statement": {
+          "zh": "年报所列截至 2026 年 2 月 20 日的高管：黄仁勋 1993 年共同创立 NVIDIA，自公司成立起任总裁、首席执行官和董事",
+          "en": "Executive officers as of 20 February 2026: Jen-Hsun Huang co-founded NVIDIA in 1993 and has been President, CEO and a director since its inception"
+        },
+        "excerpt": "Jen-Hsun Huang co-founded NVIDIA in 1993 and has served as our President, Chief Executive Officer, and a member of the Board of Directors since our inception.",
+        "locator": "Part I, Information About Our Executive Officers",
+        "document": "doc_nvda_10k_fy2026",
+        "form": "10-K",
+        "accession": "0001045810-26-000021",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "available_at": "2026-02-25"
+      },
+      {
+        "date": "2026-02-25",
+        "t": -259,
+        "kind": "filing",
+        "document": "doc_nvda_10k_fy2026",
+        "form": "10-K",
+        "items": [],
+        "accession": "0001045810-26-000021",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm",
+        "accepted_at": "2026-02-25T16:42:00-05:00"
+      },
+      {
+        "date": "2026-06-28",
+        "t": -136,
+        "kind": "related",
+        "fact": "f_puri_retire",
+        "order": 1,
+        "statement": {
+          "zh": "全球销售执行副总裁 Ajay K. Puri 通知公司，将在继任者入职时退休",
+          "en": "Ajay K. Puri, EVP of Worldwide Field Operations, notified the company that he will retire when his successor starts"
+        },
+        "excerpt": "On June 28, 2026, Ajay K. Puri, Executive Vice President, Worldwide Field Operations of NVIDIA Corporation, or the Company, notified the Company of his intention to retire from his role effective upon the employment commencement date of his successor.",
+        "locator": "Item 5.02(b)",
+        "document": "doc_nvda_8k_20260628",
+        "form": "8-K",
+        "accession": "0001045810-26-000060",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000060/nvda-20260628.htm",
+        "available_at": "2026-07-02"
+      },
+      {
+        "date": "2026-07-01",
+        "t": -133,
+        "kind": "related",
+        "fact": "f_parker_appointed",
+        "order": 2,
+        "statement": {
+          "zh": "公司任命 Nicholas Parker 为全球销售执行副总裁，预计 2026 年 8 月 24 日入职",
+          "en": "The company appointed Nicholas Parker as EVP of Worldwide Field Operations, expected to start on 24 August 2026"
+        },
+        "excerpt": "On July 1, 2026, the Company appointed Nicholas Parker, age 55, as Executive Vice President, Worldwide Field Operations of the Company, effective upon the commencement of his employment with the Company, which is anticipated to be on August 24, 2026.",
+        "locator": "Item 5.02(c)",
+        "document": "doc_nvda_8k_20260628",
+        "form": "8-K",
+        "accession": "0001045810-26-000060",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000060/nvda-20260628.htm",
+        "available_at": "2026-07-02"
+      },
+      {
+        "date": "2026-07-02",
+        "t": -132,
+        "kind": "filing",
+        "document": "doc_nvda_8k_20260628",
+        "form": "8-K",
+        "items": [
+          "5.02"
+        ],
+        "accession": "0001045810-26-000060",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000060/nvda-20260628.htm",
+        "accepted_at": "2026-07-02T09:23:16-04:00"
+      },
+      {
+        "date": "2026-11-11",
+        "t": 0,
+        "kind": "event",
+        "fact": "f_huang_resigns",
+        "order": 3,
+        "statement": {
+          "zh": "董事会接受黄仁勋辞去总裁、首席执行官和董事职务，即时生效",
+          "en": "The board accepted Jen-Hsun Huang's resignation as President, CEO and director, effective immediately"
+        },
+        "excerpt": "On November 11, 2026, the Board of Directors, or the Board, of NVIDIA Corporation accepted the resignation of Jen-Hsun Huang, as NVIDIA’s President, Chief Executive Officer and member of the Board, effective immediately.",
+        "locator": "Item 5.02",
+        "document": "doc_nvda_8k_20261111",
+        "form": "8-K",
+        "accession": "0001045810-26-000082",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvda-20261111.htm",
+        "available_at": "2026-11-12"
+      },
+      {
+        "date": "2026-11-11",
+        "t": 0,
+        "kind": "event",
+        "fact": "f_kress_interim",
+        "order": 4,
+        "statement": {
+          "zh": "董事会任命执行副总裁兼首席财务官 Colette M. Kress 为临时首席执行官，同时寻找新的首席执行官",
+          "en": "The board appointed EVP and CFO Colette M. Kress interim CEO while it searches for a new CEO"
+        },
+        "excerpt": "Following Mr. Huang’s resignation, the Board appointed NVIDIA’s Executive Vice President and Chief Financial Officer Colette M. Kress, age 59, to serve as interim Chief Executive Officer, while the Board conducts a search for a new Chief Executive Officer.",
+        "locator": "Item 5.02",
+        "document": "doc_nvda_8k_20261111",
+        "form": "8-K",
+        "accession": "0001045810-26-000082",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvda-20261111.htm",
+        "available_at": "2026-11-12"
+      },
+      {
+        "date": "2026-11-11",
+        "t": 0,
+        "kind": "event",
+        "fact": "f_kress_keeps_cfo",
+        "order": 5,
+        "statement": {
+          "zh": "Kress 自 2013 年起任首席财务官，任临时首席执行官期间继续兼任",
+          "en": "Kress has been CFO since 2013 and keeps that role while serving as interim CEO"
+        },
+        "excerpt": "Ms. Kress has served as NVIDIA’s Executive Vice President and Chief Financial Officer since 2013 and will continue in that role while she serves as the interim Chief Executive Officer.",
+        "locator": "Item 5.02",
+        "document": "doc_nvda_8k_20261111",
+        "form": "8-K",
+        "accession": "0001045810-26-000082",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvda-20261111.htm",
+        "available_at": "2026-11-12"
+      },
+      {
+        "date": "2026-11-11",
+        "t": 0,
+        "kind": "event",
+        "fact": "f_jones_chair",
+        "order": 6,
+        "statement": {
+          "zh": "董事会任命 1993 年起任董事的 Harvey C. Jones 为董事会主席",
+          "en": "The board appointed Harvey C. Jones, a director since 1993, as Chair of the Board"
+        },
+        "excerpt": "On November 11, 2026, the Board appointed Harvey C. Jones, age 73, as Chair of the Board. Mr. Jones has served on the Board since 1993.",
+        "locator": "Item 5.02",
+        "document": "doc_nvda_8k_20261111",
+        "form": "8-K",
+        "accession": "0001045810-26-000082",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvda-20261111.htm",
+        "available_at": "2026-11-12"
+      },
+      {
+        "date": "2026-11-12",
+        "t": 1,
+        "kind": "event",
+        "fact": "f_first_chair",
+        "order": 7,
+        "statement": {
+          "zh": "新闻稿说明这是公司首次设董事会主席",
+          "en": "The press release says this is the board's first-ever chair"
+        },
+        "excerpt": "The Board of Directors appointed Harvey C. Jones as its first-ever Chair of the Board.",
+        "locator": "Exhibit 99.1",
+        "document": "doc_nvda_8k_20261111_ex991",
+        "form": "8-K EX-99.1",
+        "accession": "0001045810-26-000082",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvidiaannouncesceotransiti.htm",
+        "available_at": "2026-11-12"
+      },
+      {
+        "date": "2026-11-12",
+        "t": 1,
+        "kind": "event",
+        "fact": "f_search_scope",
+        "order": 8,
+        "statement": {
+          "zh": "董事会开始寻找正式的首席执行官，内部和外部人选都会考虑",
+          "en": "The board is starting a search for a permanent CEO and will consider internal and external candidates"
+        },
+        "excerpt": "The Board is initiating a search for a permanent Chief Executive Officer and will consider internal and external candidates.",
+        "locator": "Exhibit 99.1",
+        "document": "doc_nvda_8k_20261111_ex991",
+        "form": "8-K EX-99.1",
+        "accession": "0001045810-26-000082",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvidiaannouncesceotransiti.htm",
+        "available_at": "2026-11-12"
+      },
+      {
+        "date": "2026-11-12",
+        "t": 1,
+        "kind": "filing",
+        "document": "doc_nvda_8k_20261111",
+        "form": "8-K",
+        "items": [
+          "5.02",
+          "9.01"
+        ],
+        "accession": "0001045810-26-000082",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvda-20261111.htm",
+        "accepted_at": "2026-11-12T08:52:41-05:00"
+      },
+      {
+        "date": "2026-11-12",
+        "t": 1,
+        "kind": "filing",
+        "document": "doc_nvda_8k_20261111_ex991",
+        "form": "8-K EX-99.1",
+        "items": [],
+        "accession": "0001045810-26-000082",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvidiaannouncesceotransiti.htm",
+        "accepted_at": "2026-11-12T08:52:41-05:00"
+      },
+      {
+        "date": "2026-11-17",
+        "t": 6,
+        "kind": "scheduled",
+        "fact": "f_q3_results",
+        "order": 9,
+        "statement": {
+          "zh": "公司按原定日程于 11 月 17 日公布 2027 财年第三季度业绩并召开电话会",
+          "en": "The company will report fiscal 2027 third-quarter results and hold its call on 17 November, as previously scheduled"
+        },
+        "excerpt": "NVIDIA will report its third-quarter fiscal 2027 financial results on Tuesday, November 17, at approximately 1:20 p.m. PT, as previously scheduled, followed by its earnings call at 2 p.m. PT.",
+        "locator": "Exhibit 99.1",
+        "document": "doc_nvda_8k_20261111_ex991",
+        "form": "8-K EX-99.1",
+        "accession": "0001045810-26-000082",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvidiaannouncesceotransiti.htm",
+        "available_at": "2026-11-12"
+      }
+    ],
+    "disclosure": {
+      "document": "doc_nvda_8k_20261111",
+      "form": "8-K",
+      "accession": "0001045810-26-000082",
+      "accepted_at": "2026-11-12T08:52:41-05:00",
+      "date": "2026-11-12",
+      "lag_days": 1,
+      "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvda-20261111.htm"
+    },
+    "not_mentioned": [
+      {
+        "id": "n_reason",
+        "item": {
+          "zh": "离任原因",
+          "en": "Reason for the resignation"
+        },
+        "documents": [
+          "doc_nvda_8k_20261111",
+          "doc_nvda_8k_20261111_ex991"
+        ],
+        "terms": [
+          "reason",
+          "because",
+          "due to"
+        ]
+      },
+      {
+        "id": "n_disagreement",
+        "item": {
+          "zh": "是否与公司存在分歧",
+          "en": "Whether there was a disagreement with the company"
+        },
+        "documents": [
+          "doc_nvda_8k_20261111",
+          "doc_nvda_8k_20261111_ex991"
+        ],
+        "terms": [
+          "disagree"
+        ]
+      },
+      {
+        "id": "n_role_after",
+        "item": {
+          "zh": "离任后是否留任顾问或其他职务",
+          "en": "Whether he stays on as an adviser or in another role"
+        },
+        "documents": [
+          "doc_nvda_8k_20261111",
+          "doc_nvda_8k_20261111_ex991"
+        ],
+        "terms": [
+          "advis",
+          "consult"
+        ]
+      },
+      {
+        "id": "n_separation",
+        "item": {
+          "zh": "离职补偿或其他安排",
+          "en": "Severance or other separation arrangements"
+        },
+        "documents": [
+          "doc_nvda_8k_20261111",
+          "doc_nvda_8k_20261111_ex991"
+        ],
+        "terms": [
+          "severance",
+          "separation"
+        ]
+      }
+    ],
+    "scheduled": [
+      {
+        "date": "2026-11-17",
+        "t": 6,
+        "kind": "scheduled",
+        "fact": "f_q3_results",
+        "order": 9,
+        "statement": {
+          "zh": "公司按原定日程于 11 月 17 日公布 2027 财年第三季度业绩并召开电话会",
+          "en": "The company will report fiscal 2027 third-quarter results and hold its call on 17 November, as previously scheduled"
+        },
+        "excerpt": "NVIDIA will report its third-quarter fiscal 2027 financial results on Tuesday, November 17, at approximately 1:20 p.m. PT, as previously scheduled, followed by its earnings call at 2 p.m. PT.",
+        "locator": "Exhibit 99.1",
+        "document": "doc_nvda_8k_20261111_ex991",
+        "form": "8-K EX-99.1",
+        "accession": "0001045810-26-000082",
+        "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvidiaannouncesceotransiti.htm",
+        "available_at": "2026-11-12"
+      }
+    ],
+    "summary": {
+      "facts": 10,
+      "filings": 4,
+      "counts": {
+        "context": 1,
+        "related": 2,
+        "event": 6,
+        "filing": 4,
+        "scheduled": 1
+      },
+      "not_mentioned": 4,
+      "scheduled": 1
+    }
+  },
+  "coverage": {
+    "facts": 10,
+    "completeness": "complete"
+  },
+  "unsupported": [
+    {
+      "item": "离任原因与事件的影响",
+      "kind": "scope",
+      "reason": "本研究只整理原文写明的事实；原因原文没有写，影响需要另做判断，不在公开研究范围内"
+    },
+    {
+      "item": "事件窗口的价格反应",
+      "kind": "scope",
+      "reason": "属于「事件窗口的价格反应」子类，需要日度个股价格与基准，尚未接入"
+    }
+  ],
+  "limitations": [
+    "只使用公司申报原文；媒体报道、访谈和社交媒体上的说法不进入时间线",
+    "「原文未提及」只说明所列原文中没有这些检索词，不说明事情不存在，也不排除公司日后另行披露",
+    "截至查阅日（2026-11-15）的申报；之后的申报（如继任者任命、10-Q 中的说明）需要更新登记后重跑",
+    "2026 年 6 至 7 月的全球销售负责人更替列为同期的其他高管变动，原文没有说明它与本次离任有关",
+    "相对事件日的天数按日历日计算，不是交易日",
+    "不判断离任原因、对经营或股价的影响，也不作投资建议"
+  ],
+  "validation": {
+    "evidence_check": {
+      "status": "pass",
+      "checked": 30,
+      "reason": "证据包生成前逐份核对原文 SHA256、逐条核对摘录、逐项确认未提及的检索词不在原文中"
+    },
+    "raw_spot_check": {
+      "status": "skipped",
+      "reason": "没有可在原始 CSV 中定位的合格观测"
+    }
+  },
+  "tables": {
+    "timeline": [
+      {
+        "date": "2026-02-20",
+        "t": -264,
+        "kind": "context",
+        "fact": "f_huang_tenure",
+        "document": "doc_nvda_10k_fy2026",
+        "form": "10-K",
+        "accession": "0001045810-26-000021"
+      },
+      {
+        "date": "2026-02-25",
+        "t": -259,
+        "kind": "filing",
+        "fact": null,
+        "document": "doc_nvda_10k_fy2026",
+        "form": "10-K",
+        "accession": "0001045810-26-000021"
+      },
+      {
+        "date": "2026-06-28",
+        "t": -136,
+        "kind": "related",
+        "fact": "f_puri_retire",
+        "document": "doc_nvda_8k_20260628",
+        "form": "8-K",
+        "accession": "0001045810-26-000060"
+      },
+      {
+        "date": "2026-07-01",
+        "t": -133,
+        "kind": "related",
+        "fact": "f_parker_appointed",
+        "document": "doc_nvda_8k_20260628",
+        "form": "8-K",
+        "accession": "0001045810-26-000060"
+      },
+      {
+        "date": "2026-07-02",
+        "t": -132,
+        "kind": "filing",
+        "fact": null,
+        "document": "doc_nvda_8k_20260628",
+        "form": "8-K",
+        "accession": "0001045810-26-000060"
+      },
+      {
+        "date": "2026-11-11",
+        "t": 0,
+        "kind": "event",
+        "fact": "f_huang_resigns",
+        "document": "doc_nvda_8k_20261111",
+        "form": "8-K",
+        "accession": "0001045810-26-000082"
+      },
+      {
+        "date": "2026-11-11",
+        "t": 0,
+        "kind": "event",
+        "fact": "f_kress_interim",
+        "document": "doc_nvda_8k_20261111",
+        "form": "8-K",
+        "accession": "0001045810-26-000082"
+      },
+      {
+        "date": "2026-11-11",
+        "t": 0,
+        "kind": "event",
+        "fact": "f_kress_keeps_cfo",
+        "document": "doc_nvda_8k_20261111",
+        "form": "8-K",
+        "accession": "0001045810-26-000082"
+      },
+      {
+        "date": "2026-11-11",
+        "t": 0,
+        "kind": "event",
+        "fact": "f_jones_chair",
+        "document": "doc_nvda_8k_20261111",
+        "form": "8-K",
+        "accession": "0001045810-26-000082"
+      },
+      {
+        "date": "2026-11-12",
+        "t": 1,
+        "kind": "event",
+        "fact": "f_first_chair",
+        "document": "doc_nvda_8k_20261111_ex991",
+        "form": "8-K EX-99.1",
+        "accession": "0001045810-26-000082"
+      },
+      {
+        "date": "2026-11-12",
+        "t": 1,
+        "kind": "event",
+        "fact": "f_search_scope",
+        "document": "doc_nvda_8k_20261111_ex991",
+        "form": "8-K EX-99.1",
+        "accession": "0001045810-26-000082"
+      },
+      {
+        "date": "2026-11-12",
+        "t": 1,
+        "kind": "filing",
+        "fact": null,
+        "document": "doc_nvda_8k_20261111",
+        "form": "8-K",
+        "accession": "0001045810-26-000082"
+      },
+      {
+        "date": "2026-11-12",
+        "t": 1,
+        "kind": "filing",
+        "fact": null,
+        "document": "doc_nvda_8k_20261111_ex991",
+        "form": "8-K EX-99.1",
+        "accession": "0001045810-26-000082"
+      },
+      {
+        "date": "2026-11-17",
+        "t": 6,
+        "kind": "scheduled",
+        "fact": "f_q3_results",
+        "document": "doc_nvda_8k_20261111_ex991",
+        "form": "8-K EX-99.1",
+        "accession": "0001045810-26-000082"
+      }
+    ]
+  },
+  "run_id": "event_nvda_ceo_transition_2026-20261116T005006Z-f73aba67",
+  "generated_at": "2026-11-16T00:50:07+00:00",
+  "result_hash": "b012bb26d6fbaae752e22ee23ac3bd887dd1933b51210b7d7b612e8e131009b9"
+}
