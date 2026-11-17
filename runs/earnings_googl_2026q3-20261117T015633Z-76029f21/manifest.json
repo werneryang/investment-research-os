@@ -1,0 +1,143 @@
+{
+  "run_id": "earnings_googl_2026q3-20261117T015633Z-76029f21",
+  "study_id": "earnings_googl_2026q3",
+  "study_path": "config/studies/earnings_googl_2026q3.yaml",
+  "study_config": {
+    "study_id": "earnings_googl_2026q3",
+    "title": "Alphabet：2026 年第三季度财报研究",
+    "question": "Alphabet 2026 年第三季度的收入、利润率、分部经营、现金流与资本开支相对去年同期和上一季度如何变化？ 这些变化在多大程度上可以直接比较？哪些部分发行人没有披露，所以不能下结论？",
+    "result_type": "descriptive",
+    "branch": "earnings_quarter",
+    "scope": {
+      "market": "US",
+      "currency": "USD",
+      "start": "2025-07-01",
+      "end": "2026-09-30",
+      "frequency": "quarterly",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-11-17T01:56:33+00:00",
+      "data_checked_at": {
+        "earnings_evidence": "2026-11-17T01:56:33+00:00"
+      }
+    },
+    "data": {
+      "evidence": "earnings_evidence"
+    },
+    "method": {
+      "earnings": "googl_2026q3"
+    },
+    "benchmark": "数值只来自登记的公司申报原文（10-Q、10-K、8-K 附件 99.1）；不使用媒体报道、电话会或行情数据",
+    "evaluation": [
+      "登记的每个数值出现在所引原文中，原文 SHA256 固定",
+      "会计恒等式成立：收入由产品线合成、分部营业利润合计等于营业利润、营业利润加其他收支等于税前利润、税前利润减所得税等于净利润",
+      "经营现金流减资本开支等于发行人披露的自由现金流",
+      "固定证据包版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "全部为报告口径，不是有机增长：发行人没有披露 TPU 系统销售以及 Wiz、Intersect 并购的收入与利润贡献，也没有只含经常性服务的 Cloud 利润率",
+      "2025 年第四季度由全年数减前三季度比较数推出，与当时新闻稿的直接季度值有 100 万美元的收入差异，原因未确定",
+      "去年同期含约 35 亿美元的欧盟相关费用，本期有约 52 亿美元的罚款现金支付，属于不同事项；权益证券损益使各季度净利润不可直接比较",
+      "剔除权益证券损益与去年罚款的算术只是税前示意，不是正常化盈利，也不是预测",
+      "收入积压订单自 2026 年第一季度起口径扩大，没有同口径的同比增速",
+      "没有处理业绩电话会（逐字稿的使用条款未核清）、行情反应、估值与历史预期",
+      "数值出现在原文中是存在性检查，不证明取自正确的行列；没有逐条人工审阅原文",
+      "不判断经营质量好坏，也不作投资建议"
+    ]
+  },
+  "study_config_hash": "dceed6cf623e543fd059f345ad9f372934927c9fcfdd7b7ef4ec4a8977dcbe7e",
+  "started_at": "2026-11-17T01:56:33+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "211b165191e6ad2b020ce391a0b3dd7754dee1853cb03e305695c9cca59fea11",
+    "git_commit": "1581dabeaa611a847f291414d80ddd0b64c929af",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.13",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "partial",
+  "inputs": [
+    {
+      "role": "evidence",
+      "used": true,
+      "dataset_id": "earnings_evidence",
+      "version_id": "v20261117T015633Z-ae024e0e",
+      "content_hash": "ae024e0e7684fabe49e9c5212651647a801e750bc41e6e821dbb95414207251f",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2024-01-31",
+            "2026-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-11-16"
+        ]
+      }
+    }
+  ],
+  "result_hash": "df9abb69ef3e81ad7fb28dd100d6c7b6dc4e0350c87672ab882c003ab209e811",
+  "warnings": [],
+  "unsupported": [
+    {
+      "item": "TPU 系统销售与 Wiz、Intersect 的收入和利润贡献、有机增长、仅经常性服务的利润率",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    },
+    {
+      "item": "合同级的积压订单兑现时点、选择权与照付不议条款；按年的收入转换",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    },
+    {
+      "item": "资本开支的维护/增长拆分、设备单位成本、投产时点与资产寿命",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    },
+    {
+      "item": "营运资本周期（应收、存货、应付天数）：本页未收录；2023、2024 年末存货缺匹配的申报事实，也没有仅含贸易项的应收/应付口径",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    },
+    {
+      "item": "完整的税后正常化盈利与持续性判断（罚款、证券损益是否再次出现）",
+      "kind": "scope",
+      "reason": "需要人工判断或本研究未处理的外部材料；不在公开财报算术的范围内"
+    },
+    {
+      "item": "业绩电话会的管理层表述与问答（逐字稿的使用条款未核清，未读取）",
+      "kind": "scope",
+      "reason": "需要人工判断或本研究未处理的外部材料；不在公开财报算术的范围内"
+    },
+    {
+      "item": "股价的事件窗口反应、历史预期与估值（需要可展示的日度价格来源，尚未选定；估值与预期不在本研究范围）",
+      "kind": "scope",
+      "reason": "需要人工判断或本研究未处理的外部材料；不在公开财报算术的范围内"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runs/earnings_googl_2026q3-20261117T015633Z-76029f21/result.json",
+      "sha256": "34e1cba82e29ec84cbc2d528934826da915d1e8bb775f9231cfd251bcf2dfb7b"
+    },
+    {
+      "path": "reports/earnings_googl_2026q3/earnings_googl_2026q3-20261117T015633Z-76029f21/report.md",
+      "sha256": "14ec06f689c4be84fee96d01261c88b2d8aae564fb41ef26bfe0aebc6cb27420"
+    },
+    {
+      "path": "reports/earnings_googl_2026q3/earnings_googl_2026q3-20261117T015633Z-76029f21/report.html",
+      "sha256": "0d46a4493867a5e420e599483dfe95a9fad603c6bace49c2e3feca444ab2637f"
+    }
+  ],
+  "finished_at": "2026-11-17T01:56:34+00:00"
+}
