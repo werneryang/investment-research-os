@@ -1,0 +1,1564 @@
+# Public factual walkthrough; all amounts in method_output; no private card text or personal judgments.
+id: sec-tsla-earnings-20261116
+task_id: R-20261116-tsla-earnings
+record_type: application
+status: draft
+source:
+  type: official
+  title: Tesla Q3 2026 earnings-period confirmation and SEC statements
+  author: Tesla, Inc.; U.S. SEC
+  published_on: '2026-10-22'
+  publication_date_scope: Primary linked Q3 10-Q filing date, not IR earnings announcement or retrieval date
+  earnings_release_date: '2026-10-21'
+  retrieved_on: '2026-11-16'
+  data_as_of: Latest quarter and YTD ended 2026-09-30
+  locator: https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm
+  sha256: d9661451afbe3a4e3055e7429129fb90d384922158fd4c1bb7a0f00862029597
+  outcome_known: true
+  strict_publication_cutoff_NY: '2026-11-16T17:55:00-05:00'
+  strict_publication_cutoff_UTC: '2026-11-16T22:55:00Z'
+  cutoff_policy: Retrieval happened AFTER the requested cutoff. Use only filings published/accepted before cutoff,
+    no later amendments or subsequent-event news. SEC supplied acceptanceDateTime and filingDate retained verbatim
+    as distinct metadata, not inferred from each other. This is not a historical archived IR page snapshot.
+  latest_period_evidence:
+  - url: https://ir.tesla.com/
+    access_UTC: 2026-11-16T22:57:00Z (minute-level tool observation)
+    location: Documents and Events quarterly disclosure table
+    fact: Latest displayed earnings row is 2026 Q3; earnings date October 21, 2026
+    verified: true
+  - url: https://ir.tesla.com/press-release/tesla-releases-third-quarter-2026-financial-results
+    access_UTC: 2026-11-16T22:56:00Z (minute-level tool observation)
+    location: Announcement heading/date and first paragraph
+    fact: Issuer announces release of third-quarter 2026 results on October 21, 2026
+    verified: true
+  - url: https://data.sec.gov/submissions/CIK0001318605.json
+    location: filings.recent reportDate/form/filingDate/acceptanceDateTime
+    fact: Latest periodic reporting period before cutoff is September 30, 2026
+    verified: true
+  filings:
+  - form: 10-Q
+    reportDate: '2026-09-30'
+    filingDate: '2026-10-22'
+    acceptanceDateTime: '2026-10-22T00:12:41.000Z'
+    accessionNumber: 0001628280-26-066775
+    primaryDocument: tsla-20260930.htm
+  - form: 10-Q
+    reportDate: '2026-06-30'
+    filingDate: '2026-07-23'
+    acceptanceDateTime: '2026-07-23T01:02:31.000Z'
+    accessionNumber: 0001628280-26-049270
+    primaryDocument: tsla-20260630.htm
+  - form: 10-Q
+    reportDate: '2026-03-31'
+    filingDate: '2026-04-23'
+    acceptanceDateTime: '2026-04-23T01:43:00.000Z'
+    accessionNumber: 0001628280-26-026673
+    primaryDocument: tsla-20260331.htm
+  - form: 10-K
+    reportDate: '2025-12-31'
+    filingDate: '2026-01-29'
+    acceptanceDateTime: '2026-01-29T01:55:03.000Z'
+    accessionNumber: 0001628280-26-003952
+    primaryDocument: tsla-20251231.htm
+  - form: 10-Q
+    reportDate: '2025-09-30'
+    filingDate: '2025-10-23'
+    acceptanceDateTime: '2025-10-23T01:08:43.000Z'
+    accessionNumber: 0001628280-25-045968
+    primaryDocument: tsla-20250930.htm
+  - form: 10-Q
+    reportDate: '2025-06-30'
+    filingDate: '2025-07-24'
+    acceptanceDateTime: '2025-07-24T00:23:31.000Z'
+    accessionNumber: 0001628280-25-035806
+    primaryDocument: tsla-20250630.htm
+  - form: 10-Q
+    reportDate: '2025-03-31'
+    filingDate: '2025-04-23'
+    acceptanceDateTime: '2025-04-23T01:02:10.000Z'
+    accessionNumber: 0001628280-25-018911
+    primaryDocument: tsla-20250331.htm
+  - form: 10-K
+    reportDate: '2024-12-31'
+    filingDate: '2025-01-30'
+    acceptanceDateTime: '2025-01-30T01:42:33.000Z'
+    accessionNumber: 0001628280-25-003063
+    primaryDocument: tsla-20241231.htm
+  - form: 10-Q
+    reportDate: '2024-09-30'
+    filingDate: '2024-10-24'
+    acceptanceDateTime: '2024-10-24T00:42:47.000Z'
+    accessionNumber: 0001628280-24-043486
+    primaryDocument: tsla-20240930.htm
+  - form: 10-Q
+    reportDate: '2024-06-30'
+    filingDate: '2024-07-24'
+    acceptanceDateTime: '2024-07-23T23:41:09.000Z'
+    accessionNumber: 0001628280-24-032662
+    primaryDocument: tsla-20240630.htm
+  - form: 10-Q
+    reportDate: '2024-03-31'
+    filingDate: '2024-04-24'
+    acceptanceDateTime: '2024-04-24T00:27:48.000Z'
+    accessionNumber: 0001628280-24-017503
+    primaryDocument: tsla-20240331.htm
+  - form: 10-K
+    reportDate: '2023-12-31'
+    filingDate: '2024-01-29'
+    acceptanceDateTime: '2024-01-27T02:00:20.000Z'
+    accessionNumber: 0001628280-24-002390
+    primaryDocument: tsla-20231231.htm
+  registered_source: sec_edgar in config/sources.yaml; existing SecClient with configured contact identifier and serial
+    rate limiting. Identifier not printed. No connector, config, code or dataset registration changed.
+  retrieval:
+  - snapshot: facts.json
+    url: https://data.sec.gov/api/xbrl/companyfacts/CIK0001318605.json
+    retrieved_at_utc: '2026-11-16T22:56:47.924242+00:00'
+    sha256: c951e0ae2402dd8cf8f39319928adccc4196b997941fe40b0d4d6b8060802db1
+  - snapshot: submissions.json
+    url: https://data.sec.gov/submissions/CIK0001318605.json
+    retrieved_at_utc: '2026-11-16T22:56:48.109640+00:00'
+    sha256: 5ac4219ed1b698f5381501bea9987cf3cd0cb75d0ae4066359db28b6be717e65
+  - snapshot: q3.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm
+    retrieved_at_utc: '2026-11-16T22:56:48.431873+00:00'
+    sha256: d9661451afbe3a4e3055e7429129fb90d384922158fd4c1bb7a0f00862029597
+  - snapshot: q2.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm
+    retrieved_at_utc: '2026-11-16T22:57:33.519638+00:00'
+    sha256: 89ccf6fb94b75b8a38600171b306b4d0e44948a52f484cc5710d526edc39812a
+  - snapshot: q1.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026026673/tsla-20260331.htm
+    retrieved_at_utc: '2026-11-16T22:57:33.858896+00:00'
+    sha256: 6b4c7a5fb75382d3bf4afa9c35a1eba5acf8bc77d50b24680100412948ebbeb7
+  - snapshot: fy25.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm
+    retrieved_at_utc: '2026-11-16T22:57:34.261328+00:00'
+    sha256: d0e9899b089b60d596fd77bea2c03c67f48e82768548b0cbda99f4a7f04d67ec
+  - snapshot: q325.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828025045968/tsla-20250930.htm
+    retrieved_at_utc: '2026-11-16T22:57:34.757530+00:00'
+    sha256: 799d4dc98579749c1d20d523bdea6ac1b5997dea5e08f9b875b13a363b6d6744
+  - snapshot: historical-2025-06-30.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828025035806/tsla-20250630.htm
+    retrieved_at_utc: '2026-11-16T23:06:01.569906+00:00'
+    sha256: 538cd86364e279b29c8f36f4298b1d9d38347caabdef38adcda74549b97da277
+  - snapshot: historical-2025-03-31.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828025018911/tsla-20250331.htm
+    retrieved_at_utc: '2026-11-16T23:06:02.027597+00:00'
+    sha256: 1dbc71d5b35d056ed9212d9fdc1e41453af9a022f63178f4f8932ea47dfa9f53
+  - snapshot: historical-2024-12-31.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828025003063/tsla-20241231.htm
+    retrieved_at_utc: '2026-11-16T23:06:02.690462+00:00'
+    sha256: 37728ae675aac5e85d5a57408de94879f4ad8dc91e73c49c0694ce7503a23417
+  - snapshot: historical-2024-09-30.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828024043486/tsla-20240930.htm
+    retrieved_at_utc: '2026-11-16T23:06:03.198349+00:00'
+    sha256: 33450b24914aa0d498b872a75479c552ff9083f11c3a9301d9d14b2a6d002cac
+  - snapshot: historical-2024-06-30.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828024032662/tsla-20240630.htm
+    retrieved_at_utc: '2026-11-16T23:06:03.704241+00:00'
+    sha256: 8305181b65b15c6fde1f333a9ad431ee0fd90abb56a4391ba499194e849eae5a
+  - snapshot: historical-2024-03-31.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828024017503/tsla-20240331.htm
+    retrieved_at_utc: '2026-11-16T23:06:04.835430+00:00'
+    sha256: 42c07be4cb454fc7d37131688eb2677b2507b2d411fb7518305d6fcd4ba9e1b3
+  - snapshot: historical-2023-12-31.htm
+    url: https://www.sec.gov/Archives/edgar/data/1318605/000162828024002390/tsla-20231231.htm
+    retrieved_at_utc: '2026-11-16T23:06:05.696337+00:00'
+    sha256: 16a2a3cb2a388b8f4217868e33edfb2cc75a5a17bbeeb21d97f879c60387e0d5
+  original_material_boundary: Only SEC 10-Q/10-K HTML and SEC APIs explicitly requested through the registered source
+    were saved as temporary research inputs. Tesla IR pages read via web; shareholder deck/PDF/audio/transcript originals
+    NOT downloaded. No raw originals enter this repository.
+  snapshot_storage: Temporary evidence outside repository, not a durable archive; hashes identify exact retrieval.
+    Public record contains factual derived tables, not private method text or personal conclusions.
+extraction:
+  extracted_on: '2026-11-16'
+  method: ai_assisted
+  tool: Codex
+  review: Temporary independent read-only verifier selected original SEC statement inputs and rederived material quarterly
+    accounting figures, cash flows and scope caveats. No human audit.
+  quality_notes: Parent and verifier agreed on lead independent Q3/Q2/Q3-prior core figures. Source facts/derived
+    arithmetic separated below. NetIncomeLoss and EPS numerator tags require original statement attribution and accession
+    filtering.
+method_library:
+  version: aac6b6b
+  task_type: first earnings reading; no prior thesis assumed
+  cards:
+  - id: earnings-quality-checklist
+    steps:
+    - 1
+    - 5
+    - 6
+    - 7
+  - id: guidance-tracking-playbook
+    steps:
+    - 1
+    - 2
+    - 3
+  - id: dupont-return-decomposition
+    steps:
+    - 1
+    - 3
+  - id: working-capital-forecast
+    steps:
+    - 1
+    - 2
+    - 3
+  execution: Only IDs/step numbers and actual outputs recorded; no private card bodies or provenance judgments.
+research_question:
+- layer: own_extension
+  text: Reproduce financial statement comparison and tested accounting checks for latest published earnings as of
+    strict cutoff.
+  verified: false
+evidence:
+- layer: source_fact
+  text: The original operations statements distinguish common-stockholder profit from consolidated profit and the
+    EPS allocation numerator. Revenue components are distinct from reportable segments.
+  location: q3.htm/q2.htm operations statements; Note 14
+  verified: true
+  verifiability: public_filing
+- layer: source_fact
+  text: Capital expenditures outlook is expressed as a greater-than threshold; full-year target period has not ended.
+    Cash PP&E figures exclude finance leases and are net of sales.
+  location: q3/q2/q1/FY25 MD&A Capital Expenditure Trends; cash-flow statement
+  verified: true
+  verifiability: public_filing
+thesis: []
+causal_mechanism: []
+analytical_method: []
+assumptions: []
+valuation_logic: []
+counterarguments: []
+falsification: []
+transferability: []
+links:
+  methods:
+  - id: earnings-quality-checklist
+    fit: match
+  - id: guidance-tracking-playbook
+    fit: match
+  - id: dupont-return-decomposition
+    fit: match
+  - id: working-capital-forecast
+    fit: match
+  claims: []
+method_output:
+  units:
+    amounts: USD million unless a guidance row explicitly states USD billion
+    ratios: decimal for DuPont; percent/pct for named percentage fields; times for CFO/NI; days for cash cycle
+    shares: No current market capitalization or share-based valuation computed
+  periods:
+    2026Q3:
+    - '2026-07-01'
+    - '2026-09-30'
+    2026Q2:
+    - '2026-04-01'
+    - '2026-06-30'
+    2026Q1:
+    - '2026-01-01'
+    - '2026-03-31'
+    2025Q4:
+    - '2025-10-01'
+    - '2025-12-31'
+    2025Q3:
+    - '2025-07-01'
+    - '2025-09-30'
+    9M2026:
+    - '2026-01-01'
+    - '2026-09-30'
+    6M2026:
+    - '2026-01-01'
+    - '2026-06-30'
+    9M2025:
+    - '2025-01-01'
+    - '2025-09-30'
+    annual: Calendar years FY2021-FY2025; FY2020 closing balances for first averages
+  field_locator:
+    income: Q3/Q2/Q1 10-Q consolidated statements of operations; annual values and Q4 derivation from FY25 10-K consolidated
+      operations statement. Product/segment comparisons from Notes 14/MD&A. FY2021/FY2022 annual comparisons are taken
+      from FY2023/FY2024 10-K originals, respectively.
+    cashflow: Statements of cash flows, cumulative to respective quarter; Q3=9M-6M, Q2=6M-3M, Q4=FY-9M; positive cash_PPE_outflow
+      is absolute investing outflow.
+    balance: Each relevant 10-Q consolidated balance sheet; FY25 opening balances in latest 10-Q comparative column;
+      annual extra balances via Company Facts periodic-filing-only selection with per-value provenance below.
+    income_labels:
+      parent_NI: Net income attributable to common stockholders, original statement (not basic EPS allocation numerator)
+      consolidated_NI: Net income, original statement; matched with consolidated CFO
+      automotive_product_revenue: 'Total automotive revenues: automotive sales + regulatory credits + leasing; excludes
+        services'
+      reportable_auto: Automotive segment includes services and other per Note 14
+      segment_profit: Gross profit is disclosed, not segment operating income; no segment EBIT invented
+    EPS_tag_warning: Some standard tags and nonperiodic filings contain differently attributed NI. Basic EPS allocation
+      numerator can differ from parent statement NI. Parent earnings use original operations statements; annual balance
+      facts filtered to 10-K/10-Q before cutoff.
+  disclosed_quarterly_inputs:
+    2026Q3:
+      revenue: 28046.0
+      automotive_sales: 20094.0
+      regulatory_credits: 113.0
+      automotive_leasing: 353.0
+      automotive_product_revenue: 20560.0
+      energy_revenue: 2881.0
+      services_revenue: 4605.0
+      automotive_cost: 16754.0
+      total_cost: 22552.0
+      gross_profit: 5494.0
+      R_and_D: 2761.0
+      SG_and_A: 2015.0
+      restructuring: 0
+      operating_income: 718.0
+      consolidated_NI: 804.0
+      parent_NI: 787.0
+      energy_cost: 1927.0
+      services_cost: 3871.0
+    2026Q2:
+      revenue: 28236.0
+      automotive_sales: 20006.0
+      regulatory_credits: 146.0
+      automotive_leasing: 364.0
+      automotive_product_revenue: 20516.0
+      energy_revenue: 3139.0
+      services_revenue: 4581.0
+      automotive_cost: 17053.0
+      total_cost: 23485.0
+      gross_profit: 4751.0
+      R_and_D: 2371.0
+      SG_and_A: 1982.0
+      restructuring: 0
+      operating_income: 398.0
+      consolidated_NI: 1128.0
+      parent_NI: 1114.0
+      energy_cost: 2499.0
+      services_cost: 3933.0
+    2026Q1:
+      revenue: 22387.0
+      automotive_sales: 15473.0
+      regulatory_credits: 380.0
+      automotive_leasing: 381.0
+      automotive_product_revenue: 16234.0
+      energy_revenue: 2408.0
+      services_revenue: 3745.0
+      automotive_cost: 12812.0
+      total_cost: 17667.0
+      gross_profit: 4720.0
+      R_and_D: 1946.0
+      SG_and_A: 1833.0
+      restructuring: 0
+      operating_income: 941.0
+      consolidated_NI: 491.0
+      parent_NI: 477.0
+      energy_cost: 1456.0
+      services_cost: 3399.0
+    2025Q3:
+      revenue: 28095.0
+      automotive_sales: 20359.0
+      regulatory_credits: 417.0
+      automotive_leasing: 429.0
+      automotive_product_revenue: 21205.0
+      energy_revenue: 3415.0
+      services_revenue: 3475.0
+      automotive_cost: 17590.0
+      total_cost: 23041.0
+      gross_profit: 5054.0
+      R_and_D: 1630.0
+      SG_and_A: 1562.0
+      restructuring: 238.0
+      operating_income: 1624.0
+      consolidated_NI: 1389.0
+      parent_NI: 1373.0
+      energy_cost: 2342.0
+      services_cost: 3109.0
+  derived_2025Q4_inputs:
+    formula: FY2025 original statement minus 9M2025 comparative in Q3 2026 statement, per field
+    values:
+      revenue: 24901.0
+      automotive_sales: 16750.0
+      regulatory_credits: 542.0
+      automotive_leasing: 401.0
+      automotive_product_revenue: 17693.0
+      energy_revenue: 3837.0
+      services_revenue: 3371.0
+      automotive_cost: 14080.0
+      total_cost: 19892.0
+      gross_profit: 5009.0
+      R_and_D: 1783.0
+      SG_and_A: 1655.0
+      restructuring: 162.0
+      operating_income: 1409.0
+      consolidated_NI: 856.0
+      parent_NI: 840.0
+      energy_cost: 2739.0
+      services_cost: 3073.0
+  disclosed_annual_statement_inputs:
+    '2025':
+      revenue: 94827.0
+      automotive_sales: 65821.0
+      regulatory_credits: 1993.0
+      automotive_leasing: 1712.0
+      automotive_product_revenue: 69526.0
+      energy_revenue: 12771.0
+      services_revenue: 12530.0
+      automotive_cost: 57165.0
+      total_cost: 77733.0
+      gross_profit: 17094.0
+      R_and_D: 6411.0
+      SG_and_A: 5834.0
+      restructuring: 494.0
+      operating_income: 4355.0
+      consolidated_NI: 3855.0
+      parent_NI: 3794.0
+    '2024':
+      revenue: 97690.0
+      automotive_sales: 72480.0
+      regulatory_credits: 2763.0
+      automotive_leasing: 1827.0
+      automotive_product_revenue: 77070.0
+      energy_revenue: 10086.0
+      services_revenue: 10534.0
+      automotive_cost: 62873.0
+      total_cost: 80240.0
+      gross_profit: 17450.0
+      R_and_D: 4540.0
+      SG_and_A: 5150.0
+      restructuring: 684.0
+      operating_income: 7076.0
+      consolidated_NI: 7153.0
+      parent_NI: 7091.0
+    '2023':
+      revenue: 96773.0
+      automotive_sales: 78509.0
+      regulatory_credits: 1790.0
+      automotive_leasing: 2120.0
+      automotive_product_revenue: 82419.0
+      energy_revenue: 6035.0
+      services_revenue: 8319.0
+      automotive_cost: 66389.0
+      total_cost: 79113.0
+      gross_profit: 17660.0
+      R_and_D: 3969.0
+      SG_and_A: 4800.0
+      restructuring: 0
+      operating_income: 8891.0
+      consolidated_NI: 14974.0
+      parent_NI: 14997.0
+    '2021':
+      revenue: 53823.0
+      automotive_sales: 44125.0
+      regulatory_credits: 1465.0
+      automotive_leasing: 1642.0
+      automotive_product_revenue: 47232.0
+      energy_revenue: 2789.0
+      services_revenue: 3802.0
+      automotive_cost: 33393.0
+      total_cost: 40217.0
+      gross_profit: 13606.0
+      R_and_D: 2593.0
+      SG_and_A: 4517.0
+      restructuring: -27.0
+      operating_income: 6523.0
+      consolidated_NI: 5644.0
+      parent_NI: 5519.0
+    '2022':
+      revenue: 81462.0
+      automotive_sales: 67210.0
+      regulatory_credits: 1776.0
+      automotive_leasing: 2476.0
+      automotive_product_revenue: 71462.0
+      energy_revenue: 3909.0
+      services_revenue: 6091.0
+      automotive_cost: 51108.0
+      total_cost: 60609.0
+      gross_profit: 20853.0
+      R_and_D: 3075.0
+      SG_and_A: 3946.0
+      restructuring: 176.0
+      operating_income: 13656.0
+      consolidated_NI: 12587.0
+      parent_NI: 12556.0
+  cash_flow_inputs_and_derived_quarters:
+    9M2026:
+      CFO: 14897.0
+      cash_PPE_outflow: 13014.0
+      AP_accrued_other_contribution: 7332.0
+      AR_contribution: -188.0
+      inventory_contribution: -1976.0
+      prepaid_other_contribution: -2846.0
+      deferred_revenue_contribution: 1746.0
+      lease_vehicle_contribution: 300.0
+      SBC_expense: 3346.0
+      CFO_minus_cash_PPE: 1883.0
+    6M2026:
+      CFO: 8634.0
+      cash_PPE_outflow: 8282.0
+      AP_accrued_other_contribution: 3341.0
+      AR_contribution: 377.0
+      inventory_contribution: -1663.0
+      prepaid_other_contribution: -1028.0
+      deferred_revenue_contribution: 491.0
+      lease_vehicle_contribution: 260.0
+      SBC_expense: 2181.0
+      CFO_minus_cash_PPE: 352.0
+    3M2026:
+      CFO: 3937.0
+      cash_PPE_outflow: 2493.0
+      AP_accrued_other_contribution: 1401.0
+      AR_contribution: 561.0
+      inventory_contribution: -2255.0
+      prepaid_other_contribution: 231.0
+      deferred_revenue_contribution: 263.0
+      lease_vehicle_contribution: 174.0
+      SBC_expense: 1030.0
+      CFO_minus_cash_PPE: 1444.0
+    9M2025:
+      CFO: 10934.0
+      cash_PPE_outflow: 6134.0
+      AP_accrued_other_contribution: 2979.0
+      AR_contribution: -306.0
+      inventory_contribution: -416.0
+      prepaid_other_contribution: -2280.0
+      deferred_revenue_contribution: 825.0
+      lease_vehicle_contribution: 54.0
+      SBC_expense: 1871.0
+      CFO_minus_cash_PPE: 4800.0
+    6M2025:
+      CFO: 4696.0
+      cash_PPE_outflow: 3886.0
+      AP_accrued_other_contribution: 1333.0
+      AR_contribution: 601.0
+      inventory_contribution: -2407.0
+      prepaid_other_contribution: -1137.0
+      deferred_revenue_contribution: 318.0
+      lease_vehicle_contribution: 65.0
+      SBC_expense: 1208.0
+      CFO_minus_cash_PPE: 810.0
+    FY2025:
+      CFO: 14747.0
+      cash_PPE_outflow: 8527.0
+      AP_accrued_other_contribution: 4376.0
+      AR_contribution: -261.0
+      inventory_contribution: -630.0
+      prepaid_other_contribution: -3181.0
+      deferred_revenue_contribution: 363.0
+      lease_vehicle_contribution: -25.0
+      SBC_expense: 2825.0
+      CFO_minus_cash_PPE: 6220.0
+    2026Q3:
+      CFO: 6263.0
+      cash_PPE_outflow: 4732.0
+      AP_accrued_other_contribution: 3991.0
+      AR_contribution: -565.0
+      inventory_contribution: -313.0
+      prepaid_other_contribution: -1818.0
+      deferred_revenue_contribution: 1255.0
+      lease_vehicle_contribution: 40.0
+      SBC_expense: 1165.0
+      CFO_minus_cash_PPE: 1531.0
+    2026Q2:
+      CFO: 4697.0
+      cash_PPE_outflow: 5789.0
+      AP_accrued_other_contribution: 1940.0
+      AR_contribution: -184.0
+      inventory_contribution: 592.0
+      prepaid_other_contribution: -1259.0
+      deferred_revenue_contribution: 228.0
+      lease_vehicle_contribution: 86.0
+      SBC_expense: 1151.0
+      CFO_minus_cash_PPE: -1092.0
+    2025Q3:
+      CFO: 6238.0
+      cash_PPE_outflow: 2248.0
+      AP_accrued_other_contribution: 1646.0
+      AR_contribution: -907.0
+      inventory_contribution: 1991.0
+      prepaid_other_contribution: -1143.0
+      deferred_revenue_contribution: 507.0
+      lease_vehicle_contribution: -11.0
+      SBC_expense: 663.0
+      CFO_minus_cash_PPE: 3990.0
+    2025Q4:
+      CFO: 3813.0
+      cash_PPE_outflow: 2393.0
+      AP_accrued_other_contribution: 1397.0
+      AR_contribution: 45.0
+      inventory_contribution: -214.0
+      prepaid_other_contribution: -901.0
+      deferred_revenue_contribution: -462.0
+      lease_vehicle_contribution: -79.0
+      SBC_expense: 954.0
+      CFO_minus_cash_PPE: 1420.0
+    2026Q1:
+      CFO: 3937.0
+      cash_PPE_outflow: 2493.0
+      AP_accrued_other_contribution: 1401.0
+      AR_contribution: 561.0
+      inventory_contribution: -2255.0
+      prepaid_other_contribution: 231.0
+      deferred_revenue_contribution: 263.0
+      lease_vehicle_contribution: 174.0
+      SBC_expense: 1030.0
+      CFO_minus_cash_PPE: 1444.0
+  balance_inputs:
+    '2026-09-30':
+      cash: 17853.0
+      short_term_investments: 27594.0
+      AR: 4636.0
+      inventory: 14092.0
+      AP: 17239.0
+      accrued_other: 17205.0
+      current_assets: 70402.0
+      current_liabilities: 40492.0
+      current_debt_finance_leases: 1387.0
+      longterm_debt_finance_leases: 8136.0
+      assets: 157517.0
+      parent_equity: 89289.0
+      current_deferred_revenue: 4661.0
+      longterm_deferred_revenue: 4126.0
+    '2026-06-30':
+      cash: 15219.0
+      short_term_investments: 28305.0
+      AR: 4087.0
+      inventory: 13752.0
+      AP: 15324.0
+      accrued_other: 15256.0
+      current_assets: 68758.0
+      current_liabilities: 35425.0
+      current_debt_finance_leases: 1418.0
+      longterm_debt_finance_leases: 7924.0
+      assets: 148524.0
+      parent_equity: 86858.0
+      current_deferred_revenue: 3427.0
+      longterm_deferred_revenue: 4073.0
+    '2026-03-31':
+      cash: 16603.0
+      short_term_investments: 28140.0
+      AR: 3959.0
+      inventory: 14434.0
+      AP: 14696.0
+      accrued_other: 14554.0
+      current_assets: 69748.0
+      current_liabilities: 34138.0
+      current_debt_finance_leases: 1447.0
+      longterm_debt_finance_leases: 7782.0
+      assets: 143724.0
+      parent_equity: 84116.0
+      current_deferred_revenue: 3441.0
+      longterm_deferred_revenue: 3847.0
+    '2025-09-30':
+      cash: 18289.0
+      short_term_investments: 23358.0
+      AR: 4703.0
+      inventory: 12276.0
+      AP: 12819.0
+      accrued_other: 12791.0
+      current_assets: 64653.0
+      current_liabilities: 31290.0
+      current_debt_finance_leases: 1924.0
+      longterm_debt_finance_leases: 5778.0
+      assets: 133735.0
+      parent_equity: 79970.0
+      current_deferred_revenue: 3756.0
+      longterm_deferred_revenue: 3746.0
+    '2025-12-31':
+      cash: 16513.0
+      short_term_investments: 27546.0
+      AR: 4576.0
+      inventory: 12392.0
+      AP: 13371.0
+      accrued_other: 13279.0
+      current_assets: 68642.0
+      current_liabilities: 31714.0
+      current_debt_finance_leases: 1640.0
+      longterm_debt_finance_leases: 6736.0
+      assets: 137806.0
+      parent_equity: 82137.0
+      current_deferred_revenue: 3424.0
+      longterm_deferred_revenue: 3631.0
+  historical_balance_fact_provenance:
+    '2022':
+      assets:
+        value: 82338.0
+        tag: Assets
+        accession: 0001628280-24-002390
+        filed: '2024-01-29'
+        start: null
+        end: '2022-12-31'
+      parent_equity:
+        value: 44704.0
+        tag: StockholdersEquity
+        accession: 0001628280-24-002390
+        filed: '2024-01-29'
+        start: null
+        end: '2022-12-31'
+      AR:
+        value: 2952.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0001628280-24-002390
+        filed: '2024-01-29'
+        start: null
+        end: '2022-12-31'
+      inventory:
+        value: 12839.0
+        tag: InventoryNet
+        accession: 0001628280-24-002390
+        filed: '2024-01-29'
+        start: null
+        end: '2022-12-31'
+      AP:
+        value: 15255.0
+        tag: AccountsPayableCurrent
+        accession: 0001628280-24-002390
+        filed: '2024-01-29'
+        start: null
+        end: '2022-12-31'
+    '2023':
+      assets:
+        value: 106618.0
+        tag: Assets
+        accession: 0001628280-25-003063
+        filed: '2025-01-30'
+        start: null
+        end: '2023-12-31'
+      parent_equity:
+        value: 62634.0
+        tag: StockholdersEquity
+        accession: 0001628280-25-003063
+        filed: '2025-01-30'
+        start: null
+        end: '2023-12-31'
+      AR:
+        value: 3508.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0001628280-25-003063
+        filed: '2025-01-30'
+        start: null
+        end: '2023-12-31'
+      inventory:
+        value: 13626.0
+        tag: InventoryNet
+        accession: 0001628280-25-003063
+        filed: '2025-01-30'
+        start: null
+        end: '2023-12-31'
+      AP:
+        value: 14431.0
+        tag: AccountsPayableCurrent
+        accession: 0001628280-25-003063
+        filed: '2025-01-30'
+        start: null
+        end: '2023-12-31'
+    '2024':
+      assets:
+        value: 122070.0
+        tag: Assets
+        accession: 0001628280-26-003952
+        filed: '2026-01-29'
+        start: null
+        end: '2024-12-31'
+      parent_equity:
+        value: 72913.0
+        tag: StockholdersEquity
+        accession: 0001628280-26-003952
+        filed: '2026-01-29'
+        start: null
+        end: '2024-12-31'
+      AR:
+        value: 4418.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0001628280-26-003952
+        filed: '2026-01-29'
+        start: null
+        end: '2024-12-31'
+      inventory:
+        value: 12017.0
+        tag: InventoryNet
+        accession: 0001628280-26-003952
+        filed: '2026-01-29'
+        start: null
+        end: '2024-12-31'
+      AP:
+        value: 12474.0
+        tag: AccountsPayableCurrent
+        accession: 0001628280-26-003952
+        filed: '2026-01-29'
+        start: null
+        end: '2024-12-31'
+    '2025':
+      assets:
+        value: 137806.0
+        tag: Assets
+        accession: 0001628280-26-066775
+        filed: '2026-10-22'
+        start: null
+        end: '2025-12-31'
+      parent_equity:
+        value: 82137.0
+        tag: StockholdersEquity
+        accession: 0001628280-26-066775
+        filed: '2026-10-22'
+        start: null
+        end: '2025-12-31'
+      AR:
+        value: 4576.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0001628280-26-066775
+        filed: '2026-10-22'
+        start: null
+        end: '2025-12-31'
+      inventory:
+        value: 12392.0
+        tag: InventoryNet
+        accession: 0001628280-26-066775
+        filed: '2026-10-22'
+        start: null
+        end: '2025-12-31'
+      AP:
+        value: 13371.0
+        tag: AccountsPayableCurrent
+        accession: 0001628280-26-066775
+        filed: '2026-10-22'
+        start: null
+        end: '2025-12-31'
+    '2020':
+      assets:
+        value: 52148.0
+        tag: Assets
+        accession: 0000950170-22-000796
+        filed: '2022-02-07'
+        start: null
+        end: '2020-12-31'
+      parent_equity:
+        value: 22225.0
+        tag: StockholdersEquity
+        accession: 0000950170-22-000796
+        filed: '2022-02-07'
+        start: null
+        end: '2020-12-31'
+      AR:
+        value: 1886.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0000950170-22-000796
+        filed: '2022-02-07'
+        start: null
+        end: '2020-12-31'
+      inventory:
+        value: 4101.0
+        tag: InventoryNet
+        accession: 0000950170-22-000796
+        filed: '2022-02-07'
+        start: null
+        end: '2020-12-31'
+      AP:
+        value: 6051.0
+        tag: AccountsPayableCurrent
+        accession: 0000950170-22-000796
+        filed: '2022-02-07'
+        start: null
+        end: '2020-12-31'
+    '2021':
+      assets:
+        value: 62131.0
+        tag: Assets
+        accession: 0000950170-23-001409
+        filed: '2023-01-31'
+        start: null
+        end: '2021-12-31'
+      parent_equity:
+        value: 30189.0
+        tag: StockholdersEquity
+        accession: 0000950170-23-001409
+        filed: '2023-01-31'
+        start: null
+        end: '2021-12-31'
+      AR:
+        value: 1913.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0000950170-23-001409
+        filed: '2023-01-31'
+        start: null
+        end: '2021-12-31'
+      inventory:
+        value: 5757.0
+        tag: InventoryNet
+        accession: 0000950170-23-001409
+        filed: '2023-01-31'
+        start: null
+        end: '2021-12-31'
+      AP:
+        value: 10025.0
+        tag: AccountsPayableCurrent
+        accession: 0000950170-23-001409
+        filed: '2023-01-31'
+        start: null
+        end: '2021-12-31'
+  computed_five_quarter_metrics:
+    2026Q3:
+      gross_margin_pct: 19.589246238322755
+      op_margin_pct: 2.560079868786993
+      product_mix_pct:
+        automotive_product_revenue: 73.30813663267489
+        energy_revenue: 10.272409612779006
+        services_revenue: 16.419453754546105
+      reportable_auto_including_services_revenue: 25165.0
+      reportable_auto_including_services_gross_profit: 4540.0
+      energy_gross_profit: 954.0
+      energy_gross_margin_pct: 33.113502256161055
+      CFO_to_consolidated_NI: 7.789800995024875
+      CFO_to_parent_NI_supplement: 7.958068614993647
+      reportable_auto_including_services_gross_margin_pct: 18.04092986290483
+    2026Q2:
+      gross_margin_pct: 16.826037682391274
+      op_margin_pct: 1.4095480946309675
+      product_mix_pct:
+        automotive_product_revenue: 72.65901685791188
+        energy_revenue: 11.117013741323134
+        services_revenue: 16.223969400764982
+      reportable_auto_including_services_revenue: 25097.0
+      reportable_auto_including_services_gross_profit: 4111.0
+      energy_gross_profit: 640.0
+      energy_gross_margin_pct: 20.388658808537752
+      CFO_to_consolidated_NI: 4.164007092198582
+      CFO_to_parent_NI_supplement: 4.216337522441652
+      reportable_auto_including_services_gross_margin_pct: 16.380443877754313
+    2026Q1:
+      gross_margin_pct: 21.083664626792334
+      op_margin_pct: 4.203332291061777
+      product_mix_pct:
+        automotive_product_revenue: 72.51529905748872
+        energy_revenue: 10.756242462143208
+        services_revenue: 16.728458480368072
+      reportable_auto_including_services_revenue: 19979.0
+      reportable_auto_including_services_gross_profit: 3768.0
+      energy_gross_profit: 952.0
+      energy_gross_margin_pct: 39.53488372093023
+      CFO_to_consolidated_NI: 8.018329938900203
+      CFO_to_parent_NI_supplement: 8.253668763102725
+      reportable_auto_including_services_gross_margin_pct: 18.859802792932577
+    2025Q3:
+      gross_margin_pct: 17.98896600818651
+      op_margin_pct: 5.7803879693895714
+      product_mix_pct:
+        automotive_product_revenue: 75.47606335646913
+        energy_revenue: 12.15518775582844
+        services_revenue: 12.368748887702438
+      reportable_auto_including_services_revenue: 24680.0
+      reportable_auto_including_services_gross_profit: 3981.0
+      energy_gross_profit: 1073.0
+      energy_gross_margin_pct: 31.42020497803807
+      CFO_to_consolidated_NI: 4.491000719942405
+      CFO_to_parent_NI_supplement: 4.543335761107064
+      reportable_auto_including_services_gross_margin_pct: 16.130470016207454
+    2025Q4:
+      gross_margin_pct: 20.11565800570258
+      op_margin_pct: 5.6584072928798035
+      product_mix_pct:
+        automotive_product_revenue: 71.05337135054816
+        energy_revenue: 15.409019718083611
+        services_revenue: 13.537608931368217
+      reportable_auto_including_services_revenue: 21064.0
+      reportable_auto_including_services_gross_profit: 3911.0
+      energy_gross_profit: 1098.0
+      energy_gross_margin_pct: 28.61610633307271
+      CFO_to_consolidated_NI: 4.454439252336448
+      CFO_to_parent_NI_supplement: 4.539285714285715
+      reportable_auto_including_services_gross_margin_pct: 18.567223699202433
+  computed_latest_comparison:
+    Q_Q:
+      percentage_change:
+        revenue: -0.6728998441705603
+        automotive_sales: 0.4398680395881316
+        regulatory_credits: -22.602739726027398
+        automotive_product_revenue: 0.21446675765255385
+        energy_revenue: -8.21917808219178
+        services_revenue: 0.5239030779305764
+        gross_profit: 15.638812881498643
+        operating_income: 80.40201005025125
+        parent_NI: -29.353680430879713
+        R_and_D: 16.448755799240832
+      margin_change_percentage_points:
+        gross_margin_pct: 2.763208555931481
+        op_margin_pct: 1.1505317741560255
+      cashflow_pct_change:
+        CFO: 33.34043006174154
+        cash_PPE_outflow: -18.258766626360334
+    Y_Y:
+      percentage_change:
+        revenue: -0.17440825769710067
+        automotive_sales: -1.3016356402573814
+        regulatory_credits: -72.90167865707434
+        automotive_product_revenue: -3.041735439754778
+        energy_revenue: -15.636896046852122
+        services_revenue: 32.5179856115108
+        gross_profit: 8.705975464978245
+        operating_income: -55.78817733990148
+        parent_NI: -42.680262199563
+        R_and_D: 69.38650306748467
+      margin_change_percentage_points:
+        gross_margin_pct: 1.6002802301362458
+        op_margin_pct: -3.2203081006025784
+      cashflow_pct_change:
+        CFO: 0.40076947739660085
+        cash_PPE_outflow: 110.4982206405694
+  quality_items:
+    tariff_refunds:
+      layer: source_fact
+      verified: true
+      source: q3.htm Note 11 Commitments and Contingencies; IEEPA tariff paragraph
+      period: 2026Q3
+      energy_cost_reduction: 526
+      auto_sales_cost_reduction: 260
+      energy_revenue_reduction_refunds_owed_customers: 339
+      first_half: Amounts immaterial, per issuer
+      derived_energy_GP_effect: 187
+      derived_consolidated_GP_effect: 447
+      formula: cost reductions minus revenue reduction
+      caveat: Recognition is not evidence of collection. Static pretax gross-profit bridge only, not sustainable normalized
+        earnings or an all-items non-GAAP measure.
+    SpaceX:
+      layer: source_fact
+      verified: true
+      source: q3.htm Notes 1, 2 and 13; cash-flow statement
+      investment_month: 2026-03
+      narrative_purchase_approx: 2000
+      cash_purchase_exact: 2002
+      ownership_pct: less than 1
+      fair_value_20260930: 2865
+      Q3_fair_value_income_effect: -142
+      9M_fair_value_income_effect: 863
+      6M_fair_value_income_effect: 1005
+      Q3_9M_check: 863-1005=-142
+      accounting: Note 13 significant influence/equity-method language must be read with Note 1 elected fair-value
+        option. Mark-to-market affects Other income/expense, not segment revenue or operating income.
+      Q3_related_Megapack_revenue: 221
+      Q3_related_Megapack_cost: 171
+      9M_related_Megapack_revenue: 626
+      9M_related_Megapack_cost: 478
+      AR_20260930: 729
+      AR_undelivered_Megapack_billings: 588
+      deferred_revenue_20260930: 648
+      deferred_revenue_current: 516
+      deferred_revenue_longterm: 132
+      issuer_AR_net_undelivered: 141
+      issuer_deferred_net_undelivered: 60
+      caveat: Do not substitute the 9M gain for Q3 performance or equate receivables with delivered-sales collections.
+        Do not conflate rounded investment consideration with exact investing cash outflow.
+    stock_based_compensation:
+      source: q3.htm Note 9 summary of stock-based compensation expense, not equity movements table
+      Q3_2026:
+        cost_of_revenues: 239
+        R_and_D: 513
+        SG_and_A: 413
+        total: 1165
+      Q3_2025:
+        cost_of_revenues: 207
+        R_and_D: 335
+        SG_and_A: 121
+        total: 663
+      9M_2026:
+        cost_of_revenues: 724
+        R_and_D: 1421
+        SG_and_A: 1201
+        total: 3346
+      9M_2025:
+        cost_of_revenues: 629
+        R_and_D: 910
+        SG_and_A: 332
+        total: 1871
+      caveat: Expense matches cash-flow addback; equity-statement SBC movements have a different scope. Noncash addback
+        is not absence of economic dilution/cost; no blanket earnings addback performed.
+    cash_conversion:
+      source: q3/q2 cumulative cash-flow statement; quarterly consolidated NI from original operations statement
+      9M_CFO_to_consolidated_NI: 6.148163433759802
+      9M_CFO_to_parent_NI_supplement: 6.264507989907485
+      9M_AP_accrued_other_contribution_pct_of_CFO: 49.21796334832516
+      9M_total_listed_operating_asset_liability_change: 4368.0
+      Q3_total_listed_operating_asset_liability_change: 2590.0
+      caveat: CFO is consolidated, so consolidated NI is main denominator; parent NI ratio is a scope-mismatched sensitivity.
+        No universal persistence threshold imposed. AP/accrual cash contribution is not the balance-sheet delta.
+    cash_PPE_non_cash_additions:
+      source: q3.htm supplemental non-cash investing/financing disclosure
+      9M2026_PPE_acquired_in_liabilities: 3667
+      9M2025_PPE_acquired_in_liabilities: 1631
+      9M2026_finance_lease_assets_obtained: 98
+      caveat: Cash PP&E excludes finance leases and is net of sales. These are period acquisition disclosures, NOT
+        closing capex payable balances; cannot subtract 3667 from closing AP to manufacture trade-only CCC.
+    income_tax:
+      source: q3.htm Note 10; fy25.htm annual income statement
+      2023_income_tax_provision: -5001
+      Q2_2026: California deferred-tax valuation allowance release affects YTD tax/NI; no full normalized-tax model
+        performed.
+      caveat: Historical parent ROE includes GAAP tax benefits and fair-value/nonoperating effects, not pure operating
+        return. FY25 tax notes identify the 2023 release of U.S. federal and certain state deferred-tax valuation
+        allowances.
+    organic_growth:
+      status: not established
+      reason: No complete issuer organic/constant-currency revenue bridge was obtained; acquisition/FX contribution
+        not set to zero. Reported growth retained.
+    cash_PPE_comparative_revision:
+      source: FY2024/FY2023 original 10-K cash-flow statements versus FY2025 10-K comparative columns
+      FY2024_original_cash_PPE: 11339
+      FY2024_latest_FY25_comparative_cash_PPE: 11342
+      FY2023_original_cash_PPE: 8898
+      FY2023_latest_FY25_comparative_cash_PPE: 8899
+      selection: Guidance completed-year comparison uses latest FY2025 comparative columns. These are not claimed
+        as the original historical statement amounts. Cause of the small presentation/revision differences not established
+        here.
+      effect: Both FY2024 versions exceed both greater-than guidance floors; observed attainment direction unchanged.
+  growth_contribution_pct_points:
+    formula: (Q3current product revenue - Q3prior product revenue)/Q3prior total revenue *100
+    automotive: -2.2957821676454886
+    energy: -1.9006940736785907
+    services_other: 4.02206798362698
+    sum_equals_total_revenue_Y_Y_pct: -0.17440825769709914
+    caveat: Product-revenue arithmetic, not causal decomposition or organic growth attribution.
+  dupont:
+    steps:
+    - 1
+    - 3
+    balance_assumption: Parent GAAP NI and parent equity; total consolidated assets. Average assets/equity=(beginning+ending)/2.
+      No annualization or forecasts. Annual results contain GAAP tax/valuation effects.
+    formula: ROE=(parent_NI/revenue)*(revenue/avg_assets)*(avg_assets/avg_parent_equity)=parent_NI/avg_parent_equity
+    series:
+      '2023':
+        parent_NI: 14997.0
+        revenue: 96773.0
+        avg_assets: 94478.0
+        avg_parent_equity: 53669.0
+        net_margin: 0.15497091130790613
+        asset_turnover: 1.0242913694193356
+        equity_multiplier: 1.7603830889340215
+        ROE: 0.2794350556186998
+      '2024':
+        parent_NI: 7091.0
+        revenue: 97690.0
+        avg_assets: 114344.0
+        avg_parent_equity: 67773.5
+        net_margin: 0.07258675401781145
+        asset_turnover: 0.8543517805918981
+        equity_multiplier: 1.6871491069518323
+        ROE: 0.10462791504053945
+      '2025':
+        parent_NI: 3794.0
+        revenue: 94827.0
+        avg_assets: 129938.0
+        avg_parent_equity: 77525.0
+        net_margin: 0.04000970187815706
+        asset_turnover: 0.7297865135680094
+        equity_multiplier: 1.6760786842953885
+        ROE: 0.04893905191873589
+      '2021':
+        parent_NI: 5519.0
+        revenue: 53823.0
+        avg_assets: 57139.5
+        avg_parent_equity: 26207.0
+        net_margin: 0.10253980640246735
+        asset_turnover: 0.9419578400231013
+        equity_multiplier: 2.1803144198115008
+        ROE: 0.21059258976609302
+      '2022':
+        parent_NI: 12556.0
+        revenue: 81462.0
+        avg_assets: 72234.5
+        avg_parent_equity: 37446.5
+        net_margin: 0.15413321548697553
+        asset_turnover: 1.127743668191792
+        equity_multiplier: 1.9290053810102412
+        ROE: 0.3353050351835285
+    not_executed: Forecasts, normalized return, ROIC/WACC and peer comparison not computed. Five historical fiscal
+      years completed.
+  working_capital:
+    steps:
+    - 1
+    - 2
+    - 3
+    main_assumptions: Annual end balances and 365-day convention, including leap year; separate two-point-average-balance
+      sensitivity. Consolidated AR/revenue; inventory/COGS; AP/COGS. Not a forecast.
+    formulas:
+    - DSO=AR/revenue*days
+    - DIO=inventory/COGS*days
+    - DPO=AP/COGS*days
+    - CCC=DSO+DIO-DPO
+    annual_series:
+      '2023':
+        end_balance_365_days:
+          DSO: 13.23116985109483
+          DIO: 62.865647870767134
+          DPO: 66.57963925018645
+          CCC: 9.517178471675521
+        two_point_avg_balance_365_days:
+          DSO: 12.182633585814225
+          DIO: 61.05017506604477
+          DPO: 68.48046465182713
+          CCC: 4.752344000031869
+      '2024':
+        end_balance_365_days:
+          DSO: 16.507011976660866
+          DIO: 54.66357178464606
+          DPO: 56.742397806580264
+          CCC: 14.428185954726665
+        two_point_avg_balance_365_days:
+          DSO: 14.806991503736308
+          DIO: 58.323124376869394
+          DPO: 61.193450897308075
+          CCC: 11.936664983297625
+      '2025':
+        end_balance_365_days:
+          DSO: 17.613548883756735
+          DIO: 58.18738502309187
+          DPO: 62.78433869785034
+          CCC: 13.016595208998261
+        two_point_avg_balance_365_days:
+          DSO: 17.3094688221709
+          DIO: 57.306967439826074
+          DPO: 60.67837983867855
+          CCC: 13.938056423318415
+      '2021':
+        end_balance_365_days:
+          DSO: 12.972985526633597
+          DIO: 52.24917323519904
+          DPO: 90.98453390357312
+          CCC: -25.762375141740492
+        two_point_avg_balance_365_days:
+          DSO: 12.881435445813128
+          DIO: 44.73444065942263
+          DPO: 72.9509908745058
+          CCC: -15.33511476927005
+      '2022':
+        end_balance_365_days:
+          DSO: 13.22678058481255
+          DIO: 77.31912752231516
+          DPO: 91.8687818640796
+          CCC: -1.3228737569518927
+        two_point_avg_balance_365_days:
+          DSO: 10.899100193955464
+          DIO: 55.99448926727054
+          DPO: 76.12070814565493
+          CCC: -9.22711868442893
+    quarter_supplement:
+      estimate: true
+      assumptions: Period-end balances; actual quarter days 92,91,92; no annualization. Changes compared only within
+        this convention.
+      series:
+        2026Q3:
+          period_days: 92
+          DSO: 15.207587534764315
+          DIO: 57.487761617594884
+          DPO: 70.32582476055339
+          CCC: 2.369524391805811
+        2026Q2:
+          period_days: 91
+          DSO: 13.171731123388582
+          DIO: 53.286438152011925
+          DPO: 59.37764530551416
+          CCC: 7.08052396988635
+        2025Q3:
+          period_days: 92
+          DSO: 15.400462715785727
+          DIO: 49.01662254242437
+          DPO: 51.184757606006684
+          CCC: 13.23232765220341
+    caveats:
+    - Reported AR includes related-party undelivered-capacity milestone billings, financing receivables and other
+      scope differences; not pure delivered-sales DSO.
+    - AP may include capital-related supplier funding. Period PPE acquisitions in liabilities are not closing trade/capex
+      payable allocation, so no unsupported trade-only adjustment.
+    - Consolidated product mix, lease accounting and service/energy economics limit direct operational interpretation.
+      Shorter calculated CCC is not proof of production efficiency.
+    - No forward ratios, peer-day targets or FCFF forecast supplied.
+  liquidity_bridge:
+    date: '2026-09-30'
+    cash_plus_shortterm_investments: 45447
+    debt_and_finance_lease_carrying_total: 9523
+    simple_cash_plus_STI_less_debt_finance_leases: 35924
+    current_ratio: 1.7386644275412426
+    new_credit_commitments_September_2026: 30000
+    caveat: Commitments are not funded debt. Carrying debt/finance leases is not all obligations; operating leases,
+      supplier obligations, restricted cash and use restrictions matter. Not a distributable-cash or enterprise-value
+      conclusion.
+  guidance_tracking:
+    steps:
+    - 1
+    - 2
+    - 3
+    source_scope: SEC MD&A annual capex statements for two completed years and current year, including prior forward-year
+      ranges. This does not establish quarterly guidance or cover IR deck/call-only claims.
+    metric: Capital expenditures, annual target FY2024-FY2026
+    unit: USD billion
+    observations:
+    - observed_filing_date: '2024-01-29'
+      source: historical-2023-12-31.htm MD&A Capital Expenditure Trends
+      target_year: 2024
+      operator: '>'
+      value: 10
+      unit: USD billion
+      actual_full_year: 11.342
+      result: above_disclosed_floor
+    - observed_filing_date: '2024-01-29'
+      source: historical-2023-12-31.htm MD&A Capital Expenditure Trends
+      target_year: 2025
+      operator: range_inclusive
+      value: 8
+      unit: USD billion
+      high: 10
+      actual_full_year: 8.527
+      result: within_range
+    - observed_filing_date: '2024-01-29'
+      source: historical-2023-12-31.htm MD&A Capital Expenditure Trends
+      target_year: 2026
+      operator: range_inclusive
+      value: 8
+      unit: USD billion
+      high: 10
+      actual_full_year: null
+      result: pending_not_due
+    - observed_filing_date: '2024-04-24'
+      source: historical-2024-03-31.htm MD&A Capital Expenditure Trends
+      target_year: 2024
+      operator: '>'
+      value: 10
+      unit: USD billion
+      actual_full_year: 11.342
+      result: above_disclosed_floor
+    - observed_filing_date: '2024-04-24'
+      source: historical-2024-03-31.htm MD&A Capital Expenditure Trends
+      target_year: 2025
+      operator: range_inclusive
+      value: 8
+      unit: USD billion
+      high: 10
+      actual_full_year: 8.527
+      result: within_range
+    - observed_filing_date: '2024-04-24'
+      source: historical-2024-03-31.htm MD&A Capital Expenditure Trends
+      target_year: 2026
+      operator: range_inclusive
+      value: 8
+      unit: USD billion
+      high: 10
+      actual_full_year: null
+      result: pending_not_due
+    - observed_filing_date: '2024-07-24'
+      source: historical-2024-06-30.htm MD&A Capital Expenditure Trends
+      target_year: 2024
+      operator: '>'
+      value: 10
+      unit: USD billion
+      actual_full_year: 11.342
+      result: above_disclosed_floor
+    - observed_filing_date: '2024-07-24'
+      source: historical-2024-06-30.htm MD&A Capital Expenditure Trends
+      target_year: 2025
+      operator: range_inclusive
+      value: 8
+      unit: USD billion
+      high: 10
+      actual_full_year: 8.527
+      result: within_range
+    - observed_filing_date: '2024-07-24'
+      source: historical-2024-06-30.htm MD&A Capital Expenditure Trends
+      target_year: 2026
+      operator: range_inclusive
+      value: 8
+      unit: USD billion
+      high: 10
+      actual_full_year: null
+      result: pending_not_due
+    - observed_filing_date: '2024-10-24'
+      source: historical-2024-09-30.htm MD&A Capital Expenditure Trends
+      target_year: 2024
+      operator: '>'
+      value: 11
+      unit: USD billion
+      actual_full_year: 11.342
+      result: above_disclosed_floor
+    - observed_filing_date: '2024-10-24'
+      source: historical-2024-09-30.htm MD&A Capital Expenditure Trends
+      target_year: 2025
+      operator: range_inclusive
+      value: 8
+      unit: USD billion
+      high: 10
+      actual_full_year: 8.527
+      result: within_range
+    - observed_filing_date: '2024-10-24'
+      source: historical-2024-09-30.htm MD&A Capital Expenditure Trends
+      target_year: 2026
+      operator: range_inclusive
+      value: 8
+      unit: USD billion
+      high: 10
+      actual_full_year: null
+      result: pending_not_due
+    - observed_filing_date: '2025-01-30'
+      source: historical-2024-12-31.htm MD&A Capital Expenditure Trends
+      target_year: 2025
+      operator: '>'
+      value: 11
+      unit: USD billion
+      actual_full_year: 8.527
+      result: below_disclosed_floor
+    - observed_filing_date: '2025-01-30'
+      source: historical-2024-12-31.htm MD&A Capital Expenditure Trends
+      target_year: 2026
+      operator: '>'
+      value: 11
+      unit: USD billion
+      actual_full_year: null
+      result: pending_not_due
+    - observed_filing_date: '2025-04-23'
+      source: historical-2025-03-31.htm MD&A Capital Expenditure Trends
+      target_year: 2025
+      operator: '>'
+      value: 10
+      unit: USD billion
+      actual_full_year: 8.527
+      result: below_disclosed_floor
+    - observed_filing_date: '2025-07-24'
+      source: historical-2025-06-30.htm MD&A Capital Expenditure Trends
+      target_year: 2025
+      operator: '>'
+      value: 9
+      unit: USD billion
+      actual_full_year: 8.527
+      result: below_disclosed_floor
+    - observed_filing_date: '2025-10-23'
+      source: q325.htm MD&A Capital Expenditure Trends
+      target_year: 2025
+      operator: approximately
+      value: 9
+      unit: USD billion
+      actual_full_year: 8.527
+      result: difference_only_no_tolerance_defined
+      actual_minus_point: -0.47300000000000075
+    - observed_filing_date: '2026-01-29'
+      source: fy25.htm MD&A Capital Expenditure Trends
+      target_year: 2026
+      operator: '>'
+      value: 20
+      unit: USD billion
+      actual_full_year: null
+      result: pending_not_due
+    - observed_filing_date: '2026-04-23'
+      source: q1.htm MD&A Capital Expenditure Trends
+      target_year: 2026
+      operator: '>'
+      value: 25
+      unit: USD billion
+      actual_full_year: null
+      result: pending_not_due
+    - observed_filing_date: '2026-07-23'
+      source: q2.htm MD&A Capital Expenditure Trends
+      target_year: 2026
+      operator: '>'
+      value: 25
+      unit: USD billion
+      actual_full_year: null
+      result: pending_not_due
+    - observed_filing_date: '2026-10-22'
+      source: q3.htm MD&A Capital Expenditure Trends
+      target_year: 2026
+      operator: '>'
+      value: 20
+      unit: USD billion
+      actual_full_year: null
+      result: pending_not_due
+    date_caliber: Dates identify SEC filing observations, not independently established first utterance or release
+      timestamps for each threshold.
+    check_period_end: '2026-12-31'
+    check_on: 'FY2024/FY2025 already published: completed-year comparisons above; FY2026 first official annual results
+      date not established.'
+    result: completed_years_compared_current_year_pending
+    actual_full_year:
+      '2024': 11.342
+      '2025': 8.527
+      '2026': null
+    threshold_change_Q2_to_Q3: -5
+    caveats:
+    - A lower greater-than threshold is not a fixed budget cut percentage and does not make the threshold an upper
+      limit.
+    - Full-year target is not due. Interim spend is not pass/fail evidence.
+    - Before eventual attainment check, reconcile outlook capital expenditure definition to cash PP&E excluding finance
+      leases/net of sales.
+    - Nonquantitative product/autonomy/robotics narratives not converted into invented numeric promises.
+    - Approximate point guidance has no issuer-defined tolerance; record point difference, not a fabricated met/missed
+      label. Earlier forward-year ranges are separate vintages, not simultaneous promises.
+    actual_source: 'FY2025 10-K cash-flow statement and MD&A: cash PP&E excluding finance leases/net of sales, FY24
+      11342m and FY25 8527m. Fulfillment comparisons remain on this stated cash-spend caliber.'
+  execution_coverage:
+  - card: earnings-quality-checklist
+    steps:
+    - 1
+    - 5
+    - 6
+    - 7
+    status: partial
+    done: Reported revenue comparisons; five-quarter GAAP margins, product/reportable-segment mix, CFO conversion;
+      separately sourced quality items.
+    not_done: Organic/acquisition/FX attribution not established; no non-GAAP margin bridge, same-point consensus
+      or valuation check.
+  - card: guidance-tracking-playbook
+    steps:
+    - 1
+    - 2
+    - 3
+    status: partial
+    done: SEC annual capex vintages for FY24/FY25/current FY26, completed-year comparisons and current-year pending
+      check.
+    not_done: No exhaustive quarterly/deck/call register, first-publication timestamp series or old thesis.
+  - card: dupont-return-decomposition
+    steps:
+    - 1
+    - 3
+    status: partial
+    done: FY21-FY25 parent GAAP three-factor identities with average balances.
+    not_done: Forecast, economic-profit or causal return attribution.
+  - card: working-capital-forecast
+    steps:
+    - 1
+    - 2
+    - 3
+    status: partial
+    done: Historical annual day-cycle and averaging sensitivity; quarterly supplementary comparison.
+    not_done: Trade-only balances, peer comparison, causal efficiency finding, forecast or full cash-flow model.
+  uncovered_or_untested:
+  - Full earnings normalization; isolated tariff/refund arithmetic is not normalized earnings
+  - Forecast margin drivers and complete three-statement model
+  - Full earnings-call forward reading, transcript and shareholder-deck claims
+  - Earnings reaction, current market quote, implied expectations and valuation
+  - Prior-thesis tracking (no prior dossier assumed), trading/action section
+  method_execution_issues:
+  - card: working-capital-forecast
+    step: 1
+    issue: Closing AR contains billed undelivered capacity, while AP may contain capex funding. No fully reconciled
+      trade-only counterpart series available.
+  - card: earnings-quality-checklist
+    step: 7
+    issue: Consolidated CFO and parent/common-stockholder NI differ in scope; use consolidated NI main, parent ratio
+      only labelled supplemental.
+  - card: guidance-tracking-playbook
+    step: 3
+    issue: Greater-than outlook is not a midpoint or cap; full-year actual not yet due and metric definition requires
+      reconciliation.
+  - card: dupont-return-decomposition
+    step: 1
+    issue: GAAP tax/valuation effects and two-point-average choices affect interpretation; no normalized return asserted.
+  reproducibility:
+    input_selection: Pin SEC accession/original statement for income attribution. For additional annual balance facts,
+      use units USD, matching instant date, 10-K/10-Q only, latest filed before cutoff; provenance retained per value.
+      Do not select nonperiodic facts or generic NI tags blindly.
+    quarter_formula: Statement Q3/Q2/Q1 income is directly disclosed; Q4=FY-9M. Cash flow single quarters = differences
+      of cumulative statements.
+    ratio_formula: Growth=(current/prior-1)*100; margin=value/revenue*100; margin differences in percentage points;
+      contribution pp=product delta/prior total revenue*100.
+    snapshots: All downloaded input hashes/URLs above; original temporary data not committed. No external dataset
+      version or study run fabricated.
+  verification:
+    independent: Separate temporary read-only verifier independently selected original SEC statements and rederived
+      quarter revenue/margin/cash flow/NI, balance, tariff, SpaceX and SBC items. Agreed with lead separately provided
+      quarter amounts; no material discrepancy.
+    limitations: Same original issuer disclosures, not an audit. Independent review confirmed quarterly figures, five
+      annual DuPont/CCC years, actual quarter day counts, Q4/cumulative differences and historical capex vintages.
+      It identified small historical-vs-latest cash-PPE comparative differences, recorded separately. Final YAML,
+      numerical identities, eligible periodic filings including amendments and public-boundary checks passed.
+    tests: No code changed, no pytest required. Documentary numerical assertions and YAML parsing used.
+    publication: No commit, push, PR, merge or site deployment; only new walkthrough authorized.
