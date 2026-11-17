@@ -66,6 +66,14 @@ uv run iros run config/studies/earnings_googl_2026q3.yaml
 - **测试**：`uv run pytest` 434 项通过（新增 `tests/test_earnings.py` 20 项，覆盖登记核对的拒绝情形、证据包、研究计算、页面与英文、状态与公开边界）。
 - **限制**：技术复核由模型完成，与登记同一会话，不是独立复核，也不是人工签认；没有逐条人工审阅原文。
 
+### 配置化后的核对（2026-11-17）
+
+- **登记迁移**：`config/earnings/googl_2026q3.yaml` 增加 `profile`（取代此前写在代码里的季度列、科目、恒等式、分部与页面行）；`iros earnings check` 的计数与迁移前相同：原文 11 份、数值 203 项、恒等式 51 项、摘录 14 条。
+- **与首次交付的归档运行逐字段对照**（`earnings_googl_2026q3-20261117T015633Z-76029f21` 对新运行 `…T134238Z-7a6180b9`，代码 a95bbb4，dirty=false，`iros verify` 复现一致）：`results` 里的五个季度全部指标、同比环比、分部分解、示意算术、资产负债表、积压订单、展望对照、可比性说明与覆盖分类全部相同；不同的只有重命名的键（`cash.nine_months` → `year_to_date`、`ttm` → `trailing`、`remaining_2026_arithmetic` → `remaining_arithmetic`，数值逐项相同）、新增的 `profile` 与积压订单确认期限的说明文字，以及关键发现规则 v1 → v2（六条发现的文字与证据数值相同，只有证据键名 `cloud_*` 改为 `segment_*`）。
+- **旧运行不能再用新代码复现**：关键发现规则的指纹是结果校验值的一部分，规则代码改了，旧运行的校验值就不可能不变；旧证据包也没有 profile。所以 Alphabet 重新运行并归档（archive 分支），旧运行留在档案里，`iros verify --all` 对它如实报 `[error]`（无法重算）并继续。
+- **页面**：中英文页面与改前逐段对照，除运行编号、规则版本、证据键名、历史表多一行，以及来源段落「发布第三季度业绩」改为「发布 2026 年第三季度业绩」外没有差别。
+- **测试**：`tests/test_earnings.py` 另用一家结构不同的虚构公司（两个分部、没有 Other Bets、优先股与套期，财年止于一月下旬的 52/53 周财年，没有展望、积压订单、恒定汇率、每股收益与示意算术）跑通 check、bundle、研究计算、页面、英文、文字报告与关键发现，并覆盖 profile 的 20 种错误。
+
 ## 8. 新增一家公司
 
 不改代码：每家公司一份登记和一份研究定义，命名 `config/earnings/<ticker>_<fy><q>.yaml`（如 `nvda_fy27q3`）与 `config/studies/earnings_<ticker>_<fy><q>.yaml`（study_id 同名，`method.earnings` 指向登记的 `earnings_id`）。分支 `earnings_quarter` 只读登记里的 `profile`，经证据包进入结果（`results.profile`），关键发现、页面、英文与文字报告都按它生成。
