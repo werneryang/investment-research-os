@@ -2,7 +2,7 @@
 
 按 README「开发流程」约定：开始任务时先读本文件，结束时如有待接手事项再更新。已完成的条目保留结论，方便核对。
 
-更新于 2026-11-15。
+更新于 2026-11-16。
 
 ## 1. FRED 当前版本序列改走官方 API（已完成）
 
@@ -52,6 +52,14 @@
 - 登记在 `config/events/nvda_ceo_transition_2026.yaml`，查阅日 2026-11-15。原文和证据包只在本机（`data/events/`），网站显示的是存档里的运行。
 - 11 月 17 日 2027 财年第三季度业绩公布后：查 EDGAR 有没有新的 8-K 或 10-Q 提到离任或继任，把新事实加进登记，日程项按实际发生的情况改写，`as_of` 改为新的查阅日，然后 `iros event fetch`、`iros event bundle`、重跑研究并存档。
 - 继任者任命后同样补登记。关键人物登记（`site/content.yaml` 的 `entity_people`）要给新任者加条目。
+
+## 7. Alphabet 2026 年第三季度财报研究（已上线，见部署核对）
+
+- 新增研究 `earnings_googl_2026q3`（分支 `earnings_quarter`、证据包 `earnings_evidence`、登记 `config/earnings/googl_2026q3.yaml`），设计与核对见 [docs/study-earnings.md](docs/study-earnings.md)。页面 `studies/earnings_googl_2026q3/`，与年度研究 `company_alphabet` 互相链接。
+- 原因：网站上 Alphabet 只有 2025 财年的年度数据，Q3'26 的走查记录（`methodology/records/sec-googl-earnings-20261116.yaml`）网站生成器不读。
+- 原文只在本机 `data/earnings/filings/`（不入库）；CI 不重算，网站显示归档的运行（archive 分支）。
+- 未覆盖：TPU 与并购的收入桥（发行人未披露）、电话会（逐字稿使用条款未核清，未读取）、行情反应（需选定可展示的日度价格来源）、估值与预期。
+- 待办：（1）下一个季度公布后更新，流程见该文档第 8 节；（2）第二家公司前先把分部与指标做成登记配置；（3）2026 年第三季度新闻稿的 EDGAR 接受时间没有记录，登记用发布日。
 
 ## 给方法库
 
