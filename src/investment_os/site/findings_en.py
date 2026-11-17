@@ -45,6 +45,10 @@ STATE_EN = {
     "只用久期的误差方向": "Direction of duration-only error",
     "全部低估价格": "understates price in every case", "方向不一致": "mixed direction",
     "个百分点": "pp",
+    # 季度财报研究的状态
+    "最新季度": "Latest quarter", "自由现金流符号": "Sign of free cash flow", "权益证券损益方向": "Direction of equity-security result",
+    "覆盖项": "Coverage items", "为负": "negative", "为正": "positive", "净损失": "net loss", "净收益": "net gain",
+    "已完成": "done", "数据不足": "data gap", "需判断": "needs judgement",
     # 旧规则版本记录的覆盖标签
     "截至目前完整": "complete to date",
     **{v: COVERAGE_LABEL_EN[k] for k, v in {
@@ -233,7 +237,41 @@ def _bond(result: dict[str, Any]) -> dict[str, str]:
     return out
 
 
-_EN = {"rates_curve": _curve, "par_bond_scenarios": _bond, "company": _company}
+def _earnings_quarter(result):
+    r = result['results']
+    cur = next(q for q in r['quarters'] if q['period'] == 'q3_2026')
+    prior = next(q for q in r['quarters'] if q['period'] == 'q3_2025')
+    comp, b = r['comparison'], r['bridges']
+    yoy, qoq = comp['yoy'], comp['qoq']
+    bn = lambda v: f"{v / 1e3:,.2f}"
+    out = {'earnings_revenue': f"{cur['label']} revenue was USD {bn(cur['revenue'])} billion, {yoy['pct']['revenue']:+.1f}% year over year and "
+                               f"{qoq['pct']['revenue']:+.1f}% quarter over quarter. This is reported growth: the issuer does not disclose a revenue bridge for "
+                               "acquisitions and TPU system sales, so it cannot be called organic."}
+    text = (f"Operating income was USD {bn(cur['op_income'])} billion, an operating margin of {cur['op_margin']:.1f}%, "
+            f"{yoy['margin_pp']['op_margin']:+.1f} percentage points versus a year earlier.")
+    if b.get('prior_year_charge_usd_m'):
+        text += (f" The prior-year quarter included an EU-related charge of about USD {b['prior_year_charge_usd_m'] / 1e3:.1f} billion; adding it back as "
+                 f"illustrative arithmetic, the margin is {b['current_vs_prior_margin_pp']:+.1f} percentage points versus a year earlier (not normalised earnings).")
+    out['earnings_operating'] = text
+    out['earnings_cloud'] = (f"Google Cloud revenue was USD {bn(cur['Cloud_revenue'])} billion, {yoy['pct']['Cloud_revenue']:+.1f}% year over year, with an "
+                             f"operating margin of {cur['Cloud_margin']:.1f}% ({yoy['margin_pp']['Cloud_margin']:+.1f} percentage points versus a year earlier). "
+                             "Revenue includes TPU system product sales and acquired operations; their amounts are not disclosed.")
+    equity = cur['equity_security_gain_loss']
+    out['earnings_net_income'] = (f"Consolidated net income was USD {bn(cur['consolidated_NI'])} billion, {yoy['pct']['consolidated_NI']:+.1f}% year over year; other "
+                                  f"income included a net {'loss' if equity < 0 else 'gain'} of USD {bn(abs(equity))} billion on equity securities "
+                                  f"(prior year {prior['equity_security_gain_loss'] / 1e3:+,.2f}). Pretax income excluding that item, as illustrative arithmetic, was USD "
+                                  f"{bn(cur['ebt_ex_equity_securities'])} billion (prior year {bn(prior['ebt_ex_equity_securities'])}).")
+    out['earnings_cash'] = (f"Operating cash flow was USD {bn(cur['cfo'])} billion and cash capital expenditure USD {bn(cur['cash_ppe'])} billion "
+                            f"({cur['capex_to_sales']:.1f}% of revenue; prior year {prior['capex_to_sales']:.1f}%). Free cash flow as the issuer defines it was "
+                            f"USD {cur['free_cash_flow'] / 1e3:+,.2f} billion; the last four quarters total USD {bn(r['cash']['ttm']['free_cash_flow'])} billion.")
+    last = sorted(r['rpo']['points'], key=lambda p: p['date'])[-1]
+    out['earnings_backlog'] = (f"Revenue backlog was USD {last['total']:,.1f} billion (Google Cloud USD {last['cloud']:,.1f} billion), {last['total_qoq_pct']:+.1f}% "
+                               "versus the previous quarter. The definition widened from Q1 2026, so there is no same-basis year-over-year growth rate.")
+    return out
+
+
+_EN = {"rates_curve": _curve, "par_bond_scenarios": _bond, "company": _company, "earnings_quarter": _earnings_quarter}
+
 
 
 def english_findings(result: dict[str, Any], recorded: list[dict[str, Any]]) -> list[dict[str, Any]]:

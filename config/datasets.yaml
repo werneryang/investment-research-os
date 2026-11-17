@@ -1424,6 +1424,19 @@ datasets:
     timezone: America/New_York
     availability: {type: unknown}
     vintages: none
+  # ---- 季度财报证据包（2026-11-16）：config/earnings 登记的数值与 SEC 原文核对，由 iros earnings bundle 生成 ----
+  earnings_evidence:
+    source_id: sec_edgar
+    upstream_id: "config/earnings 登记的季度合并利润表、分部、现金流与资产负债表数值，及其 SEC 申报原文（10-Q、10-K、8-K 附件 99.1）"
+    connector: evidence_bundle
+    params: {replace_snapshot: true}
+    description: "季度财报研究证据包（docs/study-earnings.md）：逐期的合并报表与分部数值，逐项核对原文并检验会计恒等式"
+    frequency: quarterly
+    unit: USD million
+    currency: USD
+    timezone: America/New_York
+    availability: {type: unknown}
+    vintages: none
   chip_segment_evidence:
     source_id: sec_edgar
     upstream_id: "FSDS 分部事实（产业链登记的 NVIDIA、Micron）与 config/supply_chain 登记状态"

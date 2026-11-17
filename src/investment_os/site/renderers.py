@@ -830,11 +830,13 @@ from .company import make_renderer as company_renderer  # noqa: E402
 from .refining import make_renderers as refining_renderers  # noqa: E402
 from .relation_chain import make_renderer as relation_chain_renderer  # noqa: E402
 from .event_timeline import make_renderer as event_timeline_renderer  # noqa: E402
+from .earnings_quarter import make_renderer as earnings_quarter_renderer  # noqa: E402
 
 RENDERERS: dict[str, Renderer] = {"rates_curve": CURVE, "par_bond_scenarios": BOND,
                                   "curve_attribution": ATTRIBUTION, "asset_history": ASSETS,
                                   "industry": make_renderer(Renderer), "company": company_renderer(Renderer),
                                   "relation_chain": relation_chain_renderer(Renderer), "event_timeline": event_timeline_renderer(Renderer),
+                                  "earnings_quarter": earnings_quarter_renderer(Renderer),
                                   **refining_renderers(Renderer)}
 
 

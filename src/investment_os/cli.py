@@ -373,6 +373,29 @@ def cmd_event(args: argparse.Namespace) -> int:
     return 1 if result.status == "failed" else 0
 
 
+def cmd_earnings(args: argparse.Namespace) -> int:
+    from . import earnings as er
+
+    root = _root(args.root)
+    if args.action == "fetch":
+        got = er.fetch(root, os.environ.get("SEC_USER_AGENT", ""))
+        print(f"下载财报原文 {len(got)} 份" + (f"：{'、'.join(got)}" if got else "（本地已齐全）"))
+        args.action = "check"
+    rep = er.check(root)
+    c = rep.checked
+    print(f"财报登记核对：原文 {c['documents']} 份校验值一致，数值 {c['values']} 项出现在原文，会计恒等式 {c['identities']} 项成立，摘录 {c['excerpts']} 条逐字核对")
+    for err in rep.errors:
+        print("  错误：" + err)
+    if rep.errors or args.action == "check":
+        return 1 if rep.errors else 0
+    doc = er.build_bundle(root)
+    path = er.write_bundle(root, doc)
+    result = ingest(Registry.load(root), DataStore(root), er.DATASET_ID, {"path": str(path)})
+    print(f"财报证据包 {path.name}：财报 {len(doc['metadata']['earnings'])} 项，记录 {len(doc['records'])} 条")
+    print(f"[{result.status}] {er.DATASET_ID}：{result.message}")
+    return 1 if result.status == "failed" else 0
+
+
 def cmd_chain(args: argparse.Namespace) -> int:
     from .data.fundamentals import EdgarStore, extract_segments
     from .supply_chain.catalog import check, load_catalog
@@ -494,6 +517,10 @@ def build_parser() -> argparse.ArgumentParser:
     v = sub.add_parser("event", help="事件登记：下载原文、核对摘录、生成并导入事件证据包")
     v.add_argument("action", choices=["fetch", "check", "bundle"])
     v.set_defaults(func=cmd_event)
+
+    w = sub.add_parser("earnings", help="季度财报登记：下载原文、核对数值与恒等式、生成并导入财报证据包")
+    w.add_argument("action", choices=["fetch", "check", "bundle"])
+    w.set_defaults(func=cmd_earnings)
 
     s = sub.add_parser("chain", help="产业链登记：导入 NAICS、提取分部事实、核对证据、生成芯片与关系链证据包")
     s.add_argument("action", choices=["naics", "segments", "check", "bundle", "relations"])

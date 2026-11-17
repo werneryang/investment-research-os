@@ -633,6 +633,28 @@ phrases:
     NVIDIA. This does not establish Micron’s customer concentration or procurement shares.
   存储芯片生产与销售: Memory chip production and sales
   半导体设备制造: Semiconductor equipment manufacturing
+  # 季度财报研究（earnings_googl_2026q3）
+  "Alphabet：2026 年第三季度财报研究": "Alphabet: Q3 2026 earnings research"
+  "Alphabet 2026 年第三季度的收入、利润率、分部经营、现金流与资本开支相对去年同期和上一季度如何变化？ 这些变化在多大程度上可以直接比较？哪些部分发行人没有披露，所以不能下结论？": "How did Alphabet's revenue, margins, segment operations, cash flow and capital expenditure in Q3 2026 change against the prior-year quarter and the previous quarter? How far can these changes be compared directly? Which parts does the issuer not disclose, so that no conclusion can be drawn?"
+  "全部为报告口径，不是有机增长：发行人没有披露 TPU 系统销售以及 Wiz、Intersect 并购的收入与利润贡献，也没有只含经常性服务的 Cloud 利润率": "Everything is on a reported basis, not organic growth: the issuer does not disclose revenue or profit contributions of TPU system sales or of the Wiz and Intersect acquisitions, nor a Cloud margin for recurring services only"
+  "2025 年第四季度由全年数减前三季度比较数推出，与当时新闻稿的直接季度值有 100 万美元的收入差异，原因未确定": "Q4 2025 is derived as full-year figures less the nine-month comparative; its revenue differs by USD 1 million from the direct quarterly value in the original release, and the cause is not established"
+  "去年同期含约 35 亿美元的欧盟相关费用，本期有约 52 亿美元的罚款现金支付，属于不同事项；权益证券损益使各季度净利润不可直接比较": "The prior-year quarter included an EU-related charge of about USD 3.5 billion and this quarter has a cash payment of about USD 5.2 billion for a fine; these are different matters, and equity-security gains and losses make quarterly net income not directly comparable"
+  "剔除权益证券损益与去年罚款的算术只是税前示意，不是正常化盈利，也不是预测": "Excluding equity-security gains and losses and the prior-year charge is illustrative pretax arithmetic, not normalised earnings and not a forecast"
+  "收入积压订单自 2026 年第一季度起口径扩大，没有同口径的同比增速": "The revenue backlog definition widened from Q1 2026, so there is no same-basis year-over-year growth rate"
+  "没有处理业绩电话会（逐字稿的使用条款未核清）、行情反应、估值与历史预期": "The earnings call (transcript terms not cleared), price reaction, valuation and past expectations are not covered"
+  "数值出现在原文中是存在性检查，不证明取自正确的行列；没有逐条人工审阅原文": "A value appearing in the filing is an existence check and does not prove it comes from the right row and column; the filings were not read line by line by a person"
+  "不判断经营质量好坏，也不作投资建议": "No judgement of operating quality and no investment advice"
+  "季度财报研究": "Quarterly earnings study"
+  "发行人没有披露所需数据，或本研究没有取得可核验的数据": "The issuer does not disclose the data needed, or this study did not obtain verifiable data"
+  "需要人工判断或本研究未处理的外部材料；不在公开财报算术的范围内": "Needs human judgement or external material this study did not handle; outside the scope of public-filing arithmetic"
+  "TPU 系统销售与 Wiz、Intersect 的收入和利润贡献、有机增长、仅经常性服务的利润率": "Revenue and profit contribution of TPU system sales, Wiz and Intersect; organic growth; recurring-services-only margin"
+  "合同级的积压订单兑现时点、选择权与照付不议条款；按年的收入转换": "Contract-level backlog timing, options and take-or-pay terms; annual revenue conversion"
+  "资本开支的维护/增长拆分、设备单位成本、投产时点与资产寿命": "Maintenance/growth split of capital expenditure, unit costs, in-service timing and asset lives"
+  "营运资本周期（应收、存货、应付天数）：本页未收录；2023、2024 年末存货缺匹配的申报事实，也没有仅含贸易项的应收/应付口径": "Working-capital cycles (receivable, inventory and payable days) are not on this page; end-2023 and end-2024 inventory has no matching filed fact and there is no trade-only receivable/payable basis"
+  "完整的税后正常化盈利与持续性判断（罚款、证券损益是否再次出现）": "Full after-tax normalised earnings and any recurrence judgement (whether fines or securities gains and losses recur)"
+  "业绩电话会的管理层表述与问答（逐字稿的使用条款未核清，未读取）": "Management commentary and Q&A from the earnings call (transcript terms not cleared; not read)"
+  "股价的事件窗口反应、历史预期与估值（需要可展示的日度价格来源，尚未选定；估值与预期不在本研究范围）": "Event-window price reaction, past expectations and valuation (needs a daily price source that may be displayed, not yet chosen; valuation and expectations are outside this study)"
+  "证据包生成前逐份核对原文 SHA256、数值出现在所引原文中、会计恒等式成立、文字摘录逐字出现在原文中": "Before the bundle was built each filing's SHA256, the presence of each value in the cited filing, the accounting identities and the verbatim text excerpts were checked"
 
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
