@@ -1,0 +1,1694 @@
+# Public factual walkthrough only; no private method bodies, personal holdings or investment conclusions.
+id: sec-googl-earnings-20261116
+task_id: R-20261116-googl-earnings
+record_type: application
+status: draft
+source:
+  type: official
+  author: Alphabet Inc.; SEC
+  title: Alphabet Q3 2026 SEC financial statements, earnings HTML and source-coverage audit
+  published_on: '2026-10-29'
+  publication_date_scope: Linked Q3 10-Q filing date, NOT retrieval or earnings release date
+  earnings_release_date: '2026-10-28'
+  retrieved_on_NY: '2026-11-16'
+  data_as_of: Latest quarter ended2026-09-30
+  locator: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000084/goog-20260930.htm
+  sha256: 036100101ac5588eb9281b1c8dd82af2f6a8fcbb460af7989f11c5957b0ffd6b
+  outcome_known: true
+  strict_publication_cutoff_NY: '2026-11-16T19:50:00-05:00'
+  strict_publication_cutoff_UTC: '2026-11-17T00:50:00Z'
+  cutoff_note: Retrieval after cutoff; only previously public filings used for financial inputs. Vendor/terms coverage
+    audit reflects actual later access, not historical market data as of cutoff. SEC supplied UTC acceptance and filing
+    dates retained separately.
+  latest_period_evidence:
+    IR_url: https://abc.xyz/investor/news/news-details/2026/Alphabet-Announces-Third-Quarter-2026-Results-2026-FCcqxfIfmh/default.aspx
+    IR_access_UTC_minute: 2026-11-17T00:52Z
+    IR_heading: Alphabet Announces Third Quarter 2026 Results
+    IR_date: '2026-10-28'
+    latest_SEC_periodic_filing:
+      form: 10-Q
+      filingDate: '2026-10-29'
+      reportDate: '2026-09-30'
+      acceptanceDateTime: '2026-10-29T00:29:06.000Z'
+      accessionNumber: 0001652044-26-000084
+      primaryDocument: goog-20260930.htm
+    acceptance_NY: '2026-10-28T20:29:06-04:00'
+    evidence: IR dated release heading, SEC submissions latest eligible periodic filing, Q3 10-Q cover and 8-K99.1
+      first paragraph agree. No newer eligible periodic reporting period observed; IR earnings index is dynamically
+      rendered, not treated as a complete archived listing.
+  registered_source: sec_edgar, config/sources.yaml; existing SecClient serial rate limiting and configured contact
+    identifier. Identifier not echoed or reproduced.
+  retrieval:
+  - snapshot: facts.json
+    url: https://data.sec.gov/api/xbrl/companyfacts/CIK0001652044.json
+    retrieved_at_utc: '2026-11-17T00:52:32.198250+00:00'
+    sha256: f87bc183f74b45ecf9a0933e0e0a1b6b97ead51a9d29367a7dae436574e1c1d0
+  - snapshot: submissions.json
+    url: https://data.sec.gov/submissions/CIK0001652044.json
+    retrieved_at_utc: '2026-11-17T00:52:32.439806+00:00'
+    sha256: 790a73a46054350b1c9e9b433a68ced09efdf4e7499ecb1b7155ec6879306f79
+  - snapshot: q3.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000084/goog-20260930.htm
+    retrieved_at_utc: '2026-11-17T00:52:32.844253+00:00'
+    sha256: 036100101ac5588eb9281b1c8dd82af2f6a8fcbb460af7989f11c5957b0ffd6b
+  - snapshot: release-q3.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000080/googexhibit991q32026.htm
+    retrieved_at_utc: '2026-11-17T00:52:33.149911+00:00'
+    sha256: b62999597e927c5123e36442adfdf86f19d416e3be27a94ea92284c1d68f9ac3
+  - snapshot: q2.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm
+    sha256: aeed4f4f0251d5224dd50f72366c75d600a66d8fa96a5c620b383d1f8e4b0dd4
+    retrieved_at_utc: '2026-11-17T00:53:14.622318+00:00'
+    form: 10-Q
+    filingDate: '2026-07-23'
+    reportDate: '2026-06-30'
+    acceptanceDateTime: '2026-07-23T01:15:54.000Z'
+    accessionNumber: 0001652044-26-000071
+  - snapshot: q1.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000048/goog-20260331.htm
+    sha256: 16f758356a5d57951c112fc56d8759c347af7a246ce3061c69201162d1eee6ae
+    retrieved_at_utc: '2026-11-17T00:53:14.897826+00:00'
+    form: 10-Q
+    filingDate: '2026-04-30'
+    reportDate: '2026-03-31'
+    acceptanceDateTime: '2026-04-30T01:02:11.000Z'
+    accessionNumber: 0001652044-26-000048
+  - snapshot: fy25.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm
+    sha256: 73a0a2f108aa99e64cdbc1323334ecd2d2fbf5602c2c3fdd3140b79dbe39c912
+    retrieved_at_utc: '2026-11-17T00:53:15.283051+00:00'
+    form: 10-K
+    filingDate: '2026-02-05'
+    reportDate: '2025-12-31'
+    acceptanceDateTime: '2026-02-05T02:56:03.000Z'
+    accessionNumber: 0001652044-26-000018
+  - snapshot: q325.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000091/goog-20250930.htm
+    sha256: a83ed14b6190f4f523365ee40be23f28528155708a507675f6df2b1dd38d32ed
+    retrieved_at_utc: '2026-11-17T00:53:15.591010+00:00'
+    form: 10-Q
+    filingDate: '2025-10-30'
+    reportDate: '2025-09-30'
+    acceptanceDateTime: '2025-10-30T01:55:01.000Z'
+    accessionNumber: 0001652044-25-000091
+  - snapshot: fy24.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm
+    sha256: 1c69d277bffbb25ae2456ee4661bdba2760d7f85b518b659fa77e7766548dfaf
+    retrieved_at_utc: '2026-11-17T00:53:15.958375+00:00'
+    form: 10-K
+    filingDate: '2025-02-05'
+    reportDate: '2024-12-31'
+    acceptanceDateTime: '2025-02-05T01:41:40.000Z'
+    accessionNumber: 0001652044-25-000014
+  - snapshot: fy23.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm
+    sha256: 4ebfdf0eb3c5892e1f0c95883ce6d166d53108490441335db5abdafea040142b
+    retrieved_at_utc: '2026-11-17T00:53:16.357757+00:00'
+    form: 10-K
+    filingDate: '2024-01-31'
+    reportDate: '2023-12-31'
+    acceptanceDateTime: '2024-01-31T02:43:43.000Z'
+    accessionNumber: 0001652044-24-000022
+  - snapshot: release-2024-01-30.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204424000014/googexhibit991q42023.htm
+    sha256: feb00d478daa8a794c48e4e596c4ad73bc0e21cfcc44a22fedd0af98dd4b6e74
+    retrieved_at_utc: '2026-11-17T00:57:28.783719+00:00'
+    form: 8-K EX99.1
+    filingDate: '2024-01-30'
+    acceptanceDateTime: '2024-01-30T21:01:26.000Z'
+    accessionNumber: 0001652044-24-000014
+  - snapshot: release-2024-04-25.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204424000047/googexhibit991q12024.htm
+    sha256: 712e5fd8e364659287edba9d849956137e4fdad94948c6075842b5d14239c9ae
+    retrieved_at_utc: '2026-11-17T00:57:29.335406+00:00'
+    form: 8-K EX99.1
+    filingDate: '2024-04-25'
+    acceptanceDateTime: '2024-04-25T20:01:35.000Z'
+    accessionNumber: 0001652044-24-000047
+  - snapshot: release-2024-07-23.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204424000076/googexhibit991q22024.htm
+    sha256: 52fd50b01daed81468816d9e47174bbdf57eb58269c46f84ab8600f06b68c88a
+    retrieved_at_utc: '2026-11-17T00:57:29.771078+00:00'
+    form: 8-K EX99.1
+    filingDate: '2024-07-23'
+    acceptanceDateTime: '2024-07-23T20:01:54.000Z'
+    accessionNumber: 0001652044-24-000076
+  - snapshot: release-2024-10-29.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204424000115/googexhibit991q32024.htm
+    sha256: 5a8ddd8262d8d77095f6d45b8740f8d6f8ac9c03db830263f00c85cafed31380
+    retrieved_at_utc: '2026-11-17T00:57:30.236230+00:00'
+    form: 8-K EX99.1
+    filingDate: '2024-10-29'
+    acceptanceDateTime: '2024-10-29T20:01:46.000Z'
+    accessionNumber: 0001652044-24-000115
+  - snapshot: release-2025-02-04.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000010/googexhibit991q42024.htm
+    sha256: 1c502f600659d00d465c7f07813879b037f403fac66fa61db2f79b50108338e6
+    retrieved_at_utc: '2026-11-17T00:57:30.759500+00:00'
+    form: 8-K EX99.1
+    filingDate: '2025-02-04'
+    acceptanceDateTime: '2025-02-04T21:01:27.000Z'
+    accessionNumber: 0001652044-25-000010
+  - snapshot: release-2025-04-24.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000040/googexhibit991q12025.htm
+    sha256: 56766cc673092a47d5dee1f671cec5bbe863fe04dc45cbb16a482ac4e807a323
+    retrieved_at_utc: '2026-11-17T00:57:31.347316+00:00'
+    form: 8-K EX99.1
+    filingDate: '2025-04-24'
+    acceptanceDateTime: '2025-04-24T20:01:26.000Z'
+    accessionNumber: 0001652044-25-000040
+  - snapshot: release-2025-07-23.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000056/googexhibit991q22025.htm
+    sha256: 723e9e2e627e8cf46a853db6b7eaf65da8399e6dffae8d61214daefcbc300446
+    retrieved_at_utc: '2026-11-17T00:57:31.885793+00:00'
+    form: 8-K EX99.1
+    filingDate: '2025-07-23'
+    acceptanceDateTime: '2025-07-23T20:01:33.000Z'
+    accessionNumber: 0001652044-25-000056
+  - snapshot: release-2025-10-29.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000087/googexhibit991q32025.htm
+    sha256: 198250a8765d082a66fdf376098fe55aa20b44a1151c7417f4093c30a6b22705
+    retrieved_at_utc: '2026-11-17T00:57:32.560408+00:00'
+    form: 8-K EX99.1
+    filingDate: '2025-10-29'
+    acceptanceDateTime: '2025-10-29T20:01:48.000Z'
+    accessionNumber: 0001652044-25-000087
+  - snapshot: release-2026-02-04.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000012/googexhibit991q42025.htm
+    sha256: cafe94d6182b397de4a02b4aa1081a4d19690b98f80a1a9116a2fe5f67e960ce
+    retrieved_at_utc: '2026-11-17T00:57:33.076751+00:00'
+    form: 8-K EX99.1
+    filingDate: '2026-02-04'
+    acceptanceDateTime: '2026-02-04T21:01:37.000Z'
+    accessionNumber: 0001652044-26-000012
+  - snapshot: release-2026-04-29.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000043/googexhibit991q12026.htm
+    sha256: 97edc306db0c7f884cf2d5445670296596b29ea759a8004b58e38f2205322168
+    retrieved_at_utc: '2026-11-17T00:57:33.791590+00:00'
+    form: 8-K EX99.1
+    filingDate: '2026-04-29'
+    acceptanceDateTime: '2026-04-29T20:01:35.000Z'
+    accessionNumber: 0001652044-26-000043
+  - snapshot: release-2026-07-22.htm
+    url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/googexhibit991q22026.htm
+    sha256: ade8365df5d45344fdb521e6274e0e3d9d9c97c6c32a809bf5e3392c0f386700
+    retrieved_at_utc: '2026-11-17T00:57:34.587429+00:00'
+    form: 8-K EX99.1
+    filingDate: '2026-07-22'
+    acceptanceDateTime: '2026-07-22T20:01:36.000Z'
+    accessionNumber: 0001652044-26-000066
+  original_boundary: Saved only allowed SEC HTML and SEC API responses outside repository. IR press-release pages
+    and provider documentation/terms read via web. No earnings deck/PDF, audio or call-transcript original downloaded;
+    no call transcript content used. Temporary files are not durable evidence hosting; raw originals not committed.
+extraction:
+  extracted_on: '2026-11-16'
+  method: ai_assisted
+  tool: Codex
+  review: Independent temporary read-only verifier parsed original SEC inputs and rederived quarter/annual figures;
+    supplementary source scan caught quantitative CapEx spelling and historical quarterly revenue vintage difference.
+    No human audit.
+  quality_notes: All comparisons identify reporting periods and share claims; no financial data from search snippets
+    or unregistered quote pages used.
+method_library:
+  version: dd452a85fc35911a6c96de99dab2aa8a1090be26
+  task_type: first earnings reading; no prior company thesis assumed
+  cards:
+  - id: earnings-quality-checklist
+    steps:
+    - 1
+    - 5
+    - 6
+    - 7
+    prior_execution: tested subset
+  - id: guidance-tracking-playbook
+    steps:
+    - 1
+    - 2
+    - 3
+    prior_execution: tested subset
+  - id: dupont-return-decomposition
+    steps:
+    - 1
+    - 3
+    prior_execution: tested subset
+  - id: working-capital-forecast
+    steps:
+    - 1
+    - 2
+    - 3
+    prior_execution: tested subset
+  - id: normalized-earnings
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    prior_execution: 未实测
+  - id: forensic-red-flags
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    prior_execution: 未实测
+  - id: margin-forecast-drivers
+    steps:
+    - 1
+    - 4
+    - 5
+    prior_execution: 未实测
+  - id: capex-forecast
+    steps:
+    - 1
+    - 3
+    - 5
+    - 6
+    prior_execution: 未实测
+  - id: cash-generation-capital-risk
+    steps:
+    - 5
+    - 6
+    - 7
+    prior_execution: 未实测
+  - id: contract-revenue-timeline
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    prior_execution: 未实测
+  boundary: Only IDs, step numbers and actual execution outputs. No private card bodies or method-source/provenance
+    judgments reproduced.
+research_question:
+- layer: own_extension
+  text: Reproduce available reporting inputs, comparisons and bounded ex-item arithmetic for latest published earnings,
+    without an investment conclusion.
+  verified: false
+evidence:
+- layer: source_fact
+  text: SEC income statements distinguish consolidated net income, preferred dividends and earnings available to common
+    shares. Revenue components are not all standalone reportable segments.
+  location: q3/q2 income statements and Notes2/11/13/15
+  verified: true
+  verifiability: public_filing
+- layer: source_fact
+  text: The SEC earnings HTML directly discloses quarterly CFO, cash PPE, its free-cash-flow definition, FX reconciliation
+    and approximate after-tax equity-loss effects.
+  location: release-q3.htm cash-flow, FCF, Other Income and constant-currency tables
+  verified: true
+  verifiability: public_filing
+thesis: []
+causal_mechanism: []
+analytical_method: []
+assumptions: []
+valuation_logic: []
+counterarguments: []
+falsification: []
+transferability: []
+links:
+  methods:
+  - id: earnings-quality-checklist
+    fit: match
+  - id: guidance-tracking-playbook
+    fit: match
+  - id: dupont-return-decomposition
+    fit: match
+  - id: working-capital-forecast
+    fit: match
+  - id: normalized-earnings
+    fit: match
+  - id: forensic-red-flags
+    fit: match
+  - id: margin-forecast-drivers
+    fit: match
+  - id: capex-forecast
+    fit: match
+  - id: cash-generation-capital-risk
+    fit: match
+  - id: contract-revenue-timeline
+    fit: match
+  claims: []
+method_output:
+  units:
+    amounts: USD million, unless explicitly USDbn; EPS USD/common share
+    percentages: percent; margin changes percentage points; ROE/factors decimal ratios
+    calendar: Calendar fiscal years; quarter dates below; no annualization of quarterly ratios
+  periods:
+    Q3_2026:
+    - '2026-07-01'
+    - '2026-09-30'
+    Q2_2026:
+    - '2026-04-01'
+    - '2026-06-30'
+    Q1_2026:
+    - '2026-01-01'
+    - '2026-03-31'
+    Q4_2025:
+    - '2025-10-01'
+    - '2025-12-31'
+    Q3_2025:
+    - '2025-07-01'
+    - '2025-09-30'
+    9M_2026:
+    - '2026-01-01'
+    - '2026-09-30'
+    annual: FY2021-FY2025; FY2020 balances for initial averages
+  field_locators:
+    quarter_income: 'Original SEC consolidated statements of income: 2025 prior column then 2026 current; Q4 is FY25
+      minus latest9M25 comparative.'
+    products: Notes2 revenues disaggregated and MD&A revenue table; Search & other, YouTube ads, Network and subscriptions/platforms/devices
+      compose Google Services.
+    segment_profit: Note15 and MD&A operating-segment table. Corporate/AI-level costs are separate; do not assign
+      their full amount into Cloud or Search.
+    cashflow: Quarter CF=9M-6M or6M-3M; Q4=FY-9M. Cross-check Q3 and recent-quarter CFO/PPE against SEC99.1 direct-quarter/TTM
+      tables.
+    annual_income: FY23 10-K comparative first column for2021, FY24 first for2022, FY25 three ascending columns for2023-25;
+      no preferred issuance in these annual periods.
+    balance: Current statements plus CompanyFacts matching instant dates and periodic-filing-only provenance below;
+      no missing-value zero fill.
+  quarter_inputs_disclosed:
+    2026Q3:
+      revenue: 127577.0
+      cost_of_revenues: 51419.0
+      R_and_D: 20640.0
+      sales_marketing: 8804.0
+      G_and_A: 6138.0
+      op_income: 40576.0
+      other_income: -8221.0
+      EBT: 32355.0
+      income_tax: 5887.0
+      consolidated_NI: 26468.0
+      common_NI: 26170.0
+      preferred_dividends: 298.0
+      Search: 63350.0
+      YouTube_ads: 11207.0
+      Network: 7455.0
+      subscriptions_platforms_devices: 14290.0
+      Services_revenue: 96302.0
+      Cloud_revenue: 30709.0
+      OtherBets_revenue: 372.0
+      hedging: 194.0
+      Services_op: 39157.0
+      Cloud_op: 11121.0
+      OtherBets_op: -2047.0
+      Alphabet_level_op: -7655.0
+      equity_security_gain_loss: -8664.0
+    2026Q2:
+      revenue: 119796.0
+      cost_of_revenues: 45943.0
+      R_and_D: 18219.0
+      sales_marketing: 8403.0
+      G_and_A: 6461.0
+      op_income: 40770.0
+      other_income: 97983.0
+      EBT: 138753.0
+      income_tax: 26560.0
+      consolidated_NI: 112193.0
+      common_NI: 112107.0
+      preferred_dividends: 86.0
+      Search: 63271.0
+      YouTube_ads: 11055.0
+      Network: 7303.0
+      subscriptions_platforms_devices: 12911.0
+      Services_revenue: 94540.0
+      Cloud_revenue: 24768.0
+      OtherBets_revenue: 382.0
+      hedging: 106.0
+      Services_op: 39544.0
+      Cloud_op: 8814.0
+      OtherBets_op: -1799.0
+      Alphabet_level_op: -5789.0
+      equity_security_gain_loss: 99031.0
+    2026Q1:
+      revenue: 109896.0
+      cost_of_revenues: 41271.0
+      R_and_D: 17032.0
+      sales_marketing: 7606.0
+      G_and_A: 4291.0
+      op_income: 39696.0
+      other_income: 37716.0
+      EBT: 77412.0
+      income_tax: 14834.0
+      consolidated_NI: 62578.0
+      common_NI: 62578.0
+      preferred_dividends: 0.0
+      Search: 60399.0
+      YouTube_ads: 9883.0
+      Network: 6971.0
+      subscriptions_platforms_devices: 12384.0
+      Services_revenue: 89637.0
+      Cloud_revenue: 20028.0
+      OtherBets_revenue: 411.0
+      hedging: -180.0
+      Services_op: 40589.0
+      Cloud_op: 6598.0
+      OtherBets_op: -2100.0
+      Alphabet_level_op: -5391.0
+      equity_security_gain_loss: 36915.0
+    2025Q3:
+      revenue: 102346.0
+      cost_of_revenues: 41369.0
+      R_and_D: 15151.0
+      sales_marketing: 7205.0
+      G_and_A: 7393.0
+      op_income: 31228.0
+      other_income: 12759.0
+      EBT: 43987.0
+      income_tax: 9008.0
+      consolidated_NI: 34979.0
+      common_NI: 34979.0
+      preferred_dividends: 0.0
+      Search: 56567.0
+      YouTube_ads: 10261.0
+      Network: 7354.0
+      subscriptions_platforms_devices: 12870.0
+      Services_revenue: 87052.0
+      Cloud_revenue: 15157.0
+      OtherBets_revenue: 344.0
+      hedging: -207.0
+      Services_op: 33527.0
+      Cloud_op: 3594.0
+      OtherBets_op: -1426.0
+      Alphabet_level_op: -4467.0
+      equity_security_gain_loss: 10734.0
+  Q4_2025_derived_inputs:
+    formula: FY2025 minus latest available9M2025 comparative for each field
+    values:
+      revenue: 113829.0
+      cost_of_revenues: 45767.0
+      R_and_D: 18572.0
+      sales_marketing: 8215.0
+      G_and_A: 5341.0
+      op_income: 35934.0
+      other_income: 3183.0
+      EBT: 39117.0
+      income_tax: 4662.0
+      consolidated_NI: 34455.0
+      common_NI: 34455.0
+      preferred_dividends: 0.0
+      Search: 63073.0
+      YouTube_ads: 11383.0
+      Network: 7828.0
+      subscriptions_platforms_devices: 13578.0
+      Services_revenue: 95862.0
+      Cloud_revenue: 17664.0
+      OtherBets_revenue: 370.0
+      hedging: -67.0
+      Services_op: 40132.0
+      Cloud_op: 5313.0
+      OtherBets_op: -3617.0
+      Alphabet_level_op: -5894.0
+      equity_security_gain_loss: 2302.0
+    vintage_warning: USD1m revenue difference versus original direct Q4 release; see quality_items.
+  annual_statement_inputs:
+    '2021':
+      revenue: 257637.0
+      cost_of_revenues: 110939.0
+      R_and_D: 31562.0
+      sales_marketing: 22912.0
+      G_and_A: 13510.0
+      op_income: 78714.0
+      other_income: 12020.0
+      EBT: 90734.0
+      income_tax: 14701.0
+      consolidated_NI: 76033.0
+      common_NI: 76033.0
+      preferred_dividends: 0.0
+    '2022':
+      revenue: 282836.0
+      cost_of_revenues: 126203.0
+      R_and_D: 39500.0
+      sales_marketing: 26567.0
+      G_and_A: 15724.0
+      op_income: 74842.0
+      other_income: -3514.0
+      EBT: 71328.0
+      income_tax: 11356.0
+      consolidated_NI: 59972.0
+      common_NI: 59972.0
+      preferred_dividends: 0.0
+    '2023':
+      revenue: 307394.0
+      cost_of_revenues: 133332.0
+      R_and_D: 45427.0
+      sales_marketing: 27917.0
+      G_and_A: 16425.0
+      op_income: 84293.0
+      other_income: 1424.0
+      EBT: 85717.0
+      income_tax: 11922.0
+      consolidated_NI: 73795.0
+      common_NI: 73795.0
+      preferred_dividends: 0.0
+    '2024':
+      revenue: 350018.0
+      cost_of_revenues: 146306.0
+      R_and_D: 49326.0
+      sales_marketing: 27808.0
+      G_and_A: 14188.0
+      op_income: 112390.0
+      other_income: 7425.0
+      EBT: 119815.0
+      income_tax: 19697.0
+      consolidated_NI: 100118.0
+      common_NI: 100118.0
+      preferred_dividends: 0.0
+    '2025':
+      revenue: 402836.0
+      cost_of_revenues: 162535.0
+      R_and_D: 61087.0
+      sales_marketing: 28693.0
+      G_and_A: 21482.0
+      op_income: 129039.0
+      other_income: 29787.0
+      EBT: 158826.0
+      income_tax: 26656.0
+      consolidated_NI: 132170.0
+      common_NI: 132170.0
+      preferred_dividends: 0.0
+  cash_flow_inputs_and_derived_quarters:
+    9M2026:
+      CFO: 127149.0
+      cash_PPE: 131953.0
+      SBC: 23338.0
+      depreciation: 21955.0
+      securities_gain_loss_CF_adjustment: -126755.0
+      AR_CF: -10821.0
+      inventory_CF: -10959.0
+      AP_CF: 1925.0
+      accrued_other_CF: -860.0
+      deferred_revenue_CF: 3340.0
+      common_stock_proceeds: 42870.0
+      preferred_stock_proceeds: 19063.0
+      debt_proceeds: 85222.0
+      CFO_minus_cash_PPE: -4804.0
+      CFO_to_cash_PPE: 0.9635930975423067
+    6M2026:
+      CFO: 84859.0
+      cash_PPE: 80598.0
+      SBC: 14708.0
+      depreciation: 13586.0
+      securities_gain_loss_CF_adjustment: -135803.0
+      AR_CF: -6904.0
+      inventory_CF: -7739.0
+      AP_CF: 2090.0
+      accrued_other_CF: 308.0
+      deferred_revenue_CF: 789.0
+      common_stock_proceeds: 30499.0
+      preferred_stock_proceeds: 19063.0
+      debt_proceeds: 56226.0
+      CFO_minus_cash_PPE: 4261.0
+      CFO_to_cash_PPE: 1.0528673168068687
+    3M2026:
+      CFO: 45790.0
+      cash_PPE: 35674.0
+      SBC: 6751.0
+      depreciation: 6482.0
+      securities_gain_loss_CF_adjustment: -36804.0
+      AR_CF: -363.0
+      inventory_CF: null
+      AP_CF: -240.0
+      accrued_other_CF: -6002.0
+      deferred_revenue_CF: 505.0
+      common_stock_proceeds: 0.0
+      preferred_stock_proceeds: 0.0
+      debt_proceeds: 31379.0
+      CFO_minus_cash_PPE: 10116.0
+      CFO_to_cash_PPE: 1.2835678645512139
+    9M2025:
+      CFO: 112311.0
+      cash_PPE: 63596.0
+      SBC: 17882.0
+      depreciation: 15096.0
+      securities_gain_loss_CF_adjustment: -22266.0
+      AR_CF: -3582.0
+      inventory_CF: -1154.0
+      AP_CF: -771.0
+      accrued_other_CF: 6299.0
+      deferred_revenue_CF: 1317.0
+      common_stock_proceeds: 0.0
+      preferred_stock_proceeds: 0.0
+      debt_proceeds: 38002.0
+      CFO_minus_cash_PPE: 48715.0
+      CFO_to_cash_PPE: 1.7660072960563558
+    6M2025:
+      CFO: 63897.0
+      cash_PPE: 39643.0
+      SBC: 11514.0
+      depreciation: 9485.0
+      securities_gain_loss_CF_adjustment: -11411.0
+      AR_CF: -1201.0
+      inventory_CF: -628.0
+      AP_CF: -327.0
+      accrued_other_CF: -1779.0
+      deferred_revenue_CF: 636.0
+      common_stock_proceeds: 0.0
+      preferred_stock_proceeds: 0.0
+      debt_proceeds: 31378.0
+      CFO_minus_cash_PPE: 24254.0
+      CFO_to_cash_PPE: 1.611810407890422
+    FY2025:
+      CFO: 164713.0
+      cash_PPE: 91447.0
+      SBC: 24953.0
+      depreciation: 21136.0
+      securities_gain_loss_CF_adjustment: -24620.0
+      AR_CF: -8779.0
+      inventory_CF: null
+      AP_CF: 907.0
+      accrued_other_CF: 12939.0
+      deferred_revenue_CF: 2420.0
+      common_stock_proceeds: 0.0
+      preferred_stock_proceeds: 0.0
+      debt_proceeds: 64564.0
+      CFO_minus_cash_PPE: 73266.0
+      CFO_to_cash_PPE: 1.8011853860706202
+    2026Q3:
+      CFO: 42290.0
+      cash_PPE: 51355.0
+      SBC: 8630.0
+      depreciation: 8369.0
+      securities_gain_loss_CF_adjustment: 9048.0
+      AR_CF: -3917.0
+      inventory_CF: -3220.0
+      AP_CF: -165.0
+      accrued_other_CF: -1168.0
+      deferred_revenue_CF: 2551.0
+      common_stock_proceeds: 12371.0
+      preferred_stock_proceeds: 0.0
+      debt_proceeds: 28996.0
+      CFO_minus_cash_PPE: -9065.0
+      CFO_to_cash_PPE: 0.8234835945867004
+    2026Q2:
+      CFO: 39069.0
+      cash_PPE: 44924.0
+      SBC: 7957.0
+      depreciation: 7104.0
+      securities_gain_loss_CF_adjustment: -98999.0
+      AR_CF: -6541.0
+      inventory_CF: null
+      AP_CF: 2330.0
+      accrued_other_CF: 6310.0
+      deferred_revenue_CF: 284.0
+      common_stock_proceeds: 30499.0
+      preferred_stock_proceeds: 19063.0
+      debt_proceeds: 24847.0
+      CFO_minus_cash_PPE: -5855.0
+      CFO_to_cash_PPE: 0.8696687739293029
+    2025Q3:
+      CFO: 48414.0
+      cash_PPE: 23953.0
+      SBC: 6368.0
+      depreciation: 5611.0
+      securities_gain_loss_CF_adjustment: -10855.0
+      AR_CF: -2381.0
+      inventory_CF: -526.0
+      AP_CF: -444.0
+      accrued_other_CF: 8078.0
+      deferred_revenue_CF: 681.0
+      common_stock_proceeds: 0.0
+      preferred_stock_proceeds: 0.0
+      debt_proceeds: 6624.0
+      CFO_minus_cash_PPE: 24461.0
+      CFO_to_cash_PPE: 2.021208199390473
+    2025Q4:
+      CFO: 52402.0
+      cash_PPE: 27851.0
+      SBC: 7071.0
+      depreciation: 6040.0
+      securities_gain_loss_CF_adjustment: -2354.0
+      AR_CF: -5197.0
+      inventory_CF: null
+      AP_CF: 1678.0
+      accrued_other_CF: 6640.0
+      deferred_revenue_CF: 1103.0
+      common_stock_proceeds: 0.0
+      preferred_stock_proceeds: 0.0
+      debt_proceeds: 26562.0
+      CFO_minus_cash_PPE: 24551.0
+      CFO_to_cash_PPE: 1.8815123334889232
+    2026Q1:
+      CFO: 45790.0
+      cash_PPE: 35674.0
+      SBC: 6751.0
+      depreciation: 6482.0
+      securities_gain_loss_CF_adjustment: -36804.0
+      AR_CF: -363.0
+      inventory_CF: null
+      AP_CF: -240.0
+      accrued_other_CF: -6002.0
+      deferred_revenue_CF: 505.0
+      common_stock_proceeds: 0.0
+      preferred_stock_proceeds: 0.0
+      debt_proceeds: 31379.0
+      CFO_minus_cash_PPE: 10116.0
+      CFO_to_cash_PPE: 1.2835678645512139
+  balance_inputs:
+    '2026-09-30':
+      cash: 56334.0
+      marketable_securities: 208764.0
+      AR: 72784.0
+      inventory: 13308.0
+      AP: 21975.0
+      total_assets: 1003312.0
+      total_equity: 677549.0
+      longterm_debt: 125102.0
+      PPE_net: 372827.0
+    '2026-06-30':
+      cash: 55911.0
+      marketable_securities: 186563.0
+      AR: 69175.0
+      inventory: 9991.0
+      AP: 20258.0
+      total_assets: 921983.0
+      total_equity: 640480.0
+      longterm_debt: 98165.0
+      PPE_net: 321212.0
+    '2025-12-31':
+      cash: 30708.0
+      marketable_securities: 96135.0
+      AR: 62886.0
+      inventory: 2439.0
+      AP: 12200.0
+      total_assets: 595281.0
+      total_equity: 415265.0
+      longterm_debt: 46547.0
+      PPE_net: 246597.0
+    '2025-09-30':
+      cash: 23090.0
+      marketable_securities: 75406.0
+      AR: 57148.0
+      inventory: null
+      AP: 10546.0
+      total_assets: 536469.0
+      total_equity: 386867.0
+      longterm_debt: 21607.0
+      PPE_net: 223787.0
+  historical_balance_fact_provenance:
+    '2020':
+      assets:
+        value: 319616.0
+        tag: Assets
+        accession: 0001652044-22-000019
+        filed: '2022-02-02'
+        start: null
+        end: '2020-12-31'
+      equity:
+        value: 222544.0
+        tag: StockholdersEquity
+        accession: 0001652044-24-000022
+        filed: '2024-01-31'
+        start: null
+        end: '2020-12-31'
+      AR:
+        value: 30930.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0001652044-22-000019
+        filed: '2022-02-02'
+        start: null
+        end: '2020-12-31'
+      inventory:
+        value: 728.0
+        tag: InventoryNet
+        accession: 0001652044-22-000019
+        filed: '2022-02-02'
+        start: null
+        end: '2020-12-31'
+      AP:
+        value: 5589.0
+        tag: AccountsPayableCurrent
+        accession: 0001652044-22-000019
+        filed: '2022-02-02'
+        start: null
+        end: '2020-12-31'
+    '2021':
+      assets:
+        value: 359268.0
+        tag: Assets
+        accession: 0001652044-23-000016
+        filed: '2023-02-03'
+        start: null
+        end: '2021-12-31'
+      equity:
+        value: 251635.0
+        tag: StockholdersEquity
+        accession: 0001652044-25-000014
+        filed: '2025-02-05'
+        start: null
+        end: '2021-12-31'
+      AR:
+        value: 39304.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0001652044-23-000016
+        filed: '2023-02-03'
+        start: null
+        end: '2021-12-31'
+      inventory:
+        value: 1170.0
+        tag: InventoryNet
+        accession: 0001652044-23-000016
+        filed: '2023-02-03'
+        start: null
+        end: '2021-12-31'
+      AP:
+        value: 6037.0
+        tag: AccountsPayableCurrent
+        accession: 0001652044-23-000016
+        filed: '2023-02-03'
+        start: null
+        end: '2021-12-31'
+    '2022':
+      assets:
+        value: 365264.0
+        tag: Assets
+        accession: 0001652044-24-000022
+        filed: '2024-01-31'
+        start: null
+        end: '2022-12-31'
+      equity:
+        value: 256144.0
+        tag: StockholdersEquity
+        accession: 0001652044-26-000018
+        filed: '2026-02-05'
+        start: null
+        end: '2022-12-31'
+      AR:
+        value: 40258.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0001652044-24-000022
+        filed: '2024-01-31'
+        start: null
+        end: '2022-12-31'
+      inventory:
+        value: 2670.0
+        tag: InventoryNet
+        accession: 0001652044-23-000094
+        filed: '2023-10-25'
+        start: null
+        end: '2022-12-31'
+      AP:
+        value: 5128.0
+        tag: AccountsPayableCurrent
+        accession: 0001652044-24-000022
+        filed: '2024-01-31'
+        start: null
+        end: '2022-12-31'
+    '2023':
+      assets:
+        value: 402392.0
+        tag: Assets
+        accession: 0001652044-25-000014
+        filed: '2025-02-05'
+        start: null
+        end: '2023-12-31'
+      equity:
+        value: 283379.0
+        tag: StockholdersEquity
+        accession: 0001652044-26-000018
+        filed: '2026-02-05'
+        start: null
+        end: '2023-12-31'
+      AR:
+        value: 47964.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0001652044-25-000014
+        filed: '2025-02-05'
+        start: null
+        end: '2023-12-31'
+      inventory:
+        value: null
+        tag: InventoryNet
+        end: '2023-12-31'
+        reason: No matching periodic-filing fact; not zero-imputed
+      AP:
+        value: 7493.0
+        tag: AccountsPayableCurrent
+        accession: 0001652044-25-000014
+        filed: '2025-02-05'
+        start: null
+        end: '2023-12-31'
+    '2024':
+      assets:
+        value: 450256.0
+        tag: Assets
+        accession: 0001652044-26-000018
+        filed: '2026-02-05'
+        start: null
+        end: '2024-12-31'
+      equity:
+        value: 325084.0
+        tag: StockholdersEquity
+        accession: 0001652044-26-000084
+        filed: '2026-10-29'
+        start: null
+        end: '2024-12-31'
+      AR:
+        value: 52340.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0001652044-26-000018
+        filed: '2026-02-05'
+        start: null
+        end: '2024-12-31'
+      inventory:
+        value: null
+        tag: InventoryNet
+        end: '2024-12-31'
+        reason: No matching periodic-filing fact; not zero-imputed
+      AP:
+        value: 7987.0
+        tag: AccountsPayableCurrent
+        accession: 0001652044-26-000018
+        filed: '2026-02-05'
+        start: null
+        end: '2024-12-31'
+    '2025':
+      assets:
+        value: 595281.0
+        tag: Assets
+        accession: 0001652044-26-000084
+        filed: '2026-10-29'
+        start: null
+        end: '2025-12-31'
+      equity:
+        value: 415265.0
+        tag: StockholdersEquity
+        accession: 0001652044-26-000084
+        filed: '2026-10-29'
+        start: null
+        end: '2025-12-31'
+      AR:
+        value: 62886.0
+        tag: AccountsReceivableNetCurrent
+        accession: 0001652044-26-000084
+        filed: '2026-10-29'
+        start: null
+        end: '2025-12-31'
+      inventory:
+        value: 2439.0
+        tag: InventoryNet
+        accession: 0001652044-26-000084
+        filed: '2026-10-29'
+        start: null
+        end: '2025-12-31'
+      AP:
+        value: 12200.0
+        tag: AccountsPayableCurrent
+        accession: 0001652044-26-000084
+        filed: '2026-10-29'
+        start: null
+        end: '2025-12-31'
+  computed_five_quarter_metrics:
+    2026Q3:
+      gross_margin_pct: 59.69571317714008
+      op_margin_pct: 31.805105936022947
+      CFO_to_consolidated_NI: 1.5977784494483904
+      CFO_to_common_NI_supplement: 1.6159724875811998
+      capex_to_sales_pct: 40.254121040626444
+      Services_margin_pct: 40.66063010114016
+      Services_sales_share_pct: 75.48539313512623
+      Cloud_margin_pct: 36.21413917743983
+      Cloud_sales_share_pct: 24.07095322824647
+      OtherBets_margin_pct: -550.2688172043011
+      OtherBets_sales_share_pct: 0.2915886092320716
+      Alphabet_level_op_to_sales_pct: -6.0002978593320115
+    2026Q2:
+      gross_margin_pct: 61.648969915523054
+      op_margin_pct: 34.03285585495342
+      CFO_to_consolidated_NI: 0.348230281746633
+      CFO_to_common_NI_supplement: 0.3484974176456421
+      capex_to_sales_pct: 37.500417376206215
+      Services_margin_pct: 41.827797757562934
+      Services_sales_share_pct: 78.91749307155497
+      Cloud_margin_pct: 35.58624031007752
+      Cloud_sales_share_pct: 20.675147751177
+      OtherBets_margin_pct: -470.94240837696333
+      OtherBets_sales_share_pct: 0.3188754215499683
+      Alphabet_level_op_to_sales_pct: -4.832381715583158
+    2026Q1:
+      gross_margin_pct: 62.44540292640315
+      op_margin_pct: 36.121423891679406
+      CFO_to_consolidated_NI: 0.7317268049474256
+      CFO_to_common_NI_supplement: 0.7317268049474256
+      capex_to_sales_pct: 32.461600058236876
+      Services_margin_pct: 45.28152437051664
+      Services_sales_share_pct: 81.56529810002185
+      Cloud_margin_pct: 32.943878570002
+      Cloud_sales_share_pct: 18.224503166630267
+      OtherBets_margin_pct: -510.9489051094891
+      OtherBets_sales_share_pct: 0.3739899541384582
+      Alphabet_level_op_to_sales_pct: -4.9055470626774405
+    2025Q3:
+      gross_margin_pct: 59.579270318331936
+      op_margin_pct: 30.512184159615423
+      CFO_to_consolidated_NI: 1.3840875954143914
+      CFO_to_common_NI_supplement: 1.3840875954143914
+      capex_to_sales_pct: 23.4039434858226
+      Services_margin_pct: 38.51376188944539
+      Services_sales_share_pct: 85.05657280206358
+      Cloud_margin_pct: 23.71181632249126
+      Cloud_sales_share_pct: 14.80956754538526
+      OtherBets_margin_pct: -414.5348837209302
+      OtherBets_sales_share_pct: 0.33611474801164676
+      Alphabet_level_op_to_sales_pct: -4.364606335372169
+    2025Q4:
+      gross_margin_pct: 59.7931985697845
+      op_margin_pct: 31.568405239438103
+      CFO_to_consolidated_NI: 1.520882310259759
+      CFO_to_common_NI_supplement: 1.520882310259759
+      capex_to_sales_pct: 24.467402858673974
+      Services_margin_pct: 41.8643466649976
+      Services_sales_share_pct: 84.21579738028095
+      Cloud_margin_pct: 30.078125
+      Cloud_sales_share_pct: 15.518013862899613
+      OtherBets_margin_pct: -977.5675675675675
+      OtherBets_sales_share_pct: 0.3250489769742333
+      Alphabet_level_op_to_sales_pct: -5.177942352124678
+  computed_latest_comparison:
+    Q_Q:
+      pct_changes:
+        revenue: 6.495208521152618
+        Search: 0.12485973036620024
+        YouTube_ads: 1.3749434644956926
+        Services_revenue: 1.8637613708483158
+        Cloud_revenue: 23.986595607235152
+        OtherBets_revenue: -2.617801047120416
+        op_income: -0.47584007848908705
+        consolidated_NI: -76.40851033486938
+        common_NI: -76.65623020863997
+        R_and_D: 13.288325374608934
+      margin_change_pp:
+        op_margin_pct: -2.2277499189304706
+        Services_margin_pct: -1.1671676564227766
+        Cloud_margin_pct: 0.6278988673623118
+      cashflow_pct_changes:
+        CFO: 8.244388133814539
+        cash_PPE: 14.31528804202653
+    Y_Y:
+      pct_changes:
+        revenue: 24.652648857796102
+        Search: 11.99109021160747
+        YouTube_ads: 9.219374329987339
+        Services_revenue: 10.625832835546568
+        Cloud_revenue: 102.60605660750808
+        OtherBets_revenue: 8.139534883720923
+        op_income: 29.934674010503404
+        consolidated_NI: -24.331741902284232
+        common_NI: -25.183681637553956
+        R_and_D: 36.2286317734803
+      margin_change_pp:
+        op_margin_pct: 1.2929217764075247
+        Services_margin_pct: 2.146868211694766
+        Cloud_margin_pct: 12.502322854948574
+      cashflow_pct_changes:
+        CFO: -12.649233692733509
+        cash_PPE: 114.39903143656326
+  quality_items:
+    EC_fine:
+      layer: source_fact
+      source: q3.htm MD&A General and administrative; Note 10 commitments/contingencies
+      Q3_2025_adtech_accrual_approx: 3500
+      Q3_2026_Android_cash_fine_interest_approx: 5200
+      caliber: 'Different cases and timing: prior-year ad-tech accrued expense is not the 2026 cash payment for the
+        2018 Android matter. No unsupported segment allocation or tax-rate adjustment.'
+    equity_securities:
+      source: q3.htm Note 7 Other income (expense), net; release-q3.htm Other Income footnote
+      reported_quarterly_gain_loss:
+        2026Q3: -8664.0
+        2026Q2: 99031.0
+        2026Q1: 36915.0
+        2025Q3: 10734.0
+        2025Q4: 2302.0
+      9M2026_gain_loss: 127282
+      issuer_Q3_loss_approx: 8700
+      issuer_Q3_tax_provision_reduction_approx: 1900
+      issuer_Q3_NI_reduction_approx: 6700
+      issuer_Q3_diluted_common_EPS_reduction_approx_USD: 0.55
+      caliber: Issuer approximate tax/NI/EPS effects, not a tax rate inferred from rounded values. Pretax item bridges
+        below are illustrative, NOT complete normalized earnings or forecasts. No recurrence probability imposed.
+    earnings_attribution:
+      source: q3/q2 statements of income; preferred-stock notes
+      Q3_consolidated_NI: 26468
+      Q3_preferred_dividend_deduction: 298
+      Q3_common_NI: 26170
+      Q2_consolidated_NI: 112193
+      Q2_preferred_dividend_deduction: 86
+      Q2_common_NI: 112107
+      9M_consolidated_NI: 201239
+      9M_preferred_dividend_deduction: 384
+      9M_common_NI: 200855
+      9M_preferred_cash_dividends_paid: 234
+      preferred_carrying_equity_20260930: 18023
+      preferred_net_issuance_cash_9M2026: 19063
+      caliber: NI minus preferred dividends equals common-available NI; the gap is not NCI. No separate parent-attributable
+        NI reconciliation is disclosed on the face; do not invent one or equate common earnings with consolidated
+        NI. Preferred equity carrying amount, net issue proceeds and dividend accrual/cash payments are different
+        measures. 2026 common ROE not computed on unadjusted total equity.
+    Cloud_business_mix:
+      source: q3.htm revenue recognition, MD&A Cloud revenue/segment profitability; release-q3.htm
+      fact: Cloud includes consumption/subscription services AND TPU system product sales. Issuer identifies TPU sales
+        as a meaningful revenue-growth contributor and related inventory/usage costs as partial offsets to operating
+        income growth.
+      caliber: No separate TPU revenue/profit amount, Wiz contribution, or recurring-service-only margin is established;
+        do not attribute the whole Cloud increase to recurring AI service consumption. Search & other is not pure
+        Search advertising only; YouTube ads excludes subscription receipts embedded in the subscriptions/platforms/devices
+        category.
+    acquisitions:
+      source: q3.htm Note 8 and MD&A Acquisitions and Divestitures
+      Wiz_close: '2026-03-11'
+      Wiz_consideration_approx: 29500
+      Wiz_reporting: Included in Google Cloud after close
+      Intersect_close: '2026-03-10'
+      Intersect_consideration_approx: 5900
+      caliber: Reported growth includes acquired operations; constant-currency data is not organic growth. No complete
+        acquisition/organic revenue bridge supplied.
+    FX:
+      source: release-q3.htm GAAP/non-GAAP constant-currency reconciliation
+      Q3_2026_reported_revenue: 127577
+      Q3_2026_Y_Y_constant_currency_revenue: 128085
+      Q3_2026_Y_Y_issuer_constant_currency_growth_pct_rounded: 25
+      Q3_2026_Q_Q_constant_currency_revenue: 127816
+      Q3_2026_Q_Q_issuer_constant_currency_growth_pct_rounded: 7
+      caliber: Different base currency periods produce different CC levels; issuer CC removes FX and hedging, not
+        acquisitions or product-mix effects. No CC profit or organic-growth series inferred.
+    financing:
+      source: q3.htm financing CF and Note 11; release-q3.htm
+      9M_common_net_cash_proceeds: 42870
+      Q3_common_net_cash_proceeds: 12371
+      9M_preferred_net_cash_proceeds: 19063
+      9M_debt_net_cash_proceeds: 85222
+      Q3_debt_net_cash_proceeds: 28996
+      June_common_public_issue_net_approx: 20500
+      June_common_private_placement_approx: 10000
+      June_preferred_issue_net_approx: 19000
+      ATM_authorization_approx: 40000
+      ATM_remaining_20260930_approx: 27600
+      caliber: Financing cash is not operating cash or independent customer-demand evidence. ATM authorization is
+        not funded cash; issued preferred stock is not common equity or an ordinary loan. Common/preferred financing
+        can affect future dilution and allocation.
+    PPE_payable_and_guarantees:
+      source: q3.htm supplemental noncash table and Notes 3/10
+      PPE_in_accrued_liabilities_and_AP_9M2025: 14574
+      PPE_in_accrued_liabilities_and_AP_9M2026: 35921
+      financial_guarantees_20260930_approx: 22800
+      caliber: Combined accrued-liability/AP disclosure is not standalone trade AP, not a cash outflow and not a fully
+        specified flow/closing split. Do not subtract it from AP. Financial guarantees are contingent exposure, not
+        funded debt. Cash PPE alone does not measure all capital commitments.
+    capital_rollforward_partial:
+      source: q3.htm balance sheet/CF
+      PPE_net_start_2026: 246597
+      PPE_net_end_Q3: 372827
+      9M_cash_PPE: 131953
+      9M_depreciation: 21955
+      derived_cash_PPE_less_depreciation: 109998
+      derived_net_PPE_change: 126230
+      residual_from_cash_only_bridge: 16232
+      caliber: Residual is not an accounting error; acquisition/noncash/FX/asset-sale and class-specific movements
+        not fully reconciled. No maintenance/growth split, capacity unit-cost forecast or depreciation-life model
+        invented.
+    cash_conversion:
+      source: quarter/9M CF and original income statements
+      9M_CFO_to_consolidated_NI: 0.6318308081435507
+      9M_CFO_to_common_NI_supplement: 0.6330387593039755
+      9M_CFO_to_cash_PPE: 0.9635930975423067
+      caliber: Consolidated CFO matches consolidated NI; common NI ratio is a separately labelled claim-scope sensitivity.
+        Securities gains, deferred tax and working-capital timing matter; SBC is an expense even when added back in
+        CFO.
+    Q4_2025_revenue_vintage_difference:
+      source: FY25 10-K; current q3.htm comparative 9M; release-2026-02-04.htm direct quarterly table
+      annual_FY25: 402836
+      latest_9M25_comparative: 289007
+      derived_Q4_2025: 113829
+      original_direct_Q4_2025: 113828
+      difference: 1
+      caliber: Latest FY-minus-9M arithmetic and original direct-quarter amount differ by USD1m; cause not established.
+        Q4 computed trend uses explicitly derived vintage, not a claim of exact direct-quarter reproduction. Current
+        Q3/Q2 core original figures unaffected. No silent plug or fabricated reconciliation.
+  mechanical_item_bridges:
+    estimate: true
+    caliber: Illustrative partial non-GAAP PRETAX arithmetic, not issuer normalized earnings, full recurring profit,
+      investment valuation or tax-adjusted forecast. ECfine is approximate; equity-security values exact disclosed
+      table amounts.
+    values:
+      prior_EC_fine_approx: 3500
+      prior_OP_plus_EC_fine: 34728.0
+      current_OP_vs_prior_ex_fine_pct: 16.83943791753053
+      prior_OP_ex_fine_margin_pct: 33.931956305082764
+      EBT_ex_equity:
+        2026Q3: 41019.0
+        2026Q2: 39722.0
+        2026Q1: 40497.0
+        2025Q3: 33253.0
+        2025Q4: 36815.0
+      prior_EBT_ex_equity_plus_EC: 36753.0
+    formula_EBT: reported EBT minus disclosed equity-security gain/loss
+    formula_prior_OP: reported prior-year OP plus approximate ECfine
+    current_vs_prior_ex_fine_margin_pp: -2.1268503690598166
+    tax_limit: Use issuer approximate Q3 loss tax/NI effect separately; do not assume a tax rate for prior fine, equity
+      items or every period. No normalized common EPS computed.
+  historical_margin_contribution:
+    estimate: false
+    formula: segment OP change sums with Alphabet-level change to consolidated OP change
+    Q3_Y_Y_OP_delta_USDm:
+      Services_op: 5630.0
+      Cloud_op: 7527.0
+      OtherBets_op: -621.0
+      Alphabet_level_op: -3188.0
+      total_OP_change: 9348.0
+    scope: Arithmetic attribution only; no causal split into TPU volume, service consumption, pricing or economies
+      of scale without disclosure. Segment margins weighted by segment revenue/consolidated revenue plus Alphabet-level
+      OP/consolidated revenue reconcile the total.
+  dupont:
+    steps:
+    - 1
+    - 3
+    formula: (common_NI/revenue)*(revenue/average_assets)*(average_assets/average_equity)=common_NI/average_equity
+    assumption: Two-point beginning/ending average consolidated assets and equity. FY21-FY25 net income equals reported
+      common earnings before new2026 preferred claims. GAAP valuation/tax/one-off effects retained.
+    series:
+      '2021':
+        NI: 76033.0
+        revenue: 257637.0
+        average_assets: 339442.0
+        average_equity: 237089.5
+        net_margin: 0.2951167728237792
+        asset_turnover: 0.7590015378179483
+        equity_multiplier: 1.4317040611245964
+        ROE: 0.3206932403164206
+      '2022':
+        NI: 59972.0
+        revenue: 282836.0
+        average_assets: 362266.0
+        average_equity: 253889.5
+        net_margin: 0.2120380715326196
+        asset_turnover: 0.7807412233000061
+        equity_multiplier: 1.4268648368680075
+        ROE: 0.23621299817440264
+      '2023':
+        NI: 73795.0
+        revenue: 307394.0
+        average_assets: 383828.0
+        average_equity: 269761.5
+        net_margin: 0.24006649446638517
+        asset_turnover: 0.8008639286347009
+        equity_multiplier: 1.4228420289774486
+        ROE: 0.2735564563512584
+      '2024':
+        NI: 100118.0
+        revenue: 350018.0
+        average_assets: 426324.0
+        average_equity: 304231.5
+        net_margin: 0.28603671811164
+        asset_turnover: 0.8210140644204877
+        equity_multiplier: 1.4013144595480744
+        ROE: 0.3290849238162386
+      '2025':
+        NI: 132170.0
+        revenue: 402836.0
+        average_assets: 522768.5
+        average_equity: 370174.5
+        net_margin: 0.3280987796522654
+        asset_turnover: 0.7705820071408281
+        equity_multiplier: 1.4122218035007814
+        ROE: 0.3570478247421149
+    not_done: No2026 common ROE on unadjusted total equity, normalized ROE, ROIC/WACC, peer or forecast return.
+  working_capital:
+    steps:
+    - 1
+    - 2
+    - 3
+    annual_convention: Reported ending balances and separate two-point-average sensitivity; uniform365days including
+      leap year. AR/revenue; inventory/COGS; AP/COGS; CCC=DSO+DIO-DPO.
+    annual_series:
+      '2021':
+        ending:
+          DSO: 55.68284058578543
+          DIO: 3.8494127403347784
+          DPO: 19.862311720855605
+          CCC: 39.6699416052646
+        average:
+          DSO: 49.75102566789708
+          DIO: 3.122301444938209
+          DPO: 19.125330136381255
+          CCC: 33.74799697645403
+      '2022':
+        ending:
+          DSO: 51.95296921184008
+          DIO: 7.722082676323067
+          DPO: 14.83102620381449
+          CCC: 44.84402568434866
+        average:
+          DSO: 51.33740047235854
+          DIO: 5.5529583290413065
+          DPO: 16.14551555826724
+          CCC: 40.74484324313261
+      '2023':
+        ending:
+          DSO: 56.95251045888989
+          DIO: null
+          DPO: 20.51229262292623
+          CCC: null
+        average:
+          DSO: 52.37745369135377
+          DIO: null
+          DPO: 17.275166501665016
+          CCC: null
+      '2024':
+        ending:
+          DSO: 54.580335868441054
+          DIO: null
+          DPO: 19.925737837135866
+          CCC: null
+        average:
+          DSO: 52.298681782079775
+          DIO: null
+          DPO: 19.309529342610695
+          CCC: null
+      '2025':
+        ending:
+          DSO: 56.979490412972034
+          DIO: 5.477189528409266
+          DPO: 27.397175992863076
+          CCC: 35.05950394851822
+        average:
+          DSO: 52.20175207776862
+          DIO: null
+          DPO: 22.6666717937675
+          CCC: null
+    quarter_supplement:
+      estimate: true
+      convention: Reported quarter-ending balances and actual92/91/92days, not annualized
+      series:
+        2026Q3:
+          period_days: 92
+          DSO: 52.48695297741756
+          DPO: 39.31815087808008
+          DIO: 23.810964818452323
+          CCC: 36.979766917789796
+        2026Q2:
+          period_days: 91
+          DSO: 52.54703829844068
+          DPO: 40.12532921228479
+          DIO: 19.789325903837362
+          CCC: 32.21103498999326
+        2025Q3:
+          period_days: 92
+          DSO: 51.37099642389541
+          DPO: 23.45311706833619
+          DIO: null
+          CCC: null
+    missing: InventoryNet absent in matching FY2023/FY2024 periodic facts and no consistently matched full historical
+      balance component established; DIO/CCC stay null. FY25 average inventory cannot be computed without FY24 opening
+      amount.
+    caveat: AP/cost-of-revenues and consolidated inventory mix are not trade-only operating cycles. Capital-related
+      accrued/AP liabilities, acquisitions and TPU product mix prevent a pure collections/efficiency interpretation;
+      no unsupported subtraction or full forward NWC forecast.
+  RPO_and_contracts:
+    prior_execution: 未实测
+    source: Q3/Q2/Q1 Note2, prior-Q3 Note2 and Q3 Note3
+    unit: USD billion
+    Q3_total: 567.7
+    Q3_Cloud: 560.8
+    Q2_total: 519.5
+    Q2_Cloud: 513.9
+    Q1_total: 467.6
+    Q1_Cloud: 462.3
+    Q3prior_total_old_scope: 157.7
+    Q_Q_total_growth_pct: 9.278152069297407
+    Q_Q_Cloud_growth_pct: 9.126289161315437
+    recognition_horizon_months: 24
+    recognition_fraction: just over55% of TOTAL backlog; remainder thereafter
+    CruxAI_related_JV_backlog: 16.8
+    caliber: Starting Q1 2026 includes original-term<=1year contracts; prior-year figure excludes them, so no same-caliber
+      raw Y/Y growth rate. Includes deferred balances and unbilled commitments, excludes cancelable contracts and
+      specified payments to customers. Consumption/delivery terms affect timing.
+    execution_limit: Aggregate horizon and one related counterparty identified; no complete contract-by-contract dates,
+      quantity options, take-or-pay protection or annual revenue schedule disclosed. Do not convert backlog to uniform
+      quarterly revenue, profit or cash, or call it recurring-service-only demand.
+  capex_and_guidance:
+    prior_execution: Capex forecast 未实测; guidance tracking tested subset
+    source_scope: Allowed SEC10-K/10-Q and eleven historical SEC99.1 HTML releases plus current release; no full call
+      read
+    annual_cash_PPE:
+      '2023': 32251
+      '2024': 52535
+      '2025': 91447
+    guidance_observations:
+    - observation: '2024-01-31'
+      source: fy23.htm MD&A capital expenditures
+      target: 2024
+      claim: Technical infrastructure investment expected to increase relative to 2023
+      numeric_target: null
+      comparison: Total cash PPE 2024 higher than2023, but technical-infrastructure-only actual is not separately
+        quantified; do not mark exact target attainment.
+    - observation: '2025-02-04'
+      source: release-2025-02-04.htm CEO paragraph
+      target: 2025
+      operator: approximately
+      point_USDbn: 75
+      actual_cash_PPE_USDbn: 91.447
+      actual_minus_point_USDbn: 16.447
+      result: difference_only_no_tolerance_defined
+    - observation: '2025-07-23'
+      source: release-2025-07-23.htm CEO paragraph
+      target: 2025
+      operator: approximately
+      point_USDbn: 85
+      actual_cash_PPE_USDbn: 91.447
+      actual_minus_point_USDbn: 6.447
+      result: difference_only_no_tolerance_defined
+    - observation: '2025-10-29'
+      source: release-2025-10-29.htm opening highlights
+      target: 2025
+      operator: inclusive_range
+      low_USDbn: 91
+      high_USDbn: 93
+      midpoint_USDbn: 92
+      actual_cash_PPE_USDbn: 91.447
+      actual_minus_midpoint_USDbn: -0.553
+      result: within_range
+    - observation: '2026-02-04'
+      source: release-2026-02-04.htm CEO paragraph (CapEx spelling)
+      target: 2026
+      operator: inclusive_range
+      low_USDbn: 175
+      high_USDbn: 185
+      midpoint_USDbn: 180
+      result: pending_not_due
+      actual_full_year: null
+    2026_recent_SEC_qualitative: FY25 andQ3 MD&A expect technical infrastructure investment to increase significantly
+      vs2025; no newer numerical range found in inspected Q1/Q2/Q3 releases, which is NOT proof of reaffirmation or
+      withdrawal of February range.
+    conditional_remaining_2026_capex_USDbn:
+      estimate: true
+      formula: February annual range175-185 minus9M cash PPE131.953
+      low: 43.047
+      high: 53.047
+      caliber: Conditional same-definition residual arithmetic, NOT new Q4 guidance or an independently forecast cash-spend
+        path.
+    method_limit: Maintenance/growth classification, capacity counts/unit prices and full asset-class/depreciation
+      schedule not disclosed well enough for a bottom-up forecast. Historical PPE/depreciation bridge retained separately.
+      Quarterly revenue/EPS guidance series and exact call-only revisions not supplied.
+  cash_capital_checks:
+    prior_execution: 未实测
+    steps:
+    - 5
+    - 6
+    - 7
+    Q3_CFO_to_PPE: 0.8234835945867004
+    9M_CFO_to_PPE: 0.9635930975423067
+    9M_CFO_to_PPE_dividends_and_debt_repayment: 0.8533547205014799
+    Q3_issuer_FCF: -9065
+    TTM_issuer_FCF: 19747
+    issuer_definition: CFO minus cash capital expenditures; agrees with direct SEC99.1 table and independently differenced
+      cash flow.
+    scope: Not sustainable owner cash flow, FCFE or liquidity sufficiency; purchases of investments, acquisitions,
+      equity/debt financing and additional commitments are outside this simple difference. Full lease-adjusted debt,
+      enforceable covenant boundary, maturity stress and future-funding model not constructed.
+  forensic_screen:
+    prior_execution: 未实测
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    status: partial_question_screen_only
+    observations:
+    - CFO/NI divergence is explicitly reconciled to securities gains/taxes and working-capital timing; no manipulation
+      inference.
+    - Receivable/inventory/AP ratios are computed with stated scopes; missing historical inventory and capex payables
+      limit trend meaning.
+    - Issuer FCF/FX tables independently checked; not a complete historical non-GAAP-name-change audit.
+    - Wiz/Intersect acquired operations and TPU sales prevent an unsupported organic/recurring growth label.
+    - RPO definition change explicitly disclosed; no blanket assertion of disclosure loss.
+    - PPE and accrued/AP noncash exposure recorded; no allegation of aggressive capitalization without project-level
+      evidence.
+    - CruxAI related-JV backlog, financing and preferred/common claim distinctions documented; no exhaustive officer/auditor-turnover
+      or governance investigation.
+    unavailable: Complete inventory cohort/aging, software capitalization by project, acquisition organic revenue
+      contribution, full historical adjustments and governance-history inputs not established. No scores or fraud
+      findings computed.
+  price_source_coverage:
+    classification: 'C: source selection/integration required before market-reaction calculations'
+    authoritative_local_files:
+    - config/sources.yaml yfinance entry and FRED benchmark entries
+    - config/datasets.yaml
+    - src/investment_os/connectors/__init__.py
+    - HANDOFF.md section5
+    finding: yfinance IS catalog-listed, docs_verified2026-10-22, restricted redistribution, but no sample or implemented
+      connector/dataset verified for GOOGL/GOOG daily prices. FRED broad index levels/SEC annual performance graphs
+      are not matched daily individual-share total-return input. Manual CSV connector still needs supplied licensed
+      data; none provided.
+    candidate_sources:
+    - publisher: Tiingo
+      urls:
+      - https://www.tiingo.com/about/pricing
+      - https://www.tiingo.com/tos/
+      access: Account/API key; EOD composite historical prices/corporate-action adjustment must be verified before
+        adoption
+      cost_observed: Starter displayed0USD/month with API limits; individual30USD/month or300USD/year; internal commercial50USD/month
+        or499USD/year. Redistribution packages separate.
+      terms: Official pricing says internal use only; cannot display/share data with another person/organization.
+        AI-processing scope and derived/public-output rights require clearance before actual use. Not adopted or sampled.
+    - publisher: Alpha Vantage
+      urls:
+      - https://www.alphavantage.co/documentation/
+      - https://www.alphavantage.co/premium/
+      - https://www.alphavantage.co/terms_of_service/
+      access: Account/API key. TIME_SERIES_DAILY_ADJUSTED explicitly premium; provides adjusted closes and split/dividend
+        events. Raw daily is not a substitute without corporate-action treatment.
+      cost_observed: Standard free limit25requests/day; adjusted-daily needs paid subscription. Exact premium price
+        not rendered in inspected official page, so not quoted.
+      terms: Default license personal/noncommercial; commercial/redistribution uses require separate written agreement.
+        No public-data redistribution permission assumed. Not adopted or sampled.
+    audit_access_date_NY: 2026-11-16 (after financial cutoff)
+    execution: No connector added, no market prices fetched, no event return/abnormal return or implied-expectation
+      computation. Future choice must fix GOOGL ClassA vsGOOG ClassC, event-session/date, adjustment/benchmark/window
+      and output rights.
+  call_coverage:
+    classification: B optional pending consent/terms clearance
+    candidate_html_url: https://abc.xyz/investor/events/event-details/2026/2026-Q3-Earnings-Call-2026-Ujou16CTw9/
+    terms_url: https://policies.google.com/terms
+    terms_observed_effective: '2026-07-30'
+    finding: IR links general Google terms, which retain IP rights and restrict automated access contrary to machine-readable
+      instructions. Applicability/specific transcript processing conditions not established in this check; robots
+      endpoint unavailable to web tool. This is an unresolved workflow clearance, NOT a claim that all HTML transcript
+      reading is legally prohibited.
+    execution: No transcript content read or original downloaded. Use allowed SEC/IR press-release facts instead;
+      optional full call could add management/Q&A context but does not supply invented current guidance.
+  execution_coverage:
+  - card: earnings-quality-checklist
+    steps:
+    - 1
+    - 5
+    - 6
+    - 7
+    status: partial
+    done: Five quarters reported revenue/margins/mix, FX source reconciliation and cash conversion
+    not_done: Complete organic-growth bridge, current consensus or valuation
+  - card: guidance-tracking-playbook
+    steps:
+    - 1
+    - 2
+    - 3
+    status: partial
+    done: Two completed fiscal years inspected; historical quantitativeFY25 and initialFY26 CapEx vintages with tests/due
+      status
+    not_done: Full call-only guidance revisions, FY26 outcome, quantified technical-only prior target
+  - card: dupont-return-decomposition
+    steps:
+    - 1
+    - 3
+    status: historical_subset_completed
+    done: FY21-FY25 identities and average balances
+    not_done: Future/common2026 return, ROIC/WACC/peer
+  - card: working-capital-forecast
+    steps:
+    - 1
+    - 2
+    - 3
+    status: partial
+    done: DSO/DPO series and averaging sensitivity; DIO/CCC where matched data exists
+    not_done: Missing2023/24 inventory, trade-only balances, peer/forecast
+  - card: normalized-earnings
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    status: 未实测_partial
+    done: Disclosed items, pretax exitem bridges and issuer own aftertax effect
+    not_done: Complete tax-adjusted recurring baseline, recurrence conclusion or forecasts
+  - card: margin-forecast-drivers
+    steps:
+    - 1
+    - 4
+    - 5
+    status: 未实测_historical_only
+    done: Segment arithmetic contribution, explicit prior-fine base and TPU/corporate-cost limitations
+    not_done: Recurring-service-only margins or future margin path
+  - card: forensic-red-flags
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    status: 未实测_partial
+    done: Evidence questions in forensic_screen
+    not_done: Comprehensive governance/adjustment audit, score or allegations
+  - card: capex-forecast
+    steps:
+    - 1
+    - 3
+    - 5
+    - 6
+    status: 未实测_partial
+    done: Historical spend, guidance/residual and partial PPE bridge
+    not_done: Maintenance/growth/units/class-specific forecast
+  - card: cash-generation-capital-risk
+    steps:
+    - 5
+    - 6
+    - 7
+    status: 未实测_partial
+    done: Explicit coverage ratios and funding/payable scope
+    not_done: Complete lease-adjusted/covenant/forecast leverage stress
+  - card: contract-revenue-timeline
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    status: 未实测_partial
+    done: Aggregate RPO horizon/scope and related-party contract
+    not_done: Complete contract timeline/option/take-or-pay/annual conversion
+  reproducibility:
+    selection: Pin original SEC statements/filings; comparative columns prior thencurrent. Extra historical facts
+      filtered periodic10K/10Q, matching dates/units and publication before cutoff, latest filed; missing not zero.
+    formulas:
+    - Q4=FY−9M; Q3 cashflow=9M−6M; Q2=6M−3M
+    - Growth=(current/prior−1)*100; operating margin=OP/revenue*100; margin differences inpp
+    - annualROE=NI/two-point-average equity; CCC=DSO+DIO−DPO with explicit day/balance choice
+    limits: Raw data/temp scripts not a registered study/dataset version and not durably archived. Source hashes and
+      full input values permit recomputation, not historical reproduction of evolving source pages.
+  verification:
+    independent: Separate read-only verifier independently parsed original SEC statements, checked Q3/Q2/Q3prior/annual
+      computations and source-caliber changes; no material arithmetic discrepancy. It found and resolved missed February
+      CapEx spelling and documented USD1m Q4 revenue source-vintage difference.
+    technical: Final YAML/public-boundary/identity checks performed before delivery; no code change or pytest run
+      for this draft documentary record.
+    not_performed: No full earnings normalisation, portfolio judgment, trade advice, target price, price-return model,
+      code/config change, commit, push, PR, merge or deployment.
