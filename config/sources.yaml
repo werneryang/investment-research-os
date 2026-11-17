@@ -1125,6 +1125,31 @@ sources:
         scope: >-
           以公司申报原文描述一个登记事件的事实、顺序、披露时间、原文未提及的事项与已公布的日程。不包括原因或影响的判断、
           市场反应、媒体报道、查阅日之后的申报或登记之外的事件
+      - dataset: earnings_evidence
+        status: access_verified
+        date: "2026-11-16"
+        evidence: >-
+          Alphabet 2026 年第三季度的 11 份申报原文（10-Q 四份、10-K 两份、8-K 附件 99.1 五份）取自 SEC EDGAR，SHA256 登记在
+          config/earnings/googl_2026q3.yaml；10-Q 与 10-K 的 accession 与接受时间同 EDGAR 申报列表一致。经 iros earnings bundle 核对零错误后导入：
+          原文校验值一致，203 个登记数值均出现在所引原文中，51 条会计恒等式成立（收入由产品线合成、分部营业利润合计等于营业利润、
+          营业利润加其他收支等于税前利润、税前利润减所得税等于净利润、净利润减优先股股息等于普通股可得净利润，含全年减前三季度推出的
+          第四季度；经营现金流减资本开支等于发行人披露的自由现金流），14 条文字摘录逐字出现在原文中。数值出现在原文中是存在性检查，
+          不证明取自正确的行列；准备阶段另有一次独立的原文复算，见 docs/study-earnings.md
+        scope: 登记的 Alphabet 季度合并利润表、分部、现金流与资产负债表时点数值；不含电话会、价格数据或登记之外的申报
+      - dataset: earnings_evidence
+        status: use_verified
+        use: descriptive
+        date: "2026-11-16"
+        # 核验覆盖的期间：2025 年第三季度至 2026 年第三季度的五个季度，以及用于对照的 2024 年以来资本开支展望
+        valid_from: "2024-01-31"
+        valid_through: "2026-12-31"
+        evidence: >-
+          基线运行见 docs/study-earnings.md「首次交付核对」（运行编号与结果校验值在该文档中，不在此重复）：iros verify 以固定输入重算结果校验值一致。
+          页面五个季度的收入、利润、分部与现金流数值同登记逐项一致；已核对恒等式与原文存在性，没有逐条人工审阅原文。
+          技术复核由模型完成，与登记同一会话，不是独立复核，也不是人工签认
+        scope: >-
+          以 SEC 申报原文描述 Alphabet 五个季度的报告口径财务数据、比较与可比性限制。不包括有机增长、TPU 与并购贡献、
+          正常化盈利、电话会、市场反应、估值、预测或投资判断
       - dataset: edgar_companyfacts
         status: access_verified
         date: "2026-10-24"

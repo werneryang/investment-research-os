@@ -7,7 +7,7 @@
 - **P0 总体架构**：完成，见 [V0.3](docs/architecture.md)。
 - **P1 公共契约与资源核验**：首个案例所需部分已实现——来源与数据集登记、核验状态、时间契约、质量规则、成果与运行契约。
 - **P2 小规模贯通验证**：已用真实免费数据跑通「2024 年美国国债收益率曲线变化」：取得 → 原始快照 → 标准化与版本 → 公共分析 → 报告与运行记录 → 复现校验。
-- **P3 研究分支扩展**：已实现利率情景与归因、主要资产长期回报，以及美国 12/49 行业和经济、历史财报、估值、指引专题；覆盖范围见各项研究设计。产业链研究的炼油段（EIA 周度统计与处理能力情景，含输入能力等级与约束引擎）与投资对照（裂解价差、利用率与 Valero、PBF 的 10-K 业绩图总收益）已在本机实现；芯片模块完成 P0 与 P3b 经营分析（NVIDIA、Micron 的分部财务，两个受限请求为 C，已登记描述用途核验；证据与映射已通过技术复核，人工复核为可选，见[芯片模块](docs/study-chips.md)）。事件研究完成第一版：NVIDIA 首席执行官离任的原文事实与时间线（[事件研究](docs/study-events.md)）。**P4 预测与策略评估**尚未实现。
+- **P3 研究分支扩展**：已实现利率情景与归因、主要资产长期回报，以及美国 12/49 行业和经济、历史财报、估值、指引专题；覆盖范围见各项研究设计。产业链研究的炼油段（EIA 周度统计与处理能力情景，含输入能力等级与约束引擎）与投资对照（裂解价差、利用率与 Valero、PBF 的 10-K 业绩图总收益）已在本机实现；芯片模块完成 P0 与 P3b 经营分析（NVIDIA、Micron 的分部财务，两个受限请求为 C，已登记描述用途核验；证据与映射已通过技术复核，人工复核为可选，见[芯片模块](docs/study-chips.md)）。事件研究完成第一版：NVIDIA 首席执行官离任的原文事实与时间线（[事件研究](docs/study-events.md)）。公司季度财报研究完成第一版：Alphabet 2026 年第三季度的五个季度报告口径财务数据、可比性限制与资本开支展望对照（[季度财报研究](docs/study-earnings.md)）。**P4 预测与策略评估**尚未实现。
 
 接入已验证的来源：美国财政部日度票面收益率曲线；FRED 宏观与标普 500、纳斯达克指数日收盘值、BEA 行业增加值、BLS 行业就业/工时/工资、工业生产和 EIA WTI 现货价；ALFRED 的 CPI、失业率、非农历史版本；French 美国及国际股票因子、12/49 行业收益和样本特征；Damodaran 长期资产回报与行业估值/利润率快照；Shiller 价格、股息、盈利与 CAPE；EIA 周度炼油总投入、可运行产能与利用率，以及原油、汽油、柴油周度现货价；SEC 财报、选定公司的管理层指引原文和炼油公司 10-K 业绩图总收益。历史财报专题使用各期 SIC 样本，不等于完整股票行业。FRED API key 放在项目根目录的 `.env`（`FRED_API_KEY=...`，不入库），`iros` 启动时读取；行业研究新增来源无需新 key。详见 [实现说明](docs/implementation.md)。
 
@@ -49,7 +49,7 @@ scripts/snapshot-agent.sh install
 
 线上地址：<https://werneryang.github.io/investment-research-os/>
 
-`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 取得登记的公开数据 → 运行国债曲线、利率情景、曲线归因、长期资产、`us_industry_12` / `us_industry_49` 和两项 2025 年炼油研究 → `iros verify --all` → 归档到 `archive` 分支并恢复历史 → 生成静态网站 → 发布到 GitHub Pages。依赖可选来源的研究取得失败不阻断其他研究发布；任何必需步骤失败都不发布。四层专题 `us_industry_dossier`、`company_*` 公司研究和炼油投资对照 `us_refining_investment_2016_2025` 使用本地准备的财报与指引证据（或需要 SEC 联系邮箱），网站恢复其已验证档案，不在每次 CI 下载全部原始财报。线上更新时间、工作流徽章与「已过期」提示会显示更新停滞。
+`.github/workflows/pages.yml` 在推送到 main、每个工作日 23:30 UTC 及手动触发时运行：测试 → 取得登记的公开数据 → 运行国债曲线、利率情景、曲线归因、长期资产、`us_industry_12` / `us_industry_49` 和两项 2025 年炼油研究 → `iros verify --all` → 归档到 `archive` 分支并恢复历史 → 生成静态网站 → 发布到 GitHub Pages。依赖可选来源的研究取得失败不阻断其他研究发布；任何必需步骤失败都不发布。四层专题 `us_industry_dossier`、`company_*` 公司研究、季度财报研究 `earnings_*` 和炼油投资对照 `us_refining_investment_2016_2025` 使用本地准备的财报与指引证据（或需要 SEC 联系邮箱），网站恢复其已验证档案，不在每次 CI 下载全部原始财报。线上更新时间、工作流徽章与「已过期」提示会显示更新停滞。
 
 网站定位为研究门户，分工回答四个问题：
 
@@ -121,6 +121,8 @@ uv run iros edgar annual apple revenue --as-of 2024-01-01
 
 事件研究：`iros event fetch`（下载登记的申报原文）、`iros event check`（核对原文校验值、摘录与未提及检索词）、`iros event bundle`（生成并导入事件证据包）；研究 `config/studies/event_nvda_ceo_transition_2026.yaml`，见[事件研究设计](docs/study-events.md)。
 
+季度财报研究：`iros earnings fetch`（下载登记的申报原文）、`iros earnings check`（核对原文校验值、数值出现在原文中、会计恒等式与摘录）、`iros earnings bundle`（生成并导入财报证据包）；研究 `config/studies/earnings_googl_2026q3.yaml`，见[季度财报研究设计](docs/study-earnings.md)。
+
 其他命令：`iros fetch --all`（全部定时数据集）、`iros sources`（已接入与候选来源及核验状态）、`iros datasets`（版本与质量概况）、`iros runs`、`iros import <dataset> <file> --declared-source "..."`（人工导入）。
 
 ```bash
@@ -173,6 +175,7 @@ uv run pytest
 - [SEC EDGAR 财报数据设计](docs/edgar-design.md)：全部申报主体的财报事实、财年与申报版本、分区存储（草案，待审阅）
 - [券商研报：私有原文与公开元数据分层方案](docs/research-report-private-view.md)：研报原文只放私有层，公开站点只引用元数据与自己的结论；含启动条件、分阶段计划与来源核对（规划，暂不实现）
 - [事件研究：事件事实与时间线](docs/study-events.md)：登记事件的原文事实、披露时间与原文未提及的事项，首例为 NVIDIA 首席执行官离任（第一版已实现）
+- [季度财报研究：Alphabet 2026 年第三季度](docs/study-earnings.md)：五个季度的报告口径收入、利润率、分部与现金流，可比性限制、资本开支展望对照与未覆盖项，首例为 Alphabet（第一版已实现）
 - [研究方法提取模块](methodology/README.md)：从公开研究中提取可复用分析方法的独立实验区，不接入研究体系与网站（初版，只有文档）
 - [历史方案索引](docs/archive/README.md)：保留 A、B、C 原始文档及 V0.2，追溯设计来源与定位变化。
 

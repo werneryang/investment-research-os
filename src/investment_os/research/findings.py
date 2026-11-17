@@ -502,17 +502,80 @@ def company_state(result):
     return {"公司数": str(r["company_count"]), "缺失项": str(r["missing"]), "修订候选": str(r["revision_candidates"])}
 
 
+def _eq_latest(result):
+    r = result["results"]
+    rows = {q["period"]: q for q in r["quarters"]}
+    return r, rows["q3_2026"], r["comparison"]
+
+
+def earnings_quarter_findings(result):
+    """季度财报的固定规则发现：报告口径的描述，不称有机增长，不估值、不预测。"""
+    r, cur, comp = _eq_latest(result)
+    yoy, qoq = comp["yoy"], comp["qoq"]
+    bn = lambda v: f"{v / 1e3:,.2f}"
+    out = [_finding("earnings_revenue",
+                    f"{cur['label']} 收入 {bn(cur['revenue'])} 十亿美元，同比 {yoy['pct']['revenue']:+.1f}%、环比 {qoq['pct']['revenue']:+.1f}%；"
+                    "为报告口径，发行人没有披露并购与 TPU 系统销售的收入桥，不能称为有机增长。",
+                    {"revenue_usd_m": cur["revenue"], "yoy_pct": round(yoy["pct"]["revenue"], 2), "qoq_pct": round(qoq["pct"]["revenue"], 2)})]
+    b = r["bridges"]
+    text = (f"营业利润 {bn(cur['op_income'])} 十亿美元，营业利润率 {cur['op_margin']:.1f}%，较去年同期 {yoy['margin_pp']['op_margin']:+.1f} 个百分点。")
+    ev = {"op_income_usd_m": cur["op_income"], "op_margin_pct": round(cur["op_margin"], 2), "yoy_margin_pp": round(yoy["margin_pp"]["op_margin"], 2)}
+    if b.get("prior_year_charge_usd_m"):
+        text += (f"去年同期含约 {b['prior_year_charge_usd_m'] / 1e3:.1f} 十亿美元的欧盟相关费用；加回该费用的示意算术下，"
+                 f"营业利润率较去年同期 {b['current_vs_prior_margin_pp']:+.1f} 个百分点（不是正常化盈利）。")
+        ev["margin_pp_after_adding_back_prior_charge"] = round(b["current_vs_prior_margin_pp"], 2)
+    out.append(_finding("earnings_operating", text, ev))
+    out.append(_finding("earnings_cloud",
+                        f"Google Cloud 收入 {bn(cur['Cloud_revenue'])} 十亿美元，同比 {yoy['pct']['Cloud_revenue']:+.1f}%，营业利润率 {cur['Cloud_margin']:.1f}%"
+                        f"（较去年同期 {yoy['margin_pp']['Cloud_margin']:+.1f} 个百分点）；收入含 TPU 系统产品销售与并购并表，金额未披露。",
+                        {"cloud_revenue_usd_m": cur["Cloud_revenue"], "yoy_pct": round(yoy["pct"]["Cloud_revenue"], 2),
+                         "cloud_margin_pct": round(cur["Cloud_margin"], 2)}))
+    equity = cur["equity_security_gain_loss"]
+    prior = next(q for q in r["quarters"] if q["period"] == "q3_2025")
+    out.append(_finding("earnings_net_income",
+                        f"合并净利润 {bn(cur['consolidated_NI'])} 十亿美元，同比 {yoy['pct']['consolidated_NI']:+.1f}%；其他收支含权益证券净"
+                        f"{'损失' if equity < 0 else '收益'} {bn(abs(equity))} 十亿美元（去年同期 {prior['equity_security_gain_loss'] / 1e3:+,.2f}）。"
+                        f"税前利润剔除该项的示意算术为 {bn(cur['ebt_ex_equity_securities'])} 十亿美元（去年同期 {bn(prior['ebt_ex_equity_securities'])}）。",
+                        {"consolidated_ni_usd_m": cur["consolidated_NI"], "equity_security_gain_loss_usd_m": equity,
+                         "ebt_ex_equity_usd_m": cur["ebt_ex_equity_securities"]}))
+    cash = r["cash"]
+    out.append(_finding("earnings_cash",
+                        f"经营活动现金流 {bn(cur['cfo'])} 十亿美元，现金资本开支 {bn(cur['cash_ppe'])} 十亿美元（占收入 {cur['capex_to_sales']:.1f}%，"
+                        f"去年同期 {prior['capex_to_sales']:.1f}%）；发行人定义的自由现金流为 {cur['free_cash_flow'] / 1e3:+,.2f} 十亿美元，"
+                        f"近四个季度合计 {bn(cash['ttm']['free_cash_flow'])} 十亿美元。",
+                        {"cfo_usd_m": cur["cfo"], "cash_capex_usd_m": cur["cash_ppe"], "free_cash_flow_usd_m": cur["free_cash_flow"],
+                         "ttm_free_cash_flow_usd_m": cash["ttm"]["free_cash_flow"]}))
+    pts = sorted(r["rpo"]["points"], key=lambda p: p["date"])
+    last = pts[-1]
+    out.append(_finding("earnings_backlog",
+                        f"收入积压订单 {last['total']:,.1f} 十亿美元（其中 Google Cloud {last['cloud']:,.1f}），较上一季度 {last['total_qoq_pct']:+.1f}%；"
+                        "自 2026 年第一季度起口径扩大，没有同口径的同比增速。",
+                        {"backlog_usd_bn": last["total"], "cloud_backlog_usd_bn": last["cloud"], "qoq_pct": round(last["total_qoq_pct"], 2)}))
+    return out
+
+
+def earnings_quarter_state(result):
+    r, cur, comp = _eq_latest(result)
+    cov = r["summary"]["coverage"]
+    return {"最新季度": cur["label"], "自由现金流符号": "为负" if cur["free_cash_flow"] < 0 else "为正",
+            "权益证券损益方向": "净损失" if cur["equity_security_gain_loss"] < 0 else "净收益",
+            "覆盖项": f"已完成 {cov['done']}、数据不足 {cov['data_gap']}、需判断 {cov['judgment']}"}
+
+
 _FINDERS = {"rates_curve": rates_curve_findings, "par_bond_scenarios": par_bond_findings,
             "curve_attribution": curve_attribution_findings, "asset_history": asset_history_findings,
-            "industry": industry_findings, "company": company_findings}
+            "industry": industry_findings, "company": company_findings,
+            "earnings_quarter": earnings_quarter_findings}
 _STATES = {"par_bond_scenarios": par_bond_state, "curve_attribution": curve_attribution_state,
-           "asset_history": asset_history_state, "industry": industry_state, "company": company_state}
+           "asset_history": asset_history_state, "industry": industry_state, "company": company_state,
+           "earnings_quarter": earnings_quarter_state}
 
 # 规则版本：人工维护的名称；规则改动时递增。指纹会自动反映代码改动，两者一起展示
 # rates_curve v2（2026-10-23）：「尚未发布」改为「未取得（下载时尚未到保守可用时点）」
 RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v2", "par_bond_scenarios": "par_bond-findings.v1",
                  "curve_attribution": "curve_attribution-findings.v1", "asset_history": "asset_history-findings.v1",
-                 "industry": "industry-findings.v1", "company": "company-findings.v1"}
+                 "industry": "industry-findings.v1", "company": "company-findings.v1",
+                 "earnings_quarter": "earnings_quarter-findings.v1"}
 
 
 def findings(result: dict[str, Any]) -> list[dict[str, Any]]:
@@ -562,6 +625,8 @@ def rule_fingerprint(branch: str) -> str | None:
         return hashlib.sha256((inspect.getsource(finder)+inspect.getsource(company_state)).encode()).hexdigest()[:16]
     if branch == "industry":
         return hashlib.sha256((inspect.getsource(finder)+inspect.getsource(industry_state)).encode()).hexdigest()[:16]
+    if branch == "earnings_quarter":
+        return hashlib.sha256((inspect.getsource(finder) + inspect.getsource(earnings_quarter_state) + inspect.getsource(_eq_latest)).encode()).hexdigest()[:16]
     if branch == "par_bond_scenarios":
         parts = [inspect.getsource(f) for f in (finder, par_bond_state, _pct, _pp)] + [repr(ERROR_BANDS_PP)]
         return hashlib.sha256("\n".join(parts).encode("utf-8")).hexdigest()[:16]
@@ -580,7 +645,7 @@ def rule_fingerprint(branch: str) -> str | None:
 def rule_params(branch: str) -> dict[str, Any]:
     if branch == "par_bond_scenarios":
         return {"error_bands_pp": list(ERROR_BANDS_PP)}
-    if branch in ("asset_history", "industry"):
+    if branch in ("asset_history", "industry", "earnings_quarter"):
         return {}
     return {"flat_bp": FLAT_BP} if branch in _FINDERS else {}
 

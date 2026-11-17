@@ -1,0 +1,714 @@
+# 季度财报登记（docs/study-earnings.md）：Alphabet 2026 年第三季度。
+# 数值取自 SEC 申报原文（SHA256 固定，存于 data/earnings/filings/，不入库）；iros earnings check 逐项核对原文并检验会计恒等式。
+# 只放公开 SEC/IR 事实、计算与限制；不含个人判断、估值或交易建议。金额单位：百万美元。
+schema_version: earnings.v1
+earnings_id: googl_2026q3
+entity: cik_1652044
+company:
+  zh: Alphabet（Google）
+  en: Alphabet Inc. (Google)
+cik: 1652044
+tickers:
+- GOOGL
+- GOOG
+latest_period:
+  label: 2026 Q3
+  start: '2026-07-01'
+  end: '2026-09-30'
+as_of: '2026-11-16'
+unit: USD million
+release:
+  ir_date: '2026-10-28'
+  ir_url: https://abc.xyz/investor/news/news-details/2026/Alphabet-Announces-Third-Quarter-2026-Results-2026-FCcqxfIfmh/default.aspx
+  form_10q_filed: '2026-10-29'
+related_studies:
+- study: company_alphabet
+  label:
+    zh: Alphabet 年度财报研究（2025 财年及此前）
+    en: Alphabet annual financial research (fiscal 2025 and earlier)
+documents:
+- id: q3_10q
+  form: 10-Q
+  period_end: '2026-09-30'
+  accession: 0001652044-26-000084
+  accepted_at: '2026-10-29T00:29:06Z'
+  url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000084/goog-20260930.htm
+  file: googl-10q-20260930.htm
+  sha256: 036100101ac5588eb9281b1c8dd82af2f6a8fcbb460af7989f11c5957b0ffd6b
+- id: q2_10q
+  form: 10-Q
+  period_end: '2026-06-30'
+  accession: 0001652044-26-000071
+  accepted_at: '2026-07-23T01:15:54Z'
+  url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm
+  file: googl-10q-20260630.htm
+  sha256: aeed4f4f0251d5224dd50f72366c75d600a66d8fa96a5c620b383d1f8e4b0dd4
+- id: q1_10q
+  form: 10-Q
+  period_end: '2026-03-31'
+  accession: 0001652044-26-000048
+  accepted_at: '2026-04-30T01:02:11Z'
+  url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000048/goog-20260331.htm
+  file: googl-10q-20260331.htm
+  sha256: 16f758356a5d57951c112fc56d8759c347af7a246ce3061c69201162d1eee6ae
+- id: fy25_10k
+  form: 10-K
+  period_end: '2025-12-31'
+  accession: 0001652044-26-000018
+  accepted_at: '2026-02-05T02:56:03Z'
+  url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm
+  file: googl-10k-20251231.htm
+  sha256: 73a0a2f108aa99e64cdbc1323334ecd2d2fbf5602c2c3fdd3140b79dbe39c912
+- id: q3_2025_10q
+  form: 10-Q
+  period_end: '2025-09-30'
+  accession: 0001652044-25-000091
+  accepted_at: '2025-10-30T01:55:01Z'
+  url: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000091/goog-20250930.htm
+  file: googl-10q-20250930.htm
+  sha256: a83ed14b6190f4f523365ee40be23f28528155708a507675f6df2b1dd38d32ed
+- id: fy23_10k
+  form: 10-K
+  period_end: '2023-12-31'
+  accession: 0001652044-24-000022
+  accepted_at: '2024-01-31T02:43:43Z'
+  url: https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm
+  file: googl-10k-20231231.htm
+  sha256: 4ebfdf0eb3c5892e1f0c95883ce6d166d53108490441335db5abdafea040142b
+- id: release_q3_2026
+  form: 8-K EX-99.1
+  period_end: '2026-09-30'
+  accession: 0001652044-26-000080
+  accepted_at: '2026-10-28'
+  url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000080/googexhibit991q32026.htm
+  file: googl-ex99-20261028.htm
+  sha256: b62999597e927c5123e36442adfdf86f19d416e3be27a94ea92284c1d68f9ac3
+  accepted_at_note: release date 2026-10-28 per Alphabet IR; EDGAR acceptance time not recorded; the release day is used
+- id: release_q4_2024
+  form: 8-K EX-99.1
+  period_end: '2024-12-31'
+  accession: 0001652044-25-000010
+  accepted_at: '2025-02-04T21:01:27Z'
+  url: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000010/googexhibit991q42024.htm
+  file: googl-ex99-20250204.htm
+  sha256: 1c502f600659d00d465c7f07813879b037f403fac66fa61db2f79b50108338e6
+- id: release_q2_2025
+  form: 8-K EX-99.1
+  period_end: '2025-06-30'
+  accession: 0001652044-25-000056
+  accepted_at: '2025-07-23T20:01:33Z'
+  url: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000056/googexhibit991q22025.htm
+  file: googl-ex99-20250723.htm
+  sha256: 723e9e2e627e8cf46a853db6b7eaf65da8399e6dffae8d61214daefcbc300446
+- id: release_q3_2025
+  form: 8-K EX-99.1
+  period_end: '2025-09-30'
+  accession: 0001652044-25-000087
+  accepted_at: '2025-10-29T20:01:48Z'
+  url: https://www.sec.gov/Archives/edgar/data/1652044/000165204425000087/googexhibit991q32025.htm
+  file: googl-ex99-20251029.htm
+  sha256: 198250a8765d082a66fdf376098fe55aa20b44a1151c7417f4093c30a6b22705
+- id: release_q4_2025
+  form: 8-K EX-99.1
+  period_end: '2025-12-31'
+  accession: 0001652044-26-000012
+  accepted_at: '2026-02-04T21:01:37Z'
+  url: https://www.sec.gov/Archives/edgar/data/1652044/000165204426000012/googexhibit991q42025.htm
+  file: googl-ex99-20260204.htm
+  sha256: cafe94d6182b397de4a02b4aa1081a4d19690b98f80a1a9116a2fe5f67e960ce
+income:
+  q3_2026:
+    label: 2026 Q3
+    start: '2026-07-01'
+    end: '2026-09-30'
+    document: q3_10q
+    values:
+      revenue: 127577
+      cost_of_revenues: 51419
+      R_and_D: 20640
+      sales_marketing: 8804
+      G_and_A: 6138
+      op_income: 40576
+      other_income: -8221
+      EBT: 32355
+      income_tax: 5887
+      consolidated_NI: 26468
+      preferred_dividends: 298
+      common_NI: 26170
+      Search: 63350
+      YouTube_ads: 11207
+      Network: 7455
+      subscriptions_platforms_devices: 14290
+      Services_revenue: 96302
+      Cloud_revenue: 30709
+      OtherBets_revenue: 372
+      hedging: 194
+      Services_op: 39157
+      Cloud_op: 11121
+      OtherBets_op: -2047
+      Alphabet_level_op: -7655
+      equity_security_gain_loss: -8664
+  q2_2026:
+    label: 2026 Q2
+    start: '2026-04-01'
+    end: '2026-06-30'
+    document: q2_10q
+    values:
+      revenue: 119796
+      cost_of_revenues: 45943
+      R_and_D: 18219
+      sales_marketing: 8403
+      G_and_A: 6461
+      op_income: 40770
+      other_income: 97983
+      EBT: 138753
+      income_tax: 26560
+      consolidated_NI: 112193
+      preferred_dividends: 86
+      common_NI: 112107
+      Search: 63271
+      YouTube_ads: 11055
+      Network: 7303
+      subscriptions_platforms_devices: 12911
+      Services_revenue: 94540
+      Cloud_revenue: 24768
+      OtherBets_revenue: 382
+      hedging: 106
+      Services_op: 39544
+      Cloud_op: 8814
+      OtherBets_op: -1799
+      Alphabet_level_op: -5789
+      equity_security_gain_loss: 99031
+  q1_2026:
+    label: 2026 Q1
+    start: '2026-01-01'
+    end: '2026-03-31'
+    document: q1_10q
+    values:
+      revenue: 109896
+      cost_of_revenues: 41271
+      R_and_D: 17032
+      sales_marketing: 7606
+      G_and_A: 4291
+      op_income: 39696
+      other_income: 37716
+      EBT: 77412
+      income_tax: 14834
+      consolidated_NI: 62578
+      preferred_dividends: 0
+      common_NI: 62578
+      Search: 60399
+      YouTube_ads: 9883
+      Network: 6971
+      subscriptions_platforms_devices: 12384
+      Services_revenue: 89637
+      Cloud_revenue: 20028
+      OtherBets_revenue: 411
+      hedging: -180
+      Services_op: 40589
+      Cloud_op: 6598
+      OtherBets_op: -2100
+      Alphabet_level_op: -5391
+      equity_security_gain_loss: 36915
+  q3_2025:
+    label: 2025 Q3
+    start: '2025-07-01'
+    end: '2025-09-30'
+    document: q3_10q
+    values:
+      revenue: 102346
+      cost_of_revenues: 41369
+      R_and_D: 15151
+      sales_marketing: 7205
+      G_and_A: 7393
+      op_income: 31228
+      other_income: 12759
+      EBT: 43987
+      income_tax: 9008
+      consolidated_NI: 34979
+      preferred_dividends: 0
+      common_NI: 34979
+      Search: 56567
+      YouTube_ads: 10261
+      Network: 7354
+      subscriptions_platforms_devices: 12870
+      Services_revenue: 87052
+      Cloud_revenue: 15157
+      OtherBets_revenue: 344
+      hedging: -207
+      Services_op: 33527
+      Cloud_op: 3594
+      OtherBets_op: -1426
+      Alphabet_level_op: -4467
+      equity_security_gain_loss: 10734
+  nine_months_2025:
+    label: 2025 前三季
+    start: '2025-01-01'
+    end: '2025-09-30'
+    document: q3_10q
+    values:
+      revenue: 289007
+      cost_of_revenues: 116768
+      R_and_D: 42515
+      sales_marketing: 20478
+      G_and_A: 16141
+      op_income: 93105
+      other_income: 26604
+      EBT: 119709
+      income_tax: 21994
+      consolidated_NI: 97715
+      preferred_dividends: 0
+      common_NI: 97715
+      Search: 161459
+      YouTube_ads: 28984
+      Network: 21964
+      subscriptions_platforms_devices: 34452
+      Services_revenue: 246859
+      Cloud_revenue: 41041
+      OtherBets_revenue: 1167
+      hedging: -60
+      Services_op: 99272
+      Cloud_op: 8597
+      OtherBets_op: -3898
+      Alphabet_level_op: -10866
+      equity_security_gain_loss: 21778
+  fy_2025:
+    label: 2025 全年
+    start: '2025-01-01'
+    end: '2025-12-31'
+    document: fy25_10k
+    values:
+      revenue: 402836
+      cost_of_revenues: 162535
+      R_and_D: 61087
+      sales_marketing: 28693
+      G_and_A: 21482
+      op_income: 129039
+      other_income: 29787
+      EBT: 158826
+      income_tax: 26656
+      consolidated_NI: 132170
+      preferred_dividends: 0
+      common_NI: 132170
+      Search: 224532
+      YouTube_ads: 40367
+      Network: 29792
+      subscriptions_platforms_devices: 48030
+      Services_revenue: 342721
+      Cloud_revenue: 58705
+      OtherBets_revenue: 1537
+      hedging: -127
+      Services_op: 139404
+      Cloud_op: 13910
+      OtherBets_op: -7515
+      Alphabet_level_op: -16760
+      equity_security_gain_loss: 24080
+cash_flow:
+  q3_2025:
+    end: '2025-09-30'
+    document: release_q3_2025
+    cfo: 48414
+    cash_ppe: 23953
+  q4_2025:
+    end: '2025-12-31'
+    document: release_q3_2026
+    cfo: 52402
+    cash_ppe: 27851
+  q1_2026:
+    end: '2026-03-31'
+    document: release_q3_2026
+    cfo: 45790
+    cash_ppe: 35674
+  q2_2026:
+    end: '2026-06-30'
+    document: release_q3_2026
+    cfo: 39069
+    cash_ppe: 44924
+  q3_2026:
+    end: '2026-09-30'
+    document: release_q3_2026
+    cfo: 42290
+    cash_ppe: 51355
+  nine_months_2026:
+    end: '2026-09-30'
+    document: q3_10q
+    cfo: 127149
+    cash_ppe: 131953
+  ttm_2026q3:
+    end: '2026-09-30'
+    document: release_q3_2026
+    cfo: 179551
+    cash_ppe: 159804
+issuer_fcf:
+  q3_2026: -9065
+  ttm_2026q3: 19747
+  document: release_q3_2026
+balance:
+  '2026-09-30':
+    document: q3_10q
+    values:
+      cash: 56334
+      marketable_securities: 208764
+      total_assets: 1003312
+      total_equity: 677549
+      longterm_debt: 125102
+      PPE_net: 372827
+  '2026-06-30':
+    document: q2_10q
+    values:
+      cash: 55911
+      marketable_securities: 186563
+      total_assets: 921983
+      total_equity: 640480
+      longterm_debt: 98165
+      PPE_net: 321212
+  '2025-12-31':
+    document: q3_10q
+    values:
+      cash: 30708
+      marketable_securities: 96135
+      total_assets: 595281
+      total_equity: 415265
+      longterm_debt: 46547
+      PPE_net: 246597
+  '2025-09-30':
+    document: q3_2025_10q
+    values:
+      cash: 23090
+      marketable_securities: 75406
+      total_assets: 536469
+      total_equity: 386867
+      longterm_debt: 21607
+      PPE_net: 223787
+rpo:
+  unit: USD billion
+  points:
+  - date: '2026-09-30'
+    total: 567.7
+    cloud: 560.8
+    document: q3_10q
+  - date: '2026-06-30'
+    total: 519.5
+    cloud: 513.9
+    document: q2_10q
+  - date: '2026-03-31'
+    total: 467.6
+    cloud: 462.3
+    document: q1_10q
+  recognition:
+    share_text: just over 55
+    months: 24
+    document: q3_10q
+    excerpt: We expect to recognize just over 55 % of the revenue backlog as revenues over the next 24 months
+  scope_change:
+    zh: 自 2026 年第一季度起，积压订单包含原合同期限不超过一年的合同；2025 年同期口径不含这些合同，因此没有同口径的同比增速。
+    en: From Q1 2026 the backlog includes contracts with an original term of one year or less; the 2025 comparison excluded them, so there is
+      no same-basis year-over-year growth rate.
+fx:
+  document: release_q3_2026
+  reported_revenue: 127577
+  yoy_constant_currency_revenue: 128085
+  yoy_constant_currency_growth_pct_rounded: 25
+  qoq_constant_currency_revenue: 127816
+  qoq_constant_currency_growth_pct_rounded: 7
+per_share:
+  document: release_q3_2026
+  diluted_eps_q3_2026: 2.12
+  diluted_eps_q3_2025: 2.87
+annual_cash_ppe:
+  year: 2025
+  value: 91447
+  document: fy25_10k
+guidance:
+- id: g_2024_qual
+  announced: '2024-01-31'
+  target_year: 2024
+  kind: qualitative
+  document: fy23_10k
+  excerpt: We also expect to increase, relative to 2023, our investment in our technical infrastructure
+  statement:
+    zh: 2024 年技术基础设施投入预计高于 2023 年（无数字区间；全年数字不能与「仅技术基础设施」口径逐项对照）
+    en: 2024 technical infrastructure investment expected to exceed 2023 (no numeric range; the full-year figure cannot be matched to a technical-infrastructure-only
+      basis)
+- id: g_2025_feb
+  announced: '2025-02-04'
+  target_year: 2025
+  kind: point
+  point_usd_bn: 75
+  document: release_q4_2024
+  excerpt: we expect to invest approximately $75 billion in capital expenditures in 2025
+  statement:
+    zh: 2025 年资本开支约 750 亿美元
+    en: 2025 capital expenditures of approximately USD 75 billion
+- id: g_2025_jul
+  announced: '2025-07-23'
+  target_year: 2025
+  kind: point
+  point_usd_bn: 85
+  document: release_q2_2025
+  excerpt: we are increasing our investment in capital expenditures in 2025 to approximately $85 billion
+  statement:
+    zh: 2025 年资本开支上调至约 850 亿美元
+    en: 2025 capital expenditures raised to approximately USD 85 billion
+- id: g_2025_oct
+  announced: '2025-10-29'
+  target_year: 2025
+  kind: range
+  low_usd_bn: 91
+  high_usd_bn: 93
+  document: release_q3_2025
+  excerpt: we now expect 2025 capital expenditures to be in a range of $91 billion to $93 billion
+  statement:
+    zh: 2025 年资本开支预计为 910 亿至 930 亿美元
+    en: 2025 capital expenditures expected at USD 91 billion to USD 93 billion
+- id: g_2026_feb
+  announced: '2026-02-04'
+  target_year: 2026
+  kind: range
+  low_usd_bn: 175
+  high_usd_bn: 185
+  document: release_q4_2025
+  excerpt: our 2026 CapEx investments are anticipated to be in the range of $175 to $185 billion
+  statement:
+    zh: 2026 年资本开支预计为 1,750 亿至 1,850 亿美元
+    en: 2026 capital expenditures anticipated at USD 175 billion to USD 185 billion
+- id: g_2026_q3_qual
+  announced: '2026-10-29'
+  target_year: 2026
+  kind: qualitative
+  document: q3_10q
+  excerpt: In 2026, we expect to significantly increase, relative to 2025, our investment in our technical infrastructure
+  statement:
+    zh: 2026 年技术基础设施投入预计较 2025 年大幅增加（第三季度 10-Q，无新的数字区间）
+    en: 2026 technical infrastructure investment expected to increase significantly versus 2025 (Q3 10-Q; no new numeric range)
+notes:
+- id: ec_fine
+  document: q3_10q
+  title:
+    zh: 欧盟委员会罚款：去年同期费用与本期现金支付不是同一事项
+    en: 'European Commission fines: the prior-year charge and the current cash payment are different matters'
+  excerpts:
+  - We recognized a charge of $ 3.5 billion in the third quarter of 2025
+  - In July 2026, we made a cash payment of $ 5.2 billion for the fine plus accrued interest.
+  fact:
+    zh: 原文披露：2025 年第三季度确认了约 35 亿美元的费用（欧盟竞争法下的广告技术事项）；2026 年 7 月以现金支付约 52 亿美元（2018 年 Android 案的罚款与应计利息，此前已计提）。
+    en: The filing discloses a charge of about USD 3.5 billion recognised in Q3 2025 (an EU competition-law ad-tech matter) and a July 2026 cash
+      payment of about USD 5.2 billion (the 2018 Android decision fine plus accrued interest, previously accrued).
+  limit:
+    zh: 两项属于不同案件、不同时点；第一项是 2025 年第三季度的费用，第二项是 2026 年的现金支付，不是同一笔钱。本页不把罚款分摊到分部，也不假设税率；「剔除去年罚款」的算术只作示意，见比较表。
+    en: 'These are different cases at different times: the first is a Q3 2025 expense, the second a 2026 cash payment, not the same money. This
+      page does not allocate the fines to segments or assume a tax rate; the ex-fine arithmetic is illustrative only, see the comparison table.'
+  approx:
+    prior_year_charge_usd_m: 3500
+    cash_payment_usd_m: 5200
+- id: equity_securities
+  document: release_q3_2026
+  title:
+    zh: 权益证券损益使各季度净利润不可直接比较
+    en: Gains and losses on equity securities make quarterly net income not directly comparable
+  excerpts:
+  - the net effect of the loss on equity securities of $8.7 billion decreased the provision for income tax, net income, and diluted net income
+    per common share by $1.9 billion, $6.7 billion, and $0.55, respectively.
+  fact:
+    zh: 「权益证券净损益」逐季为：2025 年第三季度 +107.34 亿、第四季度 +23.02 亿，2026 年第一季度 +369.15 亿、第二季度 +990.31 亿、第三季度 −86.64 亿美元。发行人披露：第三季度约 87 亿美元的损失使所得税拨备减少约 19
+      亿、净利润减少约 67 亿、稀释后每股收益减少约 0.55 美元。
+    en: 'Net gain (loss) on equity securities by quarter: Q3 2025 +USD 10.73 bn, Q4 2025 +USD 2.30 bn, Q1 2026 +USD 36.92 bn, Q2 2026 +USD 99.03
+      bn, Q3 2026 -USD 8.66 bn. The issuer states that the Q3 loss of about USD 8.7 bn reduced the income tax provision by about USD 1.9 bn, net
+      income by about USD 6.7 bn and diluted EPS by about USD 0.55.'
+  limit:
+    zh: 「税前利润剔除权益证券损益」是税前算术，不是发行人的正常化盈利，也不是预测；不推断这类损益是否再次出现。税后影响只引用发行人披露的近似值，不用四舍五入后的数字反推税率。
+    en: '''Pretax income excluding equity-security gains and losses'' is pretax arithmetic, not issuer-normalised earnings and not a forecast;
+      no recurrence is inferred. The after-tax effect uses only the issuer''s approximate figures, not a tax rate backed out of rounded numbers.'
+- id: preferred_claims
+  document: q3_10q
+  title:
+    zh: 普通股可得净利润与合并净利润之间是优先股股息，不是少数股东权益
+    en: Between consolidated and common net income is the preferred dividend, not non-controlling interest
+  excerpts: []
+  fact:
+    zh: 2026 年第三季度合并净利润 264.68 亿美元，扣除优先股股息 2.98 亿后，普通股可得净利润 261.70 亿美元；前三季度优先股现金净发行 190.63 亿美元，期末优先股账面权益 180.23 亿美元。
+    en: Q3 2026 consolidated net income was USD 26.47 bn; after USD 0.30 bn of preferred dividends, net income available to common stockholders
+      was USD 26.17 bn. Net cash proceeds of preferred issuance in the first nine months were USD 19.06 bn; the carrying amount of preferred equity
+      at period end was USD 18.02 bn.
+  limit:
+    zh: 优先股的账面权益、发行净现金与股息应计/现金支付是不同口径，不能互换；报表正面没有单独的归属母公司净利润调节，本页不自行编造。未对未调整的总权益计算 2026 年普通股回报率。
+    en: Carrying amount, net issue proceeds and dividend accrual/cash payments of the preferred stock are different measures. The statement face
+      has no separate parent-attributable reconciliation and none is invented here. No 2026 common ROE is computed on unadjusted total equity.
+- id: cloud_mix
+  document: q3_10q
+  title:
+    zh: Google Cloud 收入含 TPU 系统产品销售，发行人没有披露其金额
+    en: Google Cloud revenue includes TPU system product sales; the issuer does not disclose the amount
+  excerpts:
+  - primarily driven by growth in Google Cloud Platform, largely from infrastructure and platform services, and TPU system sales.
+  - partially offset by increases in inventory and related costs associated with the sale of TPU systems and usage costs for technical infrastructure.
+  fact:
+    zh: 原文称 Google Cloud 季度收入增长主要来自 Google Cloud Platform（以基础设施与平台服务为主）和 TPU 系统销售；营业利润增长被与销售 TPU 系统相关的库存及相关成本以及技术基础设施使用成本部分抵消。
+    en: The filing attributes the quarterly Google Cloud revenue increase mainly to Google Cloud Platform (largely infrastructure and platform
+      services) and TPU system sales, and says the operating-income increase was partly offset by inventory and related costs of TPU system sales
+      and technical-infrastructure usage costs.
+  limit:
+    zh: 没有披露 TPU 系统销售的收入或利润、也没有只含经常性服务的利润率，所以不能把 Cloud 的全部增长或利润率变化归为经常性 AI 服务消费。「Search & other」不等于纯搜索广告；「YouTube ads」不含订阅收入（计入订阅、平台和设备）。
+    en: Neither TPU system revenue or profit nor a recurring-services-only margin is disclosed, so the whole Cloud increase or margin change cannot
+      be attributed to recurring AI service consumption. 'Search & other' is not search advertising alone; 'YouTube ads' excludes subscription
+      receipts (reported in subscriptions, platforms and devices).
+- id: acquisitions
+  document: q3_10q
+  title:
+    zh: 报告增速包含并购并表，恒定汇率增速不是有机增速
+    en: Reported growth includes acquired operations; constant-currency growth is not organic growth
+  excerpts:
+  - On March 11, 2026, we completed our acquisition of Wiz for $ 29.5 billion
+  fact:
+    zh: Wiz 于 2026 年 3 月 11 日完成收购（对价约 295 亿美元，调整后、不含合并后的薪酬安排），并表后计入 Google Cloud；Intersect 于 2026 年 3 月 10 日完成（对价约 59 亿美元）。
+    en: Wiz was acquired on 11 March 2026 (about USD 29.5 bn after purchase-price adjustments, excluding post-combination compensation) and is
+      reported in Google Cloud; Intersect closed on 10 March 2026 (about USD 5.9 bn).
+  limit:
+    zh: 发行人没有提供完整的并购收入与有机增长桥，所以本页所有增速都是报告口径，不能称为有机增长。
+    en: The issuer supplies no complete acquisition or organic revenue bridge, so every growth rate on this page is on a reported basis and cannot
+      be called organic.
+- id: fx
+  document: release_q3_2026
+  title:
+    zh: 恒定汇率口径只去除汇率与套期影响
+    en: Constant-currency figures remove only FX and hedging effects
+  excerpts: []
+  fact:
+    zh: 发行人对账：2026 年第三季度报告收入 1,275.77 亿美元；按同比恒定汇率为 1,280.85 亿美元（同比约 25%）；按环比恒定汇率为 1,278.16 亿美元（环比约 7%）。
+    en: 'Issuer reconciliation: Q3 2026 reported revenue USD 127.58 bn; year-over-year constant-currency revenue USD 128.09 bn (about 25% growth);
+      quarter-over-quarter constant-currency revenue USD 127.82 bn (about 7% growth).'
+  limit:
+    zh: 恒定汇率不去除并购或产品组合影响；没有恒定汇率下的利润序列，也不由此推断有机增长。
+    en: Constant currency does not remove acquisition or product-mix effects. No constant-currency profit series exists and no organic growth
+      is inferred.
+- id: financing
+  document: q3_10q
+  title:
+    zh: 融资现金不是经营现金，也不是客户需求的证据
+    en: Financing cash is neither operating cash nor evidence of customer demand
+  excerpts:
+  - As of September 30, 2026, $27.6 billion
+  fact:
+    zh: 2026 年前三季度现金流量表：普通股发行净现金 428.70 亿美元（其中第三季度 123.71 亿）、优先股发行净现金 190.63 亿、债务发行净现金 852.22 亿（其中第三季度 289.96 亿）。按市价发行计划授权约 400 亿美元，截至 2026-09-30
+      剩余约 276 亿美元。
+    en: 'Cash-flow statement, first nine months of 2026: net proceeds of USD 42.87 bn from common stock (USD 12.37 bn in Q3), USD 19.06 bn from
+      preferred stock and USD 85.22 bn from debt (USD 29.00 bn in Q3). The at-the-market programme authorised about USD 40 bn, of which about
+      USD 27.6 bn remained at 30 September 2026.'
+  limit:
+    zh: 授权额度不是已募集资金；已发行的优先股不是普通股权益，也不是普通贷款。普通股与优先股融资可能影响后续稀释与资本配置，但本页不作判断。
+    en: An authorisation is not funded cash; preferred stock is neither common equity nor an ordinary loan. Common and preferred financing can
+      affect future dilution and capital allocation; this page makes no judgement on that.
+- id: ppe_payable
+  document: q3_10q
+  title:
+    zh: 固定资产应付款与担保是现金资本开支之外的承诺信息
+    en: Property payables and guarantees are commitments outside cash capital expenditure
+  excerpts: []
+  fact:
+    zh: 应计负债与应付账款中的固定资产款项：2025 年前三季度末 145.74 亿美元，2026 年前三季度末 359.21 亿美元；2026-09-30 财务担保约 228 亿美元。
+    en: 'Property and equipment included in accrued liabilities and accounts payable: USD 14.57 bn at the end of the first nine months of 2025
+      and USD 35.92 bn in 2026; financial guarantees at 30 September 2026 of about USD 22.8 bn.'
+  limit:
+    zh: 这是应计负债与应付账款合并披露的非现金项目，不是单独的贸易应付款，也不是已发生的现金流出，不能从应付账款中扣除；财务担保是或有敞口，不是已融资债务。现金资本开支本身不能衡量全部资本承诺。
+    en: This is a combined accrued-liability and payables non-cash disclosure, not standalone trade payables and not a cash outflow; it must not
+      be subtracted from accounts payable. Financial guarantees are contingent exposures, not funded debt. Cash capital expenditure alone does
+      not measure all capital commitments.
+- id: capital_rollforward
+  document: q3_10q
+  title:
+    zh: 固定资产净额的部分滚动：现金口径之外还有未调和的变动
+    en: 'Partial property roll-forward: movements remain beyond the cash-only bridge'
+  excerpts: []
+  fact:
+    zh: 固定资产净额 2025 年末 2,465.97 亿美元，2026-09-30 为 3,728.27 亿美元（增加 1,262.30 亿）；前三季度现金购建 1,319.53 亿减折旧 219.55 亿为 1,099.98 亿，差额 162.32 亿美元未由现金口径解释。
+    en: Net property and equipment rose from USD 246.60 bn at end-2025 to USD 372.83 bn at 30 September 2026 (+USD 126.23 bn). Nine-month cash
+      purchases of USD 131.95 bn less depreciation of USD 21.96 bn is USD 110.00 bn; the USD 16.23 bn residual is not explained by the cash-only
+      bridge.
+  limit:
+    zh: 差额不是会计差错：并购、非现金取得、汇率、资产处置与各类资产的变动没有完全调和。本页不拆分维护性与增长性开支，也不编造折旧年限模型或单位成本预测。
+    en: 'The residual is not an accounting error: acquisitions, non-cash additions, FX, disposals and class-specific movements are not fully reconciled.
+      No maintenance/growth split, depreciation-life model or unit-cost forecast is invented.'
+- id: q4_vintage
+  document: release_q4_2025
+  title:
+    zh: 2025 年第四季度由全年减前三季度推出，与当时的直接季度值差 100 万美元
+    en: Q4 2025 is derived as full year minus nine months and differs by USD 1 million from the original direct quarter
+  excerpts: []
+  fact:
+    zh: 2025 年全年收入 4,028.36 亿美元减去当前 10-Q 中前三季度比较数 2,890.07 亿美元，得 1,138.29 亿美元；当时第四季度新闻稿的直接季度值为 1,138.28 亿美元。
+    en: FY2025 revenue of USD 402.84 bn less the nine-month comparative of USD 289.01 bn in the current 10-Q gives USD 113.83 bn; the original
+      Q4 2025 release stated USD 113.83 bn directly (113,828 vs 113,829 USD million).
+  limit:
+    zh: 差异原因没有确定，也不补平；第四季度趋势使用明确标注的推导值，并非声称精确复现了直接季度值。2026 年第三、第二季度主要数字不受影响。
+    en: The cause of the difference is not established and is not plugged. The Q4 trend uses the explicitly derived values and does not claim
+      to reproduce the direct quarter exactly. Q3 and Q2 2026 headline figures are unaffected.
+  check:
+    original_direct_q4_2025_revenue: 113828
+    document: release_q4_2025
+coverage:
+- id: five_quarters
+  status: done
+  item:
+    zh: 五个季度的收入、利润、分部与现金流（报告口径）及同比、环比
+    en: Five quarters of revenue, profit, segments and cash flow (reported basis) with year-over-year and quarter-over-quarter changes
+- id: cash_conversion
+  status: done
+  item:
+    zh: 经营现金流、现金资本开支与发行人定义的自由现金流（经营现金流减资本开支）
+    en: Operating cash flow, cash capital expenditure and the issuer-defined free cash flow (operating cash flow less capital expenditure)
+- id: items_bridge
+  status: done
+  item:
+    zh: 权益证券损益与去年同期欧盟罚款的税前局部剔除算术（示意，非正常化盈利）
+    en: Pretax arithmetic excluding equity-security gains and the prior-year EU charge (illustrative; not normalised earnings)
+- id: fx_reconciliation
+  status: done
+  item:
+    zh: 发行人恒定汇率对账
+    en: Issuer constant-currency reconciliation
+- id: rpo
+  status: done
+  item:
+    zh: 收入积压订单（汇总余额、期限与口径变化）
+    en: Revenue backlog (aggregate balance, horizon and scope change)
+- id: capex_guidance
+  status: done
+  item:
+    zh: 资本开支历史展望与实际的对照（2024 至 2026 年发行人原文）
+    en: Capital expenditure outlooks versus actuals (issuer wording, 2024 to 2026)
+- id: tpu_acquisition_bridge
+  status: data_gap
+  item:
+    zh: TPU 系统销售与 Wiz、Intersect 的收入和利润贡献、有机增长、仅经常性服务的利润率
+    en: Revenue and profit contribution of TPU system sales, Wiz and Intersect; organic growth; recurring-services-only margin
+- id: backlog_timeline
+  status: data_gap
+  item:
+    zh: 合同级的积压订单兑现时点、选择权与照付不议条款；按年的收入转换
+    en: Contract-level backlog timing, options and take-or-pay terms; annual revenue conversion
+- id: capex_split
+  status: data_gap
+  item:
+    zh: 资本开支的维护/增长拆分、设备单位成本、投产时点与资产寿命
+    en: Maintenance/growth split of capital expenditure, unit costs, in-service timing and asset lives
+- id: inventory_history
+  status: data_gap
+  item:
+    zh: 营运资本周期（应收、存货、应付天数）：本页未收录；2023、2024 年末存货缺匹配的申报事实，也没有仅含贸易项的应收/应付口径
+    en: Working-capital cycles (receivable, inventory and payable days) are not on this page; end-2023 and end-2024 inventory has no matching filed fact and there is no trade-only receivable/payable basis
+- id: normalised_earnings
+  status: judgment
+  item:
+    zh: 完整的税后正常化盈利与持续性判断（罚款、证券损益是否再次出现）
+    en: Full after-tax normalised earnings and any recurrence judgement (whether fines or securities gains and losses recur)
+- id: call_context
+  status: judgment
+  item:
+    zh: 业绩电话会的管理层表述与问答（逐字稿的使用条款未核清，未读取）
+    en: Management commentary and Q&A from the earnings call (transcript terms not cleared; not read)
+- id: market_reaction
+  status: judgment
+  item:
+    zh: 股价的事件窗口反应、历史预期与估值（需要可展示的日度价格来源，尚未选定；估值与预期不在本研究范围）
+    en: Event-window price reaction, past expectations and valuation (needs a daily price source that may be displayed, not yet chosen; valuation
+      and expectations are outside this study)

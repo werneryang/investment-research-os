@@ -29,6 +29,7 @@ from .palette import PALETTE  # noqa: E402
 from .industry import figures as industry_figures, sections as industry_sections  # noqa: E402
 from .chip import check_line as chip_check_line, figures as chip_figures, sections as chip_sections  # noqa: E402
 from .events import sections as event_sections  # noqa: E402
+from .earnings import sections as earnings_sections  # noqa: E402
 from .refining import (baseline_line, figures as refining_figures, investment_figures, investment_sections,  # noqa: E402
                        overlap_line, ratio_line, sections as refining_sections, sp500_line)
 
@@ -507,7 +508,7 @@ _BRANCH_SECTIONS = {"rates_curve": _curve_sections, "par_bond_scenarios": _bond_
                     "curve_attribution": _attribution_sections, "asset_history": _asset_sections,
                     "industry": industry_sections, "company": company_sections,
                     "refining_throughput": refining_sections, "refining_investment": investment_sections,
-                    "chip_operations": chip_sections, "event_timeline": event_sections}
+                    "chip_operations": chip_sections, "event_timeline": event_sections, "earnings_quarter": earnings_sections}
 
 
 def _sections(result: dict[str, Any]) -> list[tuple[str, list[Any]]]:

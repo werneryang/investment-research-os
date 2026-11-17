@@ -21,6 +21,7 @@ PATHS = {
     'chip-segments': ('tables',), 'chip-feasibility': ('results', 'feasibility'),
     'chain-upstream': ('results', 'upstream', 'layers'), 'chain-downstream': ('results', 'downstream', 'layers'),
     'chain-revenue': ('results', 'revenue'), 'event-timeline': ('results', 'timeline'),
+    'earnings-quarterly': ('results', 'quarters'), 'earnings-comparability': ('results', 'notes'),
 }
 REPORT_TARGETS = {'chip-segments', 'chip-feasibility'}
 

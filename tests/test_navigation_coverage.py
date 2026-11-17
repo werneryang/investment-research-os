@@ -63,6 +63,8 @@ def test_all_study_families_keep_their_reader_paths(navigation):
     add(['chip_relation_chain_intc'],'company','issuer','structure','relationships','chain-downstream')
     add(['chip_relation_chain_intc'],'industry','chips','exposure','association','chain-revenue')
     add(['event_nvda_ceo_transition_2026'],'company','issuer','events','timeline','event-timeline')
+    add(['earnings_googl_2026q3'],'company','issuer','fundamentals','financials','earnings-quarterly')
+    add(['earnings_googl_2026q3'],'company','issuer','data','comparability','earnings-comparability')
     companies=yaml.safe_load((PROJECT_ROOT/'config/company-research.yaml').read_text())['companies']
     for sid in ['company_sample', *['company_'+c['slug'] for c in companies]]:
         add([sid],'company','issuer','fundamentals','financials','company-overview' if sid=='company_sample' else 'company-annual')

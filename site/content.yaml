@@ -17,6 +17,7 @@ study_order:
 - chip_relation_chain_nvda
 - chip_relation_chain_intc
 - event_nvda_ceo_transition_2026
+- earnings_googl_2026q3
 collections:
   company_filings:
     name: 公司年度财报
@@ -912,6 +913,29 @@ studies:
       primary: true
     entity_ids:
     - co_nvidia
+  earnings_googl_2026q3:
+    label: 季度财报研究
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: earnings-quarterly
+      scope:
+        zh: Alphabet 2025 年第三季度至 2026 年第三季度的五个季度：报告口径的收入、利润、分部与现金流；不是有机增长
+        en: 'Alphabet, five quarters from Q3 2025 to Q3 2026: reported revenue, profit, segments and cash flow; not organic growth'
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: earnings-comparability
+      scope:
+        zh: Alphabet 2026 年第三季度的可比性事项：欧盟费用、权益证券损益、TPU 与并购、恒定汇率、积压订单口径
+        en: 'Alphabet Q3 2026 comparability items: EU charge, equity-security gains and losses, TPU and acquisitions, constant currency, backlog definition'
+      primary: false
+    entity_ids:
+    - cik_1652044
   company_alphabet:
     routes:
     - object: company
@@ -2137,6 +2161,8 @@ entity_aliases:
   - Alphabet
   - Google
   - 谷歌
+  - GOOGL
+  - GOOG
   cik_1318605:
   - Tesla
   - 特斯拉
