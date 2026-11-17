@@ -46,7 +46,7 @@ STATE_EN = {
     "全部低估价格": "understates price in every case", "方向不一致": "mixed direction",
     "个百分点": "pp",
     # 季度财报研究的状态
-    "最新季度": "Latest quarter", "自由现金流符号": "Sign of free cash flow", "权益证券损益方向": "Direction of equity-security result",
+    "最新季度": "Latest quarter", "自由现金流符号": "Sign of free cash flow", "非经营项目损益方向": "Direction of the non-operating item result",
     "覆盖项": "Coverage items", "为负": "negative", "为正": "positive", "净损失": "net loss", "净收益": "net gain",
     "已完成": "done", "数据不足": "data gap", "需判断": "needs judgement",
     # 旧规则版本记录的覆盖标签
@@ -239,34 +239,56 @@ def _bond(result: dict[str, Any]) -> dict[str, str]:
 
 def _earnings_quarter(result):
     r = result['results']
-    cur = next(q for q in r['quarters'] if q['period'] == 'q3_2026')
-    prior = next(q for q in r['quarters'] if q['period'] == 'q3_2025')
-    comp, b = r['comparison'], r['bridges']
+    if 'profile' not in r:  # 早于 profile 的运行：保留记录的中文发现
+        return {}
+    p = r['profile']
+    f = p['findings']
+    cur = next(q for q in r['quarters'] if q['period'] == p['current'])
+    prior = next(q for q in r['quarters'] if q['period'] == p['yoy_base'])
+    comp, b = r['comparison'], r.get('bridges') or {}
     yoy, qoq = comp['yoy'], comp['qoq']
     bn = lambda v: f"{v / 1e3:,.2f}"
     out = {'earnings_revenue': f"{cur['label']} revenue was USD {bn(cur['revenue'])} billion, {yoy['pct']['revenue']:+.1f}% year over year and "
-                               f"{qoq['pct']['revenue']:+.1f}% quarter over quarter. This is reported growth: the issuer does not disclose a revenue bridge for "
-                               "acquisitions and TPU system sales, so it cannot be called organic."}
+                               f"{qoq['pct']['revenue']:+.1f}% quarter over quarter. {f['revenue_caveat']['en']}"}
     text = (f"Operating income was USD {bn(cur['op_income'])} billion, an operating margin of {cur['op_margin']:.1f}%, "
             f"{yoy['margin_pp']['op_margin']:+.1f} percentage points versus a year earlier.")
     if b.get('prior_year_charge_usd_m'):
-        text += (f" The prior-year quarter included an EU-related charge of about USD {b['prior_year_charge_usd_m'] / 1e3:.1f} billion; adding it back as "
+        text += (f" The prior-year quarter included an {p['prior_year_charge']['label']['en']} of about USD {b['prior_year_charge_usd_m'] / 1e3:.1f} billion; adding it back as "
                  f"illustrative arithmetic, the margin is {b['current_vs_prior_margin_pp']:+.1f} percentage points versus a year earlier (not normalised earnings).")
     out['earnings_operating'] = text
-    out['earnings_cloud'] = (f"Google Cloud revenue was USD {bn(cur['Cloud_revenue'])} billion, {yoy['pct']['Cloud_revenue']:+.1f}% year over year, with an "
-                             f"operating margin of {cur['Cloud_margin']:.1f}% ({yoy['margin_pp']['Cloud_margin']:+.1f} percentage points versus a year earlier). "
-                             "Revenue includes TPU system product sales and acquired operations; their amounts are not disclosed.")
-    equity = cur['equity_security_gain_loss']
-    out['earnings_net_income'] = (f"Consolidated net income was USD {bn(cur['consolidated_NI'])} billion, {yoy['pct']['consolidated_NI']:+.1f}% year over year; other "
-                                  f"income included a net {'loss' if equity < 0 else 'gain'} of USD {bn(abs(equity))} billion on equity securities "
-                                  f"(prior year {prior['equity_security_gain_loss'] / 1e3:+,.2f}). Pretax income excluding that item, as illustrative arithmetic, was USD "
-                                  f"{bn(cur['ebt_ex_equity_securities'])} billion (prior year {bn(prior['ebt_ex_equity_securities'])}).")
-    out['earnings_cash'] = (f"Operating cash flow was USD {bn(cur['cfo'])} billion and cash capital expenditure USD {bn(cur['cash_ppe'])} billion "
-                            f"({cur['capex_to_sales']:.1f}% of revenue; prior year {prior['capex_to_sales']:.1f}%). Free cash flow as the issuer defines it was "
-                            f"USD {cur['free_cash_flow'] / 1e3:+,.2f} billion; the last four quarters total USD {bn(r['cash']['ttm']['free_cash_flow'])} billion.")
-    last = sorted(r['rpo']['points'], key=lambda p: p['date'])[-1]
-    out['earnings_backlog'] = (f"Revenue backlog was USD {last['total']:,.1f} billion (Google Cloud USD {last['cloud']:,.1f} billion), {last['total_qoq_pct']:+.1f}% "
-                               "versus the previous quarter. The definition widened from Q1 2026, so there is no same-basis year-over-year growth rate.")
+    seg = f.get('segment')
+    if seg:
+        out['earnings_segment'] = (f"{seg['name']} revenue was USD {bn(cur[seg['revenue']])} billion, {yoy['pct'][seg['revenue']]:+.1f}% year over year, with an "
+                                   f"operating margin of {cur[seg['margin']]:.1f}% ({yoy['margin_pp'][seg['margin']]:+.1f} percentage points versus a year earlier). "
+                                   f"{seg['caveat']['en']}")
+    text = f"Consolidated net income was USD {bn(cur['consolidated_NI'])} billion, {yoy['pct']['consolidated_NI']:+.1f}% year over year"
+    no = p.get('non_operating')
+    if no:
+        item = cur[no['key']]
+        text += (f"; other income included a net {'loss' if item < 0 else 'gain'} of USD {bn(abs(item))} billion on {no['label']['en']} "
+                 f"(prior year {prior[no['key']] / 1e3:+,.2f}). Pretax income excluding that item, as illustrative arithmetic, was USD "
+                 f"{bn(cur['ebt_ex_equity_securities'])} billion (prior year {bn(prior['ebt_ex_equity_securities'])}).")
+    else:
+        text += "."
+    out['earnings_net_income'] = text
+    text = (f"Operating cash flow was USD {bn(cur['cfo'])} billion and cash capital expenditure USD {bn(cur['cash_ppe'])} billion "
+            f"({cur['capex_to_sales']:.1f}% of revenue; prior year {prior['capex_to_sales']:.1f}%). Free cash flow as the issuer defines it was "
+            f"USD {cur['free_cash_flow'] / 1e3:+,.2f} billion")
+    if r['cash'].get('trailing'):
+        text += f"; the last four quarters total USD {bn(r['cash']['trailing']['free_cash_flow'])} billion"
+    out['earnings_cash'] = text + "."
+    rpo = r.get('rpo')
+    if rpo:
+        series = p['rpo']['series']
+        last = sorted(rpo['points'], key=lambda x: x['date'])[-1]
+        k0 = series[0]['key']
+        text = f"Revenue backlog was USD {last[k0]:,.1f} billion"
+        if len(series) > 1:
+            text += f" ({series[1]['short']['en']} USD {last[series[1]['key']]:,.1f} billion)"
+        if last.get(f'{k0}_qoq_pct') is not None:
+            text += f", {last[f'{k0}_qoq_pct']:+.1f}% versus the previous quarter"
+        caveat = f.get('backlog_caveat')
+        out['earnings_backlog'] = text + (f". {caveat['en']}" if caveat else ".")
     return out
 
 

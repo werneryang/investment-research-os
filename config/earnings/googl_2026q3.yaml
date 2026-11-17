@@ -400,6 +400,9 @@ rpo:
     months: 24
     document: q3_10q
     excerpt: We expect to recognize just over 55 % of the revenue backlog as revenues over the next 24 months
+    statement:
+      zh: 发行人称预计在未来 24 个月内确认积压订单的略高于 55%，其余在之后确认。
+      en: The issuer expects to recognise just over 55% of the backlog over the next 24 months, the remainder thereafter.
   scope_change:
     zh: 自 2026 年第一季度起，积压订单包含原合同期限不超过一年的合同；2025 年同期口径不含这些合同，因此没有同口径的同比增速。
     en: From Q1 2026 the backlog includes contracts with an original term of one year or less; the 2025 comparison excluded them, so there is
@@ -712,3 +715,195 @@ coverage:
     zh: 股价的事件窗口反应、历史预期与估值（需要可展示的日度价格来源，尚未选定；估值与预期不在本研究范围）
     en: Event-window price reaction, past expectations and valuation (needs a daily price source that may be displayed, not yet chosen; valuation
       and expectations are outside this study)
+
+# 这家公司的研究配置（docs/study-earnings.md「新增一家公司」）：研究分支、关键发现和页面只读这里，代码里不写死公司
+profile:
+  short_name: Alphabet
+  quarters:               # 从旧到新；没有直接披露的季度用 derive（全年减前几季度）
+  - {id: q3_2025, label: 2025 Q3, end: '2025-09-30', name: {zh: 2025 年第三季度, en: Q3 2025}}
+  - id: q4_2025
+    label: 2025 Q4
+    end: '2025-12-31'
+    name: {zh: 2025 年第四季度, en: Q4 2025}
+    derive:
+      total: fy_2025
+      less: nine_months_2025
+      method: {zh: 全年减前三季度, en: full year less nine months}
+      note:
+        zh: 2025 年第四季度由 2025 年全年减去 2026 年第三季度 10-Q 中的前三季度比较数推出，不是申报中的直接季度值（与当时新闻稿的直接值收入差 100 万美元，见可比性说明）。
+        en: Q4 2025 is derived as full-year 2025 less the nine-month comparative in the Q3 2026 10-Q; it is not a directly filed quarter (revenue differs by USD 1 million from the original release; see comparability notes).
+  - {id: q1_2026, label: 2026 Q1, end: '2026-03-31', name: {zh: 2026 年第一季度, en: Q1 2026}}
+  - {id: q2_2026, label: 2026 Q2, end: '2026-06-30', name: {zh: 2026 年第二季度, en: Q2 2026}}
+  - {id: q3_2026, label: 2026 Q3, end: '2026-09-30', name: {zh: 2026 年第三季度, en: Q3 2026}}
+  current: q3_2026
+  yoy_base: q3_2025
+  qoq_base: q2_2026
+  year_to_date:           # 现金流期间 id、所含季度（用于合并净利润合计）
+    id: nine_months_2026
+    quarters: [q1_2026, q2_2026, q3_2026]
+    label: {zh: 2026 年前三季度, en: First nine months of 2026}
+    short: {zh: 前三季度, en: nine-month}
+  trailing: ttm_2026q3
+  income_metrics: [revenue, cost_of_revenues, R_and_D, sales_marketing, G_and_A, op_income, other_income, EBT, income_tax, consolidated_NI,
+    preferred_dividends, common_NI, Search, YouTube_ads, Network, subscriptions_platforms_devices, Services_revenue, Cloud_revenue,
+    OtherBets_revenue, hedging, Services_op, Cloud_op, OtherBets_op, Alphabet_level_op, equity_security_gain_loss]
+  identities:
+  - name: Search + YouTube + Network + 订阅/平台/设备 = Google Services 收入
+    terms: {Search: 1, YouTube_ads: 1, Network: 1, subscriptions_platforms_devices: 1}
+    equals: Services_revenue
+  - name: Services + Cloud + Other Bets + 套期 = 收入
+    terms: {Services_revenue: 1, Cloud_revenue: 1, OtherBets_revenue: 1, hedging: 1}
+    equals: revenue
+  - name: 收入 − 营业成本与费用 = 营业利润
+    terms: {revenue: 1, cost_of_revenues: -1, R_and_D: -1, sales_marketing: -1, G_and_A: -1}
+    equals: op_income
+  - name: 分部营业利润合计 = 营业利润
+    terms: {Services_op: 1, Cloud_op: 1, OtherBets_op: 1, Alphabet_level_op: 1}
+    equals: op_income
+  - name: 营业利润 + 其他收支 = 税前利润
+    terms: {op_income: 1, other_income: 1}
+    equals: EBT
+  - name: 税前利润 − 所得税 = 净利润
+    terms: {EBT: 1, income_tax: -1}
+    equals: consolidated_NI
+  - name: 净利润 − 优先股股息 = 普通股可得净利润
+    terms: {consolidated_NI: 1, preferred_dividends: -1}
+    equals: common_NI
+  segment_ops: [Services_op, Cloud_op, OtherBets_op, Alphabet_level_op]
+  ratios:                 # key = 100 × num / den（分母非正时为空）
+  - {key: Services_margin, num: Services_op, den: Services_revenue}
+  - {key: Cloud_margin, num: Cloud_op, den: Cloud_revenue}
+  - {key: OtherBets_margin, num: OtherBets_op, den: OtherBets_revenue}
+  - {key: Services_share, num: Services_revenue, den: revenue}
+  - {key: Cloud_share, num: Cloud_revenue, den: revenue}
+  - {key: Alphabet_level_op_to_sales, num: Alphabet_level_op, den: revenue}
+  growth: [revenue, Search, YouTube_ads, Network, subscriptions_platforms_devices, Services_revenue, Cloud_revenue, OtherBets_revenue,
+    cost_of_revenues, R_and_D, sales_marketing, G_and_A, op_income, EBT, income_tax, consolidated_NI, common_NI, cfo, cash_ppe]
+  margins: [gross_margin, op_margin, Services_margin, Cloud_margin]
+  non_operating:          # 示意算术剔除的非经营项目
+    key: equity_security_gain_loss
+    label: {zh: 权益证券, en: equity securities}
+  prior_year_charge:      # 示意算术加回的上年同期一次性费用（取自登记的说明里的约数）
+    note: ec_fine
+    field: prior_year_charge_usd_m
+    label: {zh: 欧盟相关费用, en: EU-related charge}
+  calibers:
+    segment_delta:
+      zh: 分部营业利润同比变动合计等于营业利润变动，只是算术分解；不区分 TPU 销售、服务消耗、价格或规模效应。
+      en: Year-over-year changes of segment operating income sum to the change in operating income; this is an arithmetic split only and does not separate TPU sales, service consumption, pricing or scale effects.
+    ex_items:
+      zh: 示意性的税前算术：税前利润减权益证券损益；营业利润加去年同期约 35 亿美元的欧盟相关费用。不是发行人的正常化盈利、不含税率调整、不是预测；约数来自原文的四舍五入披露。
+      en: 'Illustrative pretax arithmetic: pretax income less equity-security gains and losses; operating income plus the roughly USD 3.5 bn EU-related charge of the prior-year quarter. Not issuer-normalised earnings, no tax adjustment, not a forecast; the approximate amount comes from the filing''s rounded disclosure.'
+  bridge_clause: {zh: 权益证券损益与去年同期罚款的剔除只是税前示意算术。, en: Excluding equity-security gains and the prior-year charge is illustrative pretax arithmetic only.}
+  guidance_remaining:
+    guidance: g_2026_feb
+    label: {zh: 2026 年二月区间, en: the February 2026 range}
+    caliber:
+      zh: 二月公布的全年区间减去前三季度现金资本开支，是同口径的剩余额算术，不是公司对第四季度的指引，也不是对现金支出路径的预测。
+      en: The February full-year range less nine-month cash capital expenditure is same-definition residual arithmetic; it is neither company guidance for Q4 nor a forecast of the cash-spend path.
+  balance_note:
+    zh: 总权益含优先股，没有对未调整的总权益计算 2026 年回报率
+    en: total equity includes preferred stock, and no 2026 return on unadjusted total equity is computed
+  per_share: {current: diluted_eps_q3_2026, prior: diluted_eps_q3_2025}
+  rpo:
+    series:
+    - {key: total, label: {zh: 积压订单合计（十亿美元）, en: Backlog total (USD bn)}}
+    - {key: cloud, label: {zh: 其中 Google Cloud, en: of which Google Cloud}, short: {zh: Google Cloud, en: Google Cloud}}
+    qoq_label: {zh: 合计环比, en: Total QoQ}
+  findings:
+    revenue_caveat:
+      zh: 为报告口径，发行人没有披露并购与 TPU 系统销售的收入桥，不能称为有机增长。
+      en: 'This is reported growth: the issuer does not disclose a revenue bridge for acquisitions and TPU system sales, so it cannot be called organic.'
+    segment:
+      name: Google Cloud
+      revenue: Cloud_revenue
+      margin: Cloud_margin
+      caveat:
+        zh: 收入含 TPU 系统产品销售与并购并表，金额未披露。
+        en: Revenue includes TPU system product sales and acquired operations; their amounts are not disclosed.
+    backlog_caveat:
+      zh: 自 2026 年第一季度起口径扩大，没有同口径的同比增速。
+      en: The definition widened from Q1 2026, so there is no same-basis year-over-year growth rate.
+  metrics:
+    revenue: {zh: 收入, en: Revenue}
+    Search: {zh: Google Search & other, en: Google Search & other}
+    YouTube_ads: {zh: YouTube 广告, en: YouTube ads}
+    Network: {zh: Google Network, en: Google Network}
+    subscriptions_platforms_devices: {zh: 订阅、平台与设备, en: 'Subscriptions, platforms and devices'}
+    Services_revenue: {zh: Google Services, en: Google Services}
+    Cloud_revenue: {zh: Google Cloud, en: Google Cloud}
+    OtherBets_revenue: {zh: Other Bets, en: Other Bets}
+    cost_of_revenues: {zh: 营业成本, en: Cost of revenues}
+    R_and_D: {zh: 研发, en: Research and development}
+    sales_marketing: {zh: 销售与营销, en: Sales and marketing}
+    G_and_A: {zh: 一般与行政, en: General and administrative}
+    op_income: {zh: 营业利润, en: Operating income}
+    other_income: {zh: 其他收支净额, en: 'Other income (expense), net'}
+    equity_security_gain_loss: {zh: 其中：权益证券净损益, en: '  of which: equity securities gain (loss)'}
+    EBT: {zh: 税前利润, en: Income before taxes}
+    income_tax: {zh: 所得税, en: Income tax}
+    consolidated_NI: {zh: 合并净利润, en: Consolidated net income}
+    preferred_dividends: {zh: 优先股股息, en: Preferred dividends}
+    common_NI: {zh: 普通股可得净利润, en: Net income available to common}
+    gross_margin: {zh: 毛利率, en: Gross margin}
+    op_margin: {zh: 营业利润率, en: Operating margin}
+    Cloud_margin: {zh: Google Cloud 利润率, en: Google Cloud margin}
+    cfo: {zh: 经营活动现金流, en: Operating cash flow}
+    cash_ppe: {zh: 现金资本开支, en: Cash capital expenditure}
+    free_cash_flow: {zh: 自由现金流（发行人定义）, en: Free cash flow (issuer definition)}
+  report: [revenue, Services_revenue, Cloud_revenue, op_income, op_margin, Cloud_margin, consolidated_NI, equity_security_gain_loss, cfo, cash_ppe,
+    free_cash_flow]         # 文字报告里的行（默认同页面主表）
+  table:                  # 页面主表的行（从上到下）；growth: false 的行不显示同比、环比
+  - revenue
+  - Search
+  - YouTube_ads
+  - Network
+  - subscriptions_platforms_devices
+  - Services_revenue
+  - Cloud_revenue
+  - OtherBets_revenue
+  - cost_of_revenues
+  - R_and_D
+  - sales_marketing
+  - G_and_A
+  - op_income
+  - {key: other_income, growth: false}
+  - {key: equity_security_gain_loss, growth: false}
+  - {key: EBT, growth: false}
+  - {key: income_tax, growth: false}
+  - consolidated_NI
+  - {key: preferred_dividends, growth: false}
+  - common_NI
+  - gross_margin
+  - op_margin
+  charts:
+  - title: {zh: 收入与利润, en: Revenue and profit}
+    unit: usd_bn
+    series:
+    - {key: revenue, label: {zh: 收入, en: Revenue}}
+    - {key: op_income, label: {zh: 营业利润, en: Operating income}}
+    - {key: consolidated_NI, label: {zh: 合并净利润, en: Consolidated net income}}
+  - title: {zh: 利润率, en: Margins}
+    unit: pct
+    series:
+    - {key: gross_margin, label: {zh: 毛利率, en: Gross margin}}
+    - {key: op_margin, label: {zh: 营业利润率, en: Operating margin}}
+    - {key: Services_margin, label: {zh: Google Services 利润率, en: Google Services margin}}
+    - {key: Cloud_margin, label: {zh: Google Cloud 利润率, en: Google Cloud margin}}
+  - title: {zh: 现金流与资本开支, en: Cash flow and capital expenditure}
+    unit: usd_bn
+    series:
+    - {key: cfo, label: {zh: 经营现金流, en: Operating cash flow}}
+    - {key: cash_ppe, label: {zh: 现金资本开支, en: Cash capex}}
+    - {key: free_cash_flow, label: {zh: 自由现金流（发行人定义）, en: Free cash flow (issuer definition)}}
+  - title: {zh: 分部收入, en: Segment revenue}
+    unit: usd_bn
+    series:
+    - {key: Services_revenue, label: {zh: Google Services, en: Google Services}}
+    - {key: Cloud_revenue, label: {zh: Google Cloud, en: Google Cloud}}
+  segments:
+  - {name: Google Services, revenue: Services_revenue, op: Services_op, margin: Services_margin}
+  - {name: Google Cloud, revenue: Cloud_revenue, op: Cloud_op, margin: Cloud_margin}
+  - {name: Other Bets, revenue: OtherBets_revenue, op: OtherBets_op, margin: OtherBets_margin, digits: 0}
+  unallocated: {key: Alphabet_level_op, label: {zh: Alphabet 层面活动（未分摊）, en: Alphabet-level activities (unallocated)}, short: {zh: Alphabet 层面活动, en: Alphabet-level activities}}
+  share: {key: Cloud_share, label: {zh: 占收入比例 · Google Cloud, en: Share of revenue · Google Cloud}}

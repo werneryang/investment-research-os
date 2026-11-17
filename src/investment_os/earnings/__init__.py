@@ -1,14 +1,16 @@
 """季度财报登记与证据包（docs/study-earnings.md）。
 
 登记在 config/earnings/<earnings_id>.yaml：SEC 原文（SHA256 固定，存于 data/earnings/filings/）、
-逐期的合并利润表与分部数值、现金流量、资产负债表时点、收入积压订单、恒定汇率对账、资本开支展望、
-可比性说明和覆盖分类。核对（check）确认：
+逐期的合并利润表与分部数值、现金流量、资产负债表时点、可选的收入积压订单、恒定汇率对账、资本开支展望、
+可比性说明和覆盖分类，以及 `profile`：这家公司的季度列、利润表科目、会计恒等式、分部、比率、页面行与图表、
+关键发现措辞。研究分支、关键发现和页面只读 profile，不写死任何公司（新增公司见 docs/study-earnings.md）。核对（check）确认：
 
 - 原文文件存在、SHA256 与登记一致；
 - 每个登记数值（取绝对值、按千分位格式）出现在所引原文中；这是宽松的存在性检查，不证明数值取自正确的行列；
-- 会计恒等式成立：收入由各产品线合成，分部营业利润合计等于营业利润，营业利润加其他收支等于税前利润，
-  税前利润减所得税等于净利润，净利润减优先股股息等于普通股可得净利润；
-- 2025 年全年 = 前三季度 + 推导的第四季度；现金流量表的季度现金流与资本开支满足发行人的自由现金流定义；
+- profile 的结构完整且引用的科目都存在；
+- 会计恒等式成立（由 profile.identities 列出，例如收入由各产品线合成、分部营业利润合计等于营业利润、
+  税前利润减所得税等于净利润）；推导的季度（全年减前几季度）同样满足；
+- 现金流量表的季度现金流与资本开支满足发行人的自由现金流定义；
 - 文字摘录（展望、说明）逐字出现在所引原文中。
 
 证据包（industry-evidence.v1）只在核对零错误时生成，经 evidence_bundle 接入器进入版本库；研究只读证据包。
@@ -38,12 +40,13 @@ TZ = "America/New_York"
 
 STATUSES = ("done", "data_gap", "judgment")
 GUIDANCE_KINDS = ("qualitative", "point", "range")
-INCOME_METRICS = ("revenue", "cost_of_revenues", "R_and_D", "sales_marketing", "G_and_A", "op_income", "other_income", "EBT",
-                  "income_tax", "consolidated_NI", "preferred_dividends", "common_NI", "Search", "YouTube_ads", "Network",
-                  "subscriptions_platforms_devices", "Services_revenue", "Cloud_revenue", "OtherBets_revenue", "hedging",
-                  "Services_op", "Cloud_op", "OtherBets_op", "Alphabet_level_op", "equity_security_gain_loss")
+# 每家公司必备的合并利润表科目（研究分支据此算毛利率、营业利润率、现金转换）；其余科目由 profile.income_metrics 列出
+CORE_INCOME = ("revenue", "cost_of_revenues", "op_income", "EBT", "consolidated_NI")
+# 资产负债表时点的科目对所有公司相同
 BALANCE_METRICS = ("cash", "marketable_securities", "total_assets", "total_equity", "longterm_debt", "PPE_net")
-QUARTERS = ("q3_2025", "q4_2025", "q1_2026", "q2_2026", "q3_2026")
+CASH_METRICS = ("cfo", "cash_ppe")
+COMPUTED_KEYS = ("free_cash_flow", "gross_profit", "gross_margin", "op_margin", "capex_to_sales", "cfo_to_consolidated_ni")
+CHART_UNITS = ("usd_bn", "pct")
 
 
 def earnings_dir(root: Path) -> Path:
@@ -87,23 +90,142 @@ class Report:
     documents: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
-def _identities(label: str, v: dict[str, int], rep: Report) -> None:
-    def eq(name: str, left: float, right: float) -> None:
+def _identities(label: str, v: dict[str, int], rep: Report, identities: list[dict[str, Any]]) -> None:
+    """profile.identities：terms（科目 → ±1）的加权和等于 equals 科目。"""
+    for ident in identities:
+        left = sum(int(coef) * v[m] for m, coef in ident["terms"].items())
+        right = v[ident["equals"]]
         if left != right:
-            rep.errors.append(f"{label}：{name}不成立（{left:,} ≠ {right:,}）")
+            rep.errors.append(f"{label}：{ident['name']}不成立（{left:,} ≠ {right:,}）")
         else:
             rep.checked["identities"] += 1
 
-    eq("Search + YouTube + Network + 订阅/平台/设备 = Google Services 收入",
-       v["Search"] + v["YouTube_ads"] + v["Network"] + v["subscriptions_platforms_devices"], v["Services_revenue"])
-    eq("Services + Cloud + Other Bets + 套期 = 收入",
-       v["Services_revenue"] + v["Cloud_revenue"] + v["OtherBets_revenue"] + v["hedging"], v["revenue"])
-    eq("收入 − 营业成本与费用 = 营业利润",
-       v["revenue"] - v["cost_of_revenues"] - v["R_and_D"] - v["sales_marketing"] - v["G_and_A"], v["op_income"])
-    eq("分部营业利润合计 = 营业利润", v["Services_op"] + v["Cloud_op"] + v["OtherBets_op"] + v["Alphabet_level_op"], v["op_income"])
-    eq("营业利润 + 其他收支 = 税前利润", v["op_income"] + v["other_income"], v["EBT"])
-    eq("税前利润 − 所得税 = 净利润", v["EBT"] - v["income_tax"], v["consolidated_NI"])
-    eq("净利润 − 优先股股息 = 普通股可得净利润", v["consolidated_NI"] - v["preferred_dividends"], v["common_NI"])
+
+def _bi(x: Any) -> bool:
+    """中英文文字：恰好 zh、en 两个键且非空（YAML 流式写法里的逗号会把英文截断成多余的键）。"""
+    return isinstance(x, dict) and set(x) == {"zh", "en"} and bool(x["zh"]) and bool(x["en"])
+
+
+def display_keys(p: dict[str, Any]) -> set[str]:
+    """页面、图表与比率可以引用的行键：利润表科目、现金流、研究分支算出的指标。"""
+    keys = set(p.get("income_metrics") or []) | set(CASH_METRICS) | set(COMPUTED_KEYS) | {r.get("key") for r in p.get("ratios") or []}
+    if p.get("non_operating"):
+        keys.add("ebt_ex_equity_securities")
+    return keys
+
+
+def profile_errors(reg: dict[str, Any]) -> list[str]:
+    """profile 的结构与引用：研究分支只读 profile，缺什么就在这里报，不等到页面出错。"""
+    p = reg.get("profile")
+    if not isinstance(p, dict):
+        return ["缺少 profile（见 docs/study-earnings.md）"]
+    errs: list[str] = []
+    mets = list(p.get("income_metrics") or [])
+    miss = [m for m in CORE_INCOME if m not in mets]
+    if miss:
+        errs.append(f"profile.income_metrics 缺少必备科目 {'、'.join(miss)}")
+    if not isinstance(p.get("short_name"), str) or not p.get("short_name"):
+        errs.append("profile 缺少 short_name")
+    qs = p.get("quarters") or []
+    ids = [q.get("id") for q in qs]
+    if len(qs) < 3 or len(set(ids)) != len(ids):
+        errs.append("profile.quarters 至少 3 个且 id 不重复（从旧到新）")
+    income, cash = reg.get("income") or {}, reg.get("cash_flow") or {}
+    for q in qs:
+        where = f"profile.quarters {q.get('id')}"
+        if not q.get("id") or not q.get("label") or not q.get("end") or not _bi(q.get("name")):
+            errs.append(f"{where} 需要 id、label、end 与中英文 name")
+        d = q.get("derive")
+        if d:
+            if not d.get("total") or not d.get("less") or not _bi(d.get("method")) or not _bi(d.get("note")):
+                errs.append(f"{where} 的 derive 需要 total、less、中英文 method 与 note")
+            for k in ("total", "less"):
+                if d.get(k) not in income:
+                    errs.append(f"{where} 的 derive.{k} 不在 income 中")
+        elif q.get("id") not in income:
+            errs.append(f"{where} 不在 income 中；没有直接披露的季度要写 derive")
+        if q.get("id") not in cash:
+            errs.append(f"{where} 不在 cash_flow 中")
+    for k in ("current", "yoy_base", "qoq_base"):
+        if p.get(k) not in ids:
+            errs.append(f"profile.{k} 应是 quarters 中的 id")
+    ytd = p.get("year_to_date")
+    if ytd and not (ytd.get("id") in cash and set(ytd.get("quarters") or []) <= set(ids) and ytd.get("quarters") and _bi(ytd.get("label")) and _bi(ytd.get("short"))):
+        errs.append("profile.year_to_date 需要现金流期间 id、所含季度与中英文 label、short")
+    if p.get("trailing") and p["trailing"] not in cash:
+        errs.append("profile.trailing 不在 cash_flow 中")
+    for ident in p.get("identities") or []:
+        if not ident.get("name") or not ident.get("terms") or ident.get("equals") not in mets or not set(ident["terms"]) <= set(mets):
+            errs.append(f"profile.identities 的 {ident.get('name')} 需要 name、terms 与 equals，科目都要在 income_metrics 中")
+    if not p.get("identities"):
+        errs.append("profile.identities 不能为空：会计恒等式是防止取错值的主要检查")
+    for r in p.get("ratios") or []:
+        if not r.get("key") or r.get("num") not in mets or r.get("den") not in mets:
+            errs.append(f"profile.ratios {r.get('key')} 需要 key、num、den（科目在 income_metrics 中）")
+    keys = display_keys(p)
+    rk = {r.get("key") for r in p.get("ratios") or []} | {"gross_margin", "op_margin"}
+    for name, allowed in (("growth", set(mets) | set(CASH_METRICS)), ("margins", rk), ("segment_ops", set(mets))):
+        bad = [m for m in p.get(name) or [] if m not in allowed]
+        if bad:
+            errs.append(f"profile.{name} 引用了不存在的科目 {'、'.join(map(str, bad))}")
+    if p.get("segment_ops") and not any(i.get("equals") == "op_income" and set(i["terms"]) == set(p["segment_ops"]) for i in p.get("identities") or []):
+        errs.append("profile.segment_ops 应对应一条恒等式：分部营业利润合计 = op_income")
+    no = p.get("non_operating")
+    if no and (no.get("key") not in mets or not _bi(no.get("label"))):
+        errs.append("profile.non_operating 需要 income_metrics 中的 key 与中英文 label")
+    labels = p.get("metrics") or {}
+    table = [t if isinstance(t, str) else t.get("key") for t in p.get("table") or []]
+    if not table:
+        errs.append("profile.table 不能为空")
+    for k in table:
+        if k not in keys:
+            errs.append(f"profile.table 的 {k} 不是可显示的行键")
+        elif not _bi(labels.get(k)):
+            errs.append(f"profile.metrics 缺少 {k} 的中英文标签")
+    for k in p.get("report") or []:
+        if k not in keys or not _bi(labels.get(k)):
+            errs.append(f"profile.report 的 {k} 需要可显示的行键与 metrics 中的中英文标签")
+    for c in p.get("charts") or []:
+        if not _bi(c.get("title")) or c.get("unit") not in CHART_UNITS or not c.get("series"):
+            errs.append("profile.charts 每项需要中英文 title、unit（usd_bn 或 pct）与 series")
+        for sr in c.get("series") or []:
+            if sr.get("key") not in keys or not _bi(sr.get("label")):
+                errs.append(f"profile.charts 的序列 {sr.get('key')} 需要可显示的 key 与中英文 label")
+    if not p.get("segments"):
+        errs.append("profile.segments 不能为空（单一分部的公司也列出它）")
+    for sg in p.get("segments") or []:
+        if not sg.get("name") or any(sg.get(k) not in keys for k in ("revenue", "op", "margin")):
+            errs.append(f"profile.segments {sg.get('name')} 需要 name、revenue、op、margin（行键）")
+    for k in ("unallocated", "share"):
+        if p.get(k) and (p[k].get("key") not in keys or not _bi(p[k].get("label"))):
+            errs.append(f"profile.{k} 需要可显示的 key 与中英文 label")
+    f = p.get("findings") or {}
+    if not _bi(f.get("revenue_caveat")):
+        errs.append("profile.findings.revenue_caveat 需要中英文（收入口径限制，例如不能称为有机增长的原因）")
+    seg = f.get("segment")
+    if seg and (not seg.get("name") or seg.get("revenue") not in keys or seg.get("margin") not in keys or not _bi(seg.get("caveat"))):
+        errs.append("profile.findings.segment 需要 name、revenue、margin 与中英文 caveat")
+    cal = p.get("calibers") or {}
+    ch = p.get("prior_year_charge")
+    if ch:
+        note = next((n for n in reg.get("notes") or [] if n.get("id") == ch.get("note")), None)
+        if not note or (note.get("approx") or {}).get(ch.get("field")) is None or not _bi(ch.get("label")):
+            errs.append("profile.prior_year_charge 需要登记的说明 id、approx 中的字段与中英文 label")
+    if (no or ch) and not _bi(cal.get("ex_items")):
+        errs.append("profile.calibers.ex_items 需要中英文（示意算术的口径）")
+    gr = p.get("guidance_remaining")
+    if gr and (gr.get("guidance") not in [g.get("id") for g in reg.get("guidance") or []] or not _bi(gr.get("caliber")) or not _bi(gr.get("label")) or not ytd):
+        errs.append("profile.guidance_remaining 需要登记的展望 id、中英文 label 与 caliber，以及 year_to_date")
+    if reg.get("rpo"):
+        series = (p.get("rpo") or {}).get("series") or []
+        pts = reg["rpo"].get("points") or []
+        if not series or any(not _bi(sr.get("label")) or any(sr.get("key") not in pt for pt in pts) for sr in series):
+            errs.append("profile.rpo.series 需要中英文 label，且 key 在每个积压订单时点中")
+    if reg.get("per_share"):
+        ref = p.get("per_share") or {}
+        if set(ref) != {"current", "prior"} or any(v not in reg["per_share"] for v in ref.values()):
+            errs.append("profile.per_share 需要 current 与 prior，指向 per_share 中的字段")
+    return errs
 
 
 def check(root: Path, registry: dict[str, dict[str, Any]] | None = None) -> Report:
@@ -111,11 +233,14 @@ def check(root: Path, registry: dict[str, dict[str, Any]] | None = None) -> Repo
     rep = Report()
     registry = load_earnings(root) if registry is None else registry
     for eid, reg in registry.items():
-        for key in ("entity", "company", "as_of", "documents", "income", "cash_flow", "balance", "guidance", "notes", "coverage"):
+        for key in ("entity", "company", "as_of", "documents", "income", "cash_flow", "balance", "notes", "coverage"):
             if not reg.get(key):
                 rep.errors.append(f"{eid}：缺少 {key}")
+        rep.errors += [f"{eid}：{x}" for x in profile_errors(reg)]
         if rep.errors:
             continue
+        p = reg["profile"]
+        mets = list(p["income_metrics"])
         texts: dict[str, str] = {}
         docs: dict[str, dict[str, Any]] = {}
         for d in reg["documents"]:
@@ -148,48 +273,55 @@ def check(root: Path, registry: dict[str, dict[str, Any]] | None = None) -> Repo
                 else:
                     rep.errors.append(f"{eid}：{where} 的数值 {value:,} 没有出现在原文 {doc_id} 中")
 
-        for pid, p in reg["income"].items():
-            miss = [m for m in INCOME_METRICS if m not in p.get("values", {})]
+        for pid, per in reg["income"].items():
+            miss = [m for m in mets if m not in per.get("values", {})]
             if miss:
                 rep.errors.append(f"{eid}：{pid} 缺少 {'、'.join(miss)}")
                 continue
-            for m in INCOME_METRICS:
-                has(p["document"], p["values"][m], f"{pid}.{m}")
-            _identities(f"{eid}：{pid}", p["values"], rep)
-        if not rep.errors:
-            q4 = sub(reg["income"]["fy_2025"]["values"], reg["income"]["nine_months_2025"]["values"])
-            _identities(f"{eid}：2025 年第四季度（全年减前三季度）", q4, rep)
-        for pid, p in reg["cash_flow"].items():
-            for m in ("cfo", "cash_ppe"):
-                has(p["document"], p[m], f"现金流 {pid}.{m}")
+            for m in mets:
+                has(per["document"], per["values"][m], f"{pid}.{m}")
+            _identities(f"{eid}：{pid}", per["values"], rep, p["identities"])
+        for q in p["quarters"]:
+            d = q.get("derive")
+            if d and not rep.errors:
+                derived = sub(reg["income"][d["total"]]["values"], reg["income"][d["less"]]["values"])
+                _identities(f"{eid}：{q['name']['zh']}（{d['method']['zh']}）", derived, rep, p["identities"])
+        for pid, per in reg["cash_flow"].items():
+            for m in CASH_METRICS:
+                has(per["document"], per[m], f"现金流 {pid}.{m}")
         fcf = reg.get("issuer_fcf") or {}
-        for pid in ("q3_2026", "ttm_2026q3"):
-            if pid in fcf:
-                cf = reg["cash_flow"][pid]
-                if cf["cfo"] - cf["cash_ppe"] != fcf[pid]:
-                    rep.errors.append(f"{eid}：{pid} 的经营现金流减资本开支不等于发行人披露的自由现金流")
-                else:
-                    rep.checked["identities"] += 1
-                has(fcf["document"], fcf[pid], f"发行人自由现金流 {pid}")
+        for pid in (k for k in fcf if k != "document"):
+            if pid not in reg["cash_flow"]:
+                rep.errors.append(f"{eid}：发行人自由现金流的期间 {pid} 不在 cash_flow 中")
+                continue
+            cf = reg["cash_flow"][pid]
+            if cf["cfo"] - cf["cash_ppe"] != fcf[pid]:
+                rep.errors.append(f"{eid}：{pid} 的经营现金流减资本开支不等于发行人披露的自由现金流")
+            else:
+                rep.checked["identities"] += 1
+            has(fcf["document"], fcf[pid], f"发行人自由现金流 {pid}")
         for date_, b in reg["balance"].items():
             for m in BALANCE_METRICS:
                 if m not in b["values"]:
                     rep.errors.append(f"{eid}：资产负债表 {date_} 缺少 {m}")
                 else:
                     has(b["document"], b["values"][m], f"资产负债表 {date_}.{m}")
-        for pt in reg["rpo"]["points"]:
-            for m in ("total", "cloud"):
-                has(pt["document"], pt[m], f"积压订单 {pt['date']}.{m}")
-        fx = reg["fx"]
+        rpo = reg.get("rpo")
+        for pt in (rpo or {}).get("points", []):
+            for sr in p["rpo"]["series"]:
+                has(pt["document"], pt[sr["key"]], f"积压订单 {pt['date']}.{sr['key']}")
+        fx = reg.get("fx")
         for m in ("reported_revenue", "yoy_constant_currency_revenue", "qoq_constant_currency_revenue"):
-            has(fx["document"], fx[m], f"恒定汇率 {m}")
-        ps = reg["per_share"]
-        for m in ("diluted_eps_q3_2026", "diluted_eps_q3_2025"):
+            if fx:
+                has(fx["document"], fx[m], f"恒定汇率 {m}")
+        ps = reg.get("per_share")
+        for m in (p.get("per_share") or {}).values() if ps else ():
             if ps["document"] in texts and not re.search(rf"(?<![\d.]){re.escape(format(ps[m], '.2f'))}(?!\d)", texts[ps['document']]):
                 rep.errors.append(f"{eid}：每股收益 {ps[m]} 没有出现在原文 {ps['document']} 中")
             else:
                 rep.checked["values"] += 1
-        has(reg["annual_cash_ppe"]["document"], reg["annual_cash_ppe"]["value"], "2025 年现金资本开支")
+        if reg.get("annual_cash_ppe"):
+            has(reg["annual_cash_ppe"]["document"], reg["annual_cash_ppe"]["value"], f"{reg['annual_cash_ppe']['year']} 年现金资本开支")
 
         def excerpt(doc_id: str, text: str, where: str) -> None:
             if doc_id not in docs:
@@ -201,7 +333,7 @@ def check(root: Path, registry: dict[str, dict[str, Any]] | None = None) -> Repo
                     rep.errors.append(f"{eid}：{where} 的摘录没有逐字出现在原文 {doc_id} 中")
 
         ids = set()
-        for g in reg["guidance"]:
+        for g in reg.get("guidance") or []:
             where = f"展望 {g.get('id')}"
             if g.get("id") in ids:
                 rep.errors.append(f"{where} 重复")
@@ -216,6 +348,8 @@ def check(root: Path, registry: dict[str, dict[str, Any]] | None = None) -> Repo
             if g.get("kind") == "point" and not g.get("point_usd_bn"):
                 rep.errors.append(f"{where} 缺少点值")
             excerpt(g["document"], g["excerpt"], where)
+        if reg.get("guidance") and not reg.get("annual_cash_ppe"):
+            rep.errors.append(f"{eid}：有资本开支展望时需要 annual_cash_ppe（展望目标年的实际现金资本开支）")
         ids = set()
         for n in reg["notes"]:
             where = f"说明 {n.get('id')}"
@@ -227,9 +361,12 @@ def check(root: Path, registry: dict[str, dict[str, Any]] | None = None) -> Repo
                     rep.errors.append(f"{where} 的 {key} 缺少中英文")
             for text in n.get("excerpts") or []:
                 excerpt(n["document"], text, where)
-            if n.get("check"):
-                has(n["check"]["document"], n["check"]["original_direct_q4_2025_revenue"], where)
-        excerpt(reg["rpo"]["recognition"]["document"], reg["rpo"]["recognition"]["excerpt"], "积压订单确认期限")
+            chk = n.get("check") or {}
+            for k in (k for k in chk if k != "document"):
+                has(chk["document"], chk[k], f"{where} 的 {k}")
+        rec = (rpo or {}).get("recognition")
+        if rec:
+            excerpt(rec["document"], rec["excerpt"], "积压订单确认期限")
         for c in reg["coverage"]:
             if c.get("status") not in STATUSES:
                 rep.errors.append(f"覆盖项 {c.get('id')} 的 status 应为 {'、'.join(STATUSES)} 之一")
@@ -263,10 +400,10 @@ def build_bundle(root: Path, clock: Callable[[], datetime] = now_utc) -> dict[st
                             "metric": metric, "document": doc_id, "accession": d["accession"], "form": d["form"], "url": d["url"]})
 
         for pid, p in reg["income"].items():
-            for m in INCOME_METRICS:
+            for m in reg["profile"]["income_metrics"]:
                 add("income", pid, m, p["values"][m], p["end"], p["document"])
         for pid, p in reg["cash_flow"].items():
-            for m in ("cfo", "cash_ppe"):
+            for m in CASH_METRICS:
                 add("cash_flow", pid, m, p[m], p["end"], p["document"])
         for date_, b in reg["balance"].items():
             for m in BALANCE_METRICS:
@@ -277,8 +414,9 @@ def build_bundle(root: Path, clock: Callable[[], datetime] = now_utc) -> dict[st
             "periods": {pid: {k: p[k] for k in ("label", "start", "end", "document")} for pid, p in reg["income"].items()},
             "documents": [{k: d.get(k) for k in ("id", "form", "period_end", "accession", "accepted_at", "url", "sha256")}
                           for d in reg["documents"]],
-            "related_studies": reg.get("related_studies", []), "issuer_fcf": reg["issuer_fcf"], "rpo": reg["rpo"], "fx": reg["fx"], "per_share": reg["per_share"],
-            "annual_cash_ppe": reg["annual_cash_ppe"], "guidance": reg["guidance"], "notes": reg["notes"],
+            "related_studies": reg.get("related_studies", []), "profile": reg["profile"], "issuer_fcf": reg.get("issuer_fcf"),
+            "rpo": reg.get("rpo"), "fx": reg.get("fx"), "per_share": reg.get("per_share"),
+            "annual_cash_ppe": reg.get("annual_cash_ppe"), "guidance": reg.get("guidance") or [], "notes": reg["notes"],
             "coverage": reg["coverage"]}
     files = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(earnings_dir(root).glob("*.yaml"))}
     return {"schema": BUNDLE_SCHEMA, "unit": UNIT, "records": sorted(records, key=lambda x: x["id"]),

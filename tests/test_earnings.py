@@ -14,6 +14,8 @@ from investment_os.registry import Registry
 from investment_os.runs import run_study
 from tests.conftest import PROJECT_ROOT
 
+SHIPPED = yaml.safe_load((PROJECT_ROOT / "config/earnings/googl_2026q3.yaml").read_text(encoding="utf-8"))
+
 # 满足全部会计恒等式的基数；各期按整数倍缩放（恒等式对缩放不变）
 BASE = {"Search": 100, "YouTube_ads": 20, "Network": 10, "subscriptions_platforms_devices": 30, "Services_revenue": 160,
         "Cloud_revenue": 50, "OtherBets_revenue": 5, "hedging": 1, "revenue": 216, "cost_of_revenues": 80, "R_and_D": 40,
@@ -71,13 +73,14 @@ def registration():
         "documents": [{"id": "doc", "form": "10-Q", "period_end": "2026-09-30", "accession": "0000000000-26-000001",
                        "accepted_at": "2026-10-29T00:29:06Z", "url": "https://example.test/10q.htm", "file": "10q.htm",
                        "sha256": hashlib.sha256(raw).hexdigest()}],
-        "income": income, "cash_flow": cash,
+        "profile": copy.deepcopy(SHIPPED["profile"]), "income": income, "cash_flow": cash,
         "issuer_fcf": {"q3_2026": 4200 - 5100, "ttm_2026q3": 16900 - 15500, "document": "doc"},
         "balance": {d: {"document": "doc", "values": dict(zip(er.BALANCE_METRICS, row))} for d, row in BAL.items()},
         "rpo": {"unit": "USD billion", "points": [
             {"date": "2026-09-30", "total": 567.0, "cloud": 561.0, "document": "doc"},
             {"date": "2026-06-30", "total": 519.5, "cloud": 513.9, "document": "doc"}],
-            "recognition": {"share_text": "just over 55", "months": 24, "document": "doc", "excerpt": EXCERPTS["rpo"]},
+            "recognition": {"share_text": "just over 55", "months": 24, "document": "doc", "excerpt": EXCERPTS["rpo"],
+                            "statement": {"zh": "约 55%", "en": "about 55%"}},
             "scope_change": {"zh": "口径扩大", "en": "Definition widened"}},
         "fx": {"document": "doc", "reported_revenue": 4968, "yoy_constant_currency_revenue": 5000, "yoy_constant_currency_growth_pct_rounded": 25,
                "qoq_constant_currency_revenue": 5100, "qoq_constant_currency_growth_pct_rounded": 7},
@@ -210,13 +213,13 @@ def test_study_derives_q4_compares_periods_and_checks_outlooks(earnings_root):
     g = {x["id"]: x for x in res["guidance"]["observations"]}
     assert g["g_a"]["result"] == "difference_only" and g["g_a"]["difference_usd_bn"] == pytest.approx(9.2 - 7)
     assert g["g_b"]["result"] == "within_range" and g["g_2026_feb"]["result"] == "pending"
-    assert res["guidance"]["remaining_2026_arithmetic"]["low_usd_bn"] == pytest.approx(17.5 - 13)
+    assert res["guidance"]["remaining_arithmetic"]["low_usd_bn"] == pytest.approx(17.5 - 13)
     assert res["rpo"]["points"][1]["total_qoq_pct"] == pytest.approx((567.0 / 519.5 - 1) * 100)
     assert r["data_cutoff"] == "2026-10-28"  # 展望与日程不是数据
     assert {u["kind"] for u in r["unsupported"]} == {"data", "scope"} and len(r["unsupported"]) == 2
     assert r["validation"]["evidence_check"]["status"] == "pass"
     ids = [f["id"] for f in r["interpretation"]["items"]]
-    assert ids == ["earnings_revenue", "earnings_operating", "earnings_cloud", "earnings_net_income", "earnings_cash", "earnings_backlog"]
+    assert ids == ["earnings_revenue", "earnings_operating", "earnings_segment", "earnings_net_income", "earnings_cash", "earnings_backlog"]
     assert "不能称为有机增长" in r["interpretation"]["items"][0]["text"]
 
 
@@ -249,7 +252,7 @@ def test_state_changes_with_cash_flow_sign_and_coverage(earnings_root):
 
     write(earnings_root, registration())
     state = earnings_quarter_state(run(earnings_root))
-    assert state["最新季度"] == "2026 Q3" and state["自由现金流符号"] == "为负" and state["权益证券损益方向"] == "净收益"
+    assert state["最新季度"] == "2026 Q3" and state["自由现金流符号"] == "为负" and state["非经营项目损益方向"] == "净收益"
     assert state["覆盖项"] == "已完成 1、数据不足 1、需判断 1"
 
 
@@ -261,7 +264,8 @@ def test_shipped_registration_is_public_and_complete():
     reg = yaml.safe_load(text)
     assert reg["schema_version"] == er.SCHEMA and reg["earnings_id"] == path.stem and reg["entity"] == "cik_1652044"
     assert all(re.fullmatch(r"[0-9a-f]{64}", d["sha256"]) for d in reg["documents"])
-    assert set(reg["income"]) == set(SCALE) and all(set(p["values"]) == set(er.INCOME_METRICS) for p in reg["income"].values())
+    assert er.profile_errors(reg) == []
+    assert all(set(p["values"]) == set(reg["profile"]["income_metrics"]) for p in reg["income"].values())
     for section in ("notes", "guidance", "coverage"):
         for item in reg[section]:
             for key in ("title", "fact", "limit", "statement", "item"):
@@ -275,6 +279,239 @@ def test_shipped_registration_is_public_and_complete():
     # 登记里的全年数 = 第四季度推导 + 前三季度，且各期恒等式成立
     for pid, p in reg["income"].items():
         rep = er.Report()
-        er._identities(pid, p["values"], rep)
+        er._identities(pid, p["values"], rep, reg["profile"]["identities"])
         assert rep.errors == [], rep.errors
     assert copy.deepcopy(reg["income"]["fy_2025"]["values"])["revenue"] - reg["income"]["nine_months_2025"]["values"]["revenue"] > 0
+
+
+# ---- 结构不同的虚构公司：两个分部、没有 Other Bets / 优先股 / 套期、非日历财年（52/53 周，财年止于一月下旬）、
+# ---- 没有展望、积压订单、恒定汇率、每股收益、非经营项目示意算术与发行人自由现金流
+FBASE = {"Compute_revenue": 700, "Graphics_revenue": 300, "revenue": 1000, "cost_of_revenues": 400, "operating_expenses": 250,
+         "op_income": 350, "Compute_op": 300, "Graphics_op": 100, "Unallocated_op": -50, "other_income": 20, "EBT": 370,
+         "income_tax": 60, "consolidated_NI": 310}
+FSCALE = {"q3_fy25": 7, "q1_fy26": 9, "q2_fy26": 10, "q3_fy26": 12, "nine_fy25": 21, "fy_fy25": 29}
+FEND = {"q3_fy25": "2024-10-27", "q1_fy26": "2025-04-27", "q2_fy26": "2025-07-27", "q3_fy26": "2025-10-26",
+        "nine_fy25": "2024-10-27", "fy_fy25": "2025-01-26"}
+FCASH = {"q3_fy25": (2000, 500), "q4_fy25": (2500, 600), "q1_fy26": (2300, 700), "q2_fy26": (2600, 800), "q3_fy26": (3100, 900),
+         "nine_fy26": (8000, 2400), "ttm_fy26q3": (10500, 3000)}
+FCASH_END = {"q3_fy25": "2024-10-27", "q4_fy25": "2025-01-26", "q1_fy26": "2025-04-27", "q2_fy26": "2025-07-27", "q3_fy26": "2025-10-26",
+             "nine_fy26": "2025-10-26", "ttm_fy26q3": "2025-10-26"}
+FBAL = {"2025-10-26": (1000, 2000, 30000, 20000, 3000, 9000), "2025-07-27": (900, 1900, 28000, 19000, 3100, 8500)}
+FNOTE = "the fiscal year ends on the last Sunday of January"
+
+
+def fictional_filing():
+    nums = set()
+    for k, scale in FSCALE.items():
+        nums.update(abs(v * scale) for v in FBASE.values())
+    for a, b in FCASH.values():
+        nums.update((a, b))
+    for row in FBAL.values():
+        nums.update(row)
+    body = " ".join(f"<td>{fmt(n)}</td>" for n in sorted(nums - {0}))
+    return f"<html><body><table><tr>{body}</tr></table><p>{FNOTE}</p></body></html>".encode()
+
+
+def _name(zh, en):
+    return {"zh": zh, "en": en}
+
+
+def fictional_profile():
+    return {
+        "short_name": "Fabrica",
+        "quarters": [
+            {"id": "q3_fy25", "label": "FY25 Q3", "end": "2024-10-27", "name": _name("2025 财年第三季度", "Q3 FY25")},
+            {"id": "q4_fy25", "label": "FY25 Q4", "end": "2025-01-26", "name": _name("2025 财年第四季度", "Q4 FY25"),
+             "derive": {"total": "fy_fy25", "less": "nine_fy25", "method": _name("全年减前三季度", "full year less nine months"),
+                        "note": _name("第四季度由全年减前三季度推出。", "Q4 is derived as the full year less nine months.")}},
+            {"id": "q1_fy26", "label": "FY26 Q1", "end": "2025-04-27", "name": _name("2026 财年第一季度", "Q1 FY26")},
+            {"id": "q2_fy26", "label": "FY26 Q2", "end": "2025-07-27", "name": _name("2026 财年第二季度", "Q2 FY26")},
+            {"id": "q3_fy26", "label": "FY26 Q3", "end": "2025-10-26", "name": _name("2026 财年第三季度", "Q3 FY26")}],
+        "current": "q3_fy26", "yoy_base": "q3_fy25", "qoq_base": "q2_fy26",
+        "year_to_date": {"id": "nine_fy26", "quarters": ["q1_fy26", "q2_fy26", "q3_fy26"],
+                         "label": _name("2026 财年前三季度", "First nine months of FY26"), "short": _name("前三季度", "nine-month")},
+        "trailing": "ttm_fy26q3",
+        "income_metrics": list(FBASE),
+        "identities": [
+            {"name": "分部收入合计 = 收入", "terms": {"Compute_revenue": 1, "Graphics_revenue": 1}, "equals": "revenue"},
+            {"name": "收入 − 营业成本 − 营业费用 = 营业利润", "terms": {"revenue": 1, "cost_of_revenues": -1, "operating_expenses": -1}, "equals": "op_income"},
+            {"name": "分部营业利润合计 = 营业利润", "terms": {"Compute_op": 1, "Graphics_op": 1, "Unallocated_op": 1}, "equals": "op_income"},
+            {"name": "营业利润 + 其他收支 = 税前利润", "terms": {"op_income": 1, "other_income": 1}, "equals": "EBT"},
+            {"name": "税前利润 − 所得税 = 净利润", "terms": {"EBT": 1, "income_tax": -1}, "equals": "consolidated_NI"}],
+        "segment_ops": ["Compute_op", "Graphics_op", "Unallocated_op"],
+        "ratios": [{"key": "Compute_margin", "num": "Compute_op", "den": "Compute_revenue"},
+                   {"key": "Graphics_margin", "num": "Graphics_op", "den": "Graphics_revenue"}],
+        "growth": ["revenue", "Compute_revenue", "Graphics_revenue", "op_income", "consolidated_NI", "cfo", "cash_ppe"],
+        "margins": ["gross_margin", "op_margin", "Compute_margin"],
+        "findings": {"revenue_caveat": _name("发行人只披露报告口径。", "The issuer reports only the reported basis."),
+                     "segment": {"name": "Compute", "revenue": "Compute_revenue", "margin": "Compute_margin",
+                                 "caveat": _name("分部口径见可比性说明。", "See the comparability notes for the segment basis.")}},
+        "metrics": {"revenue": _name("收入", "Revenue"), "Compute_revenue": _name("计算", "Compute"), "Graphics_revenue": _name("图形", "Graphics"),
+                    "op_income": _name("营业利润", "Operating income"), "consolidated_NI": _name("净利润", "Net income"),
+                    "gross_margin": _name("毛利率", "Gross margin"), "op_margin": _name("营业利润率", "Operating margin")},
+        "table": ["revenue", "Compute_revenue", "Graphics_revenue", "op_income", {"key": "consolidated_NI", "growth": False},
+                  "gross_margin", "op_margin"],
+        "charts": [{"title": _name("收入与利润", "Revenue and profit"), "unit": "usd_bn",
+                    "series": [{"key": "revenue", "label": _name("收入", "Revenue")}, {"key": "op_income", "label": _name("营业利润", "Operating income")}]},
+                   {"title": _name("利润率", "Margins"), "unit": "pct",
+                    "series": [{"key": "op_margin", "label": _name("营业利润率", "Operating margin")}]}],
+        "segments": [{"name": "Compute", "revenue": "Compute_revenue", "op": "Compute_op", "margin": "Compute_margin"},
+                     {"name": "Graphics", "revenue": "Graphics_revenue", "op": "Graphics_op", "margin": "Graphics_margin"}],
+        "unallocated": {"key": "Unallocated_op", "label": _name("未分摊", "Unallocated")},
+    }
+
+
+def fictional_registration():
+    raw = fictional_filing()
+    income = {pid: {"label": pid, "start": "2024-01-29", "end": FEND[pid], "document": "doc",
+                    "values": {k: v * FSCALE[pid] for k, v in FBASE.items()}} for pid in FSCALE}
+    cash = {pid: {"end": FCASH_END[pid], "document": "doc", "cfo": a, "cash_ppe": b} for pid, (a, b) in FCASH.items()}
+    return {
+        "schema_version": "earnings.v1", "earnings_id": "fbr_fy26q3", "entity": "co_fabrica",
+        "company": _name("法布里卡", "Fabrica Corp"), "cik": 2, "tickers": ["FBR"],
+        "latest_period": {"label": "FY26 Q3", "start": "2025-07-28", "end": "2025-10-26"}, "as_of": "2025-11-20",
+        "unit": "USD million", "release": {"ir_date": "2025-11-19", "ir_url": "https://example.test/fbr", "form_10q_filed": "2025-11-20"},
+        "documents": [{"id": "doc", "form": "10-Q", "period_end": "2025-10-26", "accession": "0000000000-25-000002",
+                       "accepted_at": "2025-11-20T21:30:00Z", "url": "https://example.test/fbr10q.htm", "file": "fbr10q.htm",
+                       "sha256": hashlib.sha256(raw).hexdigest()}],
+        "profile": fictional_profile(), "income": income, "cash_flow": cash,
+        "balance": {d: {"document": "doc", "values": dict(zip(er.BALANCE_METRICS, row))} for d, row in FBAL.items()},
+        "notes": [{"id": "fiscal_calendar", "document": "doc", "title": _name("财年", "Fiscal year"), "excerpts": [FNOTE],
+                   "fact": _name("财年止于一月最后一个星期日。", "The fiscal year ends on the last Sunday of January."),
+                   "limit": _name("52/53 周财年，季度长度可能为 13 或 14 周。", "A 52/53-week year: quarters may span 13 or 14 weeks.")}],
+        "coverage": [{"id": "c1", "status": "done", "item": _name("五个季度", "Five quarters")},
+                     {"id": "c2", "status": "data_gap", "item": _name("分部内部口径", "Segment internals")}],
+    }
+
+
+@pytest.fixture
+def fictional_root(earnings_root):
+    (er.filings_dir(earnings_root) / "fbr10q.htm").write_bytes(fictional_filing())
+    return earnings_root
+
+
+def run_fictional(root):
+    path = root / "bundle.json"
+    path.write_text(json.dumps(er.build_bundle(root)), encoding="utf-8")
+    assert ingest(Registry.load(root), DataStore(root), "earnings_evidence", {"path": str(path)}).status == "created"
+    spath = root / "config" / "studies" / "earnings_fbr.yaml"
+    spath.write_text(yaml.safe_dump({**STUDY, "study_id": "earnings_fbr", "title": "虚构公司", "method": {"earnings": "fbr_fy26q3"}},
+                                    allow_unicode=True), encoding="utf-8")
+    m = run_study(root, spath)
+    assert m["status"] != "failed", m.get("error")
+    return json.loads((root / "runs" / m["run_id"] / "result.json").read_text(encoding="utf-8"))
+
+
+def test_other_company_checks_bundles_and_computes_from_its_own_profile(fictional_root):
+    write(fictional_root, fictional_registration())
+    rep = er.check(fictional_root)
+    assert rep.errors == [], rep.errors
+    # 6 个利润表期间 × 5 条恒等式 + 第四季度推导 5 条；没有发行人自由现金流
+    assert rep.checked["identities"] == 6 * 5 + 5 and rep.checked["excerpts"] == 1
+    doc = er.build_bundle(fictional_root)
+    snap = doc["metadata"]["earnings"]["fbr_fy26q3"]
+    assert snap["profile"]["short_name"] == "Fabrica" and snap["rpo"] is None and snap["guidance"] == []
+    assert len(doc["records"]) == 6 * len(FBASE) + 7 * 2 + 2 * 6
+    r = run_fictional(fictional_root)
+    res = r["results"]
+    q = {x["period"]: x for x in res["quarters"]}
+    assert [x["label"] for x in res["quarters"]] == ["FY25 Q3", "FY25 Q4", "FY26 Q1", "FY26 Q2", "FY26 Q3"]
+    assert q["q4_fy25"]["derived"] and q["q4_fy25"]["revenue"] == 1000 * (29 - 21) and q["q4_fy25"]["end"] == "2025-01-26"
+    assert q["q3_fy26"]["Compute_margin"] == pytest.approx(300 / 700 * 100) and q["q3_fy26"]["free_cash_flow"] == 3100 - 900
+    assert "ebt_ex_equity_securities" not in q["q3_fy26"] and "Other" not in " ".join(q["q3_fy26"])
+    yoy = res["comparison"]["yoy"]
+    assert yoy["base"] == "FY25 Q3" and yoy["pct"]["revenue"] == pytest.approx((12 / 7 - 1) * 100)
+    assert res["comparison"]["qoq"]["base"] == "FY26 Q2"
+    assert res["comparison"]["segment_op_delta_yoy"]["reconciles"] and set(res["comparison"]["segment_op_delta_yoy"]["delta"]) == {"Compute_op", "Graphics_op", "Unallocated_op"}
+    assert res["bridges"] is None and res["rpo"] is None and res["guidance"] is None and res["fx"] is None and res["per_share"] is None
+    assert res["cash"]["year_to_date"]["cfo"] == 8000 and res["cash"]["trailing"]["free_cash_flow"] == 7500
+    assert res["cash"]["year_to_date"]["consolidated_ni"] == 310 * (9 + 10 + 12)
+    assert r["data_cutoff"] == "2025-11-20" and r["validation"]["evidence_check"]["status"] == "pass"
+    ids = [f["id"] for f in r["interpretation"]["items"]]
+    assert ids == ["earnings_revenue", "earnings_operating", "earnings_segment", "earnings_net_income", "earnings_cash"]
+    text = " ".join(f["text"] for f in r["interpretation"]["items"])
+    assert "发行人只披露报告口径" in text and "Compute 收入" in text and "Alphabet" not in text and "Cloud" not in text
+    assert "近四个季度合计 7.50" in text and "权益证券" not in text
+    from investment_os.research.findings import earnings_quarter_state
+
+    assert earnings_quarter_state(r) == {"最新季度": "FY26 Q3", "自由现金流符号": "为正", "覆盖项": "已完成 1、数据不足 1、需判断 0"}
+
+
+def test_other_company_page_report_and_english_follow_the_profile(fictional_root):
+    from investment_os.reporting.earnings import sections
+    from investment_os.site.findings_en import english_findings
+    from investment_os.site.i18n import use
+    from investment_os.site.renderers import get_renderer
+    from investment_os.site.targets import available
+
+    write(fictional_root, fictional_registration())
+    r = run_fictional(fictional_root)
+    renderer = get_renderer("earnings_quarter")
+    page = renderer.coverage_section(r)
+    for anchor in ("earnings-quarterly", "earnings-segments", "earnings-cash", "earnings-comparability", "earnings-outlook",
+                   "earnings-backlog", "earnings-coverage", "earnings-sources"):
+        assert page.count(f'id="{anchor}"') == 1, anchor
+    assert page.count("<svg") == 2 and "FY25 Q4*" in page and "第四季度由全年减前三季度推出" in page
+    assert "Compute" in page and "Graphics" in page and "未分摊" in page and "2026 财年前三季度" in page
+    assert "Google" not in page and "Alphabet" not in page and "YouTube" not in page and "Other Bets" not in page
+    assert "没有登记资本开支展望" in page and "没有登记收入积压订单" in page and "示意性的税前算术" not in page and "恒定汇率" not in page
+    assert "Fabrica 于 2025-11-19 发布2026 财年第三季度业绩" in page
+    with use("en", {}, set()):
+        en = renderer.coverage_section(r)
+        stats = renderer.key_stats(r)
+        method = renderer.method_items(r)[0]
+    assert "No capital expenditure outlook is registered." in en and "No revenue backlog is registered." in en
+    assert "Fabrica released Q3 FY26 results" in en and "Q4 is derived as the full year less nine months." in en
+    assert "Q3 FY26 revenue (USD bn)" in stats and "Q4 FY25 is derived as full year less nine months" in method
+    assert "Five quarters of consolidated results" in method and "Alphabet" not in en and "Google" not in en
+    texts = english_findings(r, r["interpretation"]["items"])
+    assert all(t["translated"] for t in texts) and "The issuer reports only the reported basis." in texts[0]["text"]
+    assert "Compute revenue was USD" in texts[2]["text"] and "equity" not in " ".join(t["text"] for t in texts)
+    assert available(r, "earnings-quarterly") and available(r, "earnings-comparability")
+    body, title, part = sections(r)
+    assert body[1][0] == "table" and [row[0] for row in body[1][2]] == ["收入", "计算", "图形", "营业利润", "净利润", "毛利率", "营业利润率"]
+    assert body[2][1][:3] == ["比较", "收入", "计算 收入"]
+
+
+@pytest.mark.parametrize("change,message", [
+    (lambda d: d.pop("profile"), "缺少 profile"),
+    (lambda d: d["profile"]["identities"][2]["terms"].update(Unallocated_op=2), "不成立"),
+    (lambda d: d["profile"].update(identities=[]), "identities 不能为空"),
+    (lambda d: d["profile"]["quarters"][1].pop("derive"), "不在 income 中"),
+    (lambda d: d["profile"]["quarters"][1]["derive"].update(total="nope"), "derive.total 不在 income 中"),
+    (lambda d: d["profile"].update(quarters=d["profile"]["quarters"][3:]), "至少 3 个"),
+    (lambda d: d["profile"].update(current="q9"), "profile.current 应是 quarters 中的 id"),
+    (lambda d: d["profile"]["quarters"][0].update(name={"zh": "只有中文"}), "中英文 name"),
+    (lambda d: d["profile"]["metrics"].update(revenue={"zh": "收入", "en": "Revenue", "platforms and devices": None}), "缺少 revenue 的中英文标签"),
+    (lambda d: d["profile"]["table"].append("nonsense"), "nonsense 不是可显示的行键"),
+    (lambda d: d["profile"]["charts"][0].update(unit="eur"), "usd_bn 或 pct"),
+    (lambda d: d["profile"]["income_metrics"].remove("cost_of_revenues"), "缺少必备科目 cost_of_revenues"),
+    (lambda d: d["profile"].update(segments=[]), "segments 不能为空"),
+    (lambda d: d["profile"].update(segment_ops=["Compute_op", "Graphics_op"]), "分部营业利润合计 = op_income"),
+    (lambda d: d["profile"]["findings"].pop("revenue_caveat"), "revenue_caveat"),
+    (lambda d: d["profile"].update(non_operating={"key": "other_income", "label": {"zh": "其他", "en": "other"}}), "calibers.ex_items"),
+    (lambda d: d["profile"].update(growth=["revenue", "ghost"]), "引用了不存在的科目 ghost"),
+    (lambda d: d["cash_flow"].pop("q1_fy26"), "不在 cash_flow 中"),
+    (lambda d: d["notes"][0].update(excerpts=["the fiscal year ends in june"]), "摘录没有逐字出现"),
+    (lambda d: d["income"]["q3_fy26"]["values"].update(consolidated_NI=1), "不成立"),
+])
+def test_other_company_profile_errors_are_reported_by_check(fictional_root, change, message):
+    doc = fictional_registration()
+    change(doc)
+    write(fictional_root, doc)
+    errors = er.check(fictional_root).errors
+    assert any(message in x for x in errors), errors
+    with pytest.raises(ValueError):
+        er.build_bundle(fictional_root)
+
+
+def test_result_recorded_before_profiles_degrades_instead_of_failing():
+    """早于 profile 的运行（结果里没有 profile）：没有规则化发现，页面给出提示，不报错。"""
+    from investment_os.research.findings import earnings_quarter_findings, earnings_quarter_state
+    from investment_os.site.renderers import get_renderer
+
+    old = {"results": {"quarters": []}, "methods": {"description": "旧说明"}, "limitations": []}
+    assert earnings_quarter_findings(old) == [] and earnings_quarter_state(old) == {}
+    renderer = get_renderer("earnings_quarter")
+    assert "没有 profile" in renderer.coverage_section(old) and renderer.key_stats(old) == "" and renderer.home_summary(old) is None
+    assert "旧说明" in renderer.method_items(old)[0]

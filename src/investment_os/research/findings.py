@@ -505,61 +505,86 @@ def company_state(result):
 def _eq_latest(result):
     r = result["results"]
     rows = {q["period"]: q for q in r["quarters"]}
-    return r, rows["q3_2026"], r["comparison"]
+    p = r["profile"]
+    return r, rows[p["current"]], rows[p["yoy_base"]], r["comparison"]
 
 
 def earnings_quarter_findings(result):
-    """季度财报的固定规则发现：报告口径的描述，不称有机增长，不估值、不预测。"""
-    r, cur, comp = _eq_latest(result)
+    """季度财报的固定规则发现：报告口径的描述，不估值、不预测、不作投资建议。公司专属措辞来自 profile.findings。
+    早于 profile 的运行（结果里没有 profile）没有可用的规则，返回空列表。"""
+    if "profile" not in result["results"]:
+        return []
+    r, cur, prior, comp = _eq_latest(result)
+    p = r["profile"]
+    f = p["findings"]
     yoy, qoq = comp["yoy"], comp["qoq"]
     bn = lambda v: f"{v / 1e3:,.2f}"
     out = [_finding("earnings_revenue",
                     f"{cur['label']} 收入 {bn(cur['revenue'])} 十亿美元，同比 {yoy['pct']['revenue']:+.1f}%、环比 {qoq['pct']['revenue']:+.1f}%；"
-                    "为报告口径，发行人没有披露并购与 TPU 系统销售的收入桥，不能称为有机增长。",
+                    f"{f['revenue_caveat']['zh']}",
                     {"revenue_usd_m": cur["revenue"], "yoy_pct": round(yoy["pct"]["revenue"], 2), "qoq_pct": round(qoq["pct"]["revenue"], 2)})]
-    b = r["bridges"]
-    text = (f"营业利润 {bn(cur['op_income'])} 十亿美元，营业利润率 {cur['op_margin']:.1f}%，较去年同期 {yoy['margin_pp']['op_margin']:+.1f} 个百分点。")
+    b = r.get("bridges") or {}
+    text = f"营业利润 {bn(cur['op_income'])} 十亿美元，营业利润率 {cur['op_margin']:.1f}%，较去年同期 {yoy['margin_pp']['op_margin']:+.1f} 个百分点。"
     ev = {"op_income_usd_m": cur["op_income"], "op_margin_pct": round(cur["op_margin"], 2), "yoy_margin_pp": round(yoy["margin_pp"]["op_margin"], 2)}
     if b.get("prior_year_charge_usd_m"):
-        text += (f"去年同期含约 {b['prior_year_charge_usd_m'] / 1e3:.1f} 十亿美元的欧盟相关费用；加回该费用的示意算术下，"
+        text += (f"去年同期含约 {b['prior_year_charge_usd_m'] / 1e3:.1f} 十亿美元的{p['prior_year_charge']['label']['zh']}；加回该费用的示意算术下，"
                  f"营业利润率较去年同期 {b['current_vs_prior_margin_pp']:+.1f} 个百分点（不是正常化盈利）。")
         ev["margin_pp_after_adding_back_prior_charge"] = round(b["current_vs_prior_margin_pp"], 2)
     out.append(_finding("earnings_operating", text, ev))
-    out.append(_finding("earnings_cloud",
-                        f"Google Cloud 收入 {bn(cur['Cloud_revenue'])} 十亿美元，同比 {yoy['pct']['Cloud_revenue']:+.1f}%，营业利润率 {cur['Cloud_margin']:.1f}%"
-                        f"（较去年同期 {yoy['margin_pp']['Cloud_margin']:+.1f} 个百分点）；收入含 TPU 系统产品销售与并购并表，金额未披露。",
-                        {"cloud_revenue_usd_m": cur["Cloud_revenue"], "yoy_pct": round(yoy["pct"]["Cloud_revenue"], 2),
-                         "cloud_margin_pct": round(cur["Cloud_margin"], 2)}))
-    equity = cur["equity_security_gain_loss"]
-    prior = next(q for q in r["quarters"] if q["period"] == "q3_2025")
-    out.append(_finding("earnings_net_income",
-                        f"合并净利润 {bn(cur['consolidated_NI'])} 十亿美元，同比 {yoy['pct']['consolidated_NI']:+.1f}%；其他收支含权益证券净"
-                        f"{'损失' if equity < 0 else '收益'} {bn(abs(equity))} 十亿美元（去年同期 {prior['equity_security_gain_loss'] / 1e3:+,.2f}）。"
-                        f"税前利润剔除该项的示意算术为 {bn(cur['ebt_ex_equity_securities'])} 十亿美元（去年同期 {bn(prior['ebt_ex_equity_securities'])}）。",
-                        {"consolidated_ni_usd_m": cur["consolidated_NI"], "equity_security_gain_loss_usd_m": equity,
-                         "ebt_ex_equity_usd_m": cur["ebt_ex_equity_securities"]}))
+    seg = f.get("segment")
+    if seg:
+        out.append(_finding("earnings_segment",
+                            f"{seg['name']} 收入 {bn(cur[seg['revenue']])} 十亿美元，同比 {yoy['pct'][seg['revenue']]:+.1f}%，营业利润率 {cur[seg['margin']]:.1f}%"
+                            f"（较去年同期 {yoy['margin_pp'][seg['margin']]:+.1f} 个百分点）；{seg['caveat']['zh']}",
+                            {"segment_revenue_usd_m": cur[seg["revenue"]], "yoy_pct": round(yoy["pct"][seg["revenue"]], 2),
+                             "segment_margin_pct": round(cur[seg["margin"]], 2)}))
+    text = f"合并净利润 {bn(cur['consolidated_NI'])} 十亿美元，同比 {yoy['pct']['consolidated_NI']:+.1f}%。"
+    ev = {"consolidated_ni_usd_m": cur["consolidated_NI"]}
+    no = p.get("non_operating")
+    if no:
+        item = cur[no["key"]]
+        text = (text[:-1] + f"；其他收支含{no['label']['zh']}净{'损失' if item < 0 else '收益'} {bn(abs(item))} 十亿美元"
+                f"（去年同期 {prior[no['key']] / 1e3:+,.2f}）。税前利润剔除该项的示意算术为 {bn(cur['ebt_ex_equity_securities'])} 十亿美元"
+                f"（去年同期 {bn(prior['ebt_ex_equity_securities'])}）。")
+        ev |= {"equity_security_gain_loss_usd_m": item, "ebt_ex_equity_usd_m": cur["ebt_ex_equity_securities"]}
+    out.append(_finding("earnings_net_income", text, ev))
     cash = r["cash"]
-    out.append(_finding("earnings_cash",
-                        f"经营活动现金流 {bn(cur['cfo'])} 十亿美元，现金资本开支 {bn(cur['cash_ppe'])} 十亿美元（占收入 {cur['capex_to_sales']:.1f}%，"
-                        f"去年同期 {prior['capex_to_sales']:.1f}%）；发行人定义的自由现金流为 {cur['free_cash_flow'] / 1e3:+,.2f} 十亿美元，"
-                        f"近四个季度合计 {bn(cash['ttm']['free_cash_flow'])} 十亿美元。",
-                        {"cfo_usd_m": cur["cfo"], "cash_capex_usd_m": cur["cash_ppe"], "free_cash_flow_usd_m": cur["free_cash_flow"],
-                         "ttm_free_cash_flow_usd_m": cash["ttm"]["free_cash_flow"]}))
-    pts = sorted(r["rpo"]["points"], key=lambda p: p["date"])
-    last = pts[-1]
-    out.append(_finding("earnings_backlog",
-                        f"收入积压订单 {last['total']:,.1f} 十亿美元（其中 Google Cloud {last['cloud']:,.1f}），较上一季度 {last['total_qoq_pct']:+.1f}%；"
-                        "自 2026 年第一季度起口径扩大，没有同口径的同比增速。",
-                        {"backlog_usd_bn": last["total"], "cloud_backlog_usd_bn": last["cloud"], "qoq_pct": round(last["total_qoq_pct"], 2)}))
+    text = (f"经营活动现金流 {bn(cur['cfo'])} 十亿美元，现金资本开支 {bn(cur['cash_ppe'])} 十亿美元（占收入 {cur['capex_to_sales']:.1f}%，"
+            f"去年同期 {prior['capex_to_sales']:.1f}%）；发行人定义的自由现金流为 {cur['free_cash_flow'] / 1e3:+,.2f} 十亿美元")
+    ev = {"cfo_usd_m": cur["cfo"], "cash_capex_usd_m": cur["cash_ppe"], "free_cash_flow_usd_m": cur["free_cash_flow"]}
+    if cash.get("trailing"):
+        text += f"，近四个季度合计 {bn(cash['trailing']['free_cash_flow'])} 十亿美元"
+        ev["ttm_free_cash_flow_usd_m"] = cash["trailing"]["free_cash_flow"]
+    out.append(_finding("earnings_cash", text + "。", ev))
+    rpo = r.get("rpo")
+    if rpo:
+        series = p["rpo"]["series"]
+        last = sorted(rpo["points"], key=lambda x: x["date"])[-1]
+        k0 = series[0]["key"]
+        text = f"收入积压订单 {last[k0]:,.1f} 十亿美元"
+        ev = {"backlog_usd_bn": last[k0]}
+        if len(series) > 1:
+            text += f"（其中 {series[1]['short']['zh']} {last[series[1]['key']]:,.1f}）"
+            ev["segment_backlog_usd_bn"] = last[series[1]["key"]]
+        if last.get(f"{k0}_qoq_pct") is not None:
+            text += f"，较上一季度 {last[f'{k0}_qoq_pct']:+.1f}%"
+            ev["qoq_pct"] = round(last[f"{k0}_qoq_pct"], 2)
+        caveat = f.get("backlog_caveat")
+        out.append(_finding("earnings_backlog", text + (f"；{caveat['zh']}" if caveat else "。"), ev))
     return out
 
 
 def earnings_quarter_state(result):
-    r, cur, comp = _eq_latest(result)
+    if "profile" not in result["results"]:
+        return {}
+    r, cur, prior, comp = _eq_latest(result)
     cov = r["summary"]["coverage"]
-    return {"最新季度": cur["label"], "自由现金流符号": "为负" if cur["free_cash_flow"] < 0 else "为正",
-            "权益证券损益方向": "净损失" if cur["equity_security_gain_loss"] < 0 else "净收益",
-            "覆盖项": f"已完成 {cov['done']}、数据不足 {cov['data_gap']}、需判断 {cov['judgment']}"}
+    out = {"最新季度": cur["label"], "自由现金流符号": "为负" if cur["free_cash_flow"] < 0 else "为正"}
+    no = r["profile"].get("non_operating")
+    if no:
+        out["非经营项目损益方向"] = "净损失" if cur[no["key"]] < 0 else "净收益"
+    out["覆盖项"] = f"已完成 {cov['done']}、数据不足 {cov['data_gap']}、需判断 {cov['judgment']}"
+    return out
 
 
 _FINDERS = {"rates_curve": rates_curve_findings, "par_bond_scenarios": par_bond_findings,
@@ -571,11 +596,12 @@ _STATES = {"par_bond_scenarios": par_bond_state, "curve_attribution": curve_attr
            "earnings_quarter": earnings_quarter_state}
 
 # 规则版本：人工维护的名称；规则改动时递增。指纹会自动反映代码改动，两者一起展示
+# earnings_quarter v2（2026-11-17）：措辞与量改为读登记的 profile，不再写死 Alphabet；发现 id earnings_cloud 改为 earnings_segment
 # rates_curve v2（2026-10-23）：「尚未发布」改为「未取得（下载时尚未到保守可用时点）」
 RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v2", "par_bond_scenarios": "par_bond-findings.v1",
                  "curve_attribution": "curve_attribution-findings.v1", "asset_history": "asset_history-findings.v1",
                  "industry": "industry-findings.v1", "company": "company-findings.v1",
-                 "earnings_quarter": "earnings_quarter-findings.v1"}
+                 "earnings_quarter": "earnings_quarter-findings.v2"}
 
 
 def findings(result: dict[str, Any]) -> list[dict[str, Any]]:

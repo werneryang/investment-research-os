@@ -2,7 +2,7 @@
 
 按 README「开发流程」约定：开始任务时先读本文件，结束时如有待接手事项再更新。已完成的条目保留结论，方便核对。
 
-更新于 2026-11-16。
+更新于 2026-11-17。
 
 ## 1. FRED 当前版本序列改走官方 API（已完成）
 
@@ -53,13 +53,17 @@
 - 11 月 17 日 2027 财年第三季度业绩公布后：查 EDGAR 有没有新的 8-K 或 10-Q 提到离任或继任，把新事实加进登记，日程项按实际发生的情况改写，`as_of` 改为新的查阅日，然后 `iros event fetch`、`iros event bundle`、重跑研究并存档。
 - 继任者任命后同样补登记。关键人物登记（`site/content.yaml` 的 `entity_people`）要给新任者加条目。
 
-## 7. Alphabet 2026 年第三季度财报研究（已上线，见部署核对）
+## 7. 季度财报研究（Alphabet Q3'26 已上线；分支已配置化，可新增任意公司）
 
 - 新增研究 `earnings_googl_2026q3`（分支 `earnings_quarter`、证据包 `earnings_evidence`、登记 `config/earnings/googl_2026q3.yaml`），设计与核对见 [docs/study-earnings.md](docs/study-earnings.md)。页面 `studies/earnings_googl_2026q3/`，与年度研究 `company_alphabet` 互相链接。
 - 原因：网站上 Alphabet 只有 2025 财年的年度数据，Q3'26 的走查记录（`methodology/records/sec-googl-earnings-20261116.yaml`）网站生成器不读。
 - 原文只在本机 `data/earnings/filings/`（不入库）；CI 不重算，网站显示归档的运行（archive 分支）。
 - 未覆盖：TPU 与并购的收入桥（发行人未披露）、电话会（逐字稿使用条款未核清，未读取）、行情反应（需选定可展示的日度价格来源）、估值与预期。
-- 待办：（1）下一个季度公布后更新，流程见该文档第 8 节；（2）第二家公司前先把分部与指标做成登记配置；（3）2026 年第三季度新闻稿的 EDGAR 接受时间没有记录，登记用发布日。
+- 2026-11-17 配置化：分支 `earnings_quarter`、关键发现、页面与英文按登记里的 `profile` 生成（季度列含非日历财年与 52/53 周、分部、会计恒等式、比率、页面行与图表、措辞），不再写死 Alphabet；展望、积压订单、恒定汇率、每股收益、示意算术都是可选项。Alphabet 的登记已迁移，重算结果与此前归档的运行逐字段一致（只有重命名的键、新增的 profile 与规则版本不同）；关键发现规则升到 `earnings_quarter-findings.v2`，指纹变化使旧运行用新代码重算的校验值不同，因此 Alphabet 重新运行并归档（旧运行留在档案里，网站只显示其记录的发现并注明）。`iros verify --all` 遇到无法重算的运行（如早于 profile 的证据包）现在逐条报 `[error]` 并继续，不再中止。
+- 新增公司的步骤清单：[docs/study-earnings.md](docs/study-earnings.md) 第 8 节（`config/earnings/<ticker>_<fy><q>.yaml` + `config/studies/earnings_<ticker>_<fy><q>.yaml`，`fetch`/`check`/`bundle`/`run`/`verify`，与走查记录逐项对照，放行时单独归档再合并）；首页入口用研究条目的 `home_group`（第 9 节）。
+- 注意：`iros earnings fetch/check/bundle` 一次处理 `config/earnings/` 下全部登记，所以每家公司的原文都要在本机；证据包随登记变动换版本，已归档的运行不受影响。
+- 未覆盖：TPU 与并购的收入桥（发行人未披露）、电话会（逐字稿使用条款未核清，未读取）、行情反应（需选定可展示的日度价格来源）、估值与预期。
+- 待办：（1）每家公司的下一个季度公布后更新（新建下一季度的登记与研究，保留上一季度的归档）；（2）2026 年第三季度新闻稿的 EDGAR 接受时间没有记录，登记用发布日；（3）第二家公司上线前，用它的真实申报走一遍 `profile`，看有没有科目是现有字段表达不了的（例如银行、保险没有营业成本），需要时再放宽必备科目。
 
 ## 给方法库
 

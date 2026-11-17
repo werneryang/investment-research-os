@@ -121,7 +121,7 @@ uv run iros edgar annual apple revenue --as-of 2024-01-01
 
 事件研究：`iros event fetch`（下载登记的申报原文）、`iros event check`（核对原文校验值、摘录与未提及检索词）、`iros event bundle`（生成并导入事件证据包）；研究 `config/studies/event_nvda_ceo_transition_2026.yaml`，见[事件研究设计](docs/study-events.md)。
 
-季度财报研究：`iros earnings fetch`（下载登记的申报原文）、`iros earnings check`（核对原文校验值、数值出现在原文中、会计恒等式与摘录）、`iros earnings bundle`（生成并导入财报证据包）；研究 `config/studies/earnings_googl_2026q3.yaml`，见[季度财报研究设计](docs/study-earnings.md)。
+季度财报研究：`iros earnings fetch`（下载登记的申报原文）、`iros earnings check`（核对原文校验值、数值出现在原文中、会计恒等式与摘录）、`iros earnings bundle`（生成并导入财报证据包）；研究 `config/studies/earnings_googl_2026q3.yaml`；每家公司的差异写在登记的 `profile`，新增公司的步骤见[季度财报研究设计](docs/study-earnings.md)。
 
 其他命令：`iros fetch --all`（全部定时数据集）、`iros sources`（已接入与候选来源及核验状态）、`iros datasets`（版本与质量概况）、`iros runs`、`iros import <dataset> <file> --declared-source "..."`（人工导入）。
 
@@ -175,7 +175,7 @@ uv run pytest
 - [SEC EDGAR 财报数据设计](docs/edgar-design.md)：全部申报主体的财报事实、财年与申报版本、分区存储（草案，待审阅）
 - [券商研报：私有原文与公开元数据分层方案](docs/research-report-private-view.md)：研报原文只放私有层，公开站点只引用元数据与自己的结论；含启动条件、分阶段计划与来源核对（规划，暂不实现）
 - [事件研究：事件事实与时间线](docs/study-events.md)：登记事件的原文事实、披露时间与原文未提及的事项，首例为 NVIDIA 首席执行官离任（第一版已实现）
-- [季度财报研究：Alphabet 2026 年第三季度](docs/study-earnings.md)：五个季度的报告口径收入、利润率、分部与现金流，可比性限制、资本开支展望对照与未覆盖项，首例为 Alphabet（第一版已实现）
+- [季度财报研究：Alphabet 2026 年第三季度](docs/study-earnings.md)：五个季度的报告口径收入、利润率、分部与现金流，可比性限制、资本开支展望对照与未覆盖项，首例为 Alphabet；按登记的 profile 配置，可新增任意公司（已实现）
 - [研究方法提取模块](methodology/README.md)：从公开研究中提取可复用分析方法的独立实验区，不接入研究体系与网站（初版，只有文档）
 - [历史方案索引](docs/archive/README.md)：保留 A、B、C 原始文档及 V0.2，追溯设计来源与定位变化。
 

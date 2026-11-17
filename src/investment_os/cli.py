@@ -200,7 +200,16 @@ def cmd_verify(args: argparse.Namespace) -> int:
         raise SystemExit("请给出 run_id，或用 --all 复现全部运行")
     failed = 0
     for run_id in run_ids:
-        record = verify_run(root, run_id)
+        try:
+            record = verify_run(root, run_id)
+        except (ValueError, LookupError, KeyError) as exc:
+            if not args.all:
+                raise
+            # 单个运行无法重算（例如证据包早于当前登记格式）不应使其余运行不被复现
+            failed += 1
+            print(f"[error] {run_id}")
+            print(f"    无法重算：{exc}")
+            continue
         ok = record["reproduced"]
         failed += not ok
         scope = "（部分：未重算 " + "、".join(record["excluded_roles"]) + "）" if record.get("scope") == "partial" else ""
