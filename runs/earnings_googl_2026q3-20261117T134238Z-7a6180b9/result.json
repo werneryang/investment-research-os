@@ -1,0 +1,1931 @@
+{
+  "study_id": "earnings_googl_2026q3",
+  "title": "Alphabet：2026 年第三季度财报研究",
+  "question": "Alphabet 2026 年第三季度的收入、利润率、分部经营、现金流与资本开支相对去年同期和上一季度如何变化？ 这些变化在多大程度上可以直接比较？哪些部分发行人没有披露，所以不能下结论？",
+  "result_type": "descriptive",
+  "branch": "earnings_quarter",
+  "scope": {
+    "market": "US",
+    "currency": "USD",
+    "start": "2025-07-01",
+    "end": "2026-09-30",
+    "frequency": "quarterly",
+    "vintage_policy": "latest",
+    "evaluated_at": "2026-11-17T13:42:38+00:00",
+    "data_checked_at": {
+      "earnings_evidence": "2026-11-17T13:42:37+00:00"
+    }
+  },
+  "data_cutoff": "2026-10-28",
+  "methods": {
+    "description": "从固定的财报证据包读取五个季度的合并利润表、分部与现金流（报告口径，百万美元）；2025 年第四季度由全年减前三季度推出。利润率为占同期收入的比例；同比对 2025 年第三季度，环比对 2026 年第二季度；自由现金流按发行人定义。权益证券损益与去年同期罚款的剔除只是税前示意算术。不称有机增长，不估值、不预测。",
+    "parameters": {
+      "earnings": "googl_2026q3"
+    },
+    "bundle": {
+      "built_at": "2026-11-17T13:42:37+00:00",
+      "earnings_files": {
+        "googl_2026q3.yaml": "5d8836ba2668731d5c7a4c7cba359945f11146d81076974cde13862c8a2e8155"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "role": "evidence",
+      "dataset_id": "earnings_evidence",
+      "version_id": "v20261117T134237Z-b17df1de",
+      "content_hash": "b17df1de19577dc37dcda80b77516349723a5cb6fa2f9ecbfdb51175c188c195",
+      "source_id": "sec_edgar",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2024-01-31",
+            "2026-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-11-16"
+        ]
+      }
+    }
+  ],
+  "results": {
+    "company": {
+      "entity": "cik_1652044",
+      "name": {
+        "zh": "Alphabet（Google）",
+        "en": "Alphabet Inc. (Google)"
+      },
+      "cik": 1652044,
+      "tickers": [
+        "GOOGL",
+        "GOOG"
+      ]
+    },
+    "latest_period": {
+      "label": "2026 Q3",
+      "start": "2026-07-01",
+      "end": "2026-09-30"
+    },
+    "as_of": "2026-11-16",
+    "release": {
+      "ir_date": "2026-10-28",
+      "ir_url": "https://abc.xyz/investor/news/news-details/2026/Alphabet-Announces-Third-Quarter-2026-Results-2026-FCcqxfIfmh/default.aspx",
+      "form_10q_filed": "2026-10-29"
+    },
+    "related_studies": [
+      {
+        "study": "company_alphabet",
+        "label": {
+          "zh": "Alphabet 年度财报研究（2025 财年及此前）",
+          "en": "Alphabet annual financial research (fiscal 2025 and earlier)"
+        }
+      }
+    ],
+    "profile": {
+      "short_name": "Alphabet",
+      "quarters": [
+        {
+          "id": "q3_2025",
+          "label": "2025 Q3",
+          "end": "2025-09-30",
+          "name": {
+            "zh": "2025 年第三季度",
+            "en": "Q3 2025"
+          }
+        },
+        {
+          "id": "q4_2025",
+          "label": "2025 Q4",
+          "end": "2025-12-31",
+          "name": {
+            "zh": "2025 年第四季度",
+            "en": "Q4 2025"
+          },
+          "derive": {
+            "total": "fy_2025",
+            "less": "nine_months_2025",
+            "method": {
+              "zh": "全年减前三季度",
+              "en": "full year less nine months"
+            },
+            "note": {
+              "zh": "2025 年第四季度由 2025 年全年减去 2026 年第三季度 10-Q 中的前三季度比较数推出，不是申报中的直接季度值（与当时新闻稿的直接值收入差 100 万美元，见可比性说明）。",
+              "en": "Q4 2025 is derived as full-year 2025 less the nine-month comparative in the Q3 2026 10-Q; it is not a directly filed quarter (revenue differs by USD 1 million from the original release; see comparability notes)."
+            }
+          }
+        },
+        {
+          "id": "q1_2026",
+          "label": "2026 Q1",
+          "end": "2026-03-31",
+          "name": {
+            "zh": "2026 年第一季度",
+            "en": "Q1 2026"
+          }
+        },
+        {
+          "id": "q2_2026",
+          "label": "2026 Q2",
+          "end": "2026-06-30",
+          "name": {
+            "zh": "2026 年第二季度",
+            "en": "Q2 2026"
+          }
+        },
+        {
+          "id": "q3_2026",
+          "label": "2026 Q3",
+          "end": "2026-09-30",
+          "name": {
+            "zh": "2026 年第三季度",
+            "en": "Q3 2026"
+          }
+        }
+      ],
+      "current": "q3_2026",
+      "yoy_base": "q3_2025",
+      "qoq_base": "q2_2026",
+      "year_to_date": {
+        "id": "nine_months_2026",
+        "quarters": [
+          "q1_2026",
+          "q2_2026",
+          "q3_2026"
+        ],
+        "label": {
+          "zh": "2026 年前三季度",
+          "en": "First nine months of 2026"
+        },
+        "short": {
+          "zh": "前三季度",
+          "en": "nine-month"
+        }
+      },
+      "trailing": "ttm_2026q3",
+      "income_metrics": [
+        "revenue",
+        "cost_of_revenues",
+        "R_and_D",
+        "sales_marketing",
+        "G_and_A",
+        "op_income",
+        "other_income",
+        "EBT",
+        "income_tax",
+        "consolidated_NI",
+        "preferred_dividends",
+        "common_NI",
+        "Search",
+        "YouTube_ads",
+        "Network",
+        "subscriptions_platforms_devices",
+        "Services_revenue",
+        "Cloud_revenue",
+        "OtherBets_revenue",
+        "hedging",
+        "Services_op",
+        "Cloud_op",
+        "OtherBets_op",
+        "Alphabet_level_op",
+        "equity_security_gain_loss"
+      ],
+      "identities": [
+        {
+          "name": "Search + YouTube + Network + 订阅/平台/设备 = Google Services 收入",
+          "terms": {
+            "Search": 1,
+            "YouTube_ads": 1,
+            "Network": 1,
+            "subscriptions_platforms_devices": 1
+          },
+          "equals": "Services_revenue"
+        },
+        {
+          "name": "Services + Cloud + Other Bets + 套期 = 收入",
+          "terms": {
+            "Services_revenue": 1,
+            "Cloud_revenue": 1,
+            "OtherBets_revenue": 1,
+            "hedging": 1
+          },
+          "equals": "revenue"
+        },
+        {
+          "name": "收入 − 营业成本与费用 = 营业利润",
+          "terms": {
+            "revenue": 1,
+            "cost_of_revenues": -1,
+            "R_and_D": -1,
+            "sales_marketing": -1,
+            "G_and_A": -1
+          },
+          "equals": "op_income"
+        },
+        {
+          "name": "分部营业利润合计 = 营业利润",
+          "terms": {
+            "Services_op": 1,
+            "Cloud_op": 1,
+            "OtherBets_op": 1,
+            "Alphabet_level_op": 1
+          },
+          "equals": "op_income"
+        },
+        {
+          "name": "营业利润 + 其他收支 = 税前利润",
+          "terms": {
+            "op_income": 1,
+            "other_income": 1
+          },
+          "equals": "EBT"
+        },
+        {
+          "name": "税前利润 − 所得税 = 净利润",
+          "terms": {
+            "EBT": 1,
+            "income_tax": -1
+          },
+          "equals": "consolidated_NI"
+        },
+        {
+          "name": "净利润 − 优先股股息 = 普通股可得净利润",
+          "terms": {
+            "consolidated_NI": 1,
+            "preferred_dividends": -1
+          },
+          "equals": "common_NI"
+        }
+      ],
+      "segment_ops": [
+        "Services_op",
+        "Cloud_op",
+        "OtherBets_op",
+        "Alphabet_level_op"
+      ],
+      "ratios": [
+        {
+          "key": "Services_margin",
+          "num": "Services_op",
+          "den": "Services_revenue"
+        },
+        {
+          "key": "Cloud_margin",
+          "num": "Cloud_op",
+          "den": "Cloud_revenue"
+        },
+        {
+          "key": "OtherBets_margin",
+          "num": "OtherBets_op",
+          "den": "OtherBets_revenue"
+        },
+        {
+          "key": "Services_share",
+          "num": "Services_revenue",
+          "den": "revenue"
+        },
+        {
+          "key": "Cloud_share",
+          "num": "Cloud_revenue",
+          "den": "revenue"
+        },
+        {
+          "key": "Alphabet_level_op_to_sales",
+          "num": "Alphabet_level_op",
+          "den": "revenue"
+        }
+      ],
+      "growth": [
+        "revenue",
+        "Search",
+        "YouTube_ads",
+        "Network",
+        "subscriptions_platforms_devices",
+        "Services_revenue",
+        "Cloud_revenue",
+        "OtherBets_revenue",
+        "cost_of_revenues",
+        "R_and_D",
+        "sales_marketing",
+        "G_and_A",
+        "op_income",
+        "EBT",
+        "income_tax",
+        "consolidated_NI",
+        "common_NI",
+        "cfo",
+        "cash_ppe"
+      ],
+      "margins": [
+        "gross_margin",
+        "op_margin",
+        "Services_margin",
+        "Cloud_margin"
+      ],
+      "non_operating": {
+        "key": "equity_security_gain_loss",
+        "label": {
+          "zh": "权益证券",
+          "en": "equity securities"
+        }
+      },
+      "prior_year_charge": {
+        "note": "ec_fine",
+        "field": "prior_year_charge_usd_m",
+        "label": {
+          "zh": "欧盟相关费用",
+          "en": "EU-related charge"
+        }
+      },
+      "calibers": {
+        "segment_delta": {
+          "zh": "分部营业利润同比变动合计等于营业利润变动，只是算术分解；不区分 TPU 销售、服务消耗、价格或规模效应。",
+          "en": "Year-over-year changes of segment operating income sum to the change in operating income; this is an arithmetic split only and does not separate TPU sales, service consumption, pricing or scale effects."
+        },
+        "ex_items": {
+          "zh": "示意性的税前算术：税前利润减权益证券损益；营业利润加去年同期约 35 亿美元的欧盟相关费用。不是发行人的正常化盈利、不含税率调整、不是预测；约数来自原文的四舍五入披露。",
+          "en": "Illustrative pretax arithmetic: pretax income less equity-security gains and losses; operating income plus the roughly USD 3.5 bn EU-related charge of the prior-year quarter. Not issuer-normalised earnings, no tax adjustment, not a forecast; the approximate amount comes from the filing's rounded disclosure."
+        }
+      },
+      "bridge_clause": {
+        "zh": "权益证券损益与去年同期罚款的剔除只是税前示意算术。",
+        "en": "Excluding equity-security gains and the prior-year charge is illustrative pretax arithmetic only."
+      },
+      "guidance_remaining": {
+        "guidance": "g_2026_feb",
+        "label": {
+          "zh": "2026 年二月区间",
+          "en": "the February 2026 range"
+        },
+        "caliber": {
+          "zh": "二月公布的全年区间减去前三季度现金资本开支，是同口径的剩余额算术，不是公司对第四季度的指引，也不是对现金支出路径的预测。",
+          "en": "The February full-year range less nine-month cash capital expenditure is same-definition residual arithmetic; it is neither company guidance for Q4 nor a forecast of the cash-spend path."
+        }
+      },
+      "balance_note": {
+        "zh": "总权益含优先股，没有对未调整的总权益计算 2026 年回报率",
+        "en": "total equity includes preferred stock, and no 2026 return on unadjusted total equity is computed"
+      },
+      "per_share": {
+        "current": "diluted_eps_q3_2026",
+        "prior": "diluted_eps_q3_2025"
+      },
+      "rpo": {
+        "series": [
+          {
+            "key": "total",
+            "label": {
+              "zh": "积压订单合计（十亿美元）",
+              "en": "Backlog total (USD bn)"
+            }
+          },
+          {
+            "key": "cloud",
+            "label": {
+              "zh": "其中 Google Cloud",
+              "en": "of which Google Cloud"
+            },
+            "short": {
+              "zh": "Google Cloud",
+              "en": "Google Cloud"
+            }
+          }
+        ],
+        "qoq_label": {
+          "zh": "合计环比",
+          "en": "Total QoQ"
+        }
+      },
+      "findings": {
+        "revenue_caveat": {
+          "zh": "为报告口径，发行人没有披露并购与 TPU 系统销售的收入桥，不能称为有机增长。",
+          "en": "This is reported growth: the issuer does not disclose a revenue bridge for acquisitions and TPU system sales, so it cannot be called organic."
+        },
+        "segment": {
+          "name": "Google Cloud",
+          "revenue": "Cloud_revenue",
+          "margin": "Cloud_margin",
+          "caveat": {
+            "zh": "收入含 TPU 系统产品销售与并购并表，金额未披露。",
+            "en": "Revenue includes TPU system product sales and acquired operations; their amounts are not disclosed."
+          }
+        },
+        "backlog_caveat": {
+          "zh": "自 2026 年第一季度起口径扩大，没有同口径的同比增速。",
+          "en": "The definition widened from Q1 2026, so there is no same-basis year-over-year growth rate."
+        }
+      },
+      "metrics": {
+        "revenue": {
+          "zh": "收入",
+          "en": "Revenue"
+        },
+        "Search": {
+          "zh": "Google Search & other",
+          "en": "Google Search & other"
+        },
+        "YouTube_ads": {
+          "zh": "YouTube 广告",
+          "en": "YouTube ads"
+        },
+        "Network": {
+          "zh": "Google Network",
+          "en": "Google Network"
+        },
+        "subscriptions_platforms_devices": {
+          "zh": "订阅、平台与设备",
+          "en": "Subscriptions, platforms and devices"
+        },
+        "Services_revenue": {
+          "zh": "Google Services",
+          "en": "Google Services"
+        },
+        "Cloud_revenue": {
+          "zh": "Google Cloud",
+          "en": "Google Cloud"
+        },
+        "OtherBets_revenue": {
+          "zh": "Other Bets",
+          "en": "Other Bets"
+        },
+        "cost_of_revenues": {
+          "zh": "营业成本",
+          "en": "Cost of revenues"
+        },
+        "R_and_D": {
+          "zh": "研发",
+          "en": "Research and development"
+        },
+        "sales_marketing": {
+          "zh": "销售与营销",
+          "en": "Sales and marketing"
+        },
+        "G_and_A": {
+          "zh": "一般与行政",
+          "en": "General and administrative"
+        },
+        "op_income": {
+          "zh": "营业利润",
+          "en": "Operating income"
+        },
+        "other_income": {
+          "zh": "其他收支净额",
+          "en": "Other income (expense), net"
+        },
+        "equity_security_gain_loss": {
+          "zh": "其中：权益证券净损益",
+          "en": "  of which: equity securities gain (loss)"
+        },
+        "EBT": {
+          "zh": "税前利润",
+          "en": "Income before taxes"
+        },
+        "income_tax": {
+          "zh": "所得税",
+          "en": "Income tax"
+        },
+        "consolidated_NI": {
+          "zh": "合并净利润",
+          "en": "Consolidated net income"
+        },
+        "preferred_dividends": {
+          "zh": "优先股股息",
+          "en": "Preferred dividends"
+        },
+        "common_NI": {
+          "zh": "普通股可得净利润",
+          "en": "Net income available to common"
+        },
+        "gross_margin": {
+          "zh": "毛利率",
+          "en": "Gross margin"
+        },
+        "op_margin": {
+          "zh": "营业利润率",
+          "en": "Operating margin"
+        },
+        "Cloud_margin": {
+          "zh": "Google Cloud 利润率",
+          "en": "Google Cloud margin"
+        },
+        "cfo": {
+          "zh": "经营活动现金流",
+          "en": "Operating cash flow"
+        },
+        "cash_ppe": {
+          "zh": "现金资本开支",
+          "en": "Cash capital expenditure"
+        },
+        "free_cash_flow": {
+          "zh": "自由现金流（发行人定义）",
+          "en": "Free cash flow (issuer definition)"
+        }
+      },
+      "report": [
+        "revenue",
+        "Services_revenue",
+        "Cloud_revenue",
+        "op_income",
+        "op_margin",
+        "Cloud_margin",
+        "consolidated_NI",
+        "equity_security_gain_loss",
+        "cfo",
+        "cash_ppe",
+        "free_cash_flow"
+      ],
+      "table": [
+        "revenue",
+        "Search",
+        "YouTube_ads",
+        "Network",
+        "subscriptions_platforms_devices",
+        "Services_revenue",
+        "Cloud_revenue",
+        "OtherBets_revenue",
+        "cost_of_revenues",
+        "R_and_D",
+        "sales_marketing",
+        "G_and_A",
+        "op_income",
+        {
+          "key": "other_income",
+          "growth": false
+        },
+        {
+          "key": "equity_security_gain_loss",
+          "growth": false
+        },
+        {
+          "key": "EBT",
+          "growth": false
+        },
+        {
+          "key": "income_tax",
+          "growth": false
+        },
+        "consolidated_NI",
+        {
+          "key": "preferred_dividends",
+          "growth": false
+        },
+        "common_NI",
+        "gross_margin",
+        "op_margin"
+      ],
+      "charts": [
+        {
+          "title": {
+            "zh": "收入与利润",
+            "en": "Revenue and profit"
+          },
+          "unit": "usd_bn",
+          "series": [
+            {
+              "key": "revenue",
+              "label": {
+                "zh": "收入",
+                "en": "Revenue"
+              }
+            },
+            {
+              "key": "op_income",
+              "label": {
+                "zh": "营业利润",
+                "en": "Operating income"
+              }
+            },
+            {
+              "key": "consolidated_NI",
+              "label": {
+                "zh": "合并净利润",
+                "en": "Consolidated net income"
+              }
+            }
+          ]
+        },
+        {
+          "title": {
+            "zh": "利润率",
+            "en": "Margins"
+          },
+          "unit": "pct",
+          "series": [
+            {
+              "key": "gross_margin",
+              "label": {
+                "zh": "毛利率",
+                "en": "Gross margin"
+              }
+            },
+            {
+              "key": "op_margin",
+              "label": {
+                "zh": "营业利润率",
+                "en": "Operating margin"
+              }
+            },
+            {
+              "key": "Services_margin",
+              "label": {
+                "zh": "Google Services 利润率",
+                "en": "Google Services margin"
+              }
+            },
+            {
+              "key": "Cloud_margin",
+              "label": {
+                "zh": "Google Cloud 利润率",
+                "en": "Google Cloud margin"
+              }
+            }
+          ]
+        },
+        {
+          "title": {
+            "zh": "现金流与资本开支",
+            "en": "Cash flow and capital expenditure"
+          },
+          "unit": "usd_bn",
+          "series": [
+            {
+              "key": "cfo",
+              "label": {
+                "zh": "经营现金流",
+                "en": "Operating cash flow"
+              }
+            },
+            {
+              "key": "cash_ppe",
+              "label": {
+                "zh": "现金资本开支",
+                "en": "Cash capex"
+              }
+            },
+            {
+              "key": "free_cash_flow",
+              "label": {
+                "zh": "自由现金流（发行人定义）",
+                "en": "Free cash flow (issuer definition)"
+              }
+            }
+          ]
+        },
+        {
+          "title": {
+            "zh": "分部收入",
+            "en": "Segment revenue"
+          },
+          "unit": "usd_bn",
+          "series": [
+            {
+              "key": "Services_revenue",
+              "label": {
+                "zh": "Google Services",
+                "en": "Google Services"
+              }
+            },
+            {
+              "key": "Cloud_revenue",
+              "label": {
+                "zh": "Google Cloud",
+                "en": "Google Cloud"
+              }
+            }
+          ]
+        }
+      ],
+      "segments": [
+        {
+          "name": "Google Services",
+          "revenue": "Services_revenue",
+          "op": "Services_op",
+          "margin": "Services_margin"
+        },
+        {
+          "name": "Google Cloud",
+          "revenue": "Cloud_revenue",
+          "op": "Cloud_op",
+          "margin": "Cloud_margin"
+        },
+        {
+          "name": "Other Bets",
+          "revenue": "OtherBets_revenue",
+          "op": "OtherBets_op",
+          "margin": "OtherBets_margin",
+          "digits": 0
+        }
+      ],
+      "unallocated": {
+        "key": "Alphabet_level_op",
+        "label": {
+          "zh": "Alphabet 层面活动（未分摊）",
+          "en": "Alphabet-level activities (unallocated)"
+        },
+        "short": {
+          "zh": "Alphabet 层面活动",
+          "en": "Alphabet-level activities"
+        }
+      },
+      "share": {
+        "key": "Cloud_share",
+        "label": {
+          "zh": "占收入比例 · Google Cloud",
+          "en": "Share of revenue · Google Cloud"
+        }
+      }
+    },
+    "quarters": [
+      {
+        "period": "q3_2025",
+        "label": "2025 Q3",
+        "end": "2025-09-30",
+        "derived": false,
+        "Alphabet_level_op": -4467.0,
+        "Cloud_op": 3594.0,
+        "Cloud_revenue": 15157.0,
+        "EBT": 43987.0,
+        "G_and_A": 7393.0,
+        "Network": 7354.0,
+        "OtherBets_op": -1426.0,
+        "OtherBets_revenue": 344.0,
+        "R_and_D": 15151.0,
+        "Search": 56567.0,
+        "Services_op": 33527.0,
+        "Services_revenue": 87052.0,
+        "YouTube_ads": 10261.0,
+        "common_NI": 34979.0,
+        "consolidated_NI": 34979.0,
+        "cost_of_revenues": 41369.0,
+        "equity_security_gain_loss": 10734.0,
+        "hedging": -207.0,
+        "income_tax": 9008.0,
+        "op_income": 31228.0,
+        "other_income": 12759.0,
+        "preferred_dividends": 0.0,
+        "revenue": 102346.0,
+        "sales_marketing": 7205.0,
+        "subscriptions_platforms_devices": 12870.0,
+        "cfo": 48414.0,
+        "cash_ppe": 23953.0,
+        "free_cash_flow": 24461.0,
+        "gross_profit": 60977.0,
+        "gross_margin": 59.579270318331936,
+        "op_margin": 30.512184159615423,
+        "Services_margin": 38.51376188944539,
+        "Cloud_margin": 23.71181632249126,
+        "OtherBets_margin": -414.5348837209302,
+        "Services_share": 85.05657280206358,
+        "Cloud_share": 14.80956754538526,
+        "Alphabet_level_op_to_sales": -4.364606335372169,
+        "capex_to_sales": 23.4039434858226,
+        "cfo_to_consolidated_ni": 1.3840875954143914,
+        "ebt_ex_equity_securities": 33253.0
+      },
+      {
+        "period": "q4_2025",
+        "label": "2025 Q4",
+        "end": "2025-12-31",
+        "derived": true,
+        "Alphabet_level_op": -5894.0,
+        "Cloud_op": 5313.0,
+        "Cloud_revenue": 17664.0,
+        "EBT": 39117.0,
+        "G_and_A": 5341.0,
+        "Network": 7828.0,
+        "OtherBets_op": -3617.0,
+        "OtherBets_revenue": 370.0,
+        "R_and_D": 18572.0,
+        "Search": 63073.0,
+        "Services_op": 40132.0,
+        "Services_revenue": 95862.0,
+        "YouTube_ads": 11383.0,
+        "common_NI": 34455.0,
+        "consolidated_NI": 34455.0,
+        "cost_of_revenues": 45767.0,
+        "equity_security_gain_loss": 2302.0,
+        "hedging": -67.0,
+        "income_tax": 4662.0,
+        "op_income": 35934.0,
+        "other_income": 3183.0,
+        "preferred_dividends": 0.0,
+        "revenue": 113829.0,
+        "sales_marketing": 8215.0,
+        "subscriptions_platforms_devices": 13578.0,
+        "cfo": 52402.0,
+        "cash_ppe": 27851.0,
+        "free_cash_flow": 24551.0,
+        "gross_profit": 68062.0,
+        "gross_margin": 59.7931985697845,
+        "op_margin": 31.568405239438103,
+        "Services_margin": 41.8643466649976,
+        "Cloud_margin": 30.078125,
+        "OtherBets_margin": -977.5675675675675,
+        "Services_share": 84.21579738028095,
+        "Cloud_share": 15.518013862899613,
+        "Alphabet_level_op_to_sales": -5.177942352124678,
+        "capex_to_sales": 24.467402858673974,
+        "cfo_to_consolidated_ni": 1.520882310259759,
+        "ebt_ex_equity_securities": 36815.0
+      },
+      {
+        "period": "q1_2026",
+        "label": "2026 Q1",
+        "end": "2026-03-31",
+        "derived": false,
+        "Alphabet_level_op": -5391.0,
+        "Cloud_op": 6598.0,
+        "Cloud_revenue": 20028.0,
+        "EBT": 77412.0,
+        "G_and_A": 4291.0,
+        "Network": 6971.0,
+        "OtherBets_op": -2100.0,
+        "OtherBets_revenue": 411.0,
+        "R_and_D": 17032.0,
+        "Search": 60399.0,
+        "Services_op": 40589.0,
+        "Services_revenue": 89637.0,
+        "YouTube_ads": 9883.0,
+        "common_NI": 62578.0,
+        "consolidated_NI": 62578.0,
+        "cost_of_revenues": 41271.0,
+        "equity_security_gain_loss": 36915.0,
+        "hedging": -180.0,
+        "income_tax": 14834.0,
+        "op_income": 39696.0,
+        "other_income": 37716.0,
+        "preferred_dividends": 0.0,
+        "revenue": 109896.0,
+        "sales_marketing": 7606.0,
+        "subscriptions_platforms_devices": 12384.0,
+        "cfo": 45790.0,
+        "cash_ppe": 35674.0,
+        "free_cash_flow": 10116.0,
+        "gross_profit": 68625.0,
+        "gross_margin": 62.44540292640315,
+        "op_margin": 36.121423891679406,
+        "Services_margin": 45.28152437051664,
+        "Cloud_margin": 32.943878570002,
+        "OtherBets_margin": -510.9489051094891,
+        "Services_share": 81.56529810002185,
+        "Cloud_share": 18.224503166630267,
+        "Alphabet_level_op_to_sales": -4.9055470626774405,
+        "capex_to_sales": 32.461600058236876,
+        "cfo_to_consolidated_ni": 0.7317268049474256,
+        "ebt_ex_equity_securities": 40497.0
+      },
+      {
+        "period": "q2_2026",
+        "label": "2026 Q2",
+        "end": "2026-06-30",
+        "derived": false,
+        "Alphabet_level_op": -5789.0,
+        "Cloud_op": 8814.0,
+        "Cloud_revenue": 24768.0,
+        "EBT": 138753.0,
+        "G_and_A": 6461.0,
+        "Network": 7303.0,
+        "OtherBets_op": -1799.0,
+        "OtherBets_revenue": 382.0,
+        "R_and_D": 18219.0,
+        "Search": 63271.0,
+        "Services_op": 39544.0,
+        "Services_revenue": 94540.0,
+        "YouTube_ads": 11055.0,
+        "common_NI": 112107.0,
+        "consolidated_NI": 112193.0,
+        "cost_of_revenues": 45943.0,
+        "equity_security_gain_loss": 99031.0,
+        "hedging": 106.0,
+        "income_tax": 26560.0,
+        "op_income": 40770.0,
+        "other_income": 97983.0,
+        "preferred_dividends": 86.0,
+        "revenue": 119796.0,
+        "sales_marketing": 8403.0,
+        "subscriptions_platforms_devices": 12911.0,
+        "cfo": 39069.0,
+        "cash_ppe": 44924.0,
+        "free_cash_flow": -5855.0,
+        "gross_profit": 73853.0,
+        "gross_margin": 61.648969915523054,
+        "op_margin": 34.03285585495342,
+        "Services_margin": 41.827797757562934,
+        "Cloud_margin": 35.58624031007752,
+        "OtherBets_margin": -470.94240837696333,
+        "Services_share": 78.91749307155497,
+        "Cloud_share": 20.675147751177,
+        "Alphabet_level_op_to_sales": -4.832381715583158,
+        "capex_to_sales": 37.500417376206215,
+        "cfo_to_consolidated_ni": 0.348230281746633,
+        "ebt_ex_equity_securities": 39722.0
+      },
+      {
+        "period": "q3_2026",
+        "label": "2026 Q3",
+        "end": "2026-09-30",
+        "derived": false,
+        "Alphabet_level_op": -7655.0,
+        "Cloud_op": 11121.0,
+        "Cloud_revenue": 30709.0,
+        "EBT": 32355.0,
+        "G_and_A": 6138.0,
+        "Network": 7455.0,
+        "OtherBets_op": -2047.0,
+        "OtherBets_revenue": 372.0,
+        "R_and_D": 20640.0,
+        "Search": 63350.0,
+        "Services_op": 39157.0,
+        "Services_revenue": 96302.0,
+        "YouTube_ads": 11207.0,
+        "common_NI": 26170.0,
+        "consolidated_NI": 26468.0,
+        "cost_of_revenues": 51419.0,
+        "equity_security_gain_loss": -8664.0,
+        "hedging": 194.0,
+        "income_tax": 5887.0,
+        "op_income": 40576.0,
+        "other_income": -8221.0,
+        "preferred_dividends": 298.0,
+        "revenue": 127577.0,
+        "sales_marketing": 8804.0,
+        "subscriptions_platforms_devices": 14290.0,
+        "cfo": 42290.0,
+        "cash_ppe": 51355.0,
+        "free_cash_flow": -9065.0,
+        "gross_profit": 76158.0,
+        "gross_margin": 59.69571317714008,
+        "op_margin": 31.805105936022947,
+        "Services_margin": 40.66063010114016,
+        "Cloud_margin": 36.21413917743983,
+        "OtherBets_margin": -550.2688172043011,
+        "Services_share": 75.48539313512623,
+        "Cloud_share": 24.07095322824647,
+        "Alphabet_level_op_to_sales": -6.0002978593320115,
+        "capex_to_sales": 40.254121040626444,
+        "cfo_to_consolidated_ni": 1.5977784494483904,
+        "ebt_ex_equity_securities": 41019.0
+      }
+    ],
+    "comparison": {
+      "yoy": {
+        "base": "2025 Q3",
+        "current": "2026 Q3",
+        "pct": {
+          "revenue": 24.652648857796102,
+          "Search": 11.99109021160747,
+          "YouTube_ads": 9.219374329987339,
+          "Network": 1.3734022300788684,
+          "subscriptions_platforms_devices": 11.033411033411022,
+          "Services_revenue": 10.625832835546568,
+          "Cloud_revenue": 102.60605660750808,
+          "OtherBets_revenue": 8.139534883720923,
+          "cost_of_revenues": 24.293553143658286,
+          "R_and_D": 36.2286317734803,
+          "sales_marketing": 22.19292158223456,
+          "G_and_A": -16.975517381306638,
+          "op_income": 29.934674010503404,
+          "EBT": -26.44417668856708,
+          "income_tax": -34.64698046181173,
+          "consolidated_NI": -24.331741902284232,
+          "common_NI": -25.183681637553956,
+          "cfo": -12.649233692733509,
+          "cash_ppe": 114.39903143656326
+        },
+        "margin_pp": {
+          "gross_margin": 0.11644285880814209,
+          "op_margin": 1.2929217764075247,
+          "Services_margin": 2.146868211694766,
+          "Cloud_margin": 12.502322854948574
+        }
+      },
+      "qoq": {
+        "base": "2026 Q2",
+        "current": "2026 Q3",
+        "pct": {
+          "revenue": 6.495208521152618,
+          "Search": 0.12485973036620024,
+          "YouTube_ads": 1.3749434644956926,
+          "Network": 2.081336437080661,
+          "subscriptions_platforms_devices": 10.680814809077521,
+          "Services_revenue": 1.8637613708483158,
+          "Cloud_revenue": 23.986595607235152,
+          "OtherBets_revenue": -2.617801047120416,
+          "cost_of_revenues": 11.919117166924242,
+          "R_and_D": 13.288325374608934,
+          "sales_marketing": 4.772105200523624,
+          "G_and_A": -4.999226125986689,
+          "op_income": -0.47584007848908705,
+          "EBT": -76.68158526302133,
+          "income_tax": -77.83509036144578,
+          "consolidated_NI": -76.40851033486938,
+          "common_NI": -76.65623020863997,
+          "cfo": 8.244388133814539,
+          "cash_ppe": 14.31528804202653
+        },
+        "margin_pp": {
+          "gross_margin": -1.9532567383829758,
+          "op_margin": -2.2277499189304706,
+          "Services_margin": -1.1671676564227766,
+          "Cloud_margin": 0.6278988673623118
+        }
+      },
+      "segment_op_delta_yoy": {
+        "delta": {
+          "Services_op": 5630.0,
+          "Cloud_op": 7527.0,
+          "OtherBets_op": -621.0,
+          "Alphabet_level_op": -3188.0
+        },
+        "total": 9348.0,
+        "reconciles": true,
+        "caliber": {
+          "zh": "分部营业利润同比变动合计等于营业利润变动，只是算术分解；不区分 TPU 销售、服务消耗、价格或规模效应。",
+          "en": "Year-over-year changes of segment operating income sum to the change in operating income; this is an arithmetic split only and does not separate TPU sales, service consumption, pricing or scale effects."
+        }
+      }
+    },
+    "bridges": {
+      "estimate": true,
+      "caliber": {
+        "zh": "示意性的税前算术：税前利润减权益证券损益；营业利润加去年同期约 35 亿美元的欧盟相关费用。不是发行人的正常化盈利、不含税率调整、不是预测；约数来自原文的四舍五入披露。",
+        "en": "Illustrative pretax arithmetic: pretax income less equity-security gains and losses; operating income plus the roughly USD 3.5 bn EU-related charge of the prior-year quarter. Not issuer-normalised earnings, no tax adjustment, not a forecast; the approximate amount comes from the filing's rounded disclosure."
+      },
+      "ebt_ex_equity_securities": {
+        "q3_2025": 33253.0,
+        "q4_2025": 36815.0,
+        "q1_2026": 40497.0,
+        "q2_2026": 39722.0,
+        "q3_2026": 41019.0
+      },
+      "equity_security_gain_loss": {
+        "q3_2025": 10734.0,
+        "q4_2025": 2302.0,
+        "q1_2026": 36915.0,
+        "q2_2026": 99031.0,
+        "q3_2026": -8664.0
+      },
+      "prior_year_charge_usd_m": 3500,
+      "prior_op_income_plus_charge": 34728.0,
+      "prior_op_margin_plus_charge": 33.931956305082764,
+      "current_op_income_vs_prior_plus_charge_pct": 16.83943791753053,
+      "current_vs_prior_margin_pp": -2.1268503690598166
+    },
+    "cash": {
+      "current_free_cash_flow": -9065.0,
+      "issuer_fcf": {
+        "q3_2026": -9065,
+        "ttm_2026q3": 19747
+      },
+      "caliber": {
+        "zh": "自由现金流按发行人定义：经营活动现金流减购置固定资产的现金支出。不是可分配现金，也未计入有价证券买卖、并购与融资。",
+        "en": "Free cash flow as the issuer defines it: operating cash flow less cash purchases of property and equipment. Not distributable cash; purchases of securities, acquisitions and financing are outside it."
+      },
+      "year_to_date": {
+        "cfo": 127149.0,
+        "cash_ppe": 131953.0,
+        "consolidated_ni": 201239.0,
+        "cfo_to_consolidated_ni": 0.6318308081435507,
+        "cfo_to_cash_ppe": 0.9635930975423067,
+        "label": {
+          "zh": "2026 年前三季度",
+          "en": "First nine months of 2026"
+        }
+      },
+      "trailing": {
+        "cfo": 179551.0,
+        "cash_ppe": 159804.0,
+        "free_cash_flow": 19747.0
+      }
+    },
+    "balance": [
+      {
+        "date": "2026-09-30",
+        "PPE_net": 372827.0,
+        "cash": 56334.0,
+        "longterm_debt": 125102.0,
+        "marketable_securities": 208764.0,
+        "total_assets": 1003312.0,
+        "total_equity": 677549.0,
+        "cash_and_securities": 265098.0
+      },
+      {
+        "date": "2026-06-30",
+        "PPE_net": 321212.0,
+        "cash": 55911.0,
+        "longterm_debt": 98165.0,
+        "marketable_securities": 186563.0,
+        "total_assets": 921983.0,
+        "total_equity": 640480.0,
+        "cash_and_securities": 242474.0
+      },
+      {
+        "date": "2025-12-31",
+        "PPE_net": 246597.0,
+        "cash": 30708.0,
+        "longterm_debt": 46547.0,
+        "marketable_securities": 96135.0,
+        "total_assets": 595281.0,
+        "total_equity": 415265.0,
+        "cash_and_securities": 126843.0
+      },
+      {
+        "date": "2025-09-30",
+        "PPE_net": 223787.0,
+        "cash": 23090.0,
+        "longterm_debt": 21607.0,
+        "marketable_securities": 75406.0,
+        "total_assets": 536469.0,
+        "total_equity": 386867.0,
+        "cash_and_securities": 98496.0
+      }
+    ],
+    "rpo": {
+      "unit": "USD billion",
+      "points": [
+        {
+          "date": "2026-03-31",
+          "total": 467.6,
+          "cloud": 462.3,
+          "document": "q1_10q",
+          "total_qoq_pct": null,
+          "cloud_qoq_pct": null
+        },
+        {
+          "date": "2026-06-30",
+          "total": 519.5,
+          "cloud": 513.9,
+          "document": "q2_10q",
+          "total_qoq_pct": 11.099230111206149,
+          "cloud_qoq_pct": 11.161583387410756
+        },
+        {
+          "date": "2026-09-30",
+          "total": 567.7,
+          "cloud": 560.8,
+          "document": "q3_10q",
+          "total_qoq_pct": 9.278152069297407,
+          "cloud_qoq_pct": 9.126289161315437
+        }
+      ],
+      "recognition": {
+        "share_text": "just over 55",
+        "months": 24,
+        "document": "q3_10q",
+        "excerpt": "We expect to recognize just over 55 % of the revenue backlog as revenues over the next 24 months",
+        "statement": {
+          "zh": "发行人称预计在未来 24 个月内确认积压订单的略高于 55%，其余在之后确认。",
+          "en": "The issuer expects to recognise just over 55% of the backlog over the next 24 months, the remainder thereafter."
+        }
+      },
+      "scope_change": {
+        "zh": "自 2026 年第一季度起，积压订单包含原合同期限不超过一年的合同；2025 年同期口径不含这些合同，因此没有同口径的同比增速。",
+        "en": "From Q1 2026 the backlog includes contracts with an original term of one year or less; the 2025 comparison excluded them, so there is no same-basis year-over-year growth rate."
+      }
+    },
+    "fx": {
+      "document": "release_q3_2026",
+      "reported_revenue": 127577,
+      "yoy_constant_currency_revenue": 128085,
+      "yoy_constant_currency_growth_pct_rounded": 25,
+      "qoq_constant_currency_revenue": 127816,
+      "qoq_constant_currency_growth_pct_rounded": 7
+    },
+    "per_share": {
+      "document": "release_q3_2026",
+      "diluted_eps_q3_2026": 2.12,
+      "diluted_eps_q3_2025": 2.87
+    },
+    "guidance": {
+      "observations": [
+        {
+          "id": "g_2024_qual",
+          "announced": "2024-01-31",
+          "target_year": 2024,
+          "kind": "qualitative",
+          "statement": {
+            "zh": "2024 年技术基础设施投入预计高于 2023 年（无数字区间；全年数字不能与「仅技术基础设施」口径逐项对照）",
+            "en": "2024 technical infrastructure investment expected to exceed 2023 (no numeric range; the full-year figure cannot be matched to a technical-infrastructure-only basis)"
+          },
+          "excerpt": "We also expect to increase, relative to 2023, our investment in our technical infrastructure",
+          "document": "fy23_10k",
+          "low_usd_bn": null,
+          "high_usd_bn": null,
+          "point_usd_bn": null,
+          "actual_usd_bn": null,
+          "result": "not_comparable"
+        },
+        {
+          "id": "g_2025_feb",
+          "announced": "2025-02-04",
+          "target_year": 2025,
+          "kind": "point",
+          "statement": {
+            "zh": "2025 年资本开支约 750 亿美元",
+            "en": "2025 capital expenditures of approximately USD 75 billion"
+          },
+          "excerpt": "we expect to invest approximately $75 billion in capital expenditures in 2025",
+          "document": "release_q4_2024",
+          "low_usd_bn": null,
+          "high_usd_bn": null,
+          "point_usd_bn": 75,
+          "actual_usd_bn": 91.447,
+          "result": "difference_only",
+          "difference_usd_bn": 16.447000000000003
+        },
+        {
+          "id": "g_2025_jul",
+          "announced": "2025-07-23",
+          "target_year": 2025,
+          "kind": "point",
+          "statement": {
+            "zh": "2025 年资本开支上调至约 850 亿美元",
+            "en": "2025 capital expenditures raised to approximately USD 85 billion"
+          },
+          "excerpt": "we are increasing our investment in capital expenditures in 2025 to approximately $85 billion",
+          "document": "release_q2_2025",
+          "low_usd_bn": null,
+          "high_usd_bn": null,
+          "point_usd_bn": 85,
+          "actual_usd_bn": 91.447,
+          "result": "difference_only",
+          "difference_usd_bn": 6.447000000000003
+        },
+        {
+          "id": "g_2025_oct",
+          "announced": "2025-10-29",
+          "target_year": 2025,
+          "kind": "range",
+          "statement": {
+            "zh": "2025 年资本开支预计为 910 亿至 930 亿美元",
+            "en": "2025 capital expenditures expected at USD 91 billion to USD 93 billion"
+          },
+          "excerpt": "we now expect 2025 capital expenditures to be in a range of $91 billion to $93 billion",
+          "document": "release_q3_2025",
+          "low_usd_bn": 91,
+          "high_usd_bn": 93,
+          "point_usd_bn": null,
+          "actual_usd_bn": 91.447,
+          "result": "within_range",
+          "difference_usd_bn": -0.5529999999999973
+        },
+        {
+          "id": "g_2026_feb",
+          "announced": "2026-02-04",
+          "target_year": 2026,
+          "kind": "range",
+          "statement": {
+            "zh": "2026 年资本开支预计为 1,750 亿至 1,850 亿美元",
+            "en": "2026 capital expenditures anticipated at USD 175 billion to USD 185 billion"
+          },
+          "excerpt": "our 2026 CapEx investments are anticipated to be in the range of $175 to $185 billion",
+          "document": "release_q4_2025",
+          "low_usd_bn": 175,
+          "high_usd_bn": 185,
+          "point_usd_bn": null,
+          "actual_usd_bn": null,
+          "result": "pending"
+        },
+        {
+          "id": "g_2026_q3_qual",
+          "announced": "2026-10-29",
+          "target_year": 2026,
+          "kind": "qualitative",
+          "statement": {
+            "zh": "2026 年技术基础设施投入预计较 2025 年大幅增加（第三季度 10-Q，无新的数字区间）",
+            "en": "2026 technical infrastructure investment expected to increase significantly versus 2025 (Q3 10-Q; no new numeric range)"
+          },
+          "excerpt": "In 2026, we expect to significantly increase, relative to 2025, our investment in our technical infrastructure",
+          "document": "q3_10q",
+          "low_usd_bn": null,
+          "high_usd_bn": null,
+          "point_usd_bn": null,
+          "actual_usd_bn": null,
+          "result": "pending"
+        }
+      ],
+      "actual": {
+        "year": 2025,
+        "value": 91447,
+        "document": "fy25_10k"
+      },
+      "remaining_arithmetic": {
+        "guidance": "g_2026_feb",
+        "target_year": 2026,
+        "low_usd_bn": 43.047,
+        "high_usd_bn": 53.047,
+        "year_to_date_cash_ppe_usd_bn": 131.953,
+        "estimate": true,
+        "caliber": {
+          "zh": "二月公布的全年区间减去前三季度现金资本开支，是同口径的剩余额算术，不是公司对第四季度的指引，也不是对现金支出路径的预测。",
+          "en": "The February full-year range less nine-month cash capital expenditure is same-definition residual arithmetic; it is neither company guidance for Q4 nor a forecast of the cash-spend path."
+        }
+      },
+      "tolerance_note": {
+        "zh": "点值展望没有定义容差，只给出实际值与点值的差，不判定「达成」或「未达成」。",
+        "en": "Point outlooks define no tolerance, so only the difference between actual and point is shown; no 'met' or 'missed' verdict."
+      }
+    },
+    "notes": [
+      {
+        "id": "ec_fine",
+        "document": "q3_10q",
+        "title": {
+          "zh": "欧盟委员会罚款：去年同期费用与本期现金支付不是同一事项",
+          "en": "European Commission fines: the prior-year charge and the current cash payment are different matters"
+        },
+        "excerpts": [
+          "We recognized a charge of $ 3.5 billion in the third quarter of 2025",
+          "In July 2026, we made a cash payment of $ 5.2 billion for the fine plus accrued interest."
+        ],
+        "fact": {
+          "zh": "原文披露：2025 年第三季度确认了约 35 亿美元的费用（欧盟竞争法下的广告技术事项）；2026 年 7 月以现金支付约 52 亿美元（2018 年 Android 案的罚款与应计利息，此前已计提）。",
+          "en": "The filing discloses a charge of about USD 3.5 billion recognised in Q3 2025 (an EU competition-law ad-tech matter) and a July 2026 cash payment of about USD 5.2 billion (the 2018 Android decision fine plus accrued interest, previously accrued)."
+        },
+        "limit": {
+          "zh": "两项属于不同案件、不同时点；第一项是 2025 年第三季度的费用，第二项是 2026 年的现金支付，不是同一笔钱。本页不把罚款分摊到分部，也不假设税率；「剔除去年罚款」的算术只作示意，见比较表。",
+          "en": "These are different cases at different times: the first is a Q3 2025 expense, the second a 2026 cash payment, not the same money. This page does not allocate the fines to segments or assume a tax rate; the ex-fine arithmetic is illustrative only, see the comparison table."
+        },
+        "approx": {
+          "prior_year_charge_usd_m": 3500,
+          "cash_payment_usd_m": 5200
+        }
+      },
+      {
+        "id": "equity_securities",
+        "document": "release_q3_2026",
+        "title": {
+          "zh": "权益证券损益使各季度净利润不可直接比较",
+          "en": "Gains and losses on equity securities make quarterly net income not directly comparable"
+        },
+        "excerpts": [
+          "the net effect of the loss on equity securities of $8.7 billion decreased the provision for income tax, net income, and diluted net income per common share by $1.9 billion, $6.7 billion, and $0.55, respectively."
+        ],
+        "fact": {
+          "zh": "「权益证券净损益」逐季为：2025 年第三季度 +107.34 亿、第四季度 +23.02 亿，2026 年第一季度 +369.15 亿、第二季度 +990.31 亿、第三季度 −86.64 亿美元。发行人披露：第三季度约 87 亿美元的损失使所得税拨备减少约 19 亿、净利润减少约 67 亿、稀释后每股收益减少约 0.55 美元。",
+          "en": "Net gain (loss) on equity securities by quarter: Q3 2025 +USD 10.73 bn, Q4 2025 +USD 2.30 bn, Q1 2026 +USD 36.92 bn, Q2 2026 +USD 99.03 bn, Q3 2026 -USD 8.66 bn. The issuer states that the Q3 loss of about USD 8.7 bn reduced the income tax provision by about USD 1.9 bn, net income by about USD 6.7 bn and diluted EPS by about USD 0.55."
+        },
+        "limit": {
+          "zh": "「税前利润剔除权益证券损益」是税前算术，不是发行人的正常化盈利，也不是预测；不推断这类损益是否再次出现。税后影响只引用发行人披露的近似值，不用四舍五入后的数字反推税率。",
+          "en": "'Pretax income excluding equity-security gains and losses' is pretax arithmetic, not issuer-normalised earnings and not a forecast; no recurrence is inferred. The after-tax effect uses only the issuer's approximate figures, not a tax rate backed out of rounded numbers."
+        }
+      },
+      {
+        "id": "preferred_claims",
+        "document": "q3_10q",
+        "title": {
+          "zh": "普通股可得净利润与合并净利润之间是优先股股息，不是少数股东权益",
+          "en": "Between consolidated and common net income is the preferred dividend, not non-controlling interest"
+        },
+        "excerpts": [],
+        "fact": {
+          "zh": "2026 年第三季度合并净利润 264.68 亿美元，扣除优先股股息 2.98 亿后，普通股可得净利润 261.70 亿美元；前三季度优先股现金净发行 190.63 亿美元，期末优先股账面权益 180.23 亿美元。",
+          "en": "Q3 2026 consolidated net income was USD 26.47 bn; after USD 0.30 bn of preferred dividends, net income available to common stockholders was USD 26.17 bn. Net cash proceeds of preferred issuance in the first nine months were USD 19.06 bn; the carrying amount of preferred equity at period end was USD 18.02 bn."
+        },
+        "limit": {
+          "zh": "优先股的账面权益、发行净现金与股息应计/现金支付是不同口径，不能互换；报表正面没有单独的归属母公司净利润调节，本页不自行编造。未对未调整的总权益计算 2026 年普通股回报率。",
+          "en": "Carrying amount, net issue proceeds and dividend accrual/cash payments of the preferred stock are different measures. The statement face has no separate parent-attributable reconciliation and none is invented here. No 2026 common ROE is computed on unadjusted total equity."
+        }
+      },
+      {
+        "id": "cloud_mix",
+        "document": "q3_10q",
+        "title": {
+          "zh": "Google Cloud 收入含 TPU 系统产品销售，发行人没有披露其金额",
+          "en": "Google Cloud revenue includes TPU system product sales; the issuer does not disclose the amount"
+        },
+        "excerpts": [
+          "primarily driven by growth in Google Cloud Platform, largely from infrastructure and platform services, and TPU system sales.",
+          "partially offset by increases in inventory and related costs associated with the sale of TPU systems and usage costs for technical infrastructure."
+        ],
+        "fact": {
+          "zh": "原文称 Google Cloud 季度收入增长主要来自 Google Cloud Platform（以基础设施与平台服务为主）和 TPU 系统销售；营业利润增长被与销售 TPU 系统相关的库存及相关成本以及技术基础设施使用成本部分抵消。",
+          "en": "The filing attributes the quarterly Google Cloud revenue increase mainly to Google Cloud Platform (largely infrastructure and platform services) and TPU system sales, and says the operating-income increase was partly offset by inventory and related costs of TPU system sales and technical-infrastructure usage costs."
+        },
+        "limit": {
+          "zh": "没有披露 TPU 系统销售的收入或利润、也没有只含经常性服务的利润率，所以不能把 Cloud 的全部增长或利润率变化归为经常性 AI 服务消费。「Search & other」不等于纯搜索广告；「YouTube ads」不含订阅收入（计入订阅、平台和设备）。",
+          "en": "Neither TPU system revenue or profit nor a recurring-services-only margin is disclosed, so the whole Cloud increase or margin change cannot be attributed to recurring AI service consumption. 'Search & other' is not search advertising alone; 'YouTube ads' excludes subscription receipts (reported in subscriptions, platforms and devices)."
+        }
+      },
+      {
+        "id": "acquisitions",
+        "document": "q3_10q",
+        "title": {
+          "zh": "报告增速包含并购并表，恒定汇率增速不是有机增速",
+          "en": "Reported growth includes acquired operations; constant-currency growth is not organic growth"
+        },
+        "excerpts": [
+          "On March 11, 2026, we completed our acquisition of Wiz for $ 29.5 billion"
+        ],
+        "fact": {
+          "zh": "Wiz 于 2026 年 3 月 11 日完成收购（对价约 295 亿美元，调整后、不含合并后的薪酬安排），并表后计入 Google Cloud；Intersect 于 2026 年 3 月 10 日完成（对价约 59 亿美元）。",
+          "en": "Wiz was acquired on 11 March 2026 (about USD 29.5 bn after purchase-price adjustments, excluding post-combination compensation) and is reported in Google Cloud; Intersect closed on 10 March 2026 (about USD 5.9 bn)."
+        },
+        "limit": {
+          "zh": "发行人没有提供完整的并购收入与有机增长桥，所以本页所有增速都是报告口径，不能称为有机增长。",
+          "en": "The issuer supplies no complete acquisition or organic revenue bridge, so every growth rate on this page is on a reported basis and cannot be called organic."
+        }
+      },
+      {
+        "id": "fx",
+        "document": "release_q3_2026",
+        "title": {
+          "zh": "恒定汇率口径只去除汇率与套期影响",
+          "en": "Constant-currency figures remove only FX and hedging effects"
+        },
+        "excerpts": [],
+        "fact": {
+          "zh": "发行人对账：2026 年第三季度报告收入 1,275.77 亿美元；按同比恒定汇率为 1,280.85 亿美元（同比约 25%）；按环比恒定汇率为 1,278.16 亿美元（环比约 7%）。",
+          "en": "Issuer reconciliation: Q3 2026 reported revenue USD 127.58 bn; year-over-year constant-currency revenue USD 128.09 bn (about 25% growth); quarter-over-quarter constant-currency revenue USD 127.82 bn (about 7% growth)."
+        },
+        "limit": {
+          "zh": "恒定汇率不去除并购或产品组合影响；没有恒定汇率下的利润序列，也不由此推断有机增长。",
+          "en": "Constant currency does not remove acquisition or product-mix effects. No constant-currency profit series exists and no organic growth is inferred."
+        }
+      },
+      {
+        "id": "financing",
+        "document": "q3_10q",
+        "title": {
+          "zh": "融资现金不是经营现金，也不是客户需求的证据",
+          "en": "Financing cash is neither operating cash nor evidence of customer demand"
+        },
+        "excerpts": [
+          "As of September 30, 2026, $27.6 billion"
+        ],
+        "fact": {
+          "zh": "2026 年前三季度现金流量表：普通股发行净现金 428.70 亿美元（其中第三季度 123.71 亿）、优先股发行净现金 190.63 亿、债务发行净现金 852.22 亿（其中第三季度 289.96 亿）。按市价发行计划授权约 400 亿美元，截至 2026-09-30 剩余约 276 亿美元。",
+          "en": "Cash-flow statement, first nine months of 2026: net proceeds of USD 42.87 bn from common stock (USD 12.37 bn in Q3), USD 19.06 bn from preferred stock and USD 85.22 bn from debt (USD 29.00 bn in Q3). The at-the-market programme authorised about USD 40 bn, of which about USD 27.6 bn remained at 30 September 2026."
+        },
+        "limit": {
+          "zh": "授权额度不是已募集资金；已发行的优先股不是普通股权益，也不是普通贷款。普通股与优先股融资可能影响后续稀释与资本配置，但本页不作判断。",
+          "en": "An authorisation is not funded cash; preferred stock is neither common equity nor an ordinary loan. Common and preferred financing can affect future dilution and capital allocation; this page makes no judgement on that."
+        }
+      },
+      {
+        "id": "ppe_payable",
+        "document": "q3_10q",
+        "title": {
+          "zh": "固定资产应付款与担保是现金资本开支之外的承诺信息",
+          "en": "Property payables and guarantees are commitments outside cash capital expenditure"
+        },
+        "excerpts": [],
+        "fact": {
+          "zh": "应计负债与应付账款中的固定资产款项：2025 年前三季度末 145.74 亿美元，2026 年前三季度末 359.21 亿美元；2026-09-30 财务担保约 228 亿美元。",
+          "en": "Property and equipment included in accrued liabilities and accounts payable: USD 14.57 bn at the end of the first nine months of 2025 and USD 35.92 bn in 2026; financial guarantees at 30 September 2026 of about USD 22.8 bn."
+        },
+        "limit": {
+          "zh": "这是应计负债与应付账款合并披露的非现金项目，不是单独的贸易应付款，也不是已发生的现金流出，不能从应付账款中扣除；财务担保是或有敞口，不是已融资债务。现金资本开支本身不能衡量全部资本承诺。",
+          "en": "This is a combined accrued-liability and payables non-cash disclosure, not standalone trade payables and not a cash outflow; it must not be subtracted from accounts payable. Financial guarantees are contingent exposures, not funded debt. Cash capital expenditure alone does not measure all capital commitments."
+        }
+      },
+      {
+        "id": "capital_rollforward",
+        "document": "q3_10q",
+        "title": {
+          "zh": "固定资产净额的部分滚动：现金口径之外还有未调和的变动",
+          "en": "Partial property roll-forward: movements remain beyond the cash-only bridge"
+        },
+        "excerpts": [],
+        "fact": {
+          "zh": "固定资产净额 2025 年末 2,465.97 亿美元，2026-09-30 为 3,728.27 亿美元（增加 1,262.30 亿）；前三季度现金购建 1,319.53 亿减折旧 219.55 亿为 1,099.98 亿，差额 162.32 亿美元未由现金口径解释。",
+          "en": "Net property and equipment rose from USD 246.60 bn at end-2025 to USD 372.83 bn at 30 September 2026 (+USD 126.23 bn). Nine-month cash purchases of USD 131.95 bn less depreciation of USD 21.96 bn is USD 110.00 bn; the USD 16.23 bn residual is not explained by the cash-only bridge."
+        },
+        "limit": {
+          "zh": "差额不是会计差错：并购、非现金取得、汇率、资产处置与各类资产的变动没有完全调和。本页不拆分维护性与增长性开支，也不编造折旧年限模型或单位成本预测。",
+          "en": "The residual is not an accounting error: acquisitions, non-cash additions, FX, disposals and class-specific movements are not fully reconciled. No maintenance/growth split, depreciation-life model or unit-cost forecast is invented."
+        }
+      },
+      {
+        "id": "q4_vintage",
+        "document": "release_q4_2025",
+        "title": {
+          "zh": "2025 年第四季度由全年减前三季度推出，与当时的直接季度值差 100 万美元",
+          "en": "Q4 2025 is derived as full year minus nine months and differs by USD 1 million from the original direct quarter"
+        },
+        "excerpts": [],
+        "fact": {
+          "zh": "2025 年全年收入 4,028.36 亿美元减去当前 10-Q 中前三季度比较数 2,890.07 亿美元，得 1,138.29 亿美元；当时第四季度新闻稿的直接季度值为 1,138.28 亿美元。",
+          "en": "FY2025 revenue of USD 402.84 bn less the nine-month comparative of USD 289.01 bn in the current 10-Q gives USD 113.83 bn; the original Q4 2025 release stated USD 113.83 bn directly (113,828 vs 113,829 USD million)."
+        },
+        "limit": {
+          "zh": "差异原因没有确定，也不补平；第四季度趋势使用明确标注的推导值，并非声称精确复现了直接季度值。2026 年第三、第二季度主要数字不受影响。",
+          "en": "The cause of the difference is not established and is not plugged. The Q4 trend uses the explicitly derived values and does not claim to reproduce the direct quarter exactly. Q3 and Q2 2026 headline figures are unaffected."
+        },
+        "check": {
+          "original_direct_q4_2025_revenue": 113828,
+          "document": "release_q4_2025"
+        }
+      }
+    ],
+    "coverage": [
+      {
+        "id": "five_quarters",
+        "status": "done",
+        "item": {
+          "zh": "五个季度的收入、利润、分部与现金流（报告口径）及同比、环比",
+          "en": "Five quarters of revenue, profit, segments and cash flow (reported basis) with year-over-year and quarter-over-quarter changes"
+        }
+      },
+      {
+        "id": "cash_conversion",
+        "status": "done",
+        "item": {
+          "zh": "经营现金流、现金资本开支与发行人定义的自由现金流（经营现金流减资本开支）",
+          "en": "Operating cash flow, cash capital expenditure and the issuer-defined free cash flow (operating cash flow less capital expenditure)"
+        }
+      },
+      {
+        "id": "items_bridge",
+        "status": "done",
+        "item": {
+          "zh": "权益证券损益与去年同期欧盟罚款的税前局部剔除算术（示意，非正常化盈利）",
+          "en": "Pretax arithmetic excluding equity-security gains and the prior-year EU charge (illustrative; not normalised earnings)"
+        }
+      },
+      {
+        "id": "fx_reconciliation",
+        "status": "done",
+        "item": {
+          "zh": "发行人恒定汇率对账",
+          "en": "Issuer constant-currency reconciliation"
+        }
+      },
+      {
+        "id": "rpo",
+        "status": "done",
+        "item": {
+          "zh": "收入积压订单（汇总余额、期限与口径变化）",
+          "en": "Revenue backlog (aggregate balance, horizon and scope change)"
+        }
+      },
+      {
+        "id": "capex_guidance",
+        "status": "done",
+        "item": {
+          "zh": "资本开支历史展望与实际的对照（2024 至 2026 年发行人原文）",
+          "en": "Capital expenditure outlooks versus actuals (issuer wording, 2024 to 2026)"
+        }
+      },
+      {
+        "id": "tpu_acquisition_bridge",
+        "status": "data_gap",
+        "item": {
+          "zh": "TPU 系统销售与 Wiz、Intersect 的收入和利润贡献、有机增长、仅经常性服务的利润率",
+          "en": "Revenue and profit contribution of TPU system sales, Wiz and Intersect; organic growth; recurring-services-only margin"
+        }
+      },
+      {
+        "id": "backlog_timeline",
+        "status": "data_gap",
+        "item": {
+          "zh": "合同级的积压订单兑现时点、选择权与照付不议条款；按年的收入转换",
+          "en": "Contract-level backlog timing, options and take-or-pay terms; annual revenue conversion"
+        }
+      },
+      {
+        "id": "capex_split",
+        "status": "data_gap",
+        "item": {
+          "zh": "资本开支的维护/增长拆分、设备单位成本、投产时点与资产寿命",
+          "en": "Maintenance/growth split of capital expenditure, unit costs, in-service timing and asset lives"
+        }
+      },
+      {
+        "id": "inventory_history",
+        "status": "data_gap",
+        "item": {
+          "zh": "营运资本周期（应收、存货、应付天数）：本页未收录；2023、2024 年末存货缺匹配的申报事实，也没有仅含贸易项的应收/应付口径",
+          "en": "Working-capital cycles (receivable, inventory and payable days) are not on this page; end-2023 and end-2024 inventory has no matching filed fact and there is no trade-only receivable/payable basis"
+        }
+      },
+      {
+        "id": "normalised_earnings",
+        "status": "judgment",
+        "item": {
+          "zh": "完整的税后正常化盈利与持续性判断（罚款、证券损益是否再次出现）",
+          "en": "Full after-tax normalised earnings and any recurrence judgement (whether fines or securities gains and losses recur)"
+        }
+      },
+      {
+        "id": "call_context",
+        "status": "judgment",
+        "item": {
+          "zh": "业绩电话会的管理层表述与问答（逐字稿的使用条款未核清，未读取）",
+          "en": "Management commentary and Q&A from the earnings call (transcript terms not cleared; not read)"
+        }
+      },
+      {
+        "id": "market_reaction",
+        "status": "judgment",
+        "item": {
+          "zh": "股价的事件窗口反应、历史预期与估值（需要可展示的日度价格来源，尚未选定；估值与预期不在本研究范围）",
+          "en": "Event-window price reaction, past expectations and valuation (needs a daily price source that may be displayed, not yet chosen; valuation and expectations are outside this study)"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "id": "q3_10q",
+        "form": "10-Q",
+        "period_end": "2026-09-30",
+        "accession": "0001652044-26-000084",
+        "accepted_at": "2026-10-29T00:29:06Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000084/goog-20260930.htm",
+        "sha256": "036100101ac5588eb9281b1c8dd82af2f6a8fcbb460af7989f11c5957b0ffd6b"
+      },
+      {
+        "id": "q2_10q",
+        "form": "10-Q",
+        "period_end": "2026-06-30",
+        "accession": "0001652044-26-000071",
+        "accepted_at": "2026-07-23T01:15:54Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+        "sha256": "aeed4f4f0251d5224dd50f72366c75d600a66d8fa96a5c620b383d1f8e4b0dd4"
+      },
+      {
+        "id": "q1_10q",
+        "form": "10-Q",
+        "period_end": "2026-03-31",
+        "accession": "0001652044-26-000048",
+        "accepted_at": "2026-04-30T01:02:11Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000048/goog-20260331.htm",
+        "sha256": "16f758356a5d57951c112fc56d8759c347af7a246ce3061c69201162d1eee6ae"
+      },
+      {
+        "id": "fy25_10k",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "accession": "0001652044-26-000018",
+        "accepted_at": "2026-02-05T02:56:03Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000018/goog-20251231.htm",
+        "sha256": "73a0a2f108aa99e64cdbc1323334ecd2d2fbf5602c2c3fdd3140b79dbe39c912"
+      },
+      {
+        "id": "q3_2025_10q",
+        "form": "10-Q",
+        "period_end": "2025-09-30",
+        "accession": "0001652044-25-000091",
+        "accepted_at": "2025-10-30T01:55:01Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000091/goog-20250930.htm",
+        "sha256": "a83ed14b6190f4f523365ee40be23f28528155708a507675f6df2b1dd38d32ed"
+      },
+      {
+        "id": "fy23_10k",
+        "form": "10-K",
+        "period_end": "2023-12-31",
+        "accession": "0001652044-24-000022",
+        "accepted_at": "2024-01-31T02:43:43Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204424000022/goog-20231231.htm",
+        "sha256": "4ebfdf0eb3c5892e1f0c95883ce6d166d53108490441335db5abdafea040142b"
+      },
+      {
+        "id": "release_q3_2026",
+        "form": "8-K EX-99.1",
+        "period_end": "2026-09-30",
+        "accession": "0001652044-26-000080",
+        "accepted_at": "2026-10-28",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000080/googexhibit991q32026.htm",
+        "sha256": "b62999597e927c5123e36442adfdf86f19d416e3be27a94ea92284c1d68f9ac3"
+      },
+      {
+        "id": "release_q4_2024",
+        "form": "8-K EX-99.1",
+        "period_end": "2024-12-31",
+        "accession": "0001652044-25-000010",
+        "accepted_at": "2025-02-04T21:01:27Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000010/googexhibit991q42024.htm",
+        "sha256": "1c502f600659d00d465c7f07813879b037f403fac66fa61db2f79b50108338e6"
+      },
+      {
+        "id": "release_q2_2025",
+        "form": "8-K EX-99.1",
+        "period_end": "2025-06-30",
+        "accession": "0001652044-25-000056",
+        "accepted_at": "2025-07-23T20:01:33Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000056/googexhibit991q22025.htm",
+        "sha256": "723e9e2e627e8cf46a853db6b7eaf65da8399e6dffae8d61214daefcbc300446"
+      },
+      {
+        "id": "release_q3_2025",
+        "form": "8-K EX-99.1",
+        "period_end": "2025-09-30",
+        "accession": "0001652044-25-000087",
+        "accepted_at": "2025-10-29T20:01:48Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000087/googexhibit991q32025.htm",
+        "sha256": "198250a8765d082a66fdf376098fe55aa20b44a1151c7417f4093c30a6b22705"
+      },
+      {
+        "id": "release_q4_2025",
+        "form": "8-K EX-99.1",
+        "period_end": "2025-12-31",
+        "accession": "0001652044-26-000012",
+        "accepted_at": "2026-02-04T21:01:37Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000012/googexhibit991q42025.htm",
+        "sha256": "cafe94d6182b397de4a02b4aa1081a4d19690b98f80a1a9116a2fe5f67e960ce"
+      }
+    ],
+    "summary": {
+      "quarters": 5,
+      "derived_quarters": 1,
+      "notes": 10,
+      "coverage": {
+        "done": 6,
+        "data_gap": 4,
+        "judgment": 3
+      }
+    }
+  },
+  "coverage": {
+    "completeness": "partial",
+    "period_complete": true,
+    "quarters": 5,
+    "coverage_items": {
+      "done": 6,
+      "data_gap": 4,
+      "judgment": 3
+    }
+  },
+  "unsupported": [
+    {
+      "item": "TPU 系统销售与 Wiz、Intersect 的收入和利润贡献、有机增长、仅经常性服务的利润率",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    },
+    {
+      "item": "合同级的积压订单兑现时点、选择权与照付不议条款；按年的收入转换",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    },
+    {
+      "item": "资本开支的维护/增长拆分、设备单位成本、投产时点与资产寿命",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    },
+    {
+      "item": "营运资本周期（应收、存货、应付天数）：本页未收录；2023、2024 年末存货缺匹配的申报事实，也没有仅含贸易项的应收/应付口径",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    },
+    {
+      "item": "完整的税后正常化盈利与持续性判断（罚款、证券损益是否再次出现）",
+      "kind": "scope",
+      "reason": "需要人工判断或本研究未处理的外部材料；不在公开财报算术的范围内"
+    },
+    {
+      "item": "业绩电话会的管理层表述与问答（逐字稿的使用条款未核清，未读取）",
+      "kind": "scope",
+      "reason": "需要人工判断或本研究未处理的外部材料；不在公开财报算术的范围内"
+    },
+    {
+      "item": "股价的事件窗口反应、历史预期与估值（需要可展示的日度价格来源，尚未选定；估值与预期不在本研究范围）",
+      "kind": "scope",
+      "reason": "需要人工判断或本研究未处理的外部材料；不在公开财报算术的范围内"
+    }
+  ],
+  "limitations": [
+    "全部为报告口径，不是有机增长：发行人没有披露 TPU 系统销售以及 Wiz、Intersect 并购的收入与利润贡献，也没有只含经常性服务的 Cloud 利润率",
+    "2025 年第四季度由全年数减前三季度比较数推出，与当时新闻稿的直接季度值有 100 万美元的收入差异，原因未确定",
+    "去年同期含约 35 亿美元的欧盟相关费用，本期有约 52 亿美元的罚款现金支付，属于不同事项；权益证券损益使各季度净利润不可直接比较",
+    "剔除权益证券损益与去年罚款的算术只是税前示意，不是正常化盈利，也不是预测",
+    "收入积压订单自 2026 年第一季度起口径扩大，没有同口径的同比增速",
+    "没有处理业绩电话会（逐字稿的使用条款未核清）、行情反应、估值与历史预期",
+    "数值出现在原文中是存在性检查，不证明取自正确的行列；没有逐条人工审阅原文",
+    "不判断经营质量好坏，也不作投资建议"
+  ],
+  "validation": {
+    "evidence_check": {
+      "status": "pass",
+      "checked": 279,
+      "reason": "证据包生成前逐份核对原文 SHA256、数值出现在所引原文中、会计恒等式成立、文字摘录逐字出现在原文中"
+    },
+    "raw_spot_check": {
+      "status": "skipped",
+      "reason": "没有可在原始 CSV 中定位的合格观测"
+    }
+  },
+  "tables": {
+    "quarters": [
+      {
+        "period": "q3_2025",
+        "label": "2025 Q3",
+        "revenue": 102346.0,
+        "op_income": 31228.0,
+        "consolidated_NI": 34979.0,
+        "cfo": 48414.0,
+        "cash_ppe": 23953.0
+      },
+      {
+        "period": "q4_2025",
+        "label": "2025 Q4",
+        "revenue": 113829.0,
+        "op_income": 35934.0,
+        "consolidated_NI": 34455.0,
+        "cfo": 52402.0,
+        "cash_ppe": 27851.0
+      },
+      {
+        "period": "q1_2026",
+        "label": "2026 Q1",
+        "revenue": 109896.0,
+        "op_income": 39696.0,
+        "consolidated_NI": 62578.0,
+        "cfo": 45790.0,
+        "cash_ppe": 35674.0
+      },
+      {
+        "period": "q2_2026",
+        "label": "2026 Q2",
+        "revenue": 119796.0,
+        "op_income": 40770.0,
+        "consolidated_NI": 112193.0,
+        "cfo": 39069.0,
+        "cash_ppe": 44924.0
+      },
+      {
+        "period": "q3_2026",
+        "label": "2026 Q3",
+        "revenue": 127577.0,
+        "op_income": 40576.0,
+        "consolidated_NI": 26468.0,
+        "cfo": 42290.0,
+        "cash_ppe": 51355.0
+      }
+    ]
+  },
+  "interpretation": {
+    "rule_version": "earnings_quarter-findings.v2",
+    "rule_fingerprint": "3140b415a520ff45",
+    "params": {},
+    "items": [
+      {
+        "id": "earnings_revenue",
+        "text": "2026 Q3 收入 127.58 十亿美元，同比 +24.7%、环比 +6.5%；为报告口径，发行人没有披露并购与 TPU 系统销售的收入桥，不能称为有机增长。",
+        "evidence": {
+          "revenue_usd_m": 127577.0,
+          "yoy_pct": 24.65,
+          "qoq_pct": 6.5
+        }
+      },
+      {
+        "id": "earnings_operating",
+        "text": "营业利润 40.58 十亿美元，营业利润率 31.8%，较去年同期 +1.3 个百分点。去年同期含约 3.5 十亿美元的欧盟相关费用；加回该费用的示意算术下，营业利润率较去年同期 -2.1 个百分点（不是正常化盈利）。",
+        "evidence": {
+          "op_income_usd_m": 40576.0,
+          "op_margin_pct": 31.81,
+          "yoy_margin_pp": 1.29,
+          "margin_pp_after_adding_back_prior_charge": -2.13
+        }
+      },
+      {
+        "id": "earnings_segment",
+        "text": "Google Cloud 收入 30.71 十亿美元，同比 +102.6%，营业利润率 36.2%（较去年同期 +12.5 个百分点）；收入含 TPU 系统产品销售与并购并表，金额未披露。",
+        "evidence": {
+          "segment_revenue_usd_m": 30709.0,
+          "yoy_pct": 102.61,
+          "segment_margin_pct": 36.21
+        }
+      },
+      {
+        "id": "earnings_net_income",
+        "text": "合并净利润 26.47 十亿美元，同比 -24.3%；其他收支含权益证券净损失 8.66 十亿美元（去年同期 +10.73）。税前利润剔除该项的示意算术为 41.02 十亿美元（去年同期 33.25）。",
+        "evidence": {
+          "consolidated_ni_usd_m": 26468.0,
+          "equity_security_gain_loss_usd_m": -8664.0,
+          "ebt_ex_equity_usd_m": 41019.0
+        }
+      },
+      {
+        "id": "earnings_cash",
+        "text": "经营活动现金流 42.29 十亿美元，现金资本开支 51.35 十亿美元（占收入 40.3%，去年同期 23.4%）；发行人定义的自由现金流为 -9.06 十亿美元，近四个季度合计 19.75 十亿美元。",
+        "evidence": {
+          "cfo_usd_m": 42290.0,
+          "cash_capex_usd_m": 51355.0,
+          "free_cash_flow_usd_m": -9065.0,
+          "ttm_free_cash_flow_usd_m": 19747.0
+        }
+      },
+      {
+        "id": "earnings_backlog",
+        "text": "收入积压订单 567.7 十亿美元（其中 Google Cloud 560.8），较上一季度 +9.3%；自 2026 年第一季度起口径扩大，没有同口径的同比增速。",
+        "evidence": {
+          "backlog_usd_bn": 567.7,
+          "segment_backlog_usd_bn": 560.8,
+          "qoq_pct": 9.28
+        }
+      }
+    ],
+    "state": {
+      "最新季度": "2026 Q3",
+      "自由现金流符号": "为负",
+      "非经营项目损益方向": "净损失",
+      "覆盖项": "已完成 6、数据不足 4、需判断 3"
+    }
+  },
+  "run_id": "earnings_googl_2026q3-20261117T134238Z-7a6180b9",
+  "generated_at": "2026-11-17T13:42:38+00:00",
+  "result_hash": "b68d759e10fcd3f2cff8707709dd1515b381b0777ecbacf909078f838529a98e"
+}
