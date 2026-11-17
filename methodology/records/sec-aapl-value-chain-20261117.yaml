@@ -1,0 +1,1410 @@
+# Public factual source and computation walkthrough; no investment conclusions.
+id: sec-aapl-value-chain-20261117
+task_id: R-20261117-aapl-value-chain
+record_type: application
+status: draft
+scope:
+  subject: Apple Inc. (AAPL)
+  strict_publication_cutoff_NY: '2026-11-17T16:26:00-05:00'
+  strict_publication_cutoff_UTC: '2026-11-17T21:26:00Z'
+  task_kind: Business and value-chain factual mapping; not an earnings update
+  site_study: false
+  no_originals_policy: Read public HTML/APIs in memory; no PDF, deck, audio, transcript or report original downloaded
+    or stored. Response hashes are checksums, not public copies.
+  point_in_time_limit: Retrieval occurred after cutoff. Dated disclosures published before cutoff are eligible;
+    dynamic undated pages are corroboration only, not proof of historical state. No complete archived as-of snapshot
+    is claimed.
+  selection_limit: Selected directly named relationships, not a complete supplier/customer census, procurement ranking,
+    market-share table or product bill of materials. U.S. AMP disclosures overrepresent U.S. projects.
+latest_period_evidence:
+  registered_source: sec_edgar; config/sources.yaml; existing rate-limited SecClient
+  submissions_url: https://data.sec.gov/submissions/CIK0000320193.json
+  retrieved_at_utc: '2026-11-17T21:30:56.168679+00:00'
+  response_sha256: b65b1dc29464fe1d6829cc2b20c5781fb8ae44b5b46d243de84e22dd41c80707
+  latest_10K:
+    form: 10-K
+    filingDate: '2026-11-03'
+    reportDate: '2026-09-26'
+    acceptanceDateTime: '2026-11-03T13:05:15.000Z'
+    accessionNumber: 0000320193-26-000026
+    primaryDocument: aapl-20260926.htm
+  latest_10Q:
+    form: 10-Q
+    filingDate: '2026-07-31'
+    reportDate: '2026-06-27'
+    acceptanceDateTime: '2026-07-31T10:01:02.000Z'
+    accessionNumber: 0000320193-26-000020
+    primaryDocument: aapl-20260627.htm
+  latest_periodic_filing: FY2026 10-K, not Q3 10-Q
+  IR_release_date: '2026-11-02'
+  IR_release_source: ir_fy26
+  SEC_SIC:
+    code: '3571'
+    description: Electronic Computers
+    classification_limit: SEC registrant classification, not GICS and not a complete description of every business.
+  date_limit: SEC acceptance timestamps are UTC; report period, filing date, release date and retrieval date are
+    separate.
+sources:
+  aapl_10k:
+    publisher: Apple Inc.; SEC
+    url: https://www.sec.gov/Archives/edgar/data/320193/000032019326000026/aapl-20260926.htm
+    published_on: '2026-11-03'
+    locator: Item 1 Business; Item 7 Products and Services Performance; Note 13 Concentrations; Note 14 segments
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: sec_edgar
+    verification: Registered SEC HTML plus selected inline-XBRL contexts/values; consolidated revenue cross-checked
+      with Company Facts.
+    sha256_response: 2ad9d265c5fa19e9691943196b48f1db2ec59ec646ba58e69b2a255f4afe1ab5
+    retrieved_at_utc: '2026-11-17T21:32:57.422217+00:00'
+  aapl_q3_10q:
+    publisher: Apple Inc.
+    url: https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627.htm
+    published_on: '2026-07-31'
+    locator: Cover; quarter ended June 27, 2026
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: sec_edgar
+    verification: Direct allowed HTML response read in memory; hash recorded, original not persisted
+    sha256_response: b32c255ce2eeffa2a6019f174d0f02464679e43de203da05917c67a75237e2dd
+    request_started_at: '2026-11-17T21:34:25.677433+00:00'
+    retrieved_at: '2026-11-17T21:34:25.979605+00:00'
+    bytes_received_in_memory: 1018322
+    original_persisted: false
+  broadcom_8k:
+    publisher: SEC; Broadcom Inc.
+    url: https://www.sec.gov/Archives/edgar/data/1730168/000119312526295589/d84378d8k.htm
+    published_on: '2026-07-06'
+    locator: Item 8.01; event July 6, 2026
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: sec_edgar
+    verification: Direct allowed HTML response read in memory; hash recorded, original not persisted
+    sha256_response: eb55e434a37abf0db6cf9e085bacb26e58ee9b6ec31582febc315d17ad0b45b9
+    request_started_at: '2026-11-17T21:34:25.980279+00:00'
+    retrieved_at: '2026-11-17T21:34:26.099328+00:00'
+    bytes_received_in_memory: 22311
+    original_persisted: false
+  mp_424b5:
+    publisher: SEC; MP Materials Corp.
+    url: https://www.sec.gov/Archives/edgar/data/1801368/000119312525160635/d923027d424b5.htm
+    published_on: '2025-07-18'
+    locator: Partnership with Apple; prospectus supplement dated July 16, 2025; SEC filing date July 18, acceptance
+      July 17 18:40:58 EDGAR display
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: sec_edgar
+    verification: Direct allowed HTML response read in memory; hash recorded, original not persisted
+    sha256_response: 802d82b894e3be77e60dd7d3288564edf8b94545d3867117be332b637755fcf8
+    request_started_at: '2026-11-17T21:34:26.099396+00:00'
+    retrieved_at: '2026-11-17T21:34:26.420961+00:00'
+    bytes_received_in_memory: 388823
+    original_persisted: false
+    date_verification:
+      index_url: https://www.sec.gov/Archives/edgar/data/1801368/000119312525160635/0001193125-25-160635-index.html
+      retrieved_at_utc: '2026-11-17T21:38:30.756481+00:00'
+      index_response_sha256: 3836672ec36bb0cc85d7574688f499da9f197438ee9b3f9c6e06bdbcb1cb5bba
+      filing_date: '2025-07-18'
+      EDGAR_acceptance_display: '2025-07-17 18:40:58'
+      timezone_note: EDGAR index display retained without guessing UTC conversion.
+  amp_oct26:
+    publisher: Apple Inc.
+    url: https://www.apple.com/newsroom/2026/10/apple-announces-american-manufacturing-program-partners-for-latest-iphone-lineup/
+    published_on: '2026-10-20'
+    locator: Body paragraphs Perryman/Qnity; six supplier bullets; Amkor future customer sentence
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct allowed HTML response read in memory; hash recorded, original not persisted
+    sha256_response: f3847d9e678803308cc4a117155b04d06a552a8f4c77676ea4163614909e2a1b
+    request_started_at: '2026-11-17T21:34:26.421527+00:00'
+    retrieved_at: '2026-11-17T21:34:27.172472+00:00'
+    bytes_received_in_memory: 197202
+    original_persisted: false
+  amp_mar26:
+    publisher: Apple Inc.
+    url: https://www.apple.com/newsroom/2026/03/apple-adds-new-partners-to-its-american-manufacturing-program/
+    published_on: '2026-03-26'
+    locator: TDK, Bosch/TSMC, Cirrus Logic/GF and Qnity paragraphs
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct allowed HTML response read in memory; hash recorded, original not persisted
+    sha256_response: 99471d3c3b9069d9c3ce2a1e493259e0d145c42b1a5fb46f9a6b18a69ed749a9
+    request_started_at: '2026-11-17T21:34:27.172630+00:00'
+    retrieved_at: '2026-11-17T21:34:27.392022+00:00'
+    bytes_received_in_memory: 135269
+    original_persisted: false
+  amp_aug25:
+    publisher: Apple Inc.
+    url: https://www.apple.com/newsroom/2025/08/apple-increases-us-commitment-to-600-billion-usd-announces-ambitious-program/
+    published_on: '2025-08-06'
+    locator: American Silicon Supply Chain bullets; historical announcement, planned facilities distinguished
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct allowed HTML response read in memory; hash recorded, original not persisted
+    sha256_response: 690e1548fc83d30d6c7b49f0da16674d294366fe3c24e0244dacb6a2de024846
+    request_started_at: '2026-11-17T21:34:27.392146+00:00'
+    retrieved_at: '2026-11-17T21:34:28.036673+00:00'
+    bytes_received_in_memory: 206762
+    original_persisted: false
+  ir_fy26:
+    publisher: Apple Inc.
+    url: https://www.apple.com/newsroom/2026/11/apple-reports-fourth-quarter-results/
+    published_on: '2026-11-02'
+    locator: Date and first paragraph only; financial statement PDF not opened
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct allowed HTML response read in memory; hash recorded, original not persisted
+    sha256_response: 0a387c8251b86b1daa04788bae2f239dd24bb089a962093c3818fa8dbfef0e75
+    request_started_at: '2026-11-17T21:34:28.036841+00:00'
+    retrieved_at: '2026-11-17T21:34:28.279525+00:00'
+    bytes_received_in_memory: 140621
+    original_persisted: false
+  companyfacts:
+    publisher: SEC
+    url: https://data.sec.gov/api/xbrl/companyfacts/CIK0000320193.json
+    published_on: null
+    locator: us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD; accession 0000320193-26-000026; period
+      2025-09-28/2026-09-26
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: sec_edgar
+    verification: Registered source numeric cross-check; API current vintage, accession/period pinned.
+    sha256_response: f085735b4d08fb116ade18d24247ffabe11df8eb52eae6556b165831f15ef1ad
+    retrieved_at_utc: '2026-11-17T21:32:58.637616+00:00'
+  coherent:
+    publisher: Coherent Corp.
+    url: https://www.coherent.com/news/press-releases/coherent-and-apple-expand-strategic-partnership
+    published_on: '2025-08-07'
+    locator: Press release opening supply agreement paragraph
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  qualcomm:
+    publisher: Qualcomm Inc.
+    url: https://www.qualcomm.com/news/releases/2023/09/qualcomm-announces-agreement-with-apple-for-chip-supply
+    published_on: '2023-09-11'
+    locator: Opening paragraph; smartphone launches 2024, 2025, 2026
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  amkor:
+    publisher: Amkor Technology Inc.
+    url: https://ir.amkor.com/news-releases/news-release-details/amkor-announces-us-advanced-packaging-and-test-facility
+    published_on: '2023-11-30'
+    locator: Existing decade-long relationship; when new facility opens
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  apple_amkor:
+    publisher: Apple Inc.
+    url: https://www.apple.com/newsroom/2023/11/apple-announces-expanded-partnership-with-amkor-for-silicon-packaging/
+    published_on: '2023-11-30'
+    locator: Existing packaging and future Peoria facility paragraphs
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  mp_ir:
+    publisher: MP Materials Corp.
+    url: https://investors.mpmaterials.com/investor-news/news-details/2025/MP-Materials-and-Apple-Announce-500-Million-Partnership-to-Produce-Recycled-Rare-Earth-Magnets-in-the-United-States/default.aspx
+    published_on: '2025-07-15'
+    locator: Definitive long-term supply agreement; future magnet supply paragraph
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  reporting_hub:
+    publisher: Apple Inc.
+    url: https://www.supplychainreports.apple/home/default.aspx
+    published_on: null
+    locator: Reports and Filings > Supplier List > View (PDF)
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: null
+    verification: Public HTML portal read using web tool; no PDF link followed. Ordinary HTML fetch returned HTTP403;
+      no bypass attempted.
+    sha256_response: null
+  supply_chain:
+    publisher: Apple Inc.
+    url: https://www.apple.com/supply-chain/
+    published_on: null
+    locator: Read our 2026 reports > View our reporting
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: null
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  supplier_snippet:
+    publisher: Apple Inc. (indexed PDF lead)
+    url: https://www.supplychainreports.apple/files/doc_downloads/2024/04/Apple-Supplier-List.pdf
+    published_on: null
+    locator: Search-index snippet only; document NOT opened
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: null
+    verification: UNVERIFIED search lead only; no original accessed; not used to establish membership or current
+      supply.
+    sha256_response: null
+  apple_resellers:
+    publisher: Apple Inc.
+    url: https://support.apple.com/en-us/118208
+    published_on: '2026-06-02'
+    locator: United States entries AT&T/Carrier, CDW/Reseller, T-Mobile/Reseller, Verizon Wireless/Carrier
+    access_window_utc: 2026-11-17T21:30:43Z/2026-11-17T21:34Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: null
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  att:
+    publisher: AT&T Inc.
+    url: https://about.att.com/story/2026/iphone-18-lineup.html
+    published_on: '2026-09-10'
+    locator: What is New; Business Customers
+    access_window_utc: 2026-11-17T21:30:43Z/2026-11-17T21:34Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  tmobile:
+    publisher: T-Mobile US Inc.
+    url: https://www.t-mobile.com/news/devices/iphone-18-pro-iphone-duo-apple-watch-release
+    published_on: '2026-09-10'
+    locator: Opening announcement and preorders/availability schedule
+    access_window_utc: 2026-11-17T21:30:43Z/2026-11-17T21:34Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  verizon:
+    publisher: Verizon Communications Inc.
+    url: https://www.verizon.com/about/news/iphone-duo-verizon-offers
+    published_on: '2026-10-16'
+    locator: Published Oct 16, 2026; iPhone Duo preorders and Apple One
+    access_window_utc: 2026-11-17T21:30:43Z/2026-11-17T21:34Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  cdw:
+    publisher: CDW Corp.
+    url: https://www.cdw.com/content/cdw/en/brand/apple.html
+    published_on: null
+    locator: Apple Premium Business Partner; Authorized Reseller
+    access_window_utc: 2026-11-17T21:30:43Z/2026-11-17T21:31:36Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: null
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  united:
+    publisher: United Airlines
+    url: https://united.mediaroom.com/2023-10-12-United-Promotes-Benefits-of-Bluetooth-Enabled-Planes
+    published_on: '2023-10-12'
+    locator: For more than ten years; employee iPhone/iPad deployment and internal app uses
+    access_window_utc: 2026-11-17T21:30:43Z/2026-11-17T21:31:36Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  apple_united:
+    publisher: Apple Inc.
+    url: https://www.apple.com/business/enterprise/success-stories/transportation/united/
+    published_on: null
+    locator: Employee devices and custom apps
+    access_window_utc: 2026-11-17T21:30:43Z/2026-11-17T21:31:36Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: null
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  openai:
+    publisher: OpenAI
+    url: https://openai.com/index/openai-and-apple-announce-partnership/
+    published_on: '2024-06-10'
+    locator: ChatGPT integration announcement
+    access_window_utc: 2026-11-17T21:30:43Z/2026-11-17T21:31:36Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: null
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  apple_chatgpt:
+    publisher: Apple Inc.
+    url: https://www.apple.com/newsroom/2024/12/apple-intelligence-now-features-image-playground-genmoji-and-more/
+    published_on: '2024-12-11'
+    locator: ChatGPT integration in Siri and Writing Tools launched
+    access_window_utc: 2026-11-17T21:30:43Z/2026-11-17T21:31:36Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  google_joint:
+    publisher: Google and Apple joint statement
+    url: https://blog.google/company-news/inside-google/company-announcements/joint-statement-google-apple/
+    published_on: '2026-01-12'
+    locator: Joint statement body; multi-year collaboration, Gemini, devices/Private Cloud Compute
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: null
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  apple_card:
+    publisher: Apple Inc.
+    url: https://www.apple.com/newsroom/2026/01/chase-to-become-new-issuer-of-apple-card/
+    published_on: '2026-01-07'
+    locator: First paragraph, Mastercard continuity, transition
+    access_window_utc: 2026-11-17T21:29Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  chase:
+    publisher: JPMorganChase
+    url: https://www.jpmorganchase.com/newsroom/press-releases/2026/chase-to-become-new-issuer-of-apple-card
+    published_on: '2026-01-07'
+    locator: New issuer agreement and transition
+    access_window_utc: 2026-11-17T21:30:43Z/2026-11-17T21:31:36Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  goldman:
+    publisher: Goldman Sachs
+    url: https://www.goldmansachs.com/pressroom/press-releases/2026/goldman-sachs-announces-agreement-to-transition-apple-card-program-to-chase
+    published_on: '2026-01-07'
+    locator: Agreement to transfer existing Apple Card program
+    access_window_utc: 2026-11-17T21:30:43Z/2026-11-17T21:31:36Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  foxconn_history:
+    publisher: Apple Inc.
+    url: https://www.apple.com/newsroom/2012/02/13Fair-Labor-Association-Begins-Inspections-of-Foxconn/
+    published_on: '2012-02-13'
+    locator: Final assembly suppliers including Foxconn; planned Quanta/Pegatron audits
+    access_window_utc: 2026-11-17T21:33Z/2026-11-17T21:34Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  houston:
+    publisher: Apple Inc.
+    url: https://www.apple.com/newsroom/2026/08/apple-opens-advanced-manufacturing-center-in-houston/
+    published_on: '2026-08-13'
+    locator: 'Opening paragraph: AI servers built/shipped; Mac mini later this year'
+    access_window_utc: 2026-11-17T21:32Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: company_ir
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+  tata:
+    publisher: Tata Electronics
+    url: https://www.tataelectronics.com/electronics-manufacturing-services
+    published_on: null
+    locator: TESS and Pegatron Technology India ownership; EMS/FATP capabilities
+    access_window_utc: 2026-11-17T21:34Z/2026-11-17T21:35Z
+    access_window_precision: Observed batch window, not an exact server publication timestamp
+    registered_source: null
+    verification: Direct primary public HTML read; qualitative claims only unless separately registered numeric
+      input
+    sha256_response: null
+business_mapping:
+  classification_type: Descriptive activity mapping inferred from disclosed business; not licensed GICS/NAICS assignment
+  source: aapl_10k
+  geographic_reportable_segments:
+  - Americas
+  - Europe
+  - Greater China
+  - Japan
+  - Rest of Asia Pacific
+  activity_groups:
+  - id: smartphones
+    reported_category: iPhone
+    activities:
+    - smartphones
+    - iOS software/device integration
+  - id: personal_computing
+    reported_category: Mac
+    activities:
+    - laptop and desktop computers
+    - macOS
+  - id: tablets
+    reported_category: iPad
+    activities:
+    - tablets
+    - iPadOS
+  - id: wearables_home_accessories
+    reported_category: Wearables, Home and Accessories
+    activities:
+    - watches
+    - headphones
+    - spatial computing
+    - home/media devices
+    - accessories
+  - id: services
+    reported_category: Services
+    activities:
+    - advertising and licensing
+    - support and repair coverage
+    - cloud services
+    - App Store and digital content subscriptions
+    - payment services
+  limits:
+  - Activities are not separately audited revenue segments. No undisclosed Services subcategory revenues allocated.
+  - Internal silicon design and infrastructure support these businesses; no external semiconductor or cloud-infrastructure
+    sales business inferred.
+  - Geographic segments are distinct from product/service categories. Channel partners, enterprise users and ecosystem
+    participants are not interchangeable.
+financial_context:
+  period_start: '2025-09-28'
+  period_end: '2026-09-26'
+  fiscal_year: 2026
+  unit: USD million
+  source: aapl_10k
+  tag: us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax
+  scale: 6
+  axis: srt:ProductOrServiceAxis
+  reported_total: 478834
+  total_fact_id: f-390
+  total_context: c-1
+  categories:
+    iPhone:
+      reported_revenue: 254098
+      inline_id: f-375
+      context: c-44
+      member: aapl:IPhoneMember
+      computed_share_percent: 53.0659894661
+    Mac:
+      reported_revenue: 37929
+      inline_id: f-378
+      context: c-47
+      member: aapl:MacMember
+      computed_share_percent: 7.9211167127
+    iPad:
+      reported_revenue: 27929
+      inline_id: f-381
+      context: c-50
+      member: aapl:IPadMember
+      computed_share_percent: 5.8327102921
+    Wearables_Home_Accessories:
+      reported_revenue: 35577
+      inline_id: f-384
+      context: c-53
+      member: aapl:WearablesHomeandAccessoriesMember
+      computed_share_percent: 7.4299235226
+    Services:
+      reported_revenue: 123301
+      inline_id: f-387
+      context: c-14
+      member: us-gaap:ServiceMember
+      computed_share_percent: 25.7502600066
+  calculation:
+    formula_share: 100 * category_revenue / reported_total
+    sum_categories: 478834
+    sum_minus_total: 0
+    products_sum: 355533
+    products_share_percent: 74.2497399934
+    products_statement_fact: f-70, c-11, us-gaap:ProductMember; 355533
+    independent_aggregate_crosscheck:
+      source: companyfacts
+      period_start: '2025-09-28'
+      period_end: '2026-09-26'
+      accession: 0000320193-26-000026
+      USD: 478834000000
+      USD_div_1e6: 478834
+      difference: 0
+  reported_indirect_channel_share:
+    approx_percent: 60
+    scope: FY2026 total net sales, indirect channels, Item 1 Markets and Distribution
+    limit: Approximate reported aggregate; no named-counterparty weights or exact direct-channel amount computed.
+  caveats:
+  - Revenue mix is not earnings contribution, unit shipments, procurement mix or partner importance.
+  - Services includes amortization of deferred service value bundled with certain product sales.
+  - One fiscal year is used solely for current business structure; no earnings forecast, valuation or historical
+    growth ranking.
+supplier_list:
+  portal_source: reporting_hub
+  original_opened: false
+  latest_list_year_verified: false
+  verified_from_HTML: Apple portal offers a Supplier List PDF; supply-chain page points to 2026 reporting, which
+    does not establish the supplier-list fiscal coverage year.
+  candidate_not_verified:
+    source: supplier_snippet
+    indexed_document_path_year: 2024
+    indexed_text_fiscal_year: 2023
+    indexed_coverage_percent: 98
+    status: UNVERIFIED (search snippet only); not an input to any calculation or membership edge
+    denominator_lead: Worldwide direct spend for materials, manufacturing and assembly of Apple products; not all
+      corporate spend, supplier count or shipments.
+  interpretation_constraints:
+  - A named supplier/location does not establish a particular component, device SKU, procurement amount, exclusive
+    relationship or materiality.
+  - Manufacturing locations are not corporate headquarters, a complete factory census or proof of present production.
+  - Spend coverage does not mean each supplier is important or that Apple purchases all supplier output.
+  - Do not equate Supplier List with smelter/refiner list or clean-energy participation.
+  gap: PDF original not read under task scope; exact current version, entries and cover wording remain unverified.
+    No company edge below is based on Supplier List membership.
+relationships:
+- id: u_tsmc
+  from: TSMC
+  to: Apple
+  relation_type: foundry/chip manufacturing
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Arizona chips used in iPhone, iPad and Apple Watch
+  source_refs:
+  - amp_oct26
+  temporal_status: Existing production described 2026-10-20; annual output statements are not treated as completed
+    actuals
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: No exclusive source, global foundry-share or specific processor-node allocation inferred.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_oct26: '2026-10-20'
+- id: u_broadcom_rf
+  from: Broadcom
+  to: Apple
+  relation_type: RF/connectivity components
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: RF production in Fort Collins; wireless components
+  source_refs:
+  - amp_oct26
+  - amp_aug25
+  temporal_status: Existing production plus facility expansion
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: No transaction amounts or chip-volume commitments used as realized procurement.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_oct26: '2026-10-20'
+    amp_aug25: '2025-08-06'
+- id: u_broadcom_asic
+  from: Broadcom
+  to: Apple
+  relation_type: custom ASIC development/supply agreement
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Multiple generations of Apple products; agreement through 2031
+  source_refs:
+  - broadcom_8k
+  temporal_status: Signed long-term agreement; prospective delivery
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Does not identify a specific AI ASIC, shipment or revenue realization.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    broadcom_8k: '2026-07-06'
+- id: u_qualcomm
+  from: Qualcomm Technologies
+  to: Apple
+  relation_type: modem-RF supply agreement
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Snapdragon 5G Modem-RF Systems for smartphone launches in 2024–2026
+  source_refs:
+  - qualcomm
+  temporal_status: Agreement announced 2023-09-11 covering 2026 launches
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Not proof every iPhone uses Qualcomm or of actual 2026 shipment share; separate patent licensing not quantified.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    qualcomm: '2023-09-11'
+- id: u_corning
+  from: Corning
+  to: Apple
+  relation_type: specialty cover glass
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Harrodsburg glass including Ceramic Shield
+  source_refs:
+  - amp_oct26
+  temporal_status: Existing supplier; all worldwide iPhone/Watch cover glass at site remains end-2026 goal in source
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Do not treat end-2026 relocation goal as complete by research cutoff; not all device glass or all components.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_oct26: '2026-10-20'
+- id: u_coherent
+  from: Coherent
+  to: Apple
+  relation_type: VCSEL components
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Face ID and other features in iPhone/iPad
+  source_refs:
+  - amp_oct26
+  - coherent
+  temporal_status: Existing supply; multiyear agreement reaffirmed
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Not generic AI/data-center optical sales; no Apple purchase-share inferred.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_oct26: '2026-10-20'
+    coherent: '2025-08-07'
+- id: u_perryman
+  from: Perryman Company
+  to: Apple
+  relation_type: titanium materials
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Titanium for iPhone Duo; site processes material
+  source_refs:
+  - amp_oct26
+  temporal_status: Existing sourcing described; multiyear commitment prospective
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: No procurement amounts, delivery completion or importance ranking inferred.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_oct26: '2026-10-20'
+- id: u_qnity
+  from: Qnity Electronics
+  to: Apple
+  relation_type: camera films/material technology
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Films for variable-aperture iPhone 18 Pro camera
+  source_refs:
+  - amp_oct26
+  temporal_status: Expanding relationship; source uses will-produce language for program output
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Project announcement not proof completed full-volume deliveries; no BOM share.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_oct26: '2026-10-20'
+- id: u_amkor_existing
+  from: Amkor Technology
+  to: Apple
+  relation_type: chip packaging
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Existing packaging relationship predates new Arizona project
+  source_refs:
+  - apple_amkor
+  - amkor
+  temporal_status: Historical existing relationship disclosed 2023-11-30; 2026 project remains named
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Do not equate current company relationship with new-factory operating readiness.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    apple_amkor: '2023-11-30'
+    amkor: '2023-11-30'
+- id: u_amkor_future
+  from: Amkor Technology Peoria facility
+  to: Apple
+  relation_type: planned packaging/testing
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: New Arizona plant, chips from nearby TSMC fab
+  source_refs:
+  - amp_oct26
+  - amkor
+  - apple_amkor
+  temporal_status: Future first-customer relationship; facility construction, not operating delivery
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: No assertion Arizona production or Apple orders were fulfilled by cutoff.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_oct26: '2026-10-20'
+    amkor: '2023-11-30'
+    apple_amkor: '2023-11-30'
+- id: u_mp
+  from: MP Materials
+  to: Apple
+  relation_type: contracted recycled rare-earth magnets
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Independence magnet facility and Mountain Pass recycling
+  source_refs:
+  - mp_424b5
+  - mp_ir
+  - amp_aug25
+  temporal_status: Definitive long-term agreement; future supply described
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Not proof actual Apple magnet deliveries; do not generalize to all rare-earth inputs.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    mp_424b5: '2025-07-18'
+    mp_ir: '2025-07-15'
+    amp_aug25: '2025-08-06'
+- id: u_tdk
+  from: TDK
+  to: Apple
+  relation_type: sensors
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Longtime supplier, TMR/camera stabilization; new U.S. sensor manufacturing
+  source_refs:
+  - amp_mar26
+  temporal_status: Existing global supplier; U.S. supply future in March announcement
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: No completed U.S. ramp or particular current iPhone BOM inferred.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_mar26: '2026-03-26'
+- id: u_bosch
+  from: Bosch
+  to: Apple
+  relation_type: sensing-hardware collaboration
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Apple/Bosch/TSMC Washington integrated circuits for sensing
+  source_refs:
+  - amp_mar26
+  temporal_status: Announced future collaboration
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Joint manufacturing program, not proof direct completed IC deliveries or exclusive sourcing.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_mar26: '2026-03-26'
+- id: u_cirrus
+  from: Cirrus Logic
+  to: Apple
+  relation_type: mixed-signal design collaboration
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Apple/Cirrus/GF process project, including ICs for Face ID
+  source_refs:
+  - amp_mar26
+  temporal_status: New development/process program
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: No product shipment, fabrication ownership or revenue amount inferred.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_mar26: '2026-03-26'
+- id: u_gf
+  from: GlobalFoundries
+  to: Apple
+  relation_type: foundry/manufacturing collaboration
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Wireless/power-management; joint Cirrus process and Broadcom cellular programs
+  source_refs:
+  - amp_aug25
+  - amp_mar26
+  temporal_status: Signed partnership and development programs
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Fab output may reach Apple through named component designers; not all direct purchases.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_aug25: '2025-08-06'
+    amp_mar26: '2026-03-26'
+- id: u_ti
+  from: Texas Instruments
+  to: Apple
+  relation_type: semiconductor manufacturing partnership
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Lehi/Sherman capacity and future product collaboration
+  source_refs:
+  - amp_aug25
+  temporal_status: Expanded partnership; facilities/output plan at announcement
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Do not infer completed capacity expansion or particular power-management SKU.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_aug25: '2025-08-06'
+- id: u_samsung
+  from: Samsung
+  to: Apple
+  relation_type: chip-process/manufacturing collaboration
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Austin fab new chipmaking technology for Apple products
+  source_refs:
+  - amp_aug25
+  temporal_status: Announced technology/future chip supply
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Included because direct named cooperation, not because of competition; not proof current SoC/display/memory
+    supply.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_aug25: '2025-08-06'
+- id: t_gwa
+  from: GlobalWafers America
+  to: TSMC / Texas Instruments fabs → Apple products
+  relation_type: wafer manufacturing chain
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: named_multi_party_chain
+  disclosed_scope: Advanced wafers planned for U.S. fabs
+  source_refs:
+  - amp_aug25
+  temporal_status: Direct Apple partnership supports future intermediate wafer flow
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Not proof Apple physically buys all wafers or of a current device BOM.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_aug25: '2025-08-06'
+- id: t_amat
+  from: Applied Materials
+  to: U.S. semiconductor fabs → Apple products
+  relation_type: semiconductor equipment chain
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: named_multi_party_chain
+  disclosed_scope: Apple direct partnership to boost U.S. equipment; TI fabs named as users
+  source_refs:
+  - amp_aug25
+  temporal_status: Named upstream enabling chain
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Not a device component, nor proof Apple directly purchases all manufacturing tools.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    amp_aug25: '2025-08-06'
+- id: h_foxconn
+  from: Hon Hai / Foxconn
+  to: Apple
+  relation_type: final assembly
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Apple named final-assembly supplier in 2012 inspection release
+  source_refs:
+  - foxconn_history
+  temporal_status: Historical direct evidence only, 2012-02-13
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Not upgraded to 2026 current factory/model/output/share; current named assembly coverage remains a gap.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    foxconn_history: '2012-02-13'
+- id: h_quanta
+  from: Quanta Computer
+  to: Apple
+  relation_type: factory audit / historical supplier context
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Apple announced planned audit of Quanta Computer facilities in the final-assembly inspection
+    context
+  source_refs:
+  - foxconn_history
+  temporal_status: Historical context only, 2012-02-13
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: No 2026 current model allocation, ownership continuity or product scope inferred.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    foxconn_history: '2012-02-13'
+- id: h_pegatron
+  from: Pegatron
+  to: Apple
+  relation_type: factory audit / historical supplier context
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Apple announced planned audit of Pegatron facilities in the final-assembly inspection context
+  source_refs:
+  - foxconn_history
+  temporal_status: Historical context only, 2012-02-13
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: No 2026 current model allocation, ownership continuity or product scope inferred.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    foxconn_history: '2012-02-13'
+- id: d_att
+  from: Apple
+  to: AT&T
+  relation_type: carrier/resale channel
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Named 2026 Apple device offers and enterprise enrollment channel
+  source_refs:
+  - att
+  - apple_resellers
+  temporal_status: Dated 2026 channel arrangement; preorder/availability schedules as announced
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Channel, not final enterprise user; no delivered volume, sales weight or Apple receivables concentration
+    assigned.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    att: '2026-09-10'
+    apple_resellers: '2026-06-02'
+- id: d_tmobile
+  from: Apple
+  to: T-Mobile US (including Metro brand)
+  relation_type: carrier/resale channel
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Named 2026 Apple device offers and enterprise enrollment channel
+  source_refs:
+  - tmobile
+  - apple_resellers
+  temporal_status: Dated 2026 channel arrangement; preorder/availability schedules as announced
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Channel, not final enterprise user; no delivered volume, sales weight or Apple receivables concentration
+    assigned.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    tmobile: '2026-09-10'
+    apple_resellers: '2026-06-02'
+- id: d_verizon
+  from: Apple
+  to: Verizon Wireless
+  relation_type: carrier/resale channel
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Named 2026 Apple device offers and enterprise enrollment channel
+  source_refs:
+  - verizon
+  - apple_resellers
+  temporal_status: Dated 2026 channel arrangement; preorder/availability schedules as announced
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Channel, not final enterprise user; no delivered volume, sales weight or Apple receivables concentration
+    assigned.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    verizon: '2026-10-16'
+    apple_resellers: '2026-06-02'
+- id: d_cdw
+  from: Apple
+  to: CDW
+  relation_type: enterprise reseller/deployment channel
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Device Enrollment reseller; Apple business deployment offerings
+  source_refs:
+  - apple_resellers
+  - cdw
+  temporal_status: Apple dated list 2026-06-02; CDW undated current-page corroboration
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Not CDW own-use demand or a fully dated archive of every marketing claim.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    apple_resellers: '2026-06-02'
+    cdw: null
+- id: d_united
+  from: Apple devices / platform
+  to: United Airlines
+  relation_type: enterprise end use / custom apps
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Employee iPhone/iPad deployment and internal operations apps
+  source_refs:
+  - united
+  - apple_united
+  temporal_status: Historical deployment directly disclosed 2023-10-12; undated Apple case corroborates
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: No 2026 new purchase or direct procurement contract established; not ranked by device sales.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    united: '2023-10-12'
+    apple_united: null
+- id: e_openai
+  from: OpenAI ChatGPT
+  to: Apple Siri / Writing Tools
+  relation_type: AI integration ecosystem
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Integration announced and subsequently launched
+  source_refs:
+  - openai
+  - apple_chatgpt
+  temporal_status: Announced June 2024; rollout confirmed December 2024
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Not proof all 2026 regions/devices supported, commercial payment flows or current inference volume.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    openai: '2024-06-10'
+    apple_chatgpt: '2024-12-11'
+- id: e_google
+  from: Google Gemini / cloud technology
+  to: Apple Foundation Models
+  relation_type: AI model/technology collaboration
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Joint multi-year partnership for next-generation models
+  source_refs:
+  - google_joint
+  temporal_status: Agreement signed January 2026; future features in source
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Not proof all announced features shipped; statement keeps Apple devices/Private Cloud Compute, not proof
+    all inference on Google servers.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    google_joint: '2026-01-12'
+- id: e_goldman
+  from: Goldman Sachs
+  to: Apple Card
+  relation_type: historical incumbent financial-services ecosystem
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Existing program subject to agreed transfer
+  source_refs:
+  - goldman
+  - apple_card
+  temporal_status: January 2026 agreement to transition, not completed transfer
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: January disclosure identifies existing program; no independent verification of November incumbent status.
+    Credit card transfer and Savings are distinct.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    goldman: '2026-01-07'
+    apple_card: '2026-01-07'
+- id: e_chase
+  from: Chase / JPMorganChase
+  to: Apple Card
+  relation_type: future card issuer ecosystem
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: New issuer announced with transition expected in approximately 24 months
+  source_refs:
+  - apple_card
+  - chase
+  temporal_status: Future issuer under signed agreement
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Reviewed disclosures do not establish Chase had become incumbent issuer by cutoff; transition completion
+    not established.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    apple_card: '2026-01-07'
+    chase: '2026-01-07'
+- id: e_mastercard
+  from: Mastercard
+  to: Apple Card
+  relation_type: payment-network ecosystem
+  direction_meaning: Product, component or service flow; not equity ownership or cash-payment direction
+  tier: direct_named
+  disclosed_scope: Network to remain during issuer transition
+  source_refs:
+  - apple_card
+  temporal_status: Existing/continuing network described January 2026
+  evidence_certainty: Explicit named relation only; no inferred procurement size
+  limits: Network relationship, not issuer or hardware customer; no processing volumes or Apple revenue shares.
+  counterparty_economic_share: null
+  disclosed_payment_terms: null
+  evidence_date_refs:
+    apple_card: '2026-01-07'
+infrastructure_and_unassigned_edges:
+  Houston:
+    source: houston
+    fact: Apple says Houston builds and ships AI servers; Mac mini production later in 2026 remains planned.
+    operator: Not named; no Foxconn inference from location.
+  third_party_cloud:
+    source: aapl_10k
+    locator: Note 13 Concentrations
+    fact: Apple discloses reliance on third-party cloud providers alongside owned data-center infrastructure.
+    counterparty_names: null
+    limit: No AWS/Microsoft/infrastructure vendor edge invented; Google joint model-technology agreement is separately
+      scoped.
+  Tata:
+    source: tata
+    fact: Own undated EMS page reports TESS/Wistron India and majority Pegatron Technology India ownership and manufacturing
+      capabilities.
+    Apple_named_in_reviewed_page: false
+    edge_to_Apple: null
+    limit: Acquired factory/capability does not automatically prove current Apple contract or product.
+  unidentified_concentrations:
+    source: aapl_10k
+    locator: Note 4 Accounts Receivable
+    limit: Unnamed customer/vendor concentration percentages, if consulted, are not mapped to any named firm and
+      not procurement-share measures.
+method_execution:
+  library_commit: dd452a85fc35911a6c96de99dab2aa8a1090be26
+  template_commit: c433d6180c2c3237f9db8a0cbe13a7d5c3d52bd7
+  route: first_look steps 1–3 limited to business/value-chain question
+  route_status: Lead route read from task ledger; cards directly read. Not a complete company research or investment
+    peer comparison.
+  cards_read:
+  - id: company-profile-checklist
+    steps:
+    - 1
+    - 2
+    - 3
+    execution_status: completed_bounded
+    execution_result: business_mapping, financial_context; no market sizing or growth ranking.
+    test_status: 未实测 for this AAPL application
+    card_bytes_sha256_at_read: 169e35b823bc3c634abb3bf649681846ed7ce692a636fc84aa53a88191d99eba
+  - id: company-research-sequence
+    steps:
+    - A1
+    - B1
+    - B2
+    execution_status: partial
+    execution_result: Business and relationship positioning only; synchronized growth, competitive advantage, financial
+      return and valuation phases not executed.
+    test_status: 未实测 for this AAPL application
+    card_bytes_sha256_at_read: edf37c8678717d8d3a3eb9186e21feb86cd5ea48acccc51680156e542bf3a517
+  - id: data-source-routing
+    steps:
+    - 1
+    - 2
+    execution_status: completed_bounded
+    execution_result: Registered SEC financial input and primary dated relationship pages segregated from search
+      leads; no sentiment/news inference.
+    test_status: 未实测 for this AAPL application
+    card_bytes_sha256_at_read: e589f78c50ba6bc3ffd41a733dcfa6dad692cc56998bb70f68145a934be34506
+  - id: peer-layer-comparison
+    steps:
+    - 1
+    - 2
+    - 3
+    - 11
+    - 13
+    execution_status: partial
+    execution_result: SEC SIC and activity-specific layers/direction recorded. No same-customer/cost-structure peer
+      set, country dominance, valuation comparison or separate peers file generated.
+    test_status: 未实测 for this AAPL application
+    card_bytes_sha256_at_read: daac8d799dba4ad3968ac7353311e953365e10588ac1960353a79e086c07a987
+  - id: customer-dependence
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 7
+    execution_status: partial_data_insufficient
+    execution_result: Relationship terms and tenure only where explicit; receivable concentration is not customer
+      revenue concentration. Device-cost/failure-cost, customer sales shares, enforceable minimum volumes and switching-cost
+      economics unsupported.
+    test_status: 未实测 for this AAPL application
+    card_bytes_sha256_at_read: dc7cf32417482861680fc98f690b77fd67995fcdda7ad2acdecb76778ccf60b3
+  - id: competitor-capability-matrix
+    steps:
+    - 1
+    - 2
+    - 3
+    - 5
+    execution_status: partial_factual_only
+    execution_result: Relationship-role matrix, source and period columns; not a selected competitor set, scored
+      capabilities or advantages. Named competitors are not automatically supply-chain edges.
+    test_status: 未实测 for this AAPL application
+    card_bytes_sha256_at_read: ddd13170ec3f147f4c9e7c7fb48819e185e2e1239e29a15c59ccff9eed3e943c
+  - id: economic-moat-duration
+    steps:
+    - 5
+    execution_status: evidence_only_incomplete
+    execution_result: Long-term cooperation/custom-design facts documented, but no switching-cost, market-power,
+      excess-return duration or moat conclusion established.
+    test_status: 未实测 for this AAPL application
+    card_bytes_sha256_at_read: 8fd03dc81a3b94f33b15a823bbdcdaf587770887b8273e51cd7564ce8dfe83bb
+  snapshot_note: Commit identifies library baseline; card byte checksums identify actual local files read, which
+    may include later uncommitted maintenance. No card text copied.
+  not_executed:
+    peer-layer-comparison:
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 12
+    - 14
+    customer-dependence:
+    - 5
+    - 6
+    competitor-capability-matrix:
+    - 4
+    - 6
+    - 7
+    economic-moat-duration:
+    - 1
+    - 2
+    - 3
+    - 4
+  boundary: Only card IDs, steps, hashes and actual execution limits; no private method bodies or provenance judgments.
+reproduction:
+  environment: Existing project Python environment; yaml, stdlib HTMLParser, registered SecClient; no new dependencies
+    or connector
+  procedure:
+  - Read SEC submissions; filter 10-K/10-Q accepted no later than cutoff; pin accession and reportDate.
+  - Read filing HTML in memory with registered client; parse selected inline facts and associated product/service
+    contexts, including scale 6 and FY2026 dates.
+  - Cross-check consolidated revenue against Company Facts same accession and period.
+  - For each category, compute 100*revenue/478834; compare sum with total and products statement subtotal.
+  - Open cited public HTML; locate named parties and supported scope; separate agreement, future output, historical
+    relationship and existing delivery.
+  - Keep undated pages secondary, unaccessed PDF/search leads unverified; preserve publication and access separately.
+  - No original persisted; response hash lets a future permitted re-read compare bytes, but dynamic pages/metadata
+    may change.
+  arithmetic_python: v=[254098,37929,27929,35577,123301]; total=478834; assert sum(v)==total; shares=[100*x/total
+    for x in v]; assert sum(v[:-1])==355533
+  inline_context_check: 'c-1, c-11, c-14, c-44, c-47, c-50, c-53: period 2025-09-28 to 2026-09-26; srt:ProductOrServiceAxis
+    dimension for categories.'
+verification:
+  independent_numbers:
+    status: PASS
+    method: Independent reader fetched SEC HTML and rederived category sum/shares without relying on record calculations.
+    retrieved_at_utc: '2026-11-17T21:33:16.455046Z'
+    response_sha256: 2ad9d265c5fa19e9691943196b48f1db2ec59ec646ba58e69b2a255f4afe1ab5
+    difference_USDm: 0
+  independent_relationship_lane:
+    scope: Carrier channels, enterprise user, AI integration and card ecosystem checked against issuer/counterparty
+      public HTML.
+    limits: Does not certify a complete worldwide supply chain or current quantities.
+    status: PASS with temporal-precision correction applied
+    correction: Removed unsupported negative assertion that Chase was not incumbent by cutoff; retained non-verification
+      of completion.
+  YAML_parse: PASS
+  public_boundary: 'PASS: complete new-file review and scalar scan; no private method bodies/provenance judgments,
+    personal holdings/theses, emails, local absolute paths, credentials or original reports.'
+  independent_concentrations:
+    status: PASS
+    source: aapl_10k Note 4, printed page 42
+    retrieved_at_utc: '2026-11-17T21:40:15.386025Z'
+    response_sha256: 2ad9d265c5fa19e9691943196b48f1db2ec59ec646ba58e69b2a255f4afe1ab5
+    result: 13/12 and 33/34 trade-AR groups; 45/27 and 46/23 vendor-nontrade-AR groups; no named-company mapping,
+      revenue denominator or identity continuity.
+limitations_and_failures:
+- id: L1
+  class: B
+  item: Supplier List original/current fiscal coverage and entries
+  outcome: Not read; PDF only. Search snippet FY2023/98 percent is unverified and does not establish latest version.
+  optional_addition: Consent to read original, specifying source and file, would enable version/member/location
+    verification, not automatic BOM mapping.
+- id: L2
+  class: A_attempt_failed
+  item: Current named global final-assembly allocations
+  outcome: Bounded primary HTML searches did not verify 2026 Foxconn/Luxshare/Tata/Pegatron model/current output
+    assignments. Historical Foxconn evidence retained; Tata ownership alone insufficient.
+- id: L3
+  class: disclosure_limit
+  item: Supplier procurement weights, exact device components and customers sales weights
+  outcome: Not disclosed by cited evidence; left null. No ranking or importance calculation.
+- id: L4
+  class: temporal_limit
+  item: Undated live pages and post-cutoff retrieval
+  outcome: Use dated earlier releases as primary anchors; undated corroboration does not prove exact historical
+    snapshot.
+- id: L5
+  class: scope_limit
+  item: Service/ecosystem coverage
+  outcome: Selected AI/payment examples, not complete App Store developers, content licensors, repair network, advertisers,
+    or payment/enterprise partner population.
+- id: L6
+  class: scope_limit
+  item: Geographic coverage bias
+  outcome: AMP captures U.S. programs, not the global supplier base. Latest 10-K says substantially all hardware
+    final assembly uses primarily Asian partners; no U.S.-dominance inference.
+- id: L7
+  class: execution_failure_resolved
+  item: Initial metadata script named inspect.py shadowed Python stdlib
+  outcome: Renamed temporary script and reran successfully; no repo code changes.
+- id: L8
+  class: access_failure
+  item: Supply-chain reporting portal direct lightweight fetch
+  outcome: HTTP403; web HTML portal available, no bypass, PDFs not opened.
+- id: L9
+  class: data_insufficient
+  item: Named customer revenue dependency / binding strength
+  outcome: Top-client revenue mix, device-cost shares, switching/failure costs and complete contract clauses not
+    available in cited disclosures; receivables are not substitutes.
+- id: L10
+  class: method_scope
+  item: Same-layer peer/competitor/moat execution
+  outcome: Only factual role mapping applied; no investment peer set, country dominance, capability score or moat
+    conclusion. Application remains 未实测.
+customer_and_vendor_disclosure:
+  source: aapl_10k
+  locator: Note 4 Accounts Receivable; Item 1 Markets and Distribution; Note 13 Concentrations
+  dates:
+  - '2026-09-26'
+  - '2025-09-27'
+  unit: percent of stated receivable denominator, NOT percent of revenue/procurement
+  reported:
+    single_customer_trade_receivables_percent:
+    - 13
+    - 12
+    carriers_aggregate_trade_receivables_percent:
+    - 33
+    - 34
+    two_unnamed_vendors_nontrade_receivables_percent:
+      '2026-09-26':
+      - 45
+      - 27
+      '2025-09-27':
+      - 46
+      - 23
+  named_customer_or_vendor_mapping: null
+  customer_revenue_shares: null
+  top3_or_top10_customer_revenue_share: null
+  specific_component_cost_share: null
+  failure_cost: null
+  purchases_by_supplier: null
+  source_scope_limit: Disclosed threshold groups and receivable balances do not identify companies or shipment/procurement
+    concentration. No dollar amounts extrapolated from rounded percentages.
+  upstream_disclosed_risks: Issuer describes single/limited sourcing for certain components and primarily Asian
+    final assembly, plus dependence on third-party compute/storage. No named firm is mechanically assigned these
+    risks.
+  contract_observations:
+  - Broadcom custom-ASIC agreement covers multiple generations through 2031, not an unconditional delivered-volume
+    guarantee.
+  - Qualcomm supply agreement covers 2024–2026 launches, not all Apple models or all modem demand.
+  - Amkor existing relationship and prospective Peoria project are distinct.
+  - Long duration/co-development does not quantify switching costs or prove dependency.
+  offsets_or_binding_strength: Not quantified; no assumed lock-in, pricing power or replacement feasibility.
+  vendor_identity_continuity: No assurance these are identical legal counterparties in both years; percentages are
+    separate period-end groups.
+  revenue_concentration_absence_check: No direct statement found in reviewed 10-K establishing no customer at or
+    above 10% of annual revenue; no absence claim made.
+  vendor_nontrade_accounting: Components sold to assembly vendors do not enter product net sales; gains reduce product
+    cost of sales when related finished products are sold.
+flow_scope:
+  supply_or_service_direction: Each relationship from/to expresses disclosed product/service/technology path, not
+    payment direction.
+  aggregate_demand_path: Customer markets → direct Apple retail/online/direct-sales or indirect carriers/resellers
+    → Apple product/services demand; Item 1 supports aggregate channel model, not named channel weights.
+  payment_direction_and_terms: Not generally established from cited announcements; no amounts, margin capture or
+    invoices assigned to individual edges. Multi-party equipment/wafer paths are not assumed direct Apple purchases.
+  non_production_roles:
+  - carriers/resellers
+  - enterprise users
+  - software/model integration
+  - payment network/issuer
+  multi_role_policy: Same entity may be supplier, channel, ecosystem complement and competitor in different businesses.
+    Every edge retains product/role/date; no single exclusive entity bucket.
