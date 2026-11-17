@@ -1,6 +1,6 @@
-# 公司季度财报研究（第一版已实现，2026-11-16）
+# 公司季度财报研究（可配置，首例 Alphabet，2026-11-17）
 
-对应研究分类「基本面与经营 · 财务指标」与「数据可得性与口径 · 可比性」（[研究分类映射](research-classification.md)）。首例是 Alphabet 2026 年第三季度（`earnings_googl_2026q3`），页面结构参照年度研究 `company_alphabet`：研究问题 → 关键发现 → 可视化证据 → 方法 → 证据与限制 → 历史与复现。
+对应研究分类「基本面与经营 · 财务指标」与「数据可得性与口径 · 可比性」（[研究分类映射](research-classification.md)）。首例是 Alphabet 2026 年第三季度（`earnings_googl_2026q3`）；任何公司都用同一分支，公司之间的差异（季度列、分部、会计恒等式、页面行与图表、关键发现措辞）写在登记的 `profile` 里，代码不点名公司（[新增一家公司](#8-新增一家公司)）。页面结构参照年度研究 `company_alphabet`：研究问题 → 关键发现 → 可视化证据 → 方法 → 证据与限制 → 历史与复现。
 
 ## 1. 回答什么
 
@@ -66,9 +66,44 @@ uv run iros run config/studies/earnings_googl_2026q3.yaml
 - **测试**：`uv run pytest` 434 项通过（新增 `tests/test_earnings.py` 20 项，覆盖登记核对的拒绝情形、证据包、研究计算、页面与英文、状态与公开边界）。
 - **限制**：技术复核由模型完成，与登记同一会话，不是独立复核，也不是人工签认；没有逐条人工审阅原文。
 
-## 8. 下一次更新
+## 8. 新增一家公司
 
-下一个季度的 10-Q 与新闻稿公布后：在 `config/earnings/` 新增或更新登记（新增期间、展望与说明），`iros earnings fetch` / `bundle` / 重跑研究，核对通过后单独归档该运行再合并 main（做法同事件研究：从只含该运行的隔离目录归档，避免带上其他本地试运行）。第二家公司按同样的登记结构新增 `config/earnings/<id>.yaml` 与对应的研究定义；分支 `earnings_quarter` 目前按 Alphabet 的分部（Services、Cloud、Other Bets）写死，换公司要先把分部与指标做成登记里的配置。
+不改代码：每家公司一份登记和一份研究定义，命名 `config/earnings/<ticker>_<fy><q>.yaml`（如 `nvda_fy27q3`）与 `config/studies/earnings_<ticker>_<fy><q>.yaml`（study_id 同名，`method.earnings` 指向登记的 `earnings_id`）。分支 `earnings_quarter` 只读登记里的 `profile`，经证据包进入结果（`results.profile`），关键发现、页面、英文与文字报告都按它生成。
+
+**步骤**
+
+1. 在 SEC EDGAR 找到该公司的 10-Q/10-K 与业绩新闻稿（8-K 附件 99.1）。先在 `config/earnings/` 复制最接近的登记作模板，写 `documents`（accession、接受时间、URL、本地文件名；SHA256 等下载后填）、逐期 `income`（每个科目的数值；金额取绝对值能在原文中按千分位找到）、`cash_flow`、`balance`、`notes`、`coverage`，以及可选的 `issuer_fcf`、`rpo`、`fx`、`per_share`、`annual_cash_ppe` + `guidance`。
+2. 写 `profile`（下表）。**会计恒等式是防止取错值的主要检查**：至少写出合成收入、营业利润、税前利润、净利润的恒等式，分部要有「分部营业利润合计 = 营业利润」。
+3. `uv run iros earnings fetch`（需要 `.env` 中的 `SEC_USER_AGENT`）下载原文并核对；用 `shasum -a 256` 把 SHA256 填进登记。`iros earnings check` 零错误才往下：它会列出 profile 的结构问题、值不在原文、恒等式不成立、摘录不逐字、双语文字不全。
+4. 与走查记录逐项对照（方法同 [第 7 节](#7-首次交付核对2026-11-16)：重算的占比、利润率、同比与环比、现金流转换与走查记录里的计算值全部一致）。
+5. `iros earnings bundle`、`iros run config/studies/earnings_<id>.yaml`，在干净的已提交状态下运行（manifest 的 dirty 为 false），再 `iros verify <run_id>` 复现一致。
+6. 研究定义的 `limitations` 写这家公司的真实限制；`site/content.yaml` 登记研究（参照 `earnings_googl_2026q3`：`label`、`home_group: 公司季度财报`、两条 routes、`entity_ids`、`study_order`），`site/en.yaml` 补该公司专有文字的英文（登记里的双语文字不需要）。
+7. 放行时只归档这一次运行：从只含该运行的隔离目录执行 `iros archive save`，推送 `archive` 分支，再合并 main（部署会恢复它）。合并和部署分别核对；线上页显示新季度、首页公司卡片出现入口。
+8. 个股判断、论点与估值不写在本仓库，写到 company-dossiers。
+
+**`profile` 字段**（`iros earnings check` 校验；googl 登记是完整的示例）
+
+| 字段 | 内容 |
+| --- | --- |
+| `short_name` | 页面句子里的公司简称 |
+| `quarters` | 页面各季度列，从旧到新（至少 3 个）：`id`、`label`、`end`（任意日期，支持 52/53 周与非日历财年）、中英文 `name`；没有直接披露的季度写 `derive: {total, less, method, note}`（全年减前几季度，`total`/`less` 是 `income` 里的期间 id，`note` 是页面脚注） |
+| `current` / `yoy_base` / `qoq_base` | 本季度、同比基数、环比基数（`quarters` 里的 id） |
+| `year_to_date` / `trailing` | 可选：年初至今的现金流期间（含所含季度、中英文 `label`、`short`）与近四季度现金流期间 |
+| `income_metrics` | `income` 每期必须有的科目；必备 `revenue`、`cost_of_revenues`、`op_income`、`EBT`、`consolidated_NI`，其余按公司（分部收入、分部营业利润、产品线、套期、优先股……） |
+| `identities` | 会计恒等式：`name`、`terms`（科目 → ±1）、`equals` |
+| `ratios` | 额外比率 `key = 100 × num / den`（分部利润率、占收入比例） |
+| `growth` / `margins` / `segment_ops` | 算同比环比的科目；算百分点变化的利润率键；合计应等于营业利润的分部营业利润（另需一条对应恒等式） |
+| `non_operating` / `prior_year_charge` / `calibers` / `bridge_clause` | 可选的示意性税前算术：剔除的非经营项目、加回的上年同期一次性费用（取自登记说明里的 `approx` 约数）；有这两项时 `calibers.ex_items` 必填；`calibers.segment_delta` 可改写分部分解的口径说明 |
+| `guidance_remaining` / `balance_note` | 可选：展望区间减年初至今资本开支的剩余额算术；资产负债表脚注 |
+| `per_share` / `rpo` | 有 `per_share`、`rpo` 登记时：每股收益字段名；积压订单的数据列（`series`，第一列是合计）与中英文标签 |
+| `findings` | 关键发现措辞：`revenue_caveat`（收入口径限制，必填）、可选 `segment`（焦点分部）与 `backlog_caveat` |
+| `metrics` / `table` / `report` / `charts` / `segments` / `unallocated` / `share` | 页面：科目的中英文标签、主表的行（`growth: false` 的行不显示同比环比）、文字报告的行、图表（`usd_bn` 或 `pct`）、分部表（`digits` 控制利润率小数位）、未分摊行与占比行 |
+
+没有的可选项就不写：没有展望、积压订单、恒定汇率、每股收益或示意算术时，页面对应章节只写「没有登记」，不编造；`profile.segments` 至少一个（单一分部的公司列出它）。`profile` 里的双语文字必须恰好有 `zh`、`en` 两个键（YAML 流式写法里英文含逗号时要加引号，否则会被截断，`check` 会报错）。
+
+**关键发现的规则版本与指纹。** 规则代码的指纹是结果校验值的一部分，所以改动规则代码（`research/findings.py` 的季度财报规则、`site/findings_en.py`）后，旧运行用新代码重算的校验值会不同，`iros verify` 如实报告，旧记录不改写（见 [实现说明](implementation.md)）。本次配置化把规则升到 `earnings_quarter-findings.v2`，Alphabet 的运行因此重新运行并归档；早于 profile 的旧运行仍在档案里，网站对它们只显示记录的发现与一条提示。
+
+**下一个季度（同一家公司）。** 季度更新后在同一份登记里推进 `profile.quarters`、`current` 等并追加 `income`、`cash_flow`（或新建 `<ticker>_<fy><q>.yaml` 并新增研究定义，保留上一季度的研究与归档）；做法与上面的步骤相同，`iros earnings fetch` / `bundle` 一次处理 `config/earnings/` 下全部登记，所以每家公司的原文都要在本机。
 
 ## 9. 首页入口
 

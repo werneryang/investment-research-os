@@ -1,4 +1,4 @@
-"""季度财报研究的报告段落。"""
+"""季度财报研究的报告段落；行与标签来自结果里的 profile。"""
 from typing import Any
 
 
@@ -12,21 +12,25 @@ def _pct(v: float | None, signed: bool = False) -> str:
 
 def sections(r: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
     res = r["results"]
+    if "profile" not in res:
+        return [r["methods"]["description"]], "可比性与未覆盖项", [*r["limitations"]]
+    p = res["profile"]
     rows = res["quarters"]
+    pct_keys = {x["key"] for x in p.get("ratios") or []} | {"gross_margin", "op_margin"}
     heads = ["指标（十亿美元，利润率为 %）"] + [q["label"] + ("*" if q["derived"] else "") for q in rows]
-    spec = [("收入", "revenue", _bn), ("Google Services 收入", "Services_revenue", _bn), ("Google Cloud 收入", "Cloud_revenue", _bn),
-            ("营业利润", "op_income", _bn), ("营业利润率", "op_margin", _pct), ("Google Cloud 利润率", "Cloud_margin", _pct),
-            ("合并净利润", "consolidated_NI", _bn), ("权益证券净损益", "equity_security_gain_loss", _bn),
-            ("经营活动现金流", "cfo", _bn), ("现金资本开支", "cash_ppe", _bn), ("自由现金流（发行人定义）", "free_cash_flow", _bn)]
-    body: list[Any] = [f"最新季度 {res['latest_period']['label']}（{res['latest_period']['start']} 至 {res['latest_period']['end']}），"
-                       f"10-Q 于 {res['release']['form_10q_filed']} 申报。全部为报告口径，不是有机增长。* 为全年减前三季度的推导值。",
+    keys = p.get("report") or [t if isinstance(t, str) else t["key"] for t in p["table"]]
+    spec = [(p["metrics"][k]["zh"], k, _pct if k in pct_keys else _bn) for k in keys]
+    cur = res["latest_period"]
+    body: list[Any] = [f"最新季度 {cur['label']}（{cur['start']} 至 {cur['end']}），"
+                       f"{res['release'].get('periodic_form', '10-Q')} 于 {res['release']['form_10q_filed']} 申报。全部为报告口径，不是有机增长。"
+                       "* 为全年减前几季度的推导值。",
                        ("table", heads, [[label] + [fmt(q[key]) for q in rows] for label, key, fmt in spec])]
     yoy, qoq = res["comparison"]["yoy"], res["comparison"]["qoq"]
-    body.append(("table", ["比较", "收入", "Google Cloud 收入", "营业利润", "营业利润率（百分点）"],
-                 [[f"同比（对 {yoy['base']}）", _pct(yoy["pct"]["revenue"], True), _pct(yoy["pct"]["Cloud_revenue"], True),
-                   _pct(yoy["pct"]["op_income"], True), f"{yoy['margin_pp']['op_margin']:+.1f}"],
-                  [f"环比（对 {qoq['base']}）", _pct(qoq["pct"]["revenue"], True), _pct(qoq["pct"]["Cloud_revenue"], True),
-                   _pct(qoq["pct"]["op_income"], True), f"{qoq['margin_pp']['op_margin']:+.1f}"]]))
+    seg = (p["findings"].get("segment") or {}).get("revenue")
+    cols = [("收入", "revenue")] + ([(f"{p['metrics'][seg]['zh']} 收入", seg)] if seg else []) + [("营业利润", "op_income")]
+    body.append(("table", ["比较"] + [c for c, _ in cols] + ["营业利润率（百分点）"],
+                 [[f"{name}（对 {c['base']}）"] + [_pct(c["pct"][k], True) for _, k in cols] + [f"{c['margin_pp']['op_margin']:+.1f}"]
+                  for name, c in (("同比", yoy), ("环比", qoq))]))
     notes = ("table", ["可比性事项", "限制"], [[n["title"]["zh"], n["limit"]["zh"]] for n in res["notes"]])
     cov = ("table", ["类别", "内容"], [[{"done": "已完成", "data_gap": "数据不足", "judgment": "需人工判断"}[c["status"]], c["item"]["zh"]]
                                       for c in res["coverage"]])
