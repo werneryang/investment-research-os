@@ -38,6 +38,27 @@ def test_verify_all_cli(loaded, capsys):
     assert capsys.readouterr().out.count("[reproduced]") == 2
 
 
+def test_verify_all_continues_after_a_run_that_cannot_be_recomputed(loaded, capsys, monkeypatch):
+    first = run_study(loaded, write_study(loaded))
+    second = run_study(loaded, write_study(loaded, title="另一次"))
+    from investment_os import cli
+
+    real = cli.verify_run
+
+    def flaky(root, run_id):
+        if run_id == first["run_id"]:
+            raise ValueError("证据包早于当前登记格式")
+        return real(root, run_id)
+
+    monkeypatch.setattr(cli, "verify_run", flaky)
+    assert main(["--root", str(loaded), "verify", "--all"]) == 1
+    out = capsys.readouterr().out
+    assert f"[error] {first['run_id']}" in out and "无法重算：证据包早于当前登记格式" in out
+    assert f"[reproduced] {second['run_id']}" in out
+    assert main(["--root", str(loaded), "verify", first["run_id"]]) == 2  # 单个运行：仍按原样报错
+    assert "错误：证据包早于当前登记格式" in capsys.readouterr().err
+
+
 def test_build_site_from_runs(loaded):
     shutil.copytree(PROJECT_ROOT / "site", loaded / "site")
     old = run_study(loaded, write_study(loaded))
