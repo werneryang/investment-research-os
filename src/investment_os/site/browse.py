@@ -127,6 +127,18 @@ def home_page(content, model, latest, build):
                 links = ' · '.join(f'<a href="studies/{e(r["id"])}/">{e(_company_name(r))}</a>' for r in listed)
                 rows.append(f'<li><a href="browse/{e(obj)}/#{e(s)}">{te(c["name"])}</a><span class="muted">{L(f"{len(listed)} 家", f"{len(listed)}")}</span></li>'
                             f'<li class="collection-links"><span class="muted">{L("直达公司", "Go to a company")}</span><p>{links}</p></li>')
+            # 登记里写了 home_group 的研究（如公司季度财报）按组在首页单列一行并直达；没有该字段的研究只计入子类数量
+            groups: dict[str, list[dict]] = {}
+            for rec in shelf:
+                g = content['studies'].get(rec['id'], {}).get('home_group')
+                if g and rec['published'] and rec['id'] not in leads and rec['id'] in latest:
+                    groups.setdefault(g, []).append(rec)
+            for g, recs in groups.items():
+                links = ' · '.join(
+                    f'<a href="studies/{e(r["id"])}/">{e(_company_name(r))}</a> '
+                    f'<span class="muted">{L("截至", "to")} {e(str(latest[r["id"]]["result"].get("data_cutoff", "—")))}</span>' for r in recs)
+                rows.append(f'<li><a href="browse/{e(obj)}/#{e(s)}">{te(g)}</a><span class="muted">{L(f"{len(recs)} 项", f"{len(recs)}")}</span></li>'
+                            f'<li class="collection-links"><span class="muted">{L("直达研究", "Go to a study")}</span><p>{links}</p></li>')
         refs = [m for m in model['references'] if any(r['object'] == obj for r in m['routes'])]
         if refs:
             n = sum(m['record_count'] for m in refs)
