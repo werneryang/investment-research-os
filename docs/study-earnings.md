@@ -69,3 +69,7 @@ uv run iros run config/studies/earnings_googl_2026q3.yaml
 ## 8. 下一次更新
 
 下一个季度的 10-Q 与新闻稿公布后：在 `config/earnings/` 新增或更新登记（新增期间、展望与说明），`iros earnings fetch` / `bundle` / 重跑研究，核对通过后单独归档该运行再合并 main（做法同事件研究：从只含该运行的隔离目录归档，避免带上其他本地试运行）。第二家公司按同样的登记结构新增 `config/earnings/<id>.yaml` 与对应的研究定义；分支 `earnings_quarter` 目前按 Alphabet 的分部（Services、Cloud、Other Bets）写死，换公司要先把分部与指标做成登记里的配置。
+
+## 9. 首页入口
+
+首页公司卡片的「公司季度财报」一行（含直达研究的链接）由 `site/content.yaml` 中研究条目的 `home_group` 字段生成，不在代码里点名公司：任何登记了 `home_group: 公司季度财报` 且已有运行的研究都会列在该行，链接文字是公司名加「截至」数据截止日（披露日）。新增季度研究（下一季度或另一家公司）时给它同样的 `home_group`，并在 `site/en.yaml` 保留该组名的译文即可；没有 `home_group` 的研究只计入子类数量。

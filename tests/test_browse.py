@@ -60,3 +60,25 @@ def test_company_page_counts_companies_and_lists_members(site):
     html = object_page(content, model, latest, BUILD, 'company')
     assert '<p class="tagline">1 家公司，按子类与研究问题列出。' in html
     assert 'href="../../studies/company_apple/">Apple</a>' in html and '<table>' in html
+
+
+def test_home_card_links_grouped_quarterly_earnings_studies(site):
+    """登记里写了 home_group 的研究在首页公司卡片单列一行直达；没有运行时不出现，不影响其他卡片与计数。"""
+    from investment_os.site.i18n import load_phrases, use
+    content, model, latest = site
+    base = home_page(content, model, latest, BUILD)
+    assert '公司季度财报' not in base and 'earnings_googl_2026q3' not in base
+    latest = {**latest, 'earnings_googl_2026q3': _item('Alphabet：2026 年第三季度财报研究', '2026-10-28')}
+    model = catalog(content, latest, {}, {d: {} for r in content['classification']['capabilities'] for d in r.get('datasets', [])})
+    for rec in model['studies']:
+        for r in rec['routes']:
+            if rec['published']:
+                r['available'], r['href'] = True, f"studies/{rec['id']}/#{r['target']}"
+    html = home_page(content, model, latest, BUILD)
+    assert 'href="browse/company/#issuer">公司季度财报</a><span class="muted">1 项</span>' in html
+    assert 'href="studies/earnings_googl_2026q3/">Alphabet</a> <span class="muted">截至 2026-10-28</span>' in html
+    assert 'href="studies/company_apple/">Apple</a>' in html  # 年度财报入口不变
+    with use("en", load_phrases(PROJECT_ROOT)):
+        en = home_page(content, model, latest, BUILD)
+    assert 'Company quarterly earnings</a><span class="muted">1</span>' in en
+    assert 'href="studies/earnings_googl_2026q3/">Alphabet</a> <span class="muted">to 2026-10-28</span>' in en

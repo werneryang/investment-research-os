@@ -915,6 +915,7 @@ studies:
     - co_nvidia
   earnings_googl_2026q3:
     label: 季度财报研究
+    home_group: 公司季度财报
     routes:
     - object: company
       subject: issuer
