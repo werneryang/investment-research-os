@@ -1,0 +1,365 @@
+# Public factual walkthrough only; no private method text or personal valuation conclusions.
+id: sec-intc-valuation-20261116
+task_id: R-20261116-intc-valuation
+record_type: application
+status: draft
+source:
+  type: official
+  title: SEC financial statements and direct Nasdaq quote responses
+  author: Intel Corporation; SEC; Nasdaq; Yahoo Finance (cross-check only)
+  published_on: '2026-10-30'
+  publication_date_scope: Primary linked Q3 10-Q filing date; FY2025 10-K filed 2026-01-23.
+  retrieved_on: '2026-11-16'
+  quote_observation_dates: ['2026-11-13', '2026-11-16']
+  data_as_of: Financial balances 2026-09-26; share count 2026-10-23; verified daily close 2026-11-13
+  locator: https://www.sec.gov/Archives/edgar/data/50863/000005086326000191/intc-20260926.htm
+  sha256: c6701e270987fe1848d88bb8f9d1a30ce5e8535dcfd77078c4817c86ceb77678
+  outcome_known: true
+  registration: SEC EDGAR is registered in config/sources.yaml as sec_edgar; fetched with existing SecClient and
+    configured contact identifier, never printed. Nasdaq/Yahoo one-off API observations are not registered datasets.
+    No connector added.
+  retrieval:
+  - snapshot: facts.json
+    url: https://data.sec.gov/api/xbrl/companyfacts/CIK0000050863.json
+    retrieved_at_utc: '2026-11-16T22:17:12.152663+00:00'
+    sha256: 9c568557a91cfbc234c999183d6434f8bbf7b8ebf2f29577f28d761a9becb59d
+  - snapshot: submissions.json
+    url: https://data.sec.gov/submissions/CIK0000050863.json
+    retrieved_at_utc: '2026-11-16T22:17:12.341357+00:00'
+    sha256: 9a17aa0d3a296cc418353bd2a0ccba7f92d4c2bb8e661d7fc32f2301927941e4
+  - snapshot: q3.htm
+    url: https://www.sec.gov/Archives/edgar/data/50863/000005086326000191/intc-20260926.htm
+    retrieved_at_utc: '2026-11-16T22:17:12.673469+00:00'
+    sha256: c6701e270987fe1848d88bb8f9d1a30ce5e8535dcfd77078c4817c86ceb77678
+  - snapshot: fy25.htm
+    url: https://www.sec.gov/Archives/edgar/data/50863/000005086326000011/intc-20251227.htm
+    retrieved_at_utc: '2026-11-16T22:17:13.110354+00:00'
+    sha256: 33141e4391083806ef0c6c331e5f538cbb187065cb67b1080bf1d96bcdae3132
+  - snapshot: nasdaq.json
+    url: https://api.nasdaq.com/api/quote/INTC/info?assetclass=stocks
+    retrieved_at_utc: '2026-11-16T22:17:46.709684+00:00'
+    sha256: 4fbe275bc1a64e1d298101ab3bd9bac66a8728b6a6c21b164714d00f5ea9f921
+  - snapshot: nasdaq_summary.json
+    url: https://api.nasdaq.com/api/quote/INTC/summary?assetclass=stocks
+    retrieved_at_utc: '2026-11-16T22:18:00.709950+00:00'
+    sha256: a973091f2c38c2c5aaa57d0e7304ed8e280c6ec7e374249f5f7770f089c89bb4
+  - snapshot: nasdaq_historical_iso.json
+    url: https://api.nasdaq.com/api/quote/INTC/historical?assetclass=stocks&fromdate=2026-11-13&todate=2026-11-16&limit=10
+    retrieved_at_utc: '2026-11-16T22:18:32.800365+00:00'
+    sha256: 85ec9346c195e714402fd522b9891b342aafb96718391e14cb4c11f40eb9058c
+  - snapshot: yahoo_chart.json
+    url: https://query1.finance.yahoo.com/v8/finance/chart/INTC?interval=1d&range=5d
+    retrieved_at_utc: '2026-11-16T22:18:01.146338+00:00'
+    sha256: a476dda1054431fb7dc3cde1b309d7497962cf0e69e7469ca1c5b82b1d6039f5
+  storage: Raw files and calculation scratch retained temporarily outside the repository; not committed or archived.
+    Hashes identify this retrieval, but temporary storage is not durable evidence hosting.
+extraction:
+  extracted_on: '2026-11-16'
+  method: ai_assisted
+  tool: Codex
+  review: Independent temporary read-only verifier extracted SEC inputs and recomputed accounting totals, EPS adjustment
+    and market bridges. No human review.
+  quality_notes: Same original downloaded evidence, independently selected and recomputed; not an independent audit
+    of issuer statements. Exact 11/16 quotes not independently confirmed.
+method_library:
+  version: aac6b6b
+  route: valuation-check
+  route_steps:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+  cards:
+  - value-price-gap-routing
+  - valuation-by-company-type
+  - pricing-metric-caliber-check
+  - peer-layer-comparison
+  - multiple-pricing-process
+  - multiple-value-driver-chain
+  - expectations-revision
+  - sensitivity-rating-breakpoint
+  - scenario-analysis
+  content_boundary: Only card identifiers and execution outcomes; no private method text or source evaluations reproduced.
+research_question:
+- layer: own_extension
+  text: Reproduce available accounting inputs and conditional pricing arithmetic without a target price or suitability
+    judgment.
+  verified: false
+thesis: []
+causal_mechanism: []
+analytical_method: []
+assumptions: []
+valuation_logic: []
+counterarguments: []
+falsification: []
+transferability: []
+evidence:
+- layer: source_fact
+  text: Latest periodic filing in retrieved SEC submissions is Q3 10-Q, accession 0000050863-26-000191, filed 2026-10-30.
+    More recent entries include Forms 4 and a 2026-11-16 13F-HR, not newer issuer financial statements.
+  location: submissions.json filings.recent; 10-Q cover
+  verified: true
+  verifiability: public_filing
+- layer: source_fact
+  text: All financial statement amounts below are USD millions; share counts millions; EPS USD/share. FY2025 ended
+    2025-12-27, 9M2025 ended 2025-09-27, 9M2026 and Q3 ended 2026-09-26.
+  location: 10-Q statements of operations, balance sheets and cash flows; FY25 10-K statements
+  verified: true
+  verifiability: public_filing
+- layer: source_fact
+  text: 'Escrow share fair-value items: Q3 2026 gain 1,005; 9M2026 loss 12,614. Comparative Q3/9M2025 Altera sale
+    gain 5,546. Altera was deconsolidated September 12, 2025; reported TTM sales are not an organic constant-perimeter
+    series.'
+  location: 10-Q Note 7 Interest and other, net; Note 9 acquisitions and divestitures
+  verified: true
+  verifiability: public_filing
+- layer: source_fact
+  text: Nasdaq API response exposes 11/16 after-hours 17:17 ET 53.69 and regular close 16:00 ET 55.442. These are
+    directly observed supplier fields, not independently verified market prints. Yahoo regularMarketPrice is 55.47
+    at 2026-11-16 16:00 EST; fulldayPrice 53.60 lacks a matching observation time.
+  location: nasdaq.json primaryData/secondaryData; yahoo_chart.json meta
+  verified: false
+  verifiability: third_party
+- layer: source_fact
+  text: Nasdaq historical row and Yahoo daily series agree on 2026-11-13 close 59.66 (Yahoo floating point 59.65999984741211).
+    This is an older independently cross-checked daily observation, not a 11/16 current quote. Historical row supplies
+    date only; exact trade clock is not established.
+  location: nasdaq_historical_iso.json tradesTable.rows; yahoo_chart.json daily close
+  verified: true
+  verifiability: third_party
+links:
+  methods:
+  - id: value-price-gap-routing
+    fit: match
+  - id: valuation-by-company-type
+    fit: match
+  - id: pricing-metric-caliber-check
+    fit: match
+  - id: peer-layer-comparison
+    fit: match
+  - id: multiple-pricing-process
+    fit: match
+  - id: multiple-value-driver-chain
+    fit: match
+  - id: expectations-revision
+    fit: match
+  - id: sensitivity-rating-breakpoint
+    fit: match
+  - id: scenario-analysis
+    fit: match
+  claims: []
+method_output:
+  units:
+    money: USD million
+    shares: million shares
+    price: USD/share
+    multiple: times
+  route_execution:
+  - step: 1
+    cards:
+    - value-price-gap-routing
+    status: completed_scope_only
+    output: Pricing/accounting reproduction. No intrinsic value, value-price gap or convergence conclusion.
+  - step: 2
+    cards:
+    - valuation-by-company-type
+    status: partial
+    output: GAAP loss invalidates meaningful trailing P/E. P/B, sales and cash-flow arithmetic retained as descriptors
+      only; no normalized earnings or asset liquidation value established.
+  - step: 3
+    cards:
+    - pricing-metric-caliber-check
+    status: completed_available_checks
+    output: Separate outstanding from diluted weighted-average shares; Intel-attributable versus consolidated profit;
+      EPS numerator adjustment; same-window TTM; net debt alternatives; NCI proxy; deconsolidation and fair-value
+      effects.
+  - step: 4
+    cards:
+    - peer-layer-comparison
+    - multiple-pricing-process
+    status: not_computed
+    output: 'Intel FY25 10-K names AMD in client x86 competition and TSMC in foundry context. Product-design and
+      foundry layers differ. Intel Foundry includes internal transactions and cannot be compared directly to an
+      external foundry consolidated revenue multiple. No matched peer market inputs, standardized earnings, market
+      NCI or segment enterprise values: omit peer median, discount and ranking.'
+  - step: 5
+    cards:
+    - multiple-value-driver-chain
+    status: not_computed
+    output: No reconciled peer multiples or return/reinvestment forecast. No quantitative attribution of a premium
+      or discount.
+  - step: 6
+    cards:
+    - expectations-revision
+    status: partial_arithmetic_only
+    output: No defensible reinvestment, WACC, terminal value or multi-year normalized earnings model; reverse DCF
+      and implied growth omitted. Below is explicit arbitrary P/E algebra, not evidence of market expectations or
+      fair value.
+  - step: 7
+    cards:
+    - sensitivity-rating-breakpoint
+    - scenario-analysis
+    status: partial_arithmetic_only
+    output: Mechanical observed-price and denominator sensitivities only. No intrinsic-value baseline, ratings,
+      breakpoints, bull/base/bear valuations or probabilities.
+  disclosed:
+    FY2025:
+      start: '2024-12-29'
+      end: '2025-12-27'
+      source_accession: 0000050863-26-000011
+      revenue: 52853
+      Intel_attributable_NI: -267
+      operating_income: -2214
+      CFO: 9697
+      cash_PPE_purchase: 14646
+    9M2025:
+      start: '2024-12-29'
+      end: '2025-09-27'
+      source_accession: 0000050863-26-000191
+      revenue: 39179
+      Intel_attributable_NI: 324
+      operating_income: -2794
+      CFO: 5409
+      cash_PPE_purchase: 11158
+    9M2026:
+      start: '2025-12-28'
+      end: '2026-09-26'
+      source_accession: 0000050863-26-000191
+      revenue: 46218
+      Intel_attributable_NI: -11441
+      operating_income: 1182
+      CFO: 13184
+      cash_PPE_purchase: 10216
+    balance_20260926:
+      cash: 21846
+      short_term_investments: 32159
+      short_term_debt: 3817
+      long_term_debt: 46317
+      Intel_equity: 114914
+      book_NCI: 16642
+      goodwill: 20465
+      identified_intangibles: 2444
+    shares:
+      outstanding_20261023: 5315
+      outstanding_20260926: 5310
+      Q3_basic_WA: 5244
+      Q3_diluted_WA: 5307
+      9M2026_diluted_WA: 5144
+      Q3_Intel_NI: 3320
+      Q3_diluted_numerator_gain_reversal: 120
+      Q3_reported_diluted_EPS: 0.6
+      note: 9M loss excludes antidilutive securities. Current fully diluted shares and post-10/23 issuance effects
+        not established. 5,315 is a dated ordinary share count, not current dilution.
+  derived_accounting:
+    formula_TTM: FY2025 - 9M2025 + 9M2026; interval 2025-09-28 to 2026-09-26
+    TTM_revenue: 59892
+    TTM_Intel_NI: -12032
+    TTM_operating_income: 1762
+    TTM_CFO: 17472
+    TTM_cash_PPE: 13704
+    TTM_CFO_minus_cash_PPE: 3768
+    cash_flow_caveat: CFO minus cash PPE is not issuer adjusted FCF, FCFF or parent FCFE. Does not separately adjust
+      capital incentives, partner funding, noncontrolling claims, debt flows, acquisitions, supplier payment timing
+      or required future reinvestment.
+    net_debt_cash_only: 28288
+    net_debt_cash_and_STI: -3871
+    net_debt_formulas:
+    - 3817+46317-21846
+    - 3817+46317-21846-32159
+    BVPS: 21.620696142991534
+    EPS_formula: (3320-120)/5307
+    EPS_recalculated: 0.6029771999246278
+    P_E_TTM: not meaningful; negative GAAP Intel NI; no synthetic TTM EPS created by adding differing-period diluted
+      EPS
+  dated_price_baseline:
+    price: 59.66
+    observation_date: '2026-11-13'
+    clock: daily close; exact trade time unavailable, do not impute a source-observed 16:00 timestamp
+    cross_checked: true
+    not_current_20261116: true
+    shares_used: 5315
+    share_date: '2026-10-23'
+    balance_date: '2026-09-26'
+    estimate: true
+    marketcap: 317092.9
+    marketcap_formula: 59.66*5315
+    PB: 2.7593931113702417
+    PB_formula: marketcap/114914
+    simple_EV_excluding_NCI: 313221.9
+    simple_EV_with_book_NCI: 329863.9
+    simple_EV_formula: marketcap+3817+46317-21846-32159+16642
+    simple_EV_to_TTM_sales: 5.507645428437854
+    simple_EV_to_TTM_EBIT: 187.2099318955732
+    simple_CFO_minus_PPE_to_marketcap_pct: 1.188295291379908
+    EV_caveat: Incomplete illustrative bridge, NOT full market enterprise value. Book NCI is not market NCI. Lease,
+      escrow derivative and other debt-like liabilities and nonoperating investments are not fully valued; not every
+      dollar of cash/ST investment is necessarily distributable. EBIT denominator low and not normalized.
+  hypothetical_reverse_PE:
+    estimate: true
+    price_date: '2026-11-13'
+    assumptions: Arbitrary 15/20/25 times equity earnings, not selected peer benchmarks. Fixed ordinary shares 5315,
+      no future dilution or EPS numerator adjustments; TTM sales held fixed only for a scale comparison. No valuation
+      horizon, earnings forecast, recommended multiple or discounting.
+    formulas:
+    - earnings_per_ordinary_share=P/multiple
+    - Intel_NI=marketcap/multiple
+    - NI_to_TTM_sales_pct=Intel_NI/59892*100
+    grid:
+    - assumed_PE: 15
+      required_EPS: 3.977333333333333
+      required_Intel_NI_USDm: 21139.526666666665
+      required_NI_to_TTM_sales_pct: 35.29607738373517
+    - assumed_PE: 20
+      required_EPS: 2.9829999999999997
+      required_Intel_NI_USDm: 15854.644999999999
+      required_NI_to_TTM_sales_pct: 26.47205803780137
+    - assumed_PE: 25
+      required_EPS: 2.3864
+      required_Intel_NI_USDm: 12683.715999999999
+      required_NI_to_TTM_sales_pct: 21.177646430241097
+    caveat: A required ordinary-share earnings scale, not diluted EPS forecast or uniquely identified market-implied
+      profitability. Unsupported reverse DCF inputs omitted.
+  mechanical_price_sensitivity:
+    estimate: true
+    other_inputs_fixed: true
+    interpretation: Hypothetical +/-10% versus older verified daily close; not bull/bear valuation, achievable forecast
+      or current quote.
+    grid:
+    - P: 53.693999999999996
+      MC: 285383.61
+      PB: 2.483453800233218
+      EV_sales: 4.978204267681827
+    - P: 59.66
+      MC: 317092.89999999997
+      PB: 2.7593931113702417
+      EV_sales: 5.507645428437854
+    - P: 65.626
+      MC: 348802.19
+      PB: 3.0353324225072664
+      EV_sales: 6.0370865891938825
+  denominator_sensitivity:
+    estimate: true
+    marketcap_per_1_USD_price_change: 5315
+    simple_EV_to_sales_per_1_USD_price_change: 0.08874307086088293
+    bookNCI_inclusion_increases_sales_multiple_by: 0.277866826955186
+    cash_only_instead_of_cash_STI_increases_sales_multiple_by: 0.5369498430508248
+    additional_5pct_ordinary_shares_fixed_P_and_balances_marketcap_increase: 15854.645000000002
+    note: Fresh issuance cash and balance-sheet changes intentionally not modeled, so share sensitivity is purely
+      mechanical.
+  missing_or_unsupported:
+  - Exact independently confirmed 11/16 quote, matching session/time and executable bid/ask observation
+  - Current fully diluted share count; post-10/23 ordinary share changes not established
+  - Market-valued NCI, complete debt-like/lease/escrow liability and nonoperating-asset bridge
+  - Normalized sustainable earnings; recurring vs one-off adjustments with tax and parent attribution
+  - Matched peer prices/periods/definitions; no peer multiple ranking
+  - Forward sales, margin, capex/reinvestment, WACC, terminal growth and convergence horizon; no reverse DCF
+  - No current intrinsic valuation, target price, suitability, trade action or personal judgments
+  verification:
+    SEC_transport: Repository SecClient with serial rate limit; direct SEC HTML plus Company Facts/Submissions
+    independent_lane: Temporary read-only Codex verifier; no file writes. Accounting totals and EPS adjustment match.
+      Nasdaq summary market cap matches its own close*5315, which is internal consistency only.
+    technical_check: YAML parsed; numeric identities recomputed; public-boundary scan; only this new record added.
+    not_run: No code tests, data-registry updates, commit, push, PR, merge or deployment.
