@@ -1,0 +1,120 @@
+{
+  "run_id": "earnings_tsla_2026q3-20261118T022512Z-67f3da6c",
+  "study_id": "earnings_tsla_2026q3",
+  "study_path": "config/studies/earnings_tsla_2026q3.yaml",
+  "study_config": {
+    "study_id": "earnings_tsla_2026q3",
+    "title": "Tesla：2026 年第三季度财报研究",
+    "question": "Tesla Q3 2026 的报告收入、分部毛利润、合并及普通股股东净利润、季度现金流相对上季与去年同期如何变化？累计减算与机械现金差额有哪些限制？",
+    "result_type": "descriptive",
+    "branch": "earnings_quarter",
+    "scope": {
+      "market": "US",
+      "currency": "USD",
+      "start": "2025-07-01",
+      "end": "2026-09-30",
+      "frequency": "quarterly",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-11-18T02:25:12+00:00",
+      "data_checked_at": {
+        "earnings_evidence": "2026-11-18T02:18:18+00:00"
+      }
+    },
+    "data": {
+      "evidence": "earnings_evidence"
+    },
+    "method": {
+      "earnings": "tsla_2026q3"
+    },
+    "benchmark": "仅同批 SEC 10-Q/10-K HTML，报告口径；不引入后续申报或电话会",
+    "evaluation": [
+      "固定原文 SHA、逐字数值存在性、会计恒等式及来源期间核验",
+      "与已发布走查逐字段对照并独立复核源行列与减算",
+      "固定证据包 iros verify 复现"
+    ],
+    "limitations": [
+      "现金流季度值由累计相减；2025 Q4 利润表由全年减 9M 比较数，非直接季度披露",
+      "正式汽车分部包含服务及其他，利润指标是毛利润，不是分部营业利润",
+      "同批 SEC 文件未找到发行人 FCF 定义，CFO−现金 PPE 仅为机械差额，非可分配现金",
+      "关税退款、公允价值及股份支付影响报告可比性；不作完整正常化、预测或投资判断",
+      "电话会、股价反应、估值与隐含预期不在本页范围",
+      "模型复核不是人工审计；本页数据截止日沿用原任务 2026-11-16，技术取得时间另记"
+    ]
+  },
+  "study_config_hash": "b979f1991351e6d1ca191e2bde9f9e0b609c3f35ab1aba5421c1c7f9d3fd15cb",
+  "started_at": "2026-11-18T02:25:12+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "62bb532f99cf987cf8ae45b38ddf5409e63380e5a91fb7a9413399e76860fe57",
+    "git_commit": "539fde371b4a5e6f0be786712f375341ab2fcb36",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.13",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "partial",
+  "inputs": [
+    {
+      "role": "evidence",
+      "used": true,
+      "dataset_id": "earnings_evidence",
+      "version_id": "v20261118T021818Z-2358f944",
+      "content_hash": "2358f9449d5c726b1c2059145b05fa39533b5d932b417512f5e42cfdfcefd82a",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2024-01-31",
+            "2026-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-11-16"
+        ]
+      }
+    }
+  ],
+  "result_hash": "8c99a7540605b4c3784a47cbee81f3e0e3e03f9b329945ab56a9f196e03f45e4",
+  "warnings": [],
+  "unsupported": [
+    {
+      "item": "完整正常化和可持续利润",
+      "kind": "scope",
+      "reason": "需要人工判断或本研究未处理的外部材料；不在公开财报算术的范围内"
+    },
+    {
+      "item": "未取得/处理电话会及 Q&A",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    },
+    {
+      "item": "市场反应、价格及隐含预期未覆盖",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runs/earnings_tsla_2026q3-20261118T022512Z-67f3da6c/result.json",
+      "sha256": "c1faec98d1ee5252d00efd5512ce1a1dc520dd97f5d90f05b3b697aa365658ba"
+    },
+    {
+      "path": "reports/earnings_tsla_2026q3/earnings_tsla_2026q3-20261118T022512Z-67f3da6c/report.md",
+      "sha256": "685976db6b8e690140110a8381c42138b1d2ec920da814b8dad061b7970b5574"
+    },
+    {
+      "path": "reports/earnings_tsla_2026q3/earnings_tsla_2026q3-20261118T022512Z-67f3da6c/report.html",
+      "sha256": "27b5e30ad559c72444d5750242c4267e4109900e2d123551f26795e859222175"
+    }
+  ],
+  "finished_at": "2026-11-18T02:25:13+00:00"
+}

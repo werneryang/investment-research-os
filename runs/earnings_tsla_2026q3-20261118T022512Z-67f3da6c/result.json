@@ -1,0 +1,1511 @@
+{
+  "study_id": "earnings_tsla_2026q3",
+  "title": "Tesla：2026 年第三季度财报研究",
+  "question": "Tesla Q3 2026 的报告收入、分部毛利润、合并及普通股股东净利润、季度现金流相对上季与去年同期如何变化？累计减算与机械现金差额有哪些限制？",
+  "result_type": "descriptive",
+  "branch": "earnings_quarter",
+  "scope": {
+    "market": "US",
+    "currency": "USD",
+    "start": "2025-07-01",
+    "end": "2026-09-30",
+    "frequency": "quarterly",
+    "vintage_policy": "latest",
+    "evaluated_at": "2026-11-18T02:25:12+00:00",
+    "data_checked_at": {
+      "earnings_evidence": "2026-11-18T02:18:18+00:00"
+    }
+  },
+  "data_cutoff": "2026-10-21",
+  "methods": {
+    "description": "从固定的财报证据包读取五个季度的合并利润表、分部与现金流（报告口径，百万美元）；2025 年第4季度由2025 全年减前三季度推出。利润率为占同期收入的比例；同比对 2025 年第3季度，环比对 2026 年第2季度；经营现金流减现金购置支出仅为算术差额，未核实为发行人 FCF 定义。不称有机增长，不估值、不预测。",
+    "parameters": {
+      "earnings": "tsla_2026q3"
+    },
+    "bundle": {
+      "built_at": "2026-11-18T02:18:18+00:00",
+      "earnings_files": {
+        "googl_2026q3.yaml": "5d8836ba2668731d5c7a4c7cba359945f11146d81076974cde13862c8a2e8155",
+        "nvda_fy27q3.yaml": "c103ae985abab9d161900cfc5b5156c105c69b61c7e641a574f5cf2a19c24757",
+        "tsla_2026q3.yaml": "b26955c22f70be38dcf5d6bb113b76d873df952d36203f8065edb167671b2a8c"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "role": "evidence",
+      "dataset_id": "earnings_evidence",
+      "version_id": "v20261118T021818Z-2358f944",
+      "content_hash": "2358f9449d5c726b1c2059145b05fa39533b5d932b417512f5e42cfdfcefd82a",
+      "source_id": "sec_edgar",
+      "source_status": "use_verified",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2024-01-31",
+            "2026-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-11-16"
+        ]
+      }
+    }
+  ],
+  "results": {
+    "company": {
+      "entity": "cik_1318605",
+      "name": {
+        "zh": "Tesla（特斯拉）",
+        "en": "Tesla"
+      },
+      "cik": 1318605,
+      "tickers": [
+        "TSLA"
+      ]
+    },
+    "latest_period": {
+      "label": "2026 Q3",
+      "start": "2026-07-01",
+      "end": "2026-09-30"
+    },
+    "as_of": "2026-11-16",
+    "release": {
+      "ir_date": "2026-10-21",
+      "ir_url": "https://ir.tesla.com/press-release/tesla-releases-third-quarter-2026-financial-results",
+      "disclosure_form": "10-Q",
+      "disclosure_date": "2026-10-22"
+    },
+    "related_studies": [
+      {
+        "study": "company_tesla",
+        "label": {
+          "zh": "Tesla 年度财报研究",
+          "en": "Tesla annual financial study"
+        }
+      }
+    ],
+    "profile": {
+      "short_name": "Tesla",
+      "quarters": [
+        {
+          "id": "2025Q3",
+          "label": "2025 Q3",
+          "end": "2025-09-30",
+          "name": {
+            "zh": "2025 年第3季度",
+            "en": "2025 Q3"
+          }
+        },
+        {
+          "id": "2025Q4",
+          "label": "2025 Q4",
+          "end": "2025-12-31",
+          "name": {
+            "zh": "2025 年第4季度",
+            "en": "2025 Q4"
+          },
+          "derive": {
+            "total": "FY2025",
+            "less": "9M2025",
+            "method": {
+              "zh": "2025 全年减前三季度",
+              "en": "FY2025 less nine months 2025"
+            },
+            "note": {
+              "zh": "2025 Q4 利润表为全年减 9M 比较数的派生值，不是直接披露季度。",
+              "en": "Q4 2025 income is derived from annual less nine-month comparatives, not a directly reported quarter."
+            }
+          }
+        },
+        {
+          "id": "2026Q1",
+          "label": "2026 Q1",
+          "end": "2026-03-31",
+          "name": {
+            "zh": "2026 年第1季度",
+            "en": "2026 Q1"
+          }
+        },
+        {
+          "id": "2026Q2",
+          "label": "2026 Q2",
+          "end": "2026-06-30",
+          "name": {
+            "zh": "2026 年第2季度",
+            "en": "2026 Q2"
+          }
+        },
+        {
+          "id": "2026Q3",
+          "label": "2026 Q3",
+          "end": "2026-09-30",
+          "name": {
+            "zh": "2026 年第3季度",
+            "en": "2026 Q3"
+          }
+        }
+      ],
+      "current": "2026Q3",
+      "yoy_base": "2025Q3",
+      "qoq_base": "2026Q2",
+      "fcf_caliber": "mechanical",
+      "year_to_date": {
+        "id": "9M2026",
+        "quarters": [
+          "2026Q1",
+          "2026Q2",
+          "2026Q3"
+        ],
+        "label": {
+          "zh": "2026 前三季度",
+          "en": "Nine months 2026"
+        },
+        "short": {
+          "zh": "9M2026",
+          "en": "9M2026"
+        }
+      },
+      "income_metrics": [
+        "revenue",
+        "auto_sales",
+        "regulatory_credits",
+        "auto_leasing",
+        "auto_revenue",
+        "energy_revenue",
+        "services_revenue",
+        "auto_cost",
+        "energy_cost",
+        "services_cost",
+        "cost_of_revenues",
+        "R_and_D",
+        "SG_and_A",
+        "restructuring",
+        "op_income",
+        "consolidated_NI",
+        "parent_NI",
+        "interest_income",
+        "interest_expense",
+        "other_income",
+        "EBT",
+        "income_tax",
+        "noncontrolling_NI",
+        "auto_segment_revenue",
+        "auto_segment_cost",
+        "auto_segment_GP",
+        "energy_GP"
+      ],
+      "identities": [
+        {
+          "name": "汽车分项合成",
+          "terms": {
+            "auto_sales": 1,
+            "regulatory_credits": 1,
+            "auto_leasing": 1
+          },
+          "equals": "auto_revenue"
+        },
+        {
+          "name": "产品收入合计",
+          "terms": {
+            "auto_revenue": 1,
+            "energy_revenue": 1,
+            "services_revenue": 1
+          },
+          "equals": "revenue"
+        },
+        {
+          "name": "成本合计",
+          "terms": {
+            "auto_cost": 1,
+            "energy_cost": 1,
+            "services_cost": 1
+          },
+          "equals": "cost_of_revenues"
+        },
+        {
+          "name": "营业利润",
+          "terms": {
+            "revenue": 1,
+            "cost_of_revenues": -1,
+            "R_and_D": -1,
+            "SG_and_A": -1,
+            "restructuring": -1
+          },
+          "equals": "op_income"
+        },
+        {
+          "name": "税前利润",
+          "terms": {
+            "op_income": 1,
+            "interest_income": 1,
+            "interest_expense": 1,
+            "other_income": 1
+          },
+          "equals": "EBT"
+        },
+        {
+          "name": "合并净利润",
+          "terms": {
+            "EBT": 1,
+            "income_tax": -1
+          },
+          "equals": "consolidated_NI"
+        },
+        {
+          "name": "股东可得净利润",
+          "terms": {
+            "consolidated_NI": 1,
+            "noncontrolling_NI": -1
+          },
+          "equals": "parent_NI"
+        },
+        {
+          "name": "汽车分部收入",
+          "terms": {
+            "auto_revenue": 1,
+            "services_revenue": 1
+          },
+          "equals": "auto_segment_revenue"
+        },
+        {
+          "name": "汽车分部成本",
+          "terms": {
+            "auto_cost": 1,
+            "services_cost": 1
+          },
+          "equals": "auto_segment_cost"
+        },
+        {
+          "name": "汽车分部毛利润",
+          "terms": {
+            "auto_segment_revenue": 1,
+            "auto_segment_cost": -1
+          },
+          "equals": "auto_segment_GP"
+        },
+        {
+          "name": "能源分部毛利润",
+          "terms": {
+            "energy_revenue": 1,
+            "energy_cost": -1
+          },
+          "equals": "energy_GP"
+        }
+      ],
+      "ratios": [
+        {
+          "key": "auto_segment_margin",
+          "num": "auto_segment_GP",
+          "den": "auto_segment_revenue"
+        },
+        {
+          "key": "energy_margin",
+          "num": "energy_GP",
+          "den": "energy_revenue"
+        },
+        {
+          "key": "auto_product_mix",
+          "num": "auto_revenue",
+          "den": "revenue"
+        }
+      ],
+      "growth": [
+        "revenue",
+        "auto_revenue",
+        "energy_revenue",
+        "services_revenue",
+        "op_income",
+        "consolidated_NI",
+        "parent_NI",
+        "R_and_D",
+        "cfo",
+        "cash_ppe"
+      ],
+      "margins": [
+        "gross_margin",
+        "op_margin",
+        "auto_segment_margin",
+        "energy_margin"
+      ],
+      "segments": [
+        {
+          "name": "Automotive (including Services and other)",
+          "revenue": "auto_segment_revenue",
+          "profit": "auto_segment_GP",
+          "margin": "auto_segment_margin",
+          "profit_label": {
+            "zh": "毛利润",
+            "en": "gross profit"
+          },
+          "margin_label": {
+            "zh": "毛利率",
+            "en": "gross margin"
+          }
+        },
+        {
+          "name": "Energy generation and storage",
+          "revenue": "energy_revenue",
+          "profit": "energy_GP",
+          "margin": "energy_margin",
+          "profit_label": {
+            "zh": "毛利润",
+            "en": "gross profit"
+          },
+          "margin_label": {
+            "zh": "毛利率",
+            "en": "gross margin"
+          }
+        }
+      ],
+      "metrics": {
+        "revenue": {
+          "zh": "收入",
+          "en": "Revenue"
+        },
+        "auto_revenue": {
+          "zh": "汽车产品收入",
+          "en": "Automotive product revenue"
+        },
+        "energy_revenue": {
+          "zh": "能源收入",
+          "en": "Energy revenue"
+        },
+        "services_revenue": {
+          "zh": "服务及其他收入",
+          "en": "Services and other revenue"
+        },
+        "regulatory_credits": {
+          "zh": "汽车监管积分收入",
+          "en": "Automotive regulatory credits"
+        },
+        "op_income": {
+          "zh": "营业利润",
+          "en": "Operating income"
+        },
+        "consolidated_NI": {
+          "zh": "合并净利润",
+          "en": "Consolidated net income"
+        },
+        "parent_NI": {
+          "zh": "普通股股东可得净利润",
+          "en": "Net income attributable to common stockholders"
+        },
+        "gross_profit": {
+          "zh": "毛利润",
+          "en": "Gross profit"
+        },
+        "gross_margin": {
+          "zh": "毛利率",
+          "en": "Gross margin"
+        },
+        "op_margin": {
+          "zh": "营业利润率",
+          "en": "Operating margin"
+        },
+        "R_and_D": {
+          "zh": "研发费用",
+          "en": "Research and development"
+        },
+        "cfo": {
+          "zh": "经营现金流",
+          "en": "Operating cash flow"
+        },
+        "cash_ppe": {
+          "zh": "现金 PPE 净支出（不含融资租赁，扣除出售）",
+          "en": "Cash PPE purchases excluding finance leases, net of sales"
+        },
+        "free_cash_flow": {
+          "zh": "CFO−现金 PPE 机械差额",
+          "en": "Mechanical CFO less cash PPE difference"
+        }
+      },
+      "table": [
+        "revenue",
+        "auto_revenue",
+        "energy_revenue",
+        "services_revenue",
+        "regulatory_credits",
+        "gross_profit",
+        "R_and_D",
+        "op_income",
+        "consolidated_NI",
+        "parent_NI",
+        "gross_margin",
+        "op_margin"
+      ],
+      "report": [
+        "revenue",
+        "op_income",
+        "consolidated_NI",
+        "parent_NI",
+        "cfo",
+        "cash_ppe",
+        "free_cash_flow"
+      ],
+      "charts": [
+        {
+          "title": {
+            "zh": "收入与营业利润",
+            "en": "Revenue and operating income"
+          },
+          "unit": "usd_bn",
+          "series": [
+            {
+              "key": "revenue",
+              "label": {
+                "zh": "收入",
+                "en": "Revenue"
+              }
+            },
+            {
+              "key": "op_income",
+              "label": {
+                "zh": "营业利润",
+                "en": "Operating income"
+              }
+            }
+          ]
+        }
+      ],
+      "findings": {
+        "revenue_caveat": {
+          "zh": "报告口径，非有机增长；产品收入与正式分部口径分开。",
+          "en": "Reported basis, not organic growth; product revenue and reportable segments are distinct."
+        }
+      },
+      "balance_note": {
+        "zh": "有价证券为短期投资；长期债务行含融资租赁、不含流动部分；权益为股东权益加非控股权益，不含可赎回非控股权益。",
+        "en": "Securities are short-term investments; long-term debt includes finance leases but excludes current maturities. Equity includes stockholders and noncontrolling interests, excluding redeemable noncontrolling interests."
+      }
+    },
+    "quarters": [
+      {
+        "period": "2025Q3",
+        "label": "2025 Q3",
+        "end": "2025-09-30",
+        "derived": false,
+        "EBT": 1959.0,
+        "R_and_D": 1630.0,
+        "SG_and_A": 1562.0,
+        "auto_cost": 17590.0,
+        "auto_leasing": 429.0,
+        "auto_revenue": 21205.0,
+        "auto_sales": 20359.0,
+        "auto_segment_GP": 3981.0,
+        "auto_segment_cost": 20699.0,
+        "auto_segment_revenue": 24680.0,
+        "consolidated_NI": 1389.0,
+        "cost_of_revenues": 23041.0,
+        "energy_GP": 1073.0,
+        "energy_cost": 2342.0,
+        "energy_revenue": 3415.0,
+        "income_tax": 570.0,
+        "interest_expense": -76.0,
+        "interest_income": 439.0,
+        "noncontrolling_NI": 16.0,
+        "op_income": 1624.0,
+        "other_income": -28.0,
+        "parent_NI": 1373.0,
+        "regulatory_credits": 417.0,
+        "restructuring": 238.0,
+        "revenue": 28095.0,
+        "services_cost": 3109.0,
+        "services_revenue": 3475.0,
+        "cfo": 6238.0,
+        "cash_ppe": 2248.0,
+        "free_cash_flow": 3990.0,
+        "cash_derived": true,
+        "cash_derivation": {
+          "total": "9M2025",
+          "less": "6M2025",
+          "method": {
+            "zh": "9M2025 减 6M2025",
+            "en": "9M2025 less 6M2025"
+          },
+          "note": {
+            "zh": "2025Q3 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。",
+            "en": "2025Q3 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references and source inputs are retained."
+          },
+          "expression": "9M2025 - 6M2025",
+          "start": "2025-07-01",
+          "end": "2025-09-30",
+          "sources": [
+            {
+              "period": "9M2025",
+              "document": "q3",
+              "start": "2025-01-01",
+              "end": "2025-09-30",
+              "accession": "0001628280-26-066775",
+              "form": "10-Q",
+              "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+              "accepted_at": "2026-10-22T00:12:41.000Z"
+            },
+            {
+              "period": "6M2025",
+              "document": "q2",
+              "start": "2025-01-01",
+              "end": "2025-06-30",
+              "accession": "0001628280-26-049270",
+              "form": "10-Q",
+              "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm",
+              "accepted_at": "2026-07-23T01:02:31.000Z"
+            }
+          ],
+          "accepted_at": "2026-10-22T00:12:41.000Z"
+        },
+        "gross_profit": 5054.0,
+        "gross_margin": 17.98896600818651,
+        "op_margin": 5.7803879693895714,
+        "auto_segment_margin": 16.130470016207454,
+        "energy_margin": 31.42020497803807,
+        "auto_product_mix": 75.47606335646913,
+        "capex_to_sales": 8.00142374087916,
+        "cfo_to_consolidated_ni": 4.491000719942405
+      },
+      {
+        "period": "2025Q4",
+        "label": "2025 Q4",
+        "end": "2025-12-31",
+        "derived": true,
+        "EBT": 1181.0,
+        "R_and_D": 1783.0,
+        "SG_and_A": 1655.0,
+        "auto_cost": 14080.0,
+        "auto_leasing": 401.0,
+        "auto_revenue": 17693.0,
+        "auto_sales": 16750.0,
+        "auto_segment_GP": 3911.0,
+        "auto_segment_cost": 17153.0,
+        "auto_segment_revenue": 21064.0,
+        "consolidated_NI": 856.0,
+        "cost_of_revenues": 19892.0,
+        "energy_GP": 1098.0,
+        "energy_cost": 2739.0,
+        "energy_revenue": 3837.0,
+        "income_tax": 325.0,
+        "interest_expense": -85.0,
+        "interest_income": 449.0,
+        "noncontrolling_NI": 16.0,
+        "op_income": 1409.0,
+        "other_income": -592.0,
+        "parent_NI": 840.0,
+        "regulatory_credits": 542.0,
+        "restructuring": 162.0,
+        "revenue": 24901.0,
+        "services_cost": 3073.0,
+        "services_revenue": 3371.0,
+        "cfo": 3813.0,
+        "cash_ppe": 2393.0,
+        "free_cash_flow": 1420.0,
+        "cash_derived": true,
+        "cash_derivation": {
+          "total": "FY2025",
+          "less": "9M2025",
+          "method": {
+            "zh": "FY2025 减 9M2025",
+            "en": "FY2025 less 9M2025"
+          },
+          "note": {
+            "zh": "2025Q4 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。",
+            "en": "2025Q4 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references and source inputs are retained."
+          },
+          "expression": "FY2025 - 9M2025",
+          "start": "2025-10-01",
+          "end": "2025-12-31",
+          "sources": [
+            {
+              "period": "FY2025",
+              "document": "fy25",
+              "start": "2025-01-01",
+              "end": "2025-12-31",
+              "accession": "0001628280-26-003952",
+              "form": "10-K",
+              "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+              "accepted_at": "2026-01-29T01:55:03.000Z"
+            },
+            {
+              "period": "9M2025",
+              "document": "q3",
+              "start": "2025-01-01",
+              "end": "2025-09-30",
+              "accession": "0001628280-26-066775",
+              "form": "10-Q",
+              "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+              "accepted_at": "2026-10-22T00:12:41.000Z"
+            }
+          ],
+          "accepted_at": "2026-10-22T00:12:41.000Z"
+        },
+        "gross_profit": 5009.0,
+        "gross_margin": 20.11565800570258,
+        "op_margin": 5.6584072928798035,
+        "auto_segment_margin": 18.567223699202433,
+        "energy_margin": 28.61610633307271,
+        "auto_product_mix": 71.05337135054816,
+        "capex_to_sales": 9.610055821051363,
+        "cfo_to_consolidated_ni": 4.454439252336448
+      },
+      {
+        "period": "2026Q1",
+        "label": "2026 Q1",
+        "end": "2026-03-31",
+        "derived": false,
+        "EBT": 748.0,
+        "R_and_D": 1946.0,
+        "SG_and_A": 1833.0,
+        "auto_cost": 12812.0,
+        "auto_leasing": 381.0,
+        "auto_revenue": 16234.0,
+        "auto_sales": 15473.0,
+        "auto_segment_GP": 3768.0,
+        "auto_segment_cost": 16211.0,
+        "auto_segment_revenue": 19979.0,
+        "consolidated_NI": 491.0,
+        "cost_of_revenues": 17667.0,
+        "energy_GP": 952.0,
+        "energy_cost": 1456.0,
+        "energy_revenue": 2408.0,
+        "income_tax": 257.0,
+        "interest_expense": -92.0,
+        "interest_income": 434.0,
+        "noncontrolling_NI": 14.0,
+        "op_income": 941.0,
+        "other_income": -535.0,
+        "parent_NI": 477.0,
+        "regulatory_credits": 380.0,
+        "restructuring": 0.0,
+        "revenue": 22387.0,
+        "services_cost": 3399.0,
+        "services_revenue": 3745.0,
+        "cfo": 3937.0,
+        "cash_ppe": 2493.0,
+        "free_cash_flow": 1444.0,
+        "gross_profit": 4720.0,
+        "gross_margin": 21.083664626792334,
+        "op_margin": 4.203332291061777,
+        "auto_segment_margin": 18.859802792932577,
+        "energy_margin": 39.53488372093023,
+        "auto_product_mix": 72.51529905748872,
+        "capex_to_sales": 11.135927100549425,
+        "cfo_to_consolidated_ni": 8.018329938900203
+      },
+      {
+        "period": "2026Q2",
+        "label": "2026 Q2",
+        "end": "2026-06-30",
+        "derived": false,
+        "EBT": 1329.0,
+        "R_and_D": 2371.0,
+        "SG_and_A": 1982.0,
+        "auto_cost": 17053.0,
+        "auto_leasing": 364.0,
+        "auto_revenue": 20516.0,
+        "auto_sales": 20006.0,
+        "auto_segment_GP": 4111.0,
+        "auto_segment_cost": 20986.0,
+        "auto_segment_revenue": 25097.0,
+        "consolidated_NI": 1128.0,
+        "cost_of_revenues": 23485.0,
+        "energy_GP": 640.0,
+        "energy_cost": 2499.0,
+        "energy_revenue": 3139.0,
+        "income_tax": 201.0,
+        "interest_expense": -81.0,
+        "interest_income": 422.0,
+        "noncontrolling_NI": 14.0,
+        "op_income": 398.0,
+        "other_income": 590.0,
+        "parent_NI": 1114.0,
+        "regulatory_credits": 146.0,
+        "restructuring": 0.0,
+        "revenue": 28236.0,
+        "services_cost": 3933.0,
+        "services_revenue": 4581.0,
+        "cfo": 4697.0,
+        "cash_ppe": 5789.0,
+        "free_cash_flow": -1092.0,
+        "cash_derived": true,
+        "cash_derivation": {
+          "total": "6M2026",
+          "less": "3M2026",
+          "method": {
+            "zh": "6M2026 减 3M2026",
+            "en": "6M2026 less 3M2026"
+          },
+          "note": {
+            "zh": "2026Q2 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。",
+            "en": "2026Q2 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references and source inputs are retained."
+          },
+          "expression": "6M2026 - 3M2026",
+          "start": "2026-04-01",
+          "end": "2026-06-30",
+          "sources": [
+            {
+              "period": "6M2026",
+              "document": "q2",
+              "start": "2026-01-01",
+              "end": "2026-06-30",
+              "accession": "0001628280-26-049270",
+              "form": "10-Q",
+              "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm",
+              "accepted_at": "2026-07-23T01:02:31.000Z"
+            },
+            {
+              "period": "3M2026",
+              "document": "q1",
+              "start": "2026-01-01",
+              "end": "2026-03-31",
+              "accession": "0001628280-26-026673",
+              "form": "10-Q",
+              "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026026673/tsla-20260331.htm",
+              "accepted_at": "2026-04-23T01:43:00.000Z"
+            }
+          ],
+          "accepted_at": "2026-07-23T01:02:31.000Z"
+        },
+        "gross_profit": 4751.0,
+        "gross_margin": 16.826037682391274,
+        "op_margin": 1.4095480946309675,
+        "auto_segment_margin": 16.380443877754313,
+        "energy_margin": 20.388658808537752,
+        "auto_product_mix": 72.65901685791188,
+        "capex_to_sales": 20.50219577843887,
+        "cfo_to_consolidated_ni": 4.164007092198582
+      },
+      {
+        "period": "2026Q3",
+        "label": "2026 Q3",
+        "end": "2026-09-30",
+        "derived": false,
+        "EBT": 956.0,
+        "R_and_D": 2761.0,
+        "SG_and_A": 2015.0,
+        "auto_cost": 16754.0,
+        "auto_leasing": 353.0,
+        "auto_revenue": 20560.0,
+        "auto_sales": 20094.0,
+        "auto_segment_GP": 4540.0,
+        "auto_segment_cost": 20625.0,
+        "auto_segment_revenue": 25165.0,
+        "consolidated_NI": 804.0,
+        "cost_of_revenues": 22552.0,
+        "energy_GP": 954.0,
+        "energy_cost": 1927.0,
+        "energy_revenue": 2881.0,
+        "income_tax": 152.0,
+        "interest_expense": -90.0,
+        "interest_income": 445.0,
+        "noncontrolling_NI": 17.0,
+        "op_income": 718.0,
+        "other_income": -117.0,
+        "parent_NI": 787.0,
+        "regulatory_credits": 113.0,
+        "restructuring": 0.0,
+        "revenue": 28046.0,
+        "services_cost": 3871.0,
+        "services_revenue": 4605.0,
+        "cfo": 6263.0,
+        "cash_ppe": 4732.0,
+        "free_cash_flow": 1531.0,
+        "cash_derived": true,
+        "cash_derivation": {
+          "total": "9M2026",
+          "less": "6M2026",
+          "method": {
+            "zh": "9M2026 减 6M2026",
+            "en": "9M2026 less 6M2026"
+          },
+          "note": {
+            "zh": "2026Q3 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。",
+            "en": "2026Q3 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references and source inputs are retained."
+          },
+          "expression": "9M2026 - 6M2026",
+          "start": "2026-07-01",
+          "end": "2026-09-30",
+          "sources": [
+            {
+              "period": "9M2026",
+              "document": "q3",
+              "start": "2026-01-01",
+              "end": "2026-09-30",
+              "accession": "0001628280-26-066775",
+              "form": "10-Q",
+              "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+              "accepted_at": "2026-10-22T00:12:41.000Z"
+            },
+            {
+              "period": "6M2026",
+              "document": "q2",
+              "start": "2026-01-01",
+              "end": "2026-06-30",
+              "accession": "0001628280-26-049270",
+              "form": "10-Q",
+              "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm",
+              "accepted_at": "2026-07-23T01:02:31.000Z"
+            }
+          ],
+          "accepted_at": "2026-10-22T00:12:41.000Z"
+        },
+        "gross_profit": 5494.0,
+        "gross_margin": 19.589246238322755,
+        "op_margin": 2.560079868786993,
+        "auto_segment_margin": 18.04092986290483,
+        "energy_margin": 33.113502256161055,
+        "auto_product_mix": 73.30813663267489,
+        "capex_to_sales": 16.872281252228483,
+        "cfo_to_consolidated_ni": 7.789800995024875
+      }
+    ],
+    "comparison": {
+      "yoy": {
+        "base": "2025 Q3",
+        "current": "2026 Q3",
+        "pct": {
+          "revenue": -0.17440825769710067,
+          "auto_revenue": -3.041735439754778,
+          "energy_revenue": -15.636896046852122,
+          "services_revenue": 32.5179856115108,
+          "op_income": -55.78817733990148,
+          "consolidated_NI": -42.11663066954644,
+          "parent_NI": -42.680262199563,
+          "R_and_D": 69.38650306748467,
+          "cfo": 0.40076947739660085,
+          "cash_ppe": 110.4982206405694
+        },
+        "margin_pp": {
+          "gross_margin": 1.6002802301362458,
+          "op_margin": -3.2203081006025784,
+          "auto_segment_margin": 1.9104598466973748,
+          "energy_margin": 1.6932972781229871
+        }
+      },
+      "qoq": {
+        "base": "2026 Q2",
+        "current": "2026 Q3",
+        "pct": {
+          "revenue": -0.6728998441705603,
+          "auto_revenue": 0.21446675765255385,
+          "energy_revenue": -8.21917808219178,
+          "services_revenue": 0.5239030779305764,
+          "op_income": 80.40201005025125,
+          "consolidated_NI": -28.723404255319153,
+          "parent_NI": -29.353680430879713,
+          "R_and_D": 16.448755799240832,
+          "cfo": 33.34043006174154,
+          "cash_ppe": -18.258766626360334
+        },
+        "margin_pp": {
+          "gross_margin": 2.763208555931481,
+          "op_margin": 1.1505317741560255,
+          "auto_segment_margin": 1.6604859851505154,
+          "energy_margin": 12.724843447623304
+        }
+      }
+    },
+    "bridges": null,
+    "cash": {
+      "current_free_cash_flow": 1531.0,
+      "issuer_fcf": {},
+      "caliber": {
+        "zh": "经营活动现金流减购置固定资产现金支出的机械差额；未核实为发行人定义的自由现金流，不是可分配现金或持续性 owner cash。累计披露相减的单季值另标推导来源。",
+        "en": "Mechanical difference of operating cash flow less cash purchases of property and equipment; not verified as issuer-defined free cash flow, distributable cash or sustainable owner cash. Quarters derived by subtracting cumulative disclosures are separately identified with their sources."
+      },
+      "year_to_date": {
+        "cfo": 14897.0,
+        "cash_ppe": 13014.0,
+        "consolidated_ni": 2423.0,
+        "cfo_to_consolidated_ni": 6.148163433759802,
+        "cfo_to_cash_ppe": 1.144690333487014,
+        "label": {
+          "zh": "2026 前三季度",
+          "en": "Nine months 2026"
+        }
+      }
+    },
+    "balance": [
+      {
+        "date": "2026-09-30",
+        "PPE_net": 50591.0,
+        "cash": 17853.0,
+        "longterm_debt": 8136.0,
+        "marketable_securities": 27594.0,
+        "total_assets": 157517.0,
+        "total_equity": 89835.0,
+        "cash_and_securities": 45447.0
+      },
+      {
+        "date": "2026-06-30",
+        "PPE_net": 47255.0,
+        "cash": 15219.0,
+        "longterm_debt": 7924.0,
+        "marketable_securities": 28305.0,
+        "total_assets": 148524.0,
+        "total_equity": 87465.0,
+        "cash_and_securities": 43524.0
+      },
+      {
+        "date": "2026-03-31",
+        "PPE_net": 43213.0,
+        "cash": 16603.0,
+        "longterm_debt": 7782.0,
+        "marketable_securities": 28140.0,
+        "total_assets": 143724.0,
+        "total_equity": 84745.0,
+        "cash_and_securities": 44743.0
+      },
+      {
+        "date": "2025-12-31",
+        "PPE_net": 40643.0,
+        "cash": 16513.0,
+        "longterm_debt": 6736.0,
+        "marketable_securities": 27546.0,
+        "total_assets": 137806.0,
+        "total_equity": 82807.0,
+        "cash_and_securities": 44059.0
+      }
+    ],
+    "rpo": null,
+    "fx": null,
+    "per_share": null,
+    "guidance": null,
+    "notes": [
+      {
+        "id": "segment-basis",
+        "document": "q3",
+        "title": {
+          "zh": "正式分部与产品线",
+          "en": "Segments versus product lines"
+        },
+        "fact": {
+          "zh": "Note 14 汽车分部含服务及其他；分部利润指标是毛利润，不是营业利润。",
+          "en": "Note 14 Automotive includes Services and other. Segment profit is gross profit, not operating income."
+        },
+        "limit": {
+          "zh": "不计算虚构分部 EBIT 或营业利润变动分解。",
+          "en": "No invented segment EBIT or operating-income attribution."
+        }
+      },
+      {
+        "id": "cash-basis",
+        "document": "q3",
+        "title": {
+          "zh": "现金差额非发行人 FCF",
+          "en": "Cash difference is not issuer-defined FCF"
+        },
+        "fact": {
+          "zh": "同批四份 SEC 文件未找到 free cash flow 定义；仅计算 CFO 减现金 PPE 净支出。",
+          "en": "No free-cash-flow definition was found in these four SEC filings; only CFO less net cash PPE is calculated."
+        },
+        "limit": {
+          "zh": "不含融资租赁新增、并购或 SpaceX 股权投资；不等于 owner cash。",
+          "en": "Excludes new finance leases, acquisitions and SpaceX equity investment; not owner cash."
+        }
+      },
+      {
+        "id": "guidance-floor",
+        "document": "q3",
+        "title": {
+          "zh": "年度资本开支展望",
+          "en": "Annual capex outlook"
+        },
+        "fact": {
+          "zh": "Q3 10-Q 预期 2026 资本开支超过 200 亿美元；9M 现金 PPE 为 13,014 百万美元。",
+          "en": "Q3 10-Q expects 2026 capex in excess of USD20bn; nine-month cash PPE was USD13,014m."
+        },
+        "limit": {
+          "zh": "年度尚未结束；这是大于式门槛，不是点值或已实现收入。",
+          "en": "The year is incomplete; this is a strict floor, not a point estimate or realized revenue."
+        },
+        "excerpts": [
+          "We currently expect our capital expenditures to be in excess of $20 billion in 2026"
+        ]
+      },
+      {
+        "id": "tariff-refunds",
+        "document": "q3",
+        "title": {
+          "zh": "关税退款确认影响毛利润",
+          "en": "Recognized tariff refunds affect gross profit"
+        },
+        "fact": {
+          "zh": "Q3 能源成本减少 526、汽车销售成本减少 260；能源收入因应退客户金额减少 339，均为百万美元。",
+          "en": "Q3 energy cost fell by526 and auto-sales cost by260; energy revenue fell by339 for customer refunds, all USDm."
+        },
+        "limit": {
+          "zh": "确认不等于现金收取；不宣称这是全部正常化调整。",
+          "en": "Recognition is not collection; this is not a complete normalization."
+        },
+        "check": {
+          "document": "q3",
+          "energy_cost_reduction": 526,
+          "auto_cost_reduction": 260,
+          "energy_revenue_reduction": 339
+        }
+      },
+      {
+        "id": "working-capital",
+        "document": "q3",
+        "title": {
+          "zh": "现金流中的应付及应计贡献",
+          "en": "Payables and accrual contribution to CFO"
+        },
+        "fact": {
+          "zh": "9M 应付及应计现金流贡献 7,332；Q3=7,332−3,341=3,991 百万美元。",
+          "en": "Nine-month payables/accrual cash contribution was7,332; Q3=7,332−3,341=3,991 USDm."
+        },
+        "limit": {
+          "zh": "不是资产负债表差额，也不代表持续经营现金创造。",
+          "en": "Not the balance-sheet delta or evidence of sustainable cash generation."
+        },
+        "check": {
+          "document": "q3",
+          "payables_accruals": 7332
+        }
+      },
+      {
+        "id": "related-party",
+        "document": "q3",
+        "title": {
+          "zh": "关联方与公允价值",
+          "en": "Related party and fair value"
+        },
+        "fact": {
+          "zh": "SpaceX 公允价值本季损失 142，而 9M 收益 863；Q3 相关 Megapack 收入 221、成本 171，百万美元。",
+          "en": "SpaceX fair-value Q3 loss142 differs from nine-month gain863; related Q3 Megapack revenue221 and cost171, USDm."
+        },
+        "limit": {
+          "zh": "不可将 9M 收益当 Q3 表现；估值变动不是经营利润或现金收入。",
+          "en": "Do not use the nine-month gain as Q3 performance; valuation changes are not operating income or cash receipts."
+        },
+        "check": {
+          "document": "q3",
+          "fv_loss_Q3": -142,
+          "fv_gain_9M": 863,
+          "megapack_revenue": 221,
+          "megapack_cost": 171
+        }
+      },
+      {
+        "id": "sbc",
+        "document": "q3",
+        "title": {
+          "zh": "股份支付费用",
+          "en": "Share-based compensation expense"
+        },
+        "fact": {
+          "zh": "Note 9 Q3 股份支付费用 1,165，对比去年 663；9M 3,346 百万美元。",
+          "en": "Note9 Q3 SBC expense1,165 versus663 prior year; nine months3,346 USDm."
+        },
+        "limit": {
+          "zh": "不使用权益变动表不同口径数；非现金不等于无经济成本。",
+          "en": "Do not substitute equity-movement amounts; noncash does not mean costless."
+        },
+        "check": {
+          "document": "q3",
+          "q3_sbc": 1165,
+          "prior_sbc": 663,
+          "nine_month_sbc": 3346
+        }
+      }
+    ],
+    "coverage": [
+      {
+        "id": "reported",
+        "status": "done",
+        "item": {
+          "zh": "报告收入、合并/股东净利润及分部毛利润",
+          "en": "Reported revenue, consolidated/parent earnings and segment gross profit"
+        }
+      },
+      {
+        "id": "cash",
+        "status": "done",
+        "item": {
+          "zh": "累计减算现金流与机械现金差额",
+          "en": "Cash-flow subtraction and mechanical cash difference"
+        }
+      },
+      {
+        "id": "guidance",
+        "status": "done",
+        "item": {
+          "zh": "当前年度门槛展望以说明保留，不套点值模型",
+          "en": "Current annual floor preserved as note, not forced into point model"
+        }
+      },
+      {
+        "id": "normalization",
+        "status": "judgment",
+        "item": {
+          "zh": "完整正常化和可持续利润",
+          "en": "Complete normalization and sustainable earnings"
+        }
+      },
+      {
+        "id": "call",
+        "status": "data_gap",
+        "item": {
+          "zh": "未取得/处理电话会及 Q&A",
+          "en": "Call and Q&A not obtained or processed"
+        }
+      },
+      {
+        "id": "reaction",
+        "status": "data_gap",
+        "item": {
+          "zh": "市场反应、价格及隐含预期未覆盖",
+          "en": "Market reaction, prices and implied expectations not covered"
+        }
+      }
+    ],
+    "documents": [
+      {
+        "id": "q3",
+        "form": "10-Q",
+        "period_end": "2026-09-30",
+        "accession": "0001628280-26-066775",
+        "accepted_at": "2026-10-22T00:12:41.000Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+        "sha256": "e037800784513ee9661f438d365e3b01b908ed1d892c4ca27ed43a18a678e60f"
+      },
+      {
+        "id": "q2",
+        "form": "10-Q",
+        "period_end": "2026-06-30",
+        "accession": "0001628280-26-049270",
+        "accepted_at": "2026-07-23T01:02:31.000Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm",
+        "sha256": "d73ba014ab80bb4e7b180ed03f9d8466465fd90bb783306ebea031b466399dac"
+      },
+      {
+        "id": "q1",
+        "form": "10-Q",
+        "period_end": "2026-03-31",
+        "accession": "0001628280-26-026673",
+        "accepted_at": "2026-04-23T01:43:00.000Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026026673/tsla-20260331.htm",
+        "sha256": "8feb8360434320e3d86a4c7028701fab77db791dcf7e548fb968f070ecb1d1a8"
+      },
+      {
+        "id": "fy25",
+        "form": "10-K",
+        "period_end": "2025-12-31",
+        "accession": "0001628280-26-003952",
+        "accepted_at": "2026-01-29T01:55:03.000Z",
+        "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+        "sha256": "442a79e7a2099ddb16af0bdb92a78873cbdcd683613875724e17115f012cbce5"
+      }
+    ],
+    "summary": {
+      "quarters": 5,
+      "derived_quarters": 1,
+      "notes": 7,
+      "coverage": {
+        "done": 3,
+        "data_gap": 2,
+        "judgment": 1
+      }
+    },
+    "cash_derivations": {
+      "2025Q3": {
+        "total": "9M2025",
+        "less": "6M2025",
+        "method": {
+          "zh": "9M2025 减 6M2025",
+          "en": "9M2025 less 6M2025"
+        },
+        "note": {
+          "zh": "2025Q3 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。",
+          "en": "2025Q3 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references and source inputs are retained."
+        },
+        "expression": "9M2025 - 6M2025",
+        "start": "2025-07-01",
+        "end": "2025-09-30",
+        "sources": [
+          {
+            "period": "9M2025",
+            "document": "q3",
+            "start": "2025-01-01",
+            "end": "2025-09-30",
+            "accession": "0001628280-26-066775",
+            "form": "10-Q",
+            "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+            "accepted_at": "2026-10-22T00:12:41.000Z"
+          },
+          {
+            "period": "6M2025",
+            "document": "q2",
+            "start": "2025-01-01",
+            "end": "2025-06-30",
+            "accession": "0001628280-26-049270",
+            "form": "10-Q",
+            "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm",
+            "accepted_at": "2026-07-23T01:02:31.000Z"
+          }
+        ],
+        "accepted_at": "2026-10-22T00:12:41.000Z"
+      },
+      "2025Q4": {
+        "total": "FY2025",
+        "less": "9M2025",
+        "method": {
+          "zh": "FY2025 减 9M2025",
+          "en": "FY2025 less 9M2025"
+        },
+        "note": {
+          "zh": "2025Q4 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。",
+          "en": "2025Q4 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references and source inputs are retained."
+        },
+        "expression": "FY2025 - 9M2025",
+        "start": "2025-10-01",
+        "end": "2025-12-31",
+        "sources": [
+          {
+            "period": "FY2025",
+            "document": "fy25",
+            "start": "2025-01-01",
+            "end": "2025-12-31",
+            "accession": "0001628280-26-003952",
+            "form": "10-K",
+            "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm",
+            "accepted_at": "2026-01-29T01:55:03.000Z"
+          },
+          {
+            "period": "9M2025",
+            "document": "q3",
+            "start": "2025-01-01",
+            "end": "2025-09-30",
+            "accession": "0001628280-26-066775",
+            "form": "10-Q",
+            "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+            "accepted_at": "2026-10-22T00:12:41.000Z"
+          }
+        ],
+        "accepted_at": "2026-10-22T00:12:41.000Z"
+      },
+      "2026Q2": {
+        "total": "6M2026",
+        "less": "3M2026",
+        "method": {
+          "zh": "6M2026 减 3M2026",
+          "en": "6M2026 less 3M2026"
+        },
+        "note": {
+          "zh": "2026Q2 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。",
+          "en": "2026Q2 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references and source inputs are retained."
+        },
+        "expression": "6M2026 - 3M2026",
+        "start": "2026-04-01",
+        "end": "2026-06-30",
+        "sources": [
+          {
+            "period": "6M2026",
+            "document": "q2",
+            "start": "2026-01-01",
+            "end": "2026-06-30",
+            "accession": "0001628280-26-049270",
+            "form": "10-Q",
+            "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm",
+            "accepted_at": "2026-07-23T01:02:31.000Z"
+          },
+          {
+            "period": "3M2026",
+            "document": "q1",
+            "start": "2026-01-01",
+            "end": "2026-03-31",
+            "accession": "0001628280-26-026673",
+            "form": "10-Q",
+            "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026026673/tsla-20260331.htm",
+            "accepted_at": "2026-04-23T01:43:00.000Z"
+          }
+        ],
+        "accepted_at": "2026-07-23T01:02:31.000Z"
+      },
+      "2026Q3": {
+        "total": "9M2026",
+        "less": "6M2026",
+        "method": {
+          "zh": "9M2026 减 6M2026",
+          "en": "9M2026 less 6M2026"
+        },
+        "note": {
+          "zh": "2026Q3 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。",
+          "en": "2026Q3 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references and source inputs are retained."
+        },
+        "expression": "9M2026 - 6M2026",
+        "start": "2026-07-01",
+        "end": "2026-09-30",
+        "sources": [
+          {
+            "period": "9M2026",
+            "document": "q3",
+            "start": "2026-01-01",
+            "end": "2026-09-30",
+            "accession": "0001628280-26-066775",
+            "form": "10-Q",
+            "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm",
+            "accepted_at": "2026-10-22T00:12:41.000Z"
+          },
+          {
+            "period": "6M2026",
+            "document": "q2",
+            "start": "2026-01-01",
+            "end": "2026-06-30",
+            "accession": "0001628280-26-049270",
+            "form": "10-Q",
+            "url": "https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm",
+            "accepted_at": "2026-07-23T01:02:31.000Z"
+          }
+        ],
+        "accepted_at": "2026-10-22T00:12:41.000Z"
+      }
+    }
+  },
+  "coverage": {
+    "completeness": "partial",
+    "period_complete": true,
+    "quarters": 5,
+    "coverage_items": {
+      "done": 3,
+      "data_gap": 2,
+      "judgment": 1
+    }
+  },
+  "unsupported": [
+    {
+      "item": "完整正常化和可持续利润",
+      "kind": "scope",
+      "reason": "需要人工判断或本研究未处理的外部材料；不在公开财报算术的范围内"
+    },
+    {
+      "item": "未取得/处理电话会及 Q&A",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    },
+    {
+      "item": "市场反应、价格及隐含预期未覆盖",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    }
+  ],
+  "limitations": [
+    "现金流季度值由累计相减；2025 Q4 利润表由全年减 9M 比较数，非直接季度披露",
+    "正式汽车分部包含服务及其他，利润指标是毛利润，不是分部营业利润",
+    "同批 SEC 文件未找到发行人 FCF 定义，CFO−现金 PPE 仅为机械差额，非可分配现金",
+    "关税退款、公允价值及股份支付影响报告可比性；不作完整正常化、预测或投资判断",
+    "电话会、股价反应、估值与隐含预期不在本页范围",
+    "模型复核不是人工审计；本页数据截止日沿用原任务 2026-11-16，技术取得时间另记"
+  ],
+  "validation": {
+    "evidence_check": {
+      "status": "pass",
+      "checked": 651,
+      "reason": "证据包生成前逐份核对原文 SHA256、数值出现在所引原文中、会计恒等式成立、文字摘录逐字出现在原文中"
+    },
+    "raw_spot_check": {
+      "status": "skipped",
+      "reason": "没有可在原始 CSV 中定位的合格观测"
+    }
+  },
+  "tables": {
+    "quarters": [
+      {
+        "period": "2025Q3",
+        "label": "2025 Q3",
+        "revenue": 28095.0,
+        "op_income": 1624.0,
+        "consolidated_NI": 1389.0,
+        "cfo": 6238.0,
+        "cash_ppe": 2248.0
+      },
+      {
+        "period": "2025Q4",
+        "label": "2025 Q4",
+        "revenue": 24901.0,
+        "op_income": 1409.0,
+        "consolidated_NI": 856.0,
+        "cfo": 3813.0,
+        "cash_ppe": 2393.0
+      },
+      {
+        "period": "2026Q1",
+        "label": "2026 Q1",
+        "revenue": 22387.0,
+        "op_income": 941.0,
+        "consolidated_NI": 491.0,
+        "cfo": 3937.0,
+        "cash_ppe": 2493.0
+      },
+      {
+        "period": "2026Q2",
+        "label": "2026 Q2",
+        "revenue": 28236.0,
+        "op_income": 398.0,
+        "consolidated_NI": 1128.0,
+        "cfo": 4697.0,
+        "cash_ppe": 5789.0
+      },
+      {
+        "period": "2026Q3",
+        "label": "2026 Q3",
+        "revenue": 28046.0,
+        "op_income": 718.0,
+        "consolidated_NI": 804.0,
+        "cfo": 6263.0,
+        "cash_ppe": 4732.0
+      }
+    ]
+  },
+  "interpretation": {
+    "rule_version": "earnings_quarter-mechanical-cash.v1",
+    "rule_fingerprint": "a481094f222667b4",
+    "params": {},
+    "items": [
+      {
+        "id": "earnings_revenue",
+        "text": "2026 Q3 收入 28.05 十亿美元，同比 -0.2%、环比 -0.7%；报告口径，非有机增长；产品收入与正式分部口径分开。",
+        "evidence": {
+          "revenue_usd_m": 28046.0,
+          "yoy_pct": -0.17,
+          "qoq_pct": -0.67
+        }
+      },
+      {
+        "id": "earnings_operating",
+        "text": "营业利润 0.72 十亿美元，营业利润率 2.6%，较去年同期 -3.2 个百分点。",
+        "evidence": {
+          "op_income_usd_m": 718.0,
+          "op_margin_pct": 2.56,
+          "yoy_margin_pp": -3.22
+        }
+      },
+      {
+        "id": "earnings_net_income",
+        "text": "合并净利润 0.80 十亿美元，同比 -42.1%。",
+        "evidence": {
+          "consolidated_ni_usd_m": 804.0
+        }
+      },
+      {
+        "id": "earnings_cash",
+        "text": "经营活动现金流 6.26 十亿美元，现金 PPE 净支出 4.73 十亿美元；两者机械差额 +1.53 十亿美元，不是已核实的发行人 FCF 或可分配现金。",
+        "evidence": {
+          "cfo_usd_m": 6263.0,
+          "cash_capex_usd_m": 4732.0,
+          "free_cash_flow_usd_m": 1531.0
+        }
+      }
+    ],
+    "state": {
+      "最新季度": "2026 Q3",
+      "覆盖项": "已完成 3、数据不足 2、需判断 1",
+      "现金机械差额符号": "为正"
+    }
+  },
+  "run_id": "earnings_tsla_2026q3-20261118T022512Z-67f3da6c",
+  "generated_at": "2026-11-18T02:25:13+00:00",
+  "result_hash": "8c99a7540605b4c3784a47cbee81f3e0e3e03f9b329945ab56a9f196e03f45e4"
+}
