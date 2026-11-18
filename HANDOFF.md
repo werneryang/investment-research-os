@@ -96,7 +96,7 @@
 
 ## 9. 公开研究报告（notes，已上线）
 
-- 站点从 `notes/companies/` 读取通过导入门槛的可读 Markdown 报告；不复制 results。报告与 study 分开建模/计数，接入公司、关键词及报告日期筛选，中文页 noindex、入口 nofollow，生成 robots 的 notes Disallow；这不是保密或索引移除保证（README 有主机根限制）。
+- 站点从 `notes/companies/` 读取通过导入门槛的可读 Markdown 报告；不复制 results。报告与 study 分开建模/计数，接入公司、关键词及报告日期筛选，中文页 noindex、入口 nofollow，以页面 meta noindex 请求不索引（已移除无效项目 robots）；这不是保密或索引移除保证（README 有主机根限制）。
 - 导入先检查真实 reports 路径、公司与日期；仅对已验证公开 record 指针和私有结果 ID 做确定性清洗，拒绝未知路径、邮箱/key、用户专属标记、未核验代码仓库链接、原始 HTML/图片和超阈值引用。构建逐份重检，坏副本不进入页面/目录，但不得将坏源稿提交到公开 git。
 - 已从原 owner 已推送提交固定字节导入 AAPL-20261117-value-chain 与 GOOGL-20261116-q3-26，两份通过公开边界；不取 AAPL 未提交的工作树改动。NVDA 初因作者元数据的 blockquote 样式触发保守引文门槛；原 owner 已将自写元信息改为普通段落并推送，固定字节重新导入后也通过。没有删除信息、修改数字或放宽引用门槛，也未断言第三方侵权。
 - 代码完整测试 553 项通过（184.90s），新报告专项 60 项通过；独立边界复核发现的编码/格式化/跨行标记、长引用、标题分隔与未知仓库问题已补回归。正式 PR 与 live 报告页面核验尚未完成，不能把本地构建当上线。
@@ -111,3 +111,9 @@
 - 已识别适配点：单季 CFO/现金 PPE 由累计期间相减；现有现金流入口只支持直接数值存在性，必须保留累计输入/减算式与源日期，不能拿派生值冒称原表直接披露。Tesla 正式分部以毛利润披露，不可套成分部营业利润或 EBIT。先核同批原件，再作必要代码/契约 PR。
 - 适配与准备核验：累计现金流双来源/期间校验、分部毛利润标签和显式机械现金差额均已实现；独立源表230项及配置/preview454项零差异，父走查对照193项一致。原四份文件无发行人 FCF 定义，不冒用该标签；旧 GOOGL/NVDA 正式固定输入仍可复现原结果。正式 clean run、归档与部署尚待最终核验。
 - 正式运行 `earnings_tsla_2026q3-20261118T022512Z-67f3da6c` 来自 clean commit `539fde371b4a5e6f0be786712f375341ab2fcb36`，dirty=false、verify reproduced，结果哈希 `8c99a7540605b4c3784a47cbee81f3e0e3e03f9b329945ab56a9f196e03f45e4`；完整测试586项通过（174.05s）。单独归档6路径至 archive `50ffd961f017aa576b24e56cd9e8c32deaea2e26`，不归档原件或未授权输入数据。当前 PR 合并和 Actions/中英实页/Tesla/TSLA 搜索仍是独立待核步骤，验证记录 `methodology/records/sec-tsla-site-20261117.yaml`。
+
+### TSLA 部署核验完成与 robots 清理
+
+- TSLA PR #30 merge `a3b3bff8ee591c6b6f12c3455be21574206f1a11`，[Actions 44223350617](https://github.com/werneryang/investment-research-os/actions/runs/44223350617) success。中英文 live study 均 HTTP 200、指向正式 run；实际中文 Tesla/TSLA 与英文 TSLA 搜索及点击季度研究通过，study `earnings_tsla_2026q3` 状态 published。原走查及验证 checkpoint 不改写。
+- AAPL 供应商新补证已独立复核并回传 lead，原走查不改；新记录在任务 ledger 中，未提交待 main 重新放行。
+- 队尾清理：不再生成项目子路径 robots.txt；报告/目录继续 meta noindex，入口 nofollow，不向域名根添加 notes Disallow。部署及 live 文件移除仍待本次 main 推送后的 Actions 核验。

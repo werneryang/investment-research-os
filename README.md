@@ -196,4 +196,4 @@ uv run iros notes check
 
 报告页及公司/日期目录页为中文，设置 `<meta name="robots" content="noindex">`，不会因记住英文语言而重定向到不存在的译页。全部研究、公司页、公司/关键词/报告日期筛选可找到报告（报告入口使用 nofollow），但报告数量与可复现 study 数量分开。构建时逐份重新检查：失败副本不进入页面或目录，其他已放行内容照常发布；失败原稿也不得加入 git 提交。提交前仍须检查完整 diff 并运行 `iros notes check`。
 
-**不主动索引不是保密。** 链接与 GitHub 中的 Markdown 均可公开访问。构建生成 `robots.txt` 的 notes 路径 Disallow；robots 的实际作用取决于主机根入口（GitHub 项目子路径的 robots 文件不等同主机根策略），且禁止抓取也可能使爬虫看不到 noindex。无论两者如何设置，都不能保证搜索引擎绝不列出或阻止他人保存、分享链接。
+**不主动索引不是保密。** 报告与公司/日期目录以页面 `<meta name="robots" content="noindex">` 请求搜索引擎不索引；入口 nofollow 仅为补充，不是访问控制。GitHub 项目子路径的 `robots.txt` 不在域名根，不能作为有效爬虫策略，因此不再生成。不要在域名根为 notes 添加 Disallow，以免阻止爬虫读取页面 noindex。链接与 GitHub 中的 Markdown 仍可公开访问，noindex 不能保证搜索引擎绝不列出，也不能阻止他人保存、分享链接。

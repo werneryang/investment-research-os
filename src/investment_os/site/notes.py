@@ -1,6 +1,5 @@
 """Chinese-only report pages and metadata-only discovery cards; not study runs."""
 from pathlib import Path
-from urllib.parse import urlsplit
 
 from ..notes import load_notes, parser
 from .common import e, shell
@@ -72,9 +71,6 @@ def write_pages(out: Path, notes, build):
         depth = page.count('/')
         body = '<h1>研究报告</h1><ul>' + ''.join(f'<li>{e(n["company"])} · {e(n["date"])} · <a href="{"../"*depth}{e(n["href"])}">{e(n["title"])}</a></li>' for n in rows) + '</ul>'
         write(page, '研究报告', body)
-    slug = urlsplit(build.get('repo_url') or '').path.rstrip('/').rsplit('/',1)[-1]
-    prefix = '' if not slug or slug.endswith('.github.io') else '/' + slug
-    (out/'robots.txt').write_text('User-agent: *\nDisallow: '+prefix+'/notes/\nDisallow: '+prefix+'/en/notes/\n', encoding='utf-8')
 
 
 def company_directory(records):
