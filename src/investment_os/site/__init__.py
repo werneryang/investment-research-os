@@ -46,6 +46,8 @@ from ..registry import Registry
 from .capability import capability_page, summary
 from .collect import collect_runs, datasets, fundamentals_datasets, ordered_studies
 from .common import repo_url
+from .notes import note_catalog, write_pages
+from ..notes import load_notes
 from . import browse, discovery
 from .references import reference_page_part, company_reference_part
 from .entities import build_index
@@ -58,7 +60,7 @@ from .study import redirect, study_page
 __all__ = ["build_site"]
 
 _OUTPUT_MARKER = ".iros-site.json"
-_PROTECTED_DIRS = ("src", "config", "data", "runs", "reports", "site", "tests", "scripts", "docs",
+_PROTECTED_DIRS = ("src", "config", "data", "runs", "reports", "notes", "site", "tests", "scripts", "docs",
                    ".git", ".claude", ".venv")
 
 
@@ -213,9 +215,15 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
 
     company_references = build_index(root, content, definitions)
     discovery_model = discovery.catalog(content, latest, definitions, ds_by_id, any(company_references[k] for k in ('activities', 'mappings', 'relations')), company_references)
+    notes, rejected_notes = load_notes(root)
+    unknown_notes = [n for n in notes if str(n["cik"]) not in company_references["by_cik"]]
+    rejected_notes += [{"path": n["path"], "issues": ["unregistered_subject"]} for n in unknown_notes]
+    notes = [n for n in notes if n not in unknown_notes]
+    discovery_model["notes"] = note_catalog(notes, company_references)
     calendar_checks = _calendar_checks(root, registry)
     cap = summary(content, registry, ds_by_id, latest)
     # 中文页面在根目录，英文页面在 en/；英文页面上没有译文的原文记入 untranslated
+    write_pages(out, notes, build)
     for language in LANGS:
         base = out if language == "zh" else out / language
         base.mkdir(exist_ok=True)
@@ -224,7 +232,7 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
                 page_dir = base / "studies" / study_id
                 page_dir.mkdir(parents=True)
                 (page_dir / "index.html").write_text(
-                    study_page(study_id, shown[study_id], archived, registry, content, build, company_reference_part(latest[study_id]["result"], company_references, discovery_model["studies"])), encoding="utf-8")
+                    study_page(study_id, shown[study_id], archived, registry, content, build, company_reference_part(latest[study_id]["result"], company_references, discovery_model["studies"], discovery_model["notes"])), encoding="utf-8")
             frequency = {k: d["frequency"] for k, d in ds_by_id.items()}
             (base / "index.html").write_text(browse.home_page(content, discovery_model, latest, build), encoding="utf-8")
             (base / "research.html").write_text(discovery.page(content, discovery_model, latest, build, frequency), encoding="utf-8")
@@ -236,7 +244,7 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
             (base / "sources.html").write_text(sources_page(content, registry, ds_by_id, build, reference_page_part(root, company_references, discovery_model["studies"])), encoding="utf-8")
             (base / "methods.html").write_text(
                 methods_page(content, registry, ds_rows, latest, build, calendar_checks), encoding="utf-8")
-            discovery.verify_targets(base, out, [*discovery_model["studies"], *discovery_model["references"]])
+            discovery.verify_targets(base, out, [*discovery_model["studies"], *discovery_model["references"], *discovery_model["notes"]])
     (out / ".nojekyll").write_text("", encoding="utf-8")
 
     doc = {
@@ -244,6 +252,7 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
         "capability": cap,
         "classification": discovery_model,
         "subject_index": company_references,
+        "notes_rejected": rejected_notes,
         # 英文页面上仍显示中文原文的文字（需要在 site/en.yaml 补译文）
         "untranslated": sorted(untranslated),
         "calendar_checks": calendar_checks,

@@ -24,11 +24,15 @@ def reference_page_part(root: Path, index=None, studies=None) -> str:
 </section>'''
 
 
-def company_reference_part(result: dict, index: dict, studies=None) -> str:
+def company_reference_part(result: dict, index: dict, studies=None, notes=None) -> str:
+    from .notes import company_notes
     companies = result.get('results', {}).get('companies', [])
+    if result.get('branch') == 'earnings_quarter':
+        company = result.get('results', {}).get('company', {})
+        return company_notes(index['by_cik'].get(str(company.get('cik'))), notes or [])
     if result.get('branch') != 'company' or len(companies) != 1:
         return ''
     eid = index['by_cik'].get(str(int(companies[0]['cik'])))
     if not eid:
         return ''
-    return relationship_view(index, studies, prefix='../../', initial_entity=eid, embedded=True)
+    return relationship_view(index, studies, prefix='../../', initial_entity=eid, embedded=True) + company_notes(eid, notes or [])

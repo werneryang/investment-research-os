@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from .catalog import study_view
+from .notes import company_directory
 from .common import e, shell
 from .discovery import label
 from .i18n import L, is_en, te, tx
@@ -278,6 +279,7 @@ def object_page(content, model, latest, build, obj, frequency=None):
         sections.append(f'<section class="subject" id="data-plans"><h2>{L("数据与规划", "Data and plans")}</h2><ul>{items}</ul></section>')
 
     jump = ''.join(f'<a class="pill" href="#{e(s)}">{e(label(v["children"][s]))}</a>' for s in shown)
+    notes_part = company_directory(model.get('notes', [])) if obj == 'company' else ''
     quiet_line = f'<p class="small muted">{L("暂无内容：", "Nothing yet: ")}{L("、", ", ").join(quiet)}</p>' if quiet else ''
     others = ' · '.join(f'<a href="../{e(k)}/">{e(label(x["name"]))}</a>' for k, x in tax['objects'].items() if k != obj)
     name = label(v['name'])
@@ -288,5 +290,5 @@ def object_page(content, model, latest, build, obj, frequency=None):
     body = (f'<header class="hero"><div class="wrap"><nav class="crumbs small"><a href="{up}index.html">{L("首页", "Home")}</a> › {e(name)}</nav>'
             f'<h1>{e(name)}</h1><p class="tagline">{intro}</p></div></header><main class="wrap object-page">'
             f'<p class="question-pills">{jump}<a href="{up}research.html?object={e(obj)}">{L("按问题、期间与频率筛选", "Filter by question, period and frequency")} ›</a></p>'
-            f'{quiet_line}{"".join(sections)}<p class="small home-more">{L("其他对象：", "Other objects: ")}{others}</p></main>')
+            f'{quiet_line}{"".join(sections)}{notes_part}<p class="small home-more">{L("其他对象：", "Other objects: ")}{others}</p></main>')
     return shell(f'{name} · Investment Research OS', body, build, page=f'browse/{obj}/', active='index.html')

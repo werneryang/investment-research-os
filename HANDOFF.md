@@ -85,9 +85,18 @@
 - 后续适配：`profile.fcf_deduct_principal: true` 显式启用独立 `cash_ppe_principal`，核对、证据包、季度/近四季计算与中英页面共用 CFO−购置支出−相关本金的定义，详见 `docs/study-earnings.md`。专项测试 70 项、完整测试 486 项通过；独立只读复核确认 Q3 43,777、Q2 21,341（百万美元），并将现有 Alphabet 登记的季度行、现金转换与中英文现金表同旧实现逐项比较，一致；已归档 Alphabet 运行也复现相同结果校验值。
 - 网站仍待办：本次只修代码契约，未新增 NVIDIA 登记、研究配置、运行或页面，也未改写已发布走查记录。下一步从允许使用的同一批 SEC 披露准备登记，逐字段对照、运行/复现、单独归档并验证中英页面与检索后，才可报告 site 已发布。
 
-### NVIDIA site continuation（进行中）
+### NVIDIA site continuation（已上线）
 
 - 已登记 `config/earnings/nvda_fy27q3.yaml` 与 `config/studies/earnings_nvda_fy27q3.yaml`，研究 id `earnings_nvda_fy27q3`。仅直接比较 FY26 Q3、FY27 Q2、FY27 Q3；缺失的分部利润明确列出，不将合并利润伪装为分部。rounded 分部/平台收入保留原精度和出处。
 - 新登记使用 `release.disclosure_form` / `disclosure_date`，不将 8-K 日期写成 10-Q 日期。网页仍需最终干净运行、独立对照、单独归档及部署后中英页面/搜索核验，当前不能报告已发布。原走查记录字节保持不变。
 - 配置及适配验证：493 项完整测试通过（173.38s），财报专项 77 项通过；当前全体登记 check 为 15 文档、255 数值、63 恒等式、25 摘录。此前初轮的主体 id 与研究清单/数量测试失败已修复并完整重跑通过。独立只读复核确认数值和披露元数据，不代表人工审计。
 - 正式本地交付已完成：干净 commit `f0623d4bad69951a999e734d3c30f25e51a7963a` 的 run `earnings_nvda_fy27q3-20261118T004852Z-78b63678`，`dirty=false`、verify reproduced，结果哈希 `8821577900879784564de2b8dc91bc6838ff8354c77e0403ba9af319df588dcd`。85 项走查对照及独立 97 项数值核验零差异；中英当前结果链接指向正式 run。只归档该运行到 archive commit `26243a164e6db748f2f2b9887d5d357a92df624f`，未归档原始文件或未获登记许可的数据集。验证记录见 `methodology/records/sec-nvda-site-20261117.yaml`；最终部署/页面/检索证据随对应 main Actions 回报核对，不以本地构建冒充上线。
+
+- 上线核验完成：main merge `1e42dd8a61190729cc1f34451858c63a40714b3b`，[Actions 44211554003](https://github.com/werneryang/investment-research-os/actions/runs/44211554003) success。中英 NVDA study 实页及 NVDA/NVIDIA 实际搜索均已核对；正式 run 是唯一线上当前结果，原走查字节未改。
+
+## 9. 公开研究报告（notes，实施中）
+
+- 站点从 `notes/companies/` 读取通过导入门槛的可读 Markdown 报告；不复制 results。报告与 study 分开建模/计数，接入公司、关键词及报告日期筛选，中文页 noindex、入口 nofollow，生成 robots 的 notes Disallow；这不是保密或索引移除保证（README 有主机根限制）。
+- 导入先检查真实 reports 路径、公司与日期；仅对已验证公开 record 指针和私有结果 ID 做确定性清洗，拒绝未知路径、邮箱/key、用户专属标记、未核验代码仓库链接、原始 HTML/图片和超阈值引用。构建逐份重检，坏副本不进入页面/目录，但不得将坏源稿提交到公开 git。
+- 已从原 owner 已推送提交固定字节导入 AAPL-20261117-value-chain 与 GOOGL-20261116-q3-26，两份通过公开边界；不取 AAPL 未提交的工作树改动。NVDA-20261117-q3-fy27 暂因作者开头元数据采用长 blockquote 触发 `long_quote_review`，已请 owner 将自写元信息改为普通段落并推送；未断言其为第三方摘录或侵权，不放宽门槛，不影响已上线 NVDA study。
+- 代码完整测试 553 项通过（184.90s），新报告专项 60 项通过；独立边界复核发现的编码/格式化/跨行标记、长引用、标题分隔与未知仓库问题已补回归。正式 PR 与 live 报告页面核验尚未完成，不能把本地构建当上线。

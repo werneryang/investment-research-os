@@ -459,6 +459,19 @@ def cmd_chain(args: argparse.Namespace) -> int:
     return 1 if rep.errors else 0
 
 
+def cmd_notes(args: argparse.Namespace) -> int:
+    from .notes import import_report, load_notes
+    root = _root(args.root)
+    if args.action == "import":
+        if not args.file:
+            raise ValueError("notes import 需要 report 路径")
+        print(json.dumps(import_report(root, Path(args.file)), ensure_ascii=False))
+        return 0
+    notes, rejected = load_notes(root)
+    print(json.dumps({"accepted": len(notes), "rejected": rejected}, ensure_ascii=False))
+    return 2 if rejected else 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="iros", description="个人投资研究框架")
     p.add_argument("--root", help="项目根目录（默认当前目录或 IROS_HOME）")
@@ -526,6 +539,11 @@ def build_parser() -> argparse.ArgumentParser:
     v = sub.add_parser("event", help="事件登记：下载原文、核对摘录、生成并导入事件证据包")
     v.add_argument("action", choices=["fetch", "check", "bundle"])
     v.set_defaults(func=cmd_event)
+
+    n = sub.add_parser("notes", help="研究报告：仅导入 reports，公开边界核对")
+    n.add_argument("action", choices=["import", "check"])
+    n.add_argument("file", nargs="?", help="import：companies/<TICKER>/reports/<report-id>.md")
+    n.set_defaults(func=cmd_notes)
 
     w = sub.add_parser("earnings", help="季度财报登记：下载原文、核对数值与恒等式、生成并导入财报证据包")
     w.add_argument("action", choices=["fetch", "check", "bundle"])

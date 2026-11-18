@@ -34,7 +34,7 @@
     let show=baseMatch&&(!record.routes.length||routes.length>0);
     const text=textOf(record,routes,vocab,en);
     show &&= !query||((!aliases.length||routes.length>0)&&(plain.every(t=>text.includes(t))||text.includes(query)));
-    if(record.kind==='study') {
+    if(record.kind==='study'||record.kind==='note') {
       show &&= !(q.start&&q.end&&q.start>q.end);
       show &&= (!q.result_type||record.result_type===q.result_type)&&(!q.market||record.scope.market===q.market)&&(!q.frequency||record.scope.frequency===q.frequency);
       show &&= (!q.start||endDate(String(record.scope.end||''))>=q.start)&&(!q.end||String(record.scope.start||'9999')<=q.end)&&(!q.cutoff||endDate(String(record.cutoff))>=q.cutoff);
@@ -42,7 +42,7 @@
     return {show,baseMatch,routes};
   }
   function state(counts,query,entities) {
-    if(counts.published)return 'results';
+    if(counts.published||counts.notes)return 'results';
     if(query.entity&&!entities[query.entity])return 'unknown_subject';
     if(counts.missing)return 'unavailable';
     if(counts.references)return 'references';

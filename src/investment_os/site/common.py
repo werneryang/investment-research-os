@@ -18,7 +18,7 @@ USE_LABEL = Labels({
     "descriptive": ("历史描述（使用最新修订数据）", "Historical description (latest revised data)"),
     "point_in_time": ("时点研究（只用当时可获知的数据）", "Point-in-time study (only data knowable at the time)"),
     "scenario": ("情景模拟（假设输入，使用最新修订数据）", "Scenario simulation (assumed inputs, latest revised data)")})
-RESULT_TYPE_LABEL = Labels({"descriptive": ("描述与比较", "Description & comparison"),
+RESULT_TYPE_LABEL = Labels({"research_note": ("研究报告", "Research report"), "descriptive": ("描述与比较", "Description & comparison"),
                             "explanatory": ("解释与归因", "Explanation & attribution"),
                             "forecast": ("预测", "Forecast"), "simulation": ("情景与策略模拟", "Scenario & strategy simulation")})
 # 风险来源分类（架构 §4），研究方向的标签
@@ -159,7 +159,7 @@ def check_chips(result: dict[str, Any], ver: dict[str, Any] | None) -> str:
 
 
 def shell(title: str, body: str, build: dict[str, Any], *, page: str, active: str = "",
-          charts: bool = False, description: str = "") -> str:
+          charts: bool = False, description: str = "", noindex: bool = False, chinese_only: bool = False) -> str:
     """所有页面共用的外壳：导航、语言切换、过期提示、页脚状态。
 
     page 是页面在中文站点中的路径（如 index.html、studies/<id>/），英文页面位于 en/<page>。
@@ -189,6 +189,9 @@ def shell(title: str, body: str, build: dict[str, Any], *, page: str, active: st
     remember = ("" if is_en() else
                 f'<script>try{{if(localStorage.getItem("lang")==="en"&&!/[?&]lang=zh/.test(location.search))'
                 f'location.replace("{en_href}"+location.search+location.hash)}}catch(e){{}}</script>')
+    if chinese_only:
+        switch = alternates = remember = ""
+    robots = '<meta name="robots" content="noindex">' if noindex else ""
     repo = build.get("repo_url")
     wf = f"{repo}/actions/workflows/pages.yml" if repo else None
     badge = (f' <a href="{e(wf)}" title="{L("最近一次自动更新的实时状态", "Live status of the latest automatic update")}">'
@@ -215,6 +218,7 @@ trading or investment advice.</p>""")
 <html lang="{HTML_LANG[lang()]}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{e(title)}</title>
+{robots}
 <meta name="description" content="{e(description or build.get('tagline', ''))}">
 {alternates}
 {remember}

@@ -4,6 +4,7 @@ import json
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
+from .notes import discovery_cards
 from .common import e, shell, RESULT_TYPE_LABEL
 from .i18n import L, is_en, te, tx
 from .catalog import study_view
@@ -113,7 +114,7 @@ def verify_targets(base: Path, shared: Path, records):
             if not route['available']: continue
             href=route['href']; path, _, anchor=href.partition('#')
             file=(shared if route['report'] else base)/path
-            if not route['report'] and not file.suffix: file=file/'index.html'
+            if not file.suffix: file=file/'index.html'
             if not file.is_file(): raise ValueError(f'Missing classification target: {href}')
             if anchor:
                 if file not in pages:
@@ -144,7 +145,7 @@ def browser(content, model, latest, build, frequency=None):
     controls+=select('entity', L('具体公司 / 主体', 'Company / subject'), [(k, tx(v['name'])) for k,v in model.get('entities', {}).items()])
     basic=controls
     controls=''
-    controls+=select('result_type',L('成果类型','Result type'),[(k,RESULT_TYPE_LABEL.get(k,k)) for k in sorted({x['result_type'] for x in model['studies'] if x['result_type']})])
+    controls+=select('result_type',L('成果类型','Result type'),[(k,RESULT_TYPE_LABEL.get(k,k)) for k in sorted({x['result_type'] for x in [*model['studies'], *model.get('notes', [])] if x['result_type']})])
     controls+=select('market',L('市场 / 数据范围','Market / data scope'),[(k,k) for k in sorted({str(x['scope'].get('market','')) for x in model['studies']} - {''})])
     controls+=select('frequency',L('频率','Frequency'),[(k,k) for k in sorted({x['scope'].get('frequency','') for x in model['studies']} - {''})])
     for key,title,typ in [('search',L('搜索标题、问题与范围','Search titles, questions and scope'),'search'),('start',L('期间开始（含重叠）','Period from (overlap)'),'date'),('end',L('期间结束','Period to'),'date'),('cutoff',L('数据截止不早于','Data cutoff since'),'date')]:
@@ -223,9 +224,9 @@ def browser(content, model, latest, build, frequency=None):
 <noscript><p>{L('下方目录可直接展开阅读；启用 JavaScript 后可组合筛选。','The catalog below is readable without JavaScript; enable it for combined filters.')}</p></noscript>
 <p class="subject-reference" hidden></p>
 <section id="research-results"><h2>{L('研究目录','Study catalog')}</h2><p class="query-status" role="status" aria-live="polite"></p><p class="search-terms" role="status" aria-live="polite" hidden></p>
-<p class="reference-filter-note" hidden>{L('成果类型、市场、频率与日期只筛选研究；参照资料与规划仍按对象、问题及关键词列出。','Result type, market, frequency and date filters apply only to studies; references and plans still match the object, question and search.')}</p>
+<p class="reference-filter-note" hidden>{L('成果类型与日期也筛选研究报告（按报告日期）；参照资料与规划仍按对象、问题及关键词列出。','Result type and dates also filter reports by report date; references and plans still match the object, question and search.')}</p>
 <p class="empty-state" hidden>{L('当前无已发布的匹配研究。未登记的对象与问题组合尚未评估；已有数据或规划见下方。','No published studies match. Unregistered object–question combinations have not been assessed; see data and plans below.')}</p>
-{''.join(groups)}</section>
+{''.join(groups)}{discovery_cards(model.get('notes', []))}</section>
 <section id="data-plans"><details class="data-plans"><summary>{L('数据与规划','Data and plans')}</summary><ul class="capability-list">{''.join(caps)}</ul>
 <p class="small muted">{L('信号与预测检验有通用规划，尚未分配到具体对象；不代表所有对象均已规划。','Signal and forecast testing has a general plan, not yet assigned to individual objects.')}</p></details></section>
 <section class="reference-entry"><h2>{L('数据与参照','Data and references')}</h2>
