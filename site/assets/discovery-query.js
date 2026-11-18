@@ -13,7 +13,8 @@
   function textOf(record,routes,vocab,en) {
     const subjects=routes.flatMap(r=>r.entity_ids||[]).flatMap(id=>[vocab.entities[id]?.name,...(vocab.entities[id]?.aliases||[])]).join(' ');
     const title=typeof record.title==='object'?record.title[en?'en':'zh']:record.title||'';
-    return (subjects+' '+title+' '+routes.map(r=>[vocab.objects[r.object].name,vocab.objects[r.object].children[r.subject],vocab.questions[r.question].name,vocab.questions[r.question].children[r.topic],r.scope[en?'en':'zh']].join(' ')).join(' ')).toLowerCase();
+    const reportMeta=record.kind==='note'?[record.company,record.id,record.date].filter(Boolean).join(' '):'';
+    return (subjects+' '+title+' '+reportMeta+' '+routes.map(r=>[vocab.objects[r.object].name,vocab.objects[r.object].children[r.subject],vocab.questions[r.question].name,vocab.questions[r.question].children[r.topic],r.scope[en?'en':'zh']].join(' ')).join(' ')).toLowerCase();
   }
   // Words found in no record are reported, not silently dropped: the caller passes them back as q.ignore.
   function searchTerms(search,records,vocab,en=false) {

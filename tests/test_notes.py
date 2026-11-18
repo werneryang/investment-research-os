@@ -138,8 +138,8 @@ def test_noindex_chinese_only_markdown_tables_safe_links_and_metadata_catalog(pr
 def test_note_query_applies_company_date_and_result_type_without_claiming_a_study():
     script=PROJECT_ROOT/'site/assets/discovery-query.js'
     js='''const Q=require(process.argv[1]);
-const r={kind:'note',title:'Apple report',result_type:'research_note',scope:{start:'2026-11-17',end:'2026-11-17'},cutoff:'2026-11-17',routes:[{object:'company',subject:'issuer',question:'fundamentals',topic:'financials',entity_ids:['apple'],scope:{en:'report',zh:'报告'},available:true}]};
-const v={objects:{company:{name:'Company',children:{issuer:'Issuer'}}},questions:{fundamentals:{name:'Fundamentals',children:{financials:'Financials'}}},entities:{apple:{name:'Apple',aliases:['AAPL']}}};
+const r={kind:'note',company:'AAPL',title:'Apple report',result_type:'research_note',scope:{start:'2026-11-17',end:'2026-11-17'},cutoff:'2026-11-17',routes:[{object:'company',subject:'issuer',question:'fundamentals',topic:'financials',entity_ids:['apple'],scope:{en:'report',zh:'报告'},available:true}]};
+const v={objects:{company:{name:'Company',children:{issuer:'Issuer'}}},questions:{fundamentals:{name:'Fundamentals',children:{financials:'Financials'}}},entities:{apple:{name:'Apple',aliases:[]}}};
 console.log(JSON.stringify([Q.match(r,{entity:'apple',search:'AAPL'},v,true).show,Q.match(r,{entity:'other'},v,true).show,Q.match(r,{start:'2026-11-18'},v,true).show,Q.match(r,{result_type:'descriptive'},v,true).show,Q.state({notes:1}, {},v.entities)]));'''
     got=json.loads(subprocess.check_output(['node','-e',js,str(script)],text=True))
     assert got==[True,False,False,False,'results']
