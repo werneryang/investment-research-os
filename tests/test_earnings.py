@@ -640,3 +640,60 @@ def test_legacy_fcf_default_is_unchanged_and_zero_purchases_do_not_divide_by_zer
     assert rows[-1]["free_cash_flow"] == -900 and cash["trailing"]["free_cash_flow"] == 1400
     table[("cash_flow", p["year_to_date"]["id"])]["cash_ppe"] = 0
     assert cash_conversion(rows, table, doc["issuer_fcf"], p)["year_to_date"]["cfo_to_cash_ppe"] is None
+
+
+def revenue_only_registration():
+    doc = registration()
+    p = doc["profile"]
+    p["segments"] = []
+    p["segment_unavailable"] = _name("未披露分部利润；收入见原精度附注。", "Segment profit unavailable; see revenue notes at original precision.")
+    for k in ("segment_ops", "unallocated", "share"):
+        p.pop(k, None)
+    p["findings"].pop("segment", None)
+    return doc
+
+
+def test_explicit_unavailable_segment_profit_does_not_fabricate_a_segment(earnings_root):
+    from investment_os.site.i18n import use
+    from investment_os.site.renderers import get_renderer
+
+    doc = revenue_only_registration()
+    doc["release"].pop("form_10q_filed")
+    doc["release"].update(disclosure_form="8-K", disclosure_date="2026-10-28")
+    write(earnings_root, doc)
+    assert not er.check(earnings_root).errors
+    r = run(earnings_root)
+    assert "segment_op_delta_yoy" not in r["results"]["comparison"]
+    assert "earnings_segment" not in [x["id"] for x in r["interpretation"]["items"]]
+    zh = get_renderer("earnings_quarter").coverage_section(r)
+    assert "未披露分部利润" in zh
+    with use("en", {}, set()):
+        en = get_renderer("earnings_quarter").coverage_section(r)
+    assert "Segment profit unavailable" in en
+    assert "the 8-K was filed on 2026-10-28" in en
+    from investment_os.reporting.earnings import sections
+    assert "8-K 于 2026-10-28" in sections(r)[0][0]
+
+
+@pytest.mark.parametrize("change", [
+    lambda p: p.pop("segment_unavailable"),
+    lambda p: p.update(segment_unavailable={"zh": "缺英文"}),
+    lambda p: p.update(segment_ops=["Services_op"]),
+    lambda p: p.update(unallocated={"key": "Alphabet_level_op", "label": _name("未分摊", "Unallocated")}),
+    lambda p: p["findings"].update(segment=copy.deepcopy(SHIPPED["profile"]["findings"]["segment"])),
+])
+def test_missing_segment_profit_needs_explicit_bilingual_limit_and_no_profit_claims(earnings_root, change):
+    doc = revenue_only_registration()
+    change(doc["profile"])
+    write(earnings_root, doc)
+    assert er.check(earnings_root).errors
+    with pytest.raises(ValueError, match="核对未通过"):
+        er.build_bundle(earnings_root)
+
+
+def test_generic_disclosure_date_requires_explicit_form(earnings_root):
+    doc = registration()
+    doc["release"].pop("form_10q_filed")
+    doc["release"]["disclosure_date"] = "2026-10-28"
+    write(earnings_root, doc)
+    assert any("disclosure_form" in x for x in er.check(earnings_root).errors)

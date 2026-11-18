@@ -107,6 +107,13 @@ def _bi(x: Any) -> bool:
     return isinstance(x, dict) and set(x) == {"zh", "en"} and bool(x["zh"]) and bool(x["en"])
 
 
+def disclosure_info(release: dict[str, Any]) -> tuple[str, str]:
+    """通用披露表单/日期，保留旧 10-Q 登记读取但不把 8-K 写入 10-Q 字段。"""
+    if release.get("disclosure_date"):
+        return release["disclosure_form"], str(release["disclosure_date"])
+    return release.get("periodic_form", "10-Q"), str(release["form_10q_filed"])
+
+
 def cash_metrics(p: dict[str, Any]) -> tuple[str, ...]:
     """本金只在显式启用后进入核对、证据包与计算，不混入 cash_ppe。"""
     return CASH_METRICS + (("cash_ppe_principal",) if p.get("fcf_deduct_principal") is True else ())
@@ -131,6 +138,11 @@ def profile_errors(reg: dict[str, Any]) -> list[str]:
     if not isinstance(p, dict):
         return ["缺少 profile（见 docs/study-earnings.md）"]
     errs: list[str] = []
+    release = reg.get("release") or {}
+    if release.get("disclosure_date") and not release.get("disclosure_form"):
+        errs.append("release.disclosure_date 需要明确的 disclosure_form")
+    if not release.get("disclosure_date") and not release.get("form_10q_filed"):
+        errs.append("release 缺少 disclosure_date（旧登记可用 form_10q_filed）")
     mets = list(p.get("income_metrics") or [])
     miss = [m for m in CORE_INCOME if m not in mets]
     if miss:
@@ -218,7 +230,10 @@ def profile_errors(reg: dict[str, Any]) -> list[str]:
             if sr.get("key") not in keys or not _bi(sr.get("label")):
                 errs.append(f"profile.charts 的序列 {sr.get('key')} 需要可显示的 key 与中英文 label")
     if not p.get("segments"):
-        errs.append("profile.segments 不能为空（单一分部的公司也列出它）")
+        if not _bi(p.get("segment_unavailable")):
+            errs.append("profile.segments 不能为空；未披露分部利润时须写中英文 segment_unavailable")
+        if p.get("segment_ops") or p.get("unallocated") or p.get("share") or (p.get("findings") or {}).get("segment"):
+            errs.append("没有分部利润时不能登记分部分解、分部利润发现或未分摊行")
     for sg in p.get("segments") or []:
         if not sg.get("name") or any(sg.get(k) not in keys for k in ("revenue", "op", "margin")):
             errs.append(f"profile.segments {sg.get('name')} 需要 name、revenue、op、margin（行键）")

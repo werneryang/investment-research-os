@@ -1,0 +1,28 @@
+study_id: earnings_nvda_fy27q3
+title: NVIDIA：2027 财年第三季度财报研究
+question: NVIDIA FY27 Q3 的报告收入、利润率、现金流与发行人自由现金流相对上季和去年同期如何变化？哪些分部与市场平台披露可以比较，哪些数据不足？
+result_type: descriptive
+branch: earnings_quarter
+scope:
+  market: US
+  currency: USD
+  start: '2025-07-28'
+  end: '2026-10-25'
+  frequency: quarterly
+  vintage_policy: latest
+data:
+  evidence: earnings_evidence
+method:
+  earnings: nvda_fy27q3
+benchmark: 仅使用登记的 SEC 8-K furnished HTML 附件；不引入电话会、行情或估值输入
+evaluation:
+- 固定原文字节哈希、原文数值存在性、会计恒等式与 issuer FCF 勾稽
+- 与公开走查逐字段对照及独立数值复核
+- 固定证据包版本 iros verify 复现
+limitations:
+- 仅三期直接比较（FY26 Q3、FY27 Q2、FY27 Q3），不是连续三季或独立五季验证
+- 8-K 附件 furnished、未经审计，未将 Q3 10-Q 当作已申报
+- 分部与市场平台收入仅披露一位小数十亿美元，未披露分部营业利润，不计算分部利润率
+- FCF 同时扣购置支出与相关本金，不是可分配或持续性 owner cash
+- 本网页不含电话会、股价反应、估值或个人判断；Q4 指引为未实现的未来展望
+- 原文数值存在性不证明行列来源正确；模型独立核对不是人工审计

@@ -18,6 +18,7 @@ study_order:
 - chip_relation_chain_intc
 - event_nvda_ceo_transition_2026
 - earnings_googl_2026q3
+- earnings_nvda_fy27q3
 collections:
   company_filings:
     name: 公司年度财报
@@ -911,6 +912,32 @@ studies:
         zh: NVIDIA 首席执行官离任：申报原文写明的事实、披露时间与原文未提及的事项
         en: 'NVIDIA chief executive resignation: facts stated in filings, filing times and items the filings do not mention'
       primary: true
+    entity_ids:
+    - co_nvidia
+  earnings_nvda_fy27q3:
+    label: 季度财报研究
+    home_group: 公司季度财报
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: earnings-quarterly
+      scope:
+        zh: NVIDIA FY27 Q3 对上季与同比：合并财务、现金与单独列示本金的发行人 FCF
+        en: 'NVIDIA FY27 Q3 versus prior quarter and prior year: consolidated financials,
+          cash and issuer FCF with separate principal payments'
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: earnings-comparability
+      scope:
+        zh: NVIDIA 的 furnished 8-K、rounded 分部/市场平台、非 GAAP 定义与未来指引限制
+        en: NVIDIA furnished 8-K, rounded segments/platforms, non-GAAP definitions and
+          forward-outlook limits
+      primary: false
     entity_ids:
     - co_nvidia
   earnings_googl_2026q3:
