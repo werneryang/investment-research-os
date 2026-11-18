@@ -36,7 +36,7 @@ def load_interpretation(result: dict[str, Any]) -> dict[str, Any] | None:
     """
     stored = result.get("interpretation")
     branch = result.get("branch", "")
-    current = rule_fingerprint(branch)
+    current = rule_fingerprint(branch, result)
     if stored:
         changed = current is not None and (stored.get("rule_fingerprint") != current
                                            or stored.get("params") != rule_params(branch))

@@ -94,7 +94,7 @@
 
 - 上线核验完成：main merge `1e42dd8a61190729cc1f34451858c63a40714b3b`，[Actions 44211554003](https://github.com/werneryang/investment-research-os/actions/runs/44211554003) success。中英 NVDA study 实页及 NVDA/NVIDIA 实际搜索均已核对；正式 run 是唯一线上当前结果，原走查字节未改。
 
-## 9. 公开研究报告（notes，实施中）
+## 9. 公开研究报告（notes，已上线）
 
 - 站点从 `notes/companies/` 读取通过导入门槛的可读 Markdown 报告；不复制 results。报告与 study 分开建模/计数，接入公司、关键词及报告日期筛选，中文页 noindex、入口 nofollow，生成 robots 的 notes Disallow；这不是保密或索引移除保证（README 有主机根限制）。
 - 导入先检查真实 reports 路径、公司与日期；仅对已验证公开 record 指针和私有结果 ID 做确定性清洗，拒绝未知路径、邮箱/key、用户专属标记、未核验代码仓库链接、原始 HTML/图片和超阈值引用。构建逐份重检，坏副本不进入页面/目录，但不得将坏源稿提交到公开 git。
@@ -102,3 +102,11 @@
 - 代码完整测试 553 项通过（184.90s），新报告专项 60 项通过；独立边界复核发现的编码/格式化/跨行标记、长引用、标题分隔与未知仓库问题已补回归。正式 PR 与 live 报告页面核验尚未完成，不能把本地构建当上线。
 - 三份副本现均已通过：AAPL、GOOGL 来自此前已推送版本；NVDA 使用 owner 后续已推送的元信息排版修正版。复制时只读固定 Git blob，不改私有仓库或任何原 NVDA 记录。正式部署后须逐页检查 noindex、目录与实际公司/日期查询，再报告上线。
 - 合并前最终复核：三份复制正文全部通过独立边界及隔离渲染核验；加入报告 ticker/id/date 元数据搜索后，553 项完整测试再次通过（171.66s），报告/导航专项 83 项通过。待本 PR 部署及逐页 live/noindex/查询核验，部署完成信息随回报记录。
+
+- notes 上线完成：PR #29 merge `5ce1627f6f3a3aff7eb6d801541acbb7e53d4210`，[Actions 44218144615](https://github.com/werneryang/investment-research-os/actions/runs/44218144615) success。三份报告、公司/日期目录 noindex 及实际 ticker/公司/日期查询已核验。项目 robots 不等于域名根策略，移除无效文件/文档澄清已另排在 TSLA 与 AAPL 补证之后；不向域名根新增 Disallow。
+
+## 10. TSLA 2026 Q3 site backfill（进行中）
+
+- 使用已发布 `methodology/records/sec-tsla-earnings-20261116.yaml` 同批 SEC HTML，不改该记录（SHA256 `a7ff27c03a131763d215d39cf05ad7048766238e75c338a077499956815647f0`）。原结果与走查已完成；本项仅补季度研究。
+- 已识别适配点：单季 CFO/现金 PPE 由累计期间相减；现有现金流入口只支持直接数值存在性，必须保留累计输入/减算式与源日期，不能拿派生值冒称原表直接披露。Tesla 正式分部以毛利润披露，不可套成分部营业利润或 EBIT。先核同批原件，再作必要代码/契约 PR。
+- 适配与准备核验：累计现金流双来源/期间校验、分部毛利润标签和显式机械现金差额均已实现；独立源表230项及配置/preview454项零差异，父走查对照193项一致。原四份文件无发行人 FCF 定义，不冒用该标签；旧 GOOGL/NVDA 正式固定输入仍可复现原结果。正式 clean run、归档与部署尚待最终核验。

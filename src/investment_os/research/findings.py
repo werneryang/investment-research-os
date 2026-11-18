@@ -606,6 +606,8 @@ RULE_VERSIONS = {"rates_curve": "rates_curve-findings.v2", "par_bond_scenarios":
 
 def findings(result: dict[str, Any]) -> list[dict[str, Any]]:
     """按研究分支选择规则；没有规则的分支返回空列表（页面显示「暂无规则化发现」）。"""
+    if _mechanical_cash(result):
+        return mechanical_cash_findings(result)
     finder = _FINDERS.get(result.get("branch", ""))
     return finder(result) if finder else []
 
@@ -642,8 +644,34 @@ def state_changes(previous: dict[str, str], current: dict[str, str]) -> list[dic
             for k, v in current.items() if k in previous and previous[k] != v]
 
 
-def rule_fingerprint(branch: str) -> str | None:
+def _mechanical_cash(result: dict[str, Any]) -> bool:
+    return (result.get("branch") == "earnings_quarter"
+            and result.get("results", {}).get("profile", {}).get("fcf_caliber") == "mechanical")
+
+
+def mechanical_cash_findings(result: dict[str, Any]) -> list[dict[str, Any]]:
+    """Separate opt-in rules; legacy issuer-defined rules retain their fingerprint."""
+    items = earnings_quarter_findings(result)
+    r, cur, prior, comp = _eq_latest(result)
+    for item in items:
+        if item["id"] == "earnings_cash":
+            item["text"] = (f"经营活动现金流 {cur['cfo'] / 1e3:,.2f} 十亿美元，现金 PPE 净支出 {cur['cash_ppe'] / 1e3:,.2f} 十亿美元；"
+                            f"两者机械差额 {cur['free_cash_flow'] / 1e3:+,.2f} 十亿美元，不是已核实的发行人 FCF 或可分配现金。")
+    return items
+
+
+def mechanical_cash_state(result: dict[str, Any]) -> dict[str, str]:
+    state = earnings_quarter_state(result)
+    state["现金机械差额符号"] = state.pop("自由现金流符号")
+    return state
+
+
+def rule_fingerprint(branch: str, result: dict[str, Any] | None = None) -> str | None:
     """规则代码（发现、状态、措辞与覆盖说明）的校验值；只要规则代码变化，指纹就变化。"""
+    if result is not None and _mechanical_cash(result):
+        parts = (earnings_quarter_findings, earnings_quarter_state, _eq_latest,
+                 _mechanical_cash, mechanical_cash_findings, mechanical_cash_state)
+        return hashlib.sha256("".join(inspect.getsource(f) for f in parts).encode()).hexdigest()[:16]
     finder = _FINDERS.get(branch)
     if finder is None:
         return None
@@ -681,10 +709,11 @@ def interpret(result: dict[str, Any]) -> dict[str, Any] | None:
     branch = result.get("branch", "")
     if branch not in _FINDERS:
         return None
+    mechanical = _mechanical_cash(result)
     return {
-        "rule_version": RULE_VERSIONS[branch],
-        "rule_fingerprint": rule_fingerprint(branch),
+        "rule_version": "earnings_quarter-mechanical-cash.v1" if mechanical else RULE_VERSIONS[branch],
+        "rule_fingerprint": rule_fingerprint(branch, result),
         "params": rule_params(branch),
-        "items": findings(result),
-        "state": _STATES.get(branch, state)(result),
+        "items": mechanical_cash_findings(result) if mechanical else findings(result),
+        "state": mechanical_cash_state(result) if mechanical else _STATES.get(branch, state)(result),
     }

@@ -169,7 +169,7 @@ def test_site_integration_lists_notes_without_study_run_or_bad_note_leak(project
     assert ID in (out/'browse/company/index.html').read_text()
     assert not (out/'notes/companies/AAPL/2026-11-18/AAPL-20261118-value-chain/index.html').exists()
     assert '你的判断' not in (out/'research.html').read_text()
-    assert model['runs']==[] and len(model['classification']['studies'])==35
+    assert model['runs']==[] and len(model['classification']['studies'])==36
     records=model['classification']['notes']
     index={'by_cik':{'320193':'cik_320193'}}
     section=company_reference_part({'branch':'earnings_quarter','results':{'company':{'cik':320193}}},index,[],records)

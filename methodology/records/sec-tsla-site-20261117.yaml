@@ -1,0 +1,183 @@
+id: sec-tsla-site-20261117
+task_id: R-20261116-tsla-earnings
+record_type: quarterly-site-backfill-verification
+status: local QA; clean run and deployment pending
+as_of: '2026-11-16'
+original_walkthrough:
+  path: methodology/records/sec-tsla-earnings-20261116.yaml
+  sha256: a7ff27c03a131763d215d39cf05ad7048766238e75c338a077499956815647f0
+  unchanged: true
+source_scope:
+  allowed: Same SEC Q3/Q2/Q1 2026 10-Q and FY2025 10-K HTML; no shareholder PDF, deck, audio or call transcript
+    obtained
+  latest_fiscal_period: 2026 Q3 ended 2026-09-30
+  ir_release_date: '2026-10-21'
+  filing_date: '2026-10-22'
+  original_publication_cutoff: '2026-11-16T17:55:00-05:00'
+  technical_retrieval: Later retrieval of original accessions, not subsequent amendments
+sources:
+- form: 10-Q
+  reportDate: '2026-09-30'
+  filingDate: '2026-10-22'
+  acceptanceDateTime: '2026-10-22T00:12:41.000Z'
+  accessionNumber: 0001628280-26-066775
+  primaryDocument: tsla-20260930.htm
+  id: tsla-20260930
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm
+  file: tsla-tsla-20260930.htm
+  sha256: e037800784513ee9661f438d365e3b01b908ed1d892c4ca27ed43a18a678e60f
+  size_bytes: 1605254
+  retrieved_at: '2026-11-18T02:10:33.873788+00:00'
+- form: 10-Q
+  reportDate: '2026-06-30'
+  filingDate: '2026-07-23'
+  acceptanceDateTime: '2026-07-23T01:02:31.000Z'
+  accessionNumber: 0001628280-26-049270
+  primaryDocument: tsla-20260630.htm
+  id: tsla-20260630
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm
+  file: tsla-tsla-20260630.htm
+  sha256: d73ba014ab80bb4e7b180ed03f9d8466465fd90bb783306ebea031b466399dac
+  size_bytes: 1573438
+  retrieved_at: '2026-11-18T02:10:34.184343+00:00'
+- form: 10-Q
+  reportDate: '2026-03-31'
+  filingDate: '2026-04-23'
+  acceptanceDateTime: '2026-04-23T01:43:00.000Z'
+  accessionNumber: 0001628280-26-026673
+  primaryDocument: tsla-20260331.htm
+  id: tsla-20260331
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026026673/tsla-20260331.htm
+  file: tsla-tsla-20260331.htm
+  sha256: 8feb8360434320e3d86a4c7028701fab77db791dcf7e548fb968f070ecb1d1a8
+  size_bytes: 1240874
+  retrieved_at: '2026-11-18T02:10:34.439188+00:00'
+- form: 10-K
+  reportDate: '2025-12-31'
+  filingDate: '2026-01-29'
+  acceptanceDateTime: '2026-01-29T01:55:03.000Z'
+  accessionNumber: 0001628280-26-003952
+  primaryDocument: tsla-20251231.htm
+  id: tsla-20251231
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm
+  file: tsla-tsla-20251231.htm
+  sha256: 442a79e7a2099ddb16af0bdb92a78873cbdcd683613875724e17115f012cbce5
+  size_bytes: 2391644
+  retrieved_at: '2026-11-18T02:10:34.783361+00:00'
+artifacts:
+  earnings: config/earnings/tsla_2026q3.yaml
+  study: config/studies/earnings_tsla_2026q3.yaml
+  study_id: earnings_tsla_2026q3
+units: USD million; ratios percent unless labelled times
+key_values:
+  Q3_2026:
+    revenue: 28046
+    operating_income: 718
+    consolidated_NI: 804
+    common_stockholder_NI: 787
+    auto_product_revenue: 20560
+    services_revenue: 4605
+    auto_reportable_segment_revenue: 25165
+    auto_segment_gross_profit: 4540
+    energy_revenue: 2881
+    energy_gross_profit: 954
+    CFO: 6263
+    cash_PPE: 4732
+    mechanical_difference: 1531
+  quarter_cash:
+    Q3_2025:
+    - 6238
+    - 2248
+    - 3990
+    Q4_2025:
+    - 3813
+    - 2393
+    - 1420
+    Q1_2026:
+    - 3937
+    - 2493
+    - 1444
+    Q2_2026:
+    - 4697
+    - 5789
+    - -1092
+    Q3_2026:
+    - 6263
+    - 4732
+    - 1531
+calibers:
+  income: Q4 2025 derived annual less nine-month comparative; four other quarters directly reported
+  cash: Q3=9M−6M; Q2=6M−3M; Q4=FY−9M. Both original source references and cumulative inputs retained. Q1 directly
+    reported. Outflows shown positive; net PPE excludes finance leases and is net of sales.
+  segments: Automotive includes Services and other. Profit is gross profit, never segment EBIT. Product lines and
+    reportable segments are separate.
+  cash_difference: No free cash flow phrase/definition found in four source filings. Mechanical CFO−cash PPE, not
+    issuer-defined FCF, owner cash or sustainable distributable cash.
+  guidance: Current in-excess-of USD20bn annual 2026 capex floor retained in source note; year incomplete. Not forced
+    into point/range model.
+  balance: Total equity includes stockholders plus noncontrolling interests; excludes redeemable NCI. Long-term
+    debt includes finance leases but excludes current portion.
+verification:
+  registration_check:
+    documents: 19
+    values: 466
+    identities: 140
+    excerpts: 26
+    errors: 0
+    scope: All three registered earnings configurations, not TSLA-only counts
+  parent_walkthrough_comparison:
+    checks: 193
+    differences: 0
+    tolerance: 1.0e-09
+  independent_source_review:
+    checks: 230
+    differences: 0
+    scope: 90 core statement inputs,110 cumulative/quarter cash inputs and arithmetic,30 reportable segment fields;
+      source row and column extraction independent of configuration builder
+  contract_review: Independent adversarial review found and fixed period endpoint drift; invalid quarter/YTD mismatch
+    now rejected. Mechanical findings and dual-source provenance checked. Model review, not human audit.
+  legacy_reproduction:
+    nvda_result_hash: 8821577900879784564de2b8dc91bc6838ff8354c77e0403ba9af319df588dcd
+    googl_result_hash_prefix: b68d759e10fcd3f2
+    reproduced: true
+  public_boundary: 'PASS: complete owned paths scanned and reviewed; no local absolute paths, email, key, private
+    repository link, method bodies, personal holdings or user judgments. Original financial record SHA unchanged.'
+  independent_site_preview_review:
+    checks: 454
+    differences: 0
+    scope: Config and preview income162+135; GP/margins30; income derivation flags5; direct cash14; run cash15;
+      cash flags5/source pairs4; balance24+28; doc metadata20; income periods12; special notes also source-checked
+    nonblocking_naming_fix: Unused auto_product_margin share ratio renamed auto_product_mix before final configuration
+  initial_full_suite:
+    passed: 585
+    failed: 1
+    seconds: 174.5
+    failure: notes integration study-count assertion still35 after adding36th study; expected inventory updated,
+      no numerical or computation failure
+  local_bilingual_page: PASS; current material values and actual gross-profit/mechanical cash labels verified. English
+    CJK limited to language switch.
+  full_tests:
+    passed: 586
+    failed: 0
+    seconds: 174.05
+site:
+  status: pending
+  reason: Formal clean run, isolated archive, PR merge, Actions and live CN/EN/search remain required
+limitations:
+- Number-existence check alone does not identify correct row/column; independent source extraction supplements it.
+- No full normalization, call/Q&A, market reaction, valuation, implied expectations or investment conclusion.
+- Originals remain local and are not publicly redistributed; archive-data policy unchanged.
+reproduction:
+  commands:
+  - iros earnings fetch
+  - iros earnings check
+  - iros earnings bundle
+  - iros run config/studies/earnings_tsla_2026q3.yaml
+  - iros verify <run_id>
+  formulas:
+    cash_quarter: Cumulative total minus prior cumulative period, field by field; positive net PPE outflow
+    gross_margin_percent: 100*(revenue−cost_of_revenues)/revenue
+    operating_margin_percent: 100*op_income/revenue
+    segment_GP_margin_percent: 100*reported_segment_gross_profit/reported_segment_revenue
+    growth_percent: 100*(current/base−1), only positive base
+    mechanical_cash_difference: CFO−cash PPE net purchases excluding finance leases

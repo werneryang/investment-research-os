@@ -1,7 +1,7 @@
 """Quarterly earnings pages: the quarters, comparability notes, outlooks against actuals, and what is not covered.
 
 Every company-specific row, label, chart and sentence comes from the registration profile carried in the result (results.profile)."""
-from ..earnings import disclosure_info
+from ..earnings import cash_flow_label, disclosure_info
 from .common import e, stat
 from .company import table
 from .i18n import L, is_en
@@ -151,9 +151,14 @@ def _segment_table(res):
     lines, names = [], {}
     for sg in p['segments']:
         name = tl(sg['name'])
-        names[sg['op']] = name
-        lines.append([e(name + L(' 营业利润', ' operating income')), *[bn(r[sg['op']]) for r in rows]])
-        lines.append([e(name + L(' 利润率', ' margin')), *[pct(r[sg['margin']], sg.get('digits', 1)) for r in rows]])
+        profit = sg.get('profit', sg.get('op'))
+        names[profit] = name
+        if 'profit' in sg:
+            lines.append([e(name + L(' 收入', ' revenue')), *[bn(r[sg['revenue']]) for r in rows]])
+        profit_label = tl(sg['profit_label']) if 'profit' in sg else L('营业利润', 'operating income')
+        margin_label = tl(sg['margin_label']) if 'profit' in sg else L('利润率', 'margin')
+        lines.append([e(name + ' ' + profit_label), *[bn(r[profit]) for r in rows]])
+        lines.append([e(name + ' ' + margin_label), *[pct(r[sg['margin']], sg.get('digits', 1)) for r in rows]])
     if p.get('unallocated'):
         names[p['unallocated']['key']] = tl(p['unallocated'].get('short') or p['unallocated']['label'])
         lines.append([e(tl(p['unallocated']['label'])), *[bn(r[p['unallocated']['key']]) for r in rows]])
@@ -176,11 +181,11 @@ def _times(v):
 def _cash_table(res):
     rows = res['quarters']
     p = _prof(res)
-    heads = [L('指标', 'Metric')] + [r['label'] + ('*' if r['derived'] else '') for r in rows]
+    heads = [L('指标', 'Metric')] + [r['label'] + ('*' if (r.get('cash_derived') if res.get('cash_derivations') else r['derived']) else '') for r in rows]
     cash = res['cash']
     lines = [[e(L('经营活动现金流', 'Operating cash flow')), *[bn(r['cfo']) for r in rows]],
-             [e(tl(p['metrics']['cash_ppe']) if p.get('fcf_deduct_principal') is True else L('现金资本开支（购置固定资产）', 'Cash capital expenditure (purchases of property and equipment)')), *[bn(r['cash_ppe']) for r in rows]],
-             [e(L('自由现金流（发行人定义）', 'Free cash flow (issuer definition)')), *[bn(r['free_cash_flow']) for r in rows]],
+             [e(tl(p['metrics']['cash_ppe']) if p.get('fcf_deduct_principal') is True or p.get('fcf_caliber') == 'mechanical' else L('现金资本开支（购置固定资产）', 'Cash capital expenditure (purchases of property and equipment)')), *[bn(r['cash_ppe']) for r in rows]],
+             [e(tl(cash_flow_label(p))), *[bn(r['free_cash_flow']) for r in rows]],
              [e(L('现金资本开支 / 收入', 'Cash capex / revenue')), *[pct(r['capex_to_sales']) for r in rows]],
              [e(L('经营现金流 / 合并净利润', 'Operating cash flow / consolidated net income')), *[_times(r['cfo_to_consolidated_ni']) for r in rows]]]
     if p.get('fcf_deduct_principal') is True:
@@ -198,11 +203,17 @@ def _cash_table(res):
             zh += f'{tl(p["metrics"]["cash_ppe_principal"])} {bn(ytd["cash_ppe_principal"])} 十亿美元（另列，不含在购置支出中）。'
             en += f'{tl(p["metrics"]["cash_ppe_principal"])} USD {bn(ytd["cash_ppe_principal"])} bn (separate from purchases). '
     if ttm:
-        zh += f'近四个季度自由现金流 {bn(ttm["free_cash_flow"])} 十亿美元。'
-        en += f'Free cash flow over the last four quarters: USD {bn(ttm["free_cash_flow"])} bn.'
+        label = cash_flow_label(p, qualified=False)
+        zh += f'近四个季度{label["zh"]} {bn(ttm["free_cash_flow"])} 十亿美元。'
+        en += f'{label["en"]} over the last four quarters: USD {bn(ttm["free_cash_flow"])} bn.'
     if zh:
         html += '<p>' + L(zh, en.strip()) + '</p>'
     html += '<p class="small muted">' + _lang(cash['caliber']) + '</p>'
+    for row in rows:
+        d = row.get('cash_derivation')
+        if d:
+            sources = '; '.join(f"{x['period']} [{x['document']}, {x['accession']}]" for x in d['sources'])
+            html += '<p class="small muted">* ' + e(row['label'] + ': ' + tl(d['note']) + ' (' + d['expression'] + '; ' + sources + ')') + '</p>'
     bal = res['balance']
     heads2 = [L('资产负债表时点', 'Balance sheet date'), L('现金与有价证券', 'Cash and marketable securities'), L('长期债务', 'Long-term debt'),
               L('固定资产净额', 'Net property and equipment'), L('总资产', 'Total assets'), L('总权益', 'Total equity')]
@@ -355,7 +366,7 @@ def _stats(r):
     yoy = res['comparison']['yoy']
     return ('<div class="stats">' + stat(L(f'{cur["label"]} 收入（十亿美元）', f'{_qname(res, p["current"])} revenue (USD bn)'), bn(cur['revenue']), L(f'同比 {pct(yoy["pct"]["revenue"], signed=True)}（报告口径）', f'{pct(yoy["pct"]["revenue"], signed=True)} YoY (reported)'))
             + stat(L('营业利润率', 'Operating margin'), pct(cur['op_margin']), L(f'较去年同期 {pp(yoy["margin_pp"]["op_margin"])}', f'{pp(yoy["margin_pp"]["op_margin"])} YoY'))
-            + stat(L('自由现金流（十亿美元）', 'Free cash flow (USD bn)'), bn(cur['free_cash_flow']), L('发行人定义', 'issuer definition'))
+            + stat(tl(cash_flow_label(p, qualified=False)) + L('（十亿美元）', ' (USD bn)'), bn(cur['free_cash_flow']), L('算术差额，非发行人定义', 'arithmetic difference, not issuer definition') if p.get('fcf_caliber') == 'mechanical' else L('发行人定义', 'issuer definition'))
             + stat(L('未覆盖项', 'Not covered'), str(res['summary']['coverage']['data_gap'] + res['summary']['coverage']['judgment']),
                    L('数据不足或需人工判断', 'data gap or needs judgement')) + '</div>')
 
@@ -366,8 +377,9 @@ def _summary(r):
         return None
     cur = _quarter(res, _prof(res)['current'])
     yoy = res['comparison']['yoy']
-    return L(f"{cur['label']} 收入 {bn(cur['revenue'])} 十亿美元（同比 {pct(yoy['pct']['revenue'], signed=True)}，报告口径），营业利润率 {pct(cur['op_margin'])}，自由现金流 {bn(cur['free_cash_flow'])} 十亿美元",
-             f"{cur['label']} revenue USD {bn(cur['revenue'])} bn ({pct(yoy['pct']['revenue'], signed=True)} YoY, reported), operating margin {pct(cur['op_margin'])}, free cash flow USD {bn(cur['free_cash_flow'])} bn")
+    cash_label = cash_flow_label(_prof(res), qualified=False)
+    return L(f"{cur['label']} 收入 {bn(cur['revenue'])} 十亿美元（同比 {pct(yoy['pct']['revenue'], signed=True)}，报告口径），营业利润率 {pct(cur['op_margin'])}，{cash_label['zh']} {bn(cur['free_cash_flow'])} 十亿美元",
+             f"{cur['label']} revenue USD {bn(cur['revenue'])} bn ({pct(yoy['pct']['revenue'], signed=True)} YoY, reported), operating margin {pct(cur['op_margin'])}, {cash_label['en'].lower()} USD {bn(cur['free_cash_flow'])} bn")
 
 
 def _method_items(r):

@@ -46,7 +46,7 @@ STATE_EN = {
     "全部低估价格": "understates price in every case", "方向不一致": "mixed direction",
     "个百分点": "pp",
     # 季度财报研究的状态
-    "最新季度": "Latest quarter", "自由现金流符号": "Sign of free cash flow", "非经营项目损益方向": "Direction of the non-operating item result",
+    "最新季度": "Latest quarter", "自由现金流符号": "Sign of free cash flow", "现金机械差额符号": "Sign of mechanical cash difference", "非经营项目损益方向": "Direction of the non-operating item result",
     "覆盖项": "Coverage items", "为负": "negative", "为正": "positive", "净损失": "net loss", "净收益": "net gain",
     "已完成": "done", "数据不足": "data gap", "需判断": "needs judgement",
     # 旧规则版本记录的覆盖标签
@@ -300,5 +300,12 @@ def english_findings(result: dict[str, Any], recorded: list[dict[str, Any]]) -> 
     """记录中的发现换成英文措辞；返回的每条带 translated 标记。"""
     maker = _EN.get(result.get("branch", ""))
     texts = maker(result) if maker else {}
+    if (result.get("branch") == "earnings_quarter"
+            and result.get("results", {}).get("profile", {}).get("fcf_caliber") == "mechanical"):
+        r = result["results"]
+        cur = next(q for q in r["quarters"] if q["period"] == r["profile"]["current"])
+        texts["earnings_cash"] = (f"Operating cash flow was USD {cur['cfo'] / 1e3:,.2f} billion and net cash PPE expenditure "
+                                  f"USD {cur['cash_ppe'] / 1e3:,.2f} billion. Their mechanical difference was "
+                                  f"USD {cur['free_cash_flow'] / 1e3:+,.2f} billion; this is not verified issuer FCF or distributable cash.")
     return [{**f, "text": texts.get(f["id"], f["text"]), "translated": f["id"] in texts} for f in recorded]
 

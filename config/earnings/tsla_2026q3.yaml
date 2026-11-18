@@ -1,0 +1,823 @@
+schema_version: earnings.v1
+earnings_id: tsla_2026q3
+entity: cik_1318605
+company:
+  zh: Tesla（特斯拉）
+  en: Tesla
+cik: 1318605
+tickers:
+- TSLA
+latest_period:
+  label: 2026 Q3
+  start: '2026-07-01'
+  end: '2026-09-30'
+as_of: '2026-11-16'
+unit: USD million
+release:
+  ir_date: '2026-10-21'
+  ir_url: https://ir.tesla.com/press-release/tesla-releases-third-quarter-2026-financial-results
+  disclosure_form: 10-Q
+  disclosure_date: '2026-10-22'
+related_studies:
+- study: company_tesla
+  label:
+    zh: Tesla 年度财报研究
+    en: Tesla annual financial study
+documents:
+- id: q3
+  form: 10-Q
+  period_end: '2026-09-30'
+  accession: 0001628280-26-066775
+  accepted_at: '2026-10-22T00:12:41.000Z'
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026066775/tsla-20260930.htm
+  file: tsla-tsla-20260930.htm
+  sha256: e037800784513ee9661f438d365e3b01b908ed1d892c4ca27ed43a18a678e60f
+  retrieved_at: '2026-11-18T02:10:33.873788+00:00'
+  size_bytes: 1605254
+  retrieval_representation: SEC DOCUMENT wrapper containing HTML; hash pins retrieved bytes, not the earlier record
+    response
+- id: q2
+  form: 10-Q
+  period_end: '2026-06-30'
+  accession: 0001628280-26-049270
+  accepted_at: '2026-07-23T01:02:31.000Z'
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026049270/tsla-20260630.htm
+  file: tsla-tsla-20260630.htm
+  sha256: d73ba014ab80bb4e7b180ed03f9d8466465fd90bb783306ebea031b466399dac
+  retrieved_at: '2026-11-18T02:10:34.184343+00:00'
+  size_bytes: 1573438
+  retrieval_representation: SEC DOCUMENT wrapper containing HTML; hash pins retrieved bytes, not the earlier record
+    response
+- id: q1
+  form: 10-Q
+  period_end: '2026-03-31'
+  accession: 0001628280-26-026673
+  accepted_at: '2026-04-23T01:43:00.000Z'
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026026673/tsla-20260331.htm
+  file: tsla-tsla-20260331.htm
+  sha256: 8feb8360434320e3d86a4c7028701fab77db791dcf7e548fb968f070ecb1d1a8
+  retrieved_at: '2026-11-18T02:10:34.439188+00:00'
+  size_bytes: 1240874
+  retrieval_representation: SEC DOCUMENT wrapper containing HTML; hash pins retrieved bytes, not the earlier record
+    response
+- id: fy25
+  form: 10-K
+  period_end: '2025-12-31'
+  accession: 0001628280-26-003952
+  accepted_at: '2026-01-29T01:55:03.000Z'
+  url: https://www.sec.gov/Archives/edgar/data/1318605/000162828026003952/tsla-20251231.htm
+  file: tsla-tsla-20251231.htm
+  sha256: 442a79e7a2099ddb16af0bdb92a78873cbdcd683613875724e17115f012cbce5
+  retrieved_at: '2026-11-18T02:10:34.783361+00:00'
+  size_bytes: 2391644
+  retrieval_representation: SEC DOCUMENT wrapper containing HTML; hash pins retrieved bytes, not the earlier record
+    response
+profile:
+  short_name: Tesla
+  quarters:
+  - id: 2025Q3
+    label: 2025 Q3
+    end: '2025-09-30'
+    name:
+      zh: 2025 年第3季度
+      en: 2025 Q3
+  - id: 2025Q4
+    label: 2025 Q4
+    end: '2025-12-31'
+    name:
+      zh: 2025 年第4季度
+      en: 2025 Q4
+    derive:
+      total: FY2025
+      less: 9M2025
+      method:
+        zh: 2025 全年减前三季度
+        en: FY2025 less nine months 2025
+      note:
+        zh: 2025 Q4 利润表为全年减 9M 比较数的派生值，不是直接披露季度。
+        en: Q4 2025 income is derived from annual less nine-month comparatives, not a directly reported quarter.
+  - id: 2026Q1
+    label: 2026 Q1
+    end: '2026-03-31'
+    name:
+      zh: 2026 年第1季度
+      en: 2026 Q1
+  - id: 2026Q2
+    label: 2026 Q2
+    end: '2026-06-30'
+    name:
+      zh: 2026 年第2季度
+      en: 2026 Q2
+  - id: 2026Q3
+    label: 2026 Q3
+    end: '2026-09-30'
+    name:
+      zh: 2026 年第3季度
+      en: 2026 Q3
+  current: 2026Q3
+  yoy_base: 2025Q3
+  qoq_base: 2026Q2
+  fcf_caliber: mechanical
+  year_to_date:
+    id: 9M2026
+    quarters:
+    - 2026Q1
+    - 2026Q2
+    - 2026Q3
+    label:
+      zh: 2026 前三季度
+      en: Nine months 2026
+    short:
+      zh: 9M2026
+      en: 9M2026
+  income_metrics:
+  - revenue
+  - auto_sales
+  - regulatory_credits
+  - auto_leasing
+  - auto_revenue
+  - energy_revenue
+  - services_revenue
+  - auto_cost
+  - energy_cost
+  - services_cost
+  - cost_of_revenues
+  - R_and_D
+  - SG_and_A
+  - restructuring
+  - op_income
+  - consolidated_NI
+  - parent_NI
+  - interest_income
+  - interest_expense
+  - other_income
+  - EBT
+  - income_tax
+  - noncontrolling_NI
+  - auto_segment_revenue
+  - auto_segment_cost
+  - auto_segment_GP
+  - energy_GP
+  identities:
+  - name: 汽车分项合成
+    terms:
+      auto_sales: 1
+      regulatory_credits: 1
+      auto_leasing: 1
+    equals: auto_revenue
+  - name: 产品收入合计
+    terms:
+      auto_revenue: 1
+      energy_revenue: 1
+      services_revenue: 1
+    equals: revenue
+  - name: 成本合计
+    terms:
+      auto_cost: 1
+      energy_cost: 1
+      services_cost: 1
+    equals: cost_of_revenues
+  - name: 营业利润
+    terms:
+      revenue: 1
+      cost_of_revenues: -1
+      R_and_D: -1
+      SG_and_A: -1
+      restructuring: -1
+    equals: op_income
+  - name: 税前利润
+    terms:
+      op_income: 1
+      interest_income: 1
+      interest_expense: 1
+      other_income: 1
+    equals: EBT
+  - name: 合并净利润
+    terms:
+      EBT: 1
+      income_tax: -1
+    equals: consolidated_NI
+  - name: 股东可得净利润
+    terms:
+      consolidated_NI: 1
+      noncontrolling_NI: -1
+    equals: parent_NI
+  - name: 汽车分部收入
+    terms:
+      auto_revenue: 1
+      services_revenue: 1
+    equals: auto_segment_revenue
+  - name: 汽车分部成本
+    terms:
+      auto_cost: 1
+      services_cost: 1
+    equals: auto_segment_cost
+  - name: 汽车分部毛利润
+    terms:
+      auto_segment_revenue: 1
+      auto_segment_cost: -1
+    equals: auto_segment_GP
+  - name: 能源分部毛利润
+    terms:
+      energy_revenue: 1
+      energy_cost: -1
+    equals: energy_GP
+  ratios:
+  - key: auto_segment_margin
+    num: auto_segment_GP
+    den: auto_segment_revenue
+  - key: energy_margin
+    num: energy_GP
+    den: energy_revenue
+  - key: auto_product_mix
+    num: auto_revenue
+    den: revenue
+  growth:
+  - revenue
+  - auto_revenue
+  - energy_revenue
+  - services_revenue
+  - op_income
+  - consolidated_NI
+  - parent_NI
+  - R_and_D
+  - cfo
+  - cash_ppe
+  margins:
+  - gross_margin
+  - op_margin
+  - auto_segment_margin
+  - energy_margin
+  segments:
+  - name: Automotive (including Services and other)
+    revenue: auto_segment_revenue
+    profit: auto_segment_GP
+    margin: auto_segment_margin
+    profit_label:
+      zh: 毛利润
+      en: gross profit
+    margin_label:
+      zh: 毛利率
+      en: gross margin
+  - name: Energy generation and storage
+    revenue: energy_revenue
+    profit: energy_GP
+    margin: energy_margin
+    profit_label:
+      zh: 毛利润
+      en: gross profit
+    margin_label:
+      zh: 毛利率
+      en: gross margin
+  metrics:
+    revenue:
+      zh: 收入
+      en: Revenue
+    auto_revenue:
+      zh: 汽车产品收入
+      en: Automotive product revenue
+    energy_revenue:
+      zh: 能源收入
+      en: Energy revenue
+    services_revenue:
+      zh: 服务及其他收入
+      en: Services and other revenue
+    regulatory_credits:
+      zh: 汽车监管积分收入
+      en: Automotive regulatory credits
+    op_income:
+      zh: 营业利润
+      en: Operating income
+    consolidated_NI:
+      zh: 合并净利润
+      en: Consolidated net income
+    parent_NI:
+      zh: 普通股股东可得净利润
+      en: Net income attributable to common stockholders
+    gross_profit:
+      zh: 毛利润
+      en: Gross profit
+    gross_margin:
+      zh: 毛利率
+      en: Gross margin
+    op_margin:
+      zh: 营业利润率
+      en: Operating margin
+    R_and_D:
+      zh: 研发费用
+      en: Research and development
+    cfo:
+      zh: 经营现金流
+      en: Operating cash flow
+    cash_ppe:
+      zh: 现金 PPE 净支出（不含融资租赁，扣除出售）
+      en: Cash PPE purchases excluding finance leases, net of sales
+    free_cash_flow:
+      zh: CFO−现金 PPE 机械差额
+      en: Mechanical CFO less cash PPE difference
+  table:
+  - revenue
+  - auto_revenue
+  - energy_revenue
+  - services_revenue
+  - regulatory_credits
+  - gross_profit
+  - R_and_D
+  - op_income
+  - consolidated_NI
+  - parent_NI
+  - gross_margin
+  - op_margin
+  report:
+  - revenue
+  - op_income
+  - consolidated_NI
+  - parent_NI
+  - cfo
+  - cash_ppe
+  - free_cash_flow
+  charts:
+  - title:
+      zh: 收入与营业利润
+      en: Revenue and operating income
+    unit: usd_bn
+    series:
+    - key: revenue
+      label:
+        zh: 收入
+        en: Revenue
+    - key: op_income
+      label:
+        zh: 营业利润
+        en: Operating income
+  findings:
+    revenue_caveat:
+      zh: 报告口径，非有机增长；产品收入与正式分部口径分开。
+      en: Reported basis, not organic growth; product revenue and reportable segments are distinct.
+  balance_note:
+    zh: 有价证券为短期投资；长期债务行含融资租赁、不含流动部分；权益为股东权益加非控股权益，不含可赎回非控股权益。
+    en: Securities are short-term investments; long-term debt includes finance leases but excludes current maturities.
+      Equity includes stockholders and noncontrolling interests, excluding redeemable noncontrolling interests.
+income:
+  2026Q3:
+    label: 2026Q3
+    start: '2026-07-01'
+    end: '2026-09-30'
+    document: q3
+    values:
+      revenue: 28046
+      auto_sales: 20094
+      regulatory_credits: 113
+      auto_leasing: 353
+      auto_revenue: 20560
+      energy_revenue: 2881
+      services_revenue: 4605
+      auto_cost: 16754
+      energy_cost: 1927
+      services_cost: 3871
+      cost_of_revenues: 22552
+      R_and_D: 2761
+      SG_and_A: 2015
+      restructuring: 0
+      op_income: 718
+      consolidated_NI: 804
+      parent_NI: 787
+      interest_income: 445
+      interest_expense: -90
+      other_income: -117
+      EBT: 956
+      income_tax: 152
+      noncontrolling_NI: 17
+      auto_segment_revenue: 25165
+      auto_segment_cost: 20625
+      auto_segment_GP: 4540
+      energy_GP: 954
+  2026Q2:
+    label: 2026Q2
+    start: '2026-04-01'
+    end: '2026-06-30'
+    document: q2
+    values:
+      revenue: 28236
+      auto_sales: 20006
+      regulatory_credits: 146
+      auto_leasing: 364
+      auto_revenue: 20516
+      energy_revenue: 3139
+      services_revenue: 4581
+      auto_cost: 17053
+      energy_cost: 2499
+      services_cost: 3933
+      cost_of_revenues: 23485
+      R_and_D: 2371
+      SG_and_A: 1982
+      restructuring: 0
+      op_income: 398
+      consolidated_NI: 1128
+      parent_NI: 1114
+      interest_income: 422
+      interest_expense: -81
+      other_income: 590
+      EBT: 1329
+      income_tax: 201
+      noncontrolling_NI: 14
+      auto_segment_revenue: 25097
+      auto_segment_cost: 20986
+      auto_segment_GP: 4111
+      energy_GP: 640
+  2026Q1:
+    label: 2026Q1
+    start: '2026-01-01'
+    end: '2026-03-31'
+    document: q1
+    values:
+      revenue: 22387
+      auto_sales: 15473
+      regulatory_credits: 380
+      auto_leasing: 381
+      auto_revenue: 16234
+      energy_revenue: 2408
+      services_revenue: 3745
+      auto_cost: 12812
+      energy_cost: 1456
+      services_cost: 3399
+      cost_of_revenues: 17667
+      R_and_D: 1946
+      SG_and_A: 1833
+      restructuring: 0
+      op_income: 941
+      consolidated_NI: 491
+      parent_NI: 477
+      interest_income: 434
+      interest_expense: -92
+      other_income: -535
+      EBT: 748
+      income_tax: 257
+      noncontrolling_NI: 14
+      auto_segment_revenue: 19979
+      auto_segment_cost: 16211
+      auto_segment_GP: 3768
+      energy_GP: 952
+  2025Q3:
+    label: 2025Q3
+    start: '2025-07-01'
+    end: '2025-09-30'
+    document: q3
+    values:
+      revenue: 28095
+      auto_sales: 20359
+      regulatory_credits: 417
+      auto_leasing: 429
+      auto_revenue: 21205
+      energy_revenue: 3415
+      services_revenue: 3475
+      auto_cost: 17590
+      energy_cost: 2342
+      services_cost: 3109
+      cost_of_revenues: 23041
+      R_and_D: 1630
+      SG_and_A: 1562
+      restructuring: 238
+      op_income: 1624
+      consolidated_NI: 1389
+      parent_NI: 1373
+      interest_income: 439
+      interest_expense: -76
+      other_income: -28
+      EBT: 1959
+      income_tax: 570
+      noncontrolling_NI: 16
+      auto_segment_revenue: 24680
+      auto_segment_cost: 20699
+      auto_segment_GP: 3981
+      energy_GP: 1073
+  FY2025:
+    label: FY2025
+    start: '2025-01-01'
+    end: '2025-12-31'
+    document: fy25
+    values:
+      revenue: 94827
+      auto_sales: 65821
+      regulatory_credits: 1993
+      auto_leasing: 1712
+      auto_revenue: 69526
+      energy_revenue: 12771
+      services_revenue: 12530
+      auto_cost: 57165
+      energy_cost: 8969
+      services_cost: 11599
+      cost_of_revenues: 77733
+      R_and_D: 6411
+      SG_and_A: 5834
+      restructuring: 494
+      op_income: 4355
+      consolidated_NI: 3855
+      parent_NI: 3794
+      interest_income: 1680
+      interest_expense: -338
+      other_income: -419
+      EBT: 5278
+      income_tax: 1423
+      noncontrolling_NI: 61
+      auto_segment_revenue: 82056
+      auto_segment_cost: 68764
+      auto_segment_GP: 13292
+      energy_GP: 3802
+  9M2025:
+    label: 9M2025
+    start: '2025-01-01'
+    end: '2025-09-30'
+    document: q3
+    values:
+      revenue: 69926
+      auto_sales: 49071
+      regulatory_credits: 1451
+      auto_leasing: 1311
+      auto_revenue: 51833
+      energy_revenue: 8934
+      services_revenue: 9159
+      auto_cost: 43085
+      energy_cost: 6230
+      services_cost: 8526
+      cost_of_revenues: 57841
+      R_and_D: 4628
+      SG_and_A: 4179
+      restructuring: 332
+      op_income: 2946
+      consolidated_NI: 2999
+      parent_NI: 2954
+      interest_income: 1231
+      interest_expense: -253
+      other_income: 173
+      EBT: 4097
+      income_tax: 1098
+      noncontrolling_NI: 45
+      auto_segment_revenue: 60992
+      auto_segment_cost: 51611
+      auto_segment_GP: 9381
+      energy_GP: 2704
+cash_flow:
+  9M2026:
+    start: '2026-01-01'
+    end: '2026-09-30'
+    document: q3
+    cfo: 14897
+    cash_ppe: 13014
+  6M2026:
+    start: '2026-01-01'
+    end: '2026-06-30'
+    document: q2
+    cfo: 8634
+    cash_ppe: 8282
+  3M2026:
+    start: '2026-01-01'
+    end: '2026-03-31'
+    document: q1
+    cfo: 3937
+    cash_ppe: 2493
+  9M2025:
+    start: '2025-01-01'
+    end: '2025-09-30'
+    document: q3
+    cfo: 10934
+    cash_ppe: 6134
+  6M2025:
+    start: '2025-01-01'
+    end: '2025-06-30'
+    document: q2
+    cfo: 4696
+    cash_ppe: 3886
+  FY2025:
+    start: '2025-01-01'
+    end: '2025-12-31'
+    document: fy25
+    cfo: 14747
+    cash_ppe: 8527
+  2025Q3:
+    start: '2025-07-01'
+    end: '2025-09-30'
+    derive:
+      total: 9M2025
+      less: 6M2025
+      method:
+        zh: 9M2025 减 6M2025
+        en: 9M2025 less 6M2025
+      note:
+        zh: 2025Q3 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。
+        en: 2025Q3 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references
+          and source inputs are retained.
+  2025Q4:
+    start: '2025-10-01'
+    end: '2025-12-31'
+    derive:
+      total: FY2025
+      less: 9M2025
+      method:
+        zh: FY2025 减 9M2025
+        en: FY2025 less 9M2025
+      note:
+        zh: 2025Q4 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。
+        en: 2025Q4 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references
+          and source inputs are retained.
+  2026Q2:
+    start: '2026-04-01'
+    end: '2026-06-30'
+    derive:
+      total: 6M2026
+      less: 3M2026
+      method:
+        zh: 6M2026 减 3M2026
+        en: 6M2026 less 3M2026
+      note:
+        zh: 2026Q2 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。
+        en: 2026Q2 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references
+          and source inputs are retained.
+  2026Q3:
+    start: '2026-07-01'
+    end: '2026-09-30'
+    derive:
+      total: 9M2026
+      less: 6M2026
+      method:
+        zh: 9M2026 减 6M2026
+        en: 9M2026 less 6M2026
+      note:
+        zh: 2026Q3 现金流为累计相减；源输入与两个申报指针保留，不是原表直接季度值。
+        en: 2026Q3 cash flow is cumulative subtraction, not directly reported quarterly values; both filing references
+          and source inputs are retained.
+  2026Q1:
+    start: '2026-01-01'
+    end: '2026-03-31'
+    document: q1
+    cfo: 3937
+    cash_ppe: 2493
+balance:
+  '2026-09-30':
+    document: q3
+    values:
+      cash: 17853
+      marketable_securities: 27594
+      total_assets: 157517
+      total_equity: 89835
+      longterm_debt: 8136
+      PPE_net: 50591
+  '2026-06-30':
+    document: q2
+    values:
+      cash: 15219
+      marketable_securities: 28305
+      total_assets: 148524
+      total_equity: 87465
+      longterm_debt: 7924
+      PPE_net: 47255
+  '2026-03-31':
+    document: q1
+    values:
+      cash: 16603
+      marketable_securities: 28140
+      total_assets: 143724
+      total_equity: 84745
+      longterm_debt: 7782
+      PPE_net: 43213
+  '2025-12-31':
+    document: q3
+    values:
+      cash: 16513
+      marketable_securities: 27546
+      total_assets: 137806
+      total_equity: 82807
+      longterm_debt: 6736
+      PPE_net: 40643
+notes:
+- id: segment-basis
+  document: q3
+  title:
+    zh: 正式分部与产品线
+    en: Segments versus product lines
+  fact:
+    zh: Note 14 汽车分部含服务及其他；分部利润指标是毛利润，不是营业利润。
+    en: Note 14 Automotive includes Services and other. Segment profit is gross profit, not operating income.
+  limit:
+    zh: 不计算虚构分部 EBIT 或营业利润变动分解。
+    en: No invented segment EBIT or operating-income attribution.
+- id: cash-basis
+  document: q3
+  title:
+    zh: 现金差额非发行人 FCF
+    en: Cash difference is not issuer-defined FCF
+  fact:
+    zh: 同批四份 SEC 文件未找到 free cash flow 定义；仅计算 CFO 减现金 PPE 净支出。
+    en: No free-cash-flow definition was found in these four SEC filings; only CFO less net cash PPE is calculated.
+  limit:
+    zh: 不含融资租赁新增、并购或 SpaceX 股权投资；不等于 owner cash。
+    en: Excludes new finance leases, acquisitions and SpaceX equity investment; not owner cash.
+- id: guidance-floor
+  document: q3
+  title:
+    zh: 年度资本开支展望
+    en: Annual capex outlook
+  fact:
+    zh: Q3 10-Q 预期 2026 资本开支超过 200 亿美元；9M 现金 PPE 为 13,014 百万美元。
+    en: Q3 10-Q expects 2026 capex in excess of USD20bn; nine-month cash PPE was USD13,014m.
+  limit:
+    zh: 年度尚未结束；这是大于式门槛，不是点值或已实现收入。
+    en: The year is incomplete; this is a strict floor, not a point estimate or realized revenue.
+  excerpts:
+  - We currently expect our capital expenditures to be in excess of $20 billion in 2026
+- id: tariff-refunds
+  document: q3
+  title:
+    zh: 关税退款确认影响毛利润
+    en: Recognized tariff refunds affect gross profit
+  fact:
+    zh: Q3 能源成本减少 526、汽车销售成本减少 260；能源收入因应退客户金额减少 339，均为百万美元。
+    en: Q3 energy cost fell by526 and auto-sales cost by260; energy revenue fell by339 for customer refunds, all
+      USDm.
+  limit:
+    zh: 确认不等于现金收取；不宣称这是全部正常化调整。
+    en: Recognition is not collection; this is not a complete normalization.
+  check:
+    document: q3
+    energy_cost_reduction: 526
+    auto_cost_reduction: 260
+    energy_revenue_reduction: 339
+- id: working-capital
+  document: q3
+  title:
+    zh: 现金流中的应付及应计贡献
+    en: Payables and accrual contribution to CFO
+  fact:
+    zh: 9M 应付及应计现金流贡献 7,332；Q3=7,332−3,341=3,991 百万美元。
+    en: Nine-month payables/accrual cash contribution was7,332; Q3=7,332−3,341=3,991 USDm.
+  limit:
+    zh: 不是资产负债表差额，也不代表持续经营现金创造。
+    en: Not the balance-sheet delta or evidence of sustainable cash generation.
+  check:
+    document: q3
+    payables_accruals: 7332
+- id: related-party
+  document: q3
+  title:
+    zh: 关联方与公允价值
+    en: Related party and fair value
+  fact:
+    zh: SpaceX 公允价值本季损失 142，而 9M 收益 863；Q3 相关 Megapack 收入 221、成本 171，百万美元。
+    en: SpaceX fair-value Q3 loss142 differs from nine-month gain863; related Q3 Megapack revenue221 and cost171,
+      USDm.
+  limit:
+    zh: 不可将 9M 收益当 Q3 表现；估值变动不是经营利润或现金收入。
+    en: Do not use the nine-month gain as Q3 performance; valuation changes are not operating income or cash receipts.
+  check:
+    document: q3
+    fv_loss_Q3: -142
+    fv_gain_9M: 863
+    megapack_revenue: 221
+    megapack_cost: 171
+- id: sbc
+  document: q3
+  title:
+    zh: 股份支付费用
+    en: Share-based compensation expense
+  fact:
+    zh: Note 9 Q3 股份支付费用 1,165，对比去年 663；9M 3,346 百万美元。
+    en: Note9 Q3 SBC expense1,165 versus663 prior year; nine months3,346 USDm.
+  limit:
+    zh: 不使用权益变动表不同口径数；非现金不等于无经济成本。
+    en: Do not substitute equity-movement amounts; noncash does not mean costless.
+  check:
+    document: q3
+    q3_sbc: 1165
+    prior_sbc: 663
+    nine_month_sbc: 3346
+coverage:
+- id: reported
+  status: done
+  item:
+    zh: 报告收入、合并/股东净利润及分部毛利润
+    en: Reported revenue, consolidated/parent earnings and segment gross profit
+- id: cash
+  status: done
+  item:
+    zh: 累计减算现金流与机械现金差额
+    en: Cash-flow subtraction and mechanical cash difference
+- id: guidance
+  status: done
+  item:
+    zh: 当前年度门槛展望以说明保留，不套点值模型
+    en: Current annual floor preserved as note, not forced into point model
+- id: normalization
+  status: judgment
+  item:
+    zh: 完整正常化和可持续利润
+    en: Complete normalization and sustainable earnings
+- id: call
+  status: data_gap
+  item:
+    zh: 未取得/处理电话会及 Q&A
+    en: Call and Q&A not obtained or processed
+- id: reaction
+  status: data_gap
+  item:
+    zh: 市场反应、价格及隐含预期未覆盖
+    en: Market reaction, prices and implied expectations not covered
