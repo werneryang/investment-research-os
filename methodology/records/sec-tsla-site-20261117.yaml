@@ -1,7 +1,7 @@
 id: sec-tsla-site-20261117
 task_id: R-20261116-tsla-earnings
 record_type: quarterly-site-backfill-verification
-status: local QA; clean run and deployment pending
+status: Local clean-run validation and isolated archive complete; deployment checkpoint pending
 as_of: '2026-11-16'
 original_walkthrough:
   path: methodology/records/sec-tsla-earnings-20261116.yaml
@@ -160,9 +160,18 @@ verification:
     passed: 586
     failed: 0
     seconds: 174.05
+  precommit_scan_note: Diff-marker plus pytest decorator caused email-regex false positive; staged file bytes individually
+    scanned and reviewed with no actual email or other forbidden content.
+  independent_clean_run_review:
+    checks: 406
+    differences: 0
+    scope: 290 material values/periods/cash provenance/balance/comparison/caliber checks against independently sourced
+      preview, plus116 direct configuration and cash subtraction checks
+    status: PASS; model read-only review, not human audit
 site:
   status: pending
-  reason: Formal clean run, isolated archive, PR merge, Actions and live CN/EN/search remain required
+  reason: PR merge, Actions and actual live CN/EN and Tesla/TSLA searches required; this immutable verification
+    checkpoint is not deployment proof
 limitations:
 - Number-existence check alone does not identify correct row/column; independent source extraction supplements it.
 - No full normalization, call/Q&A, market reaction, valuation, implied expectations or investment conclusion.
@@ -181,3 +190,21 @@ reproduction:
     segment_GP_margin_percent: 100*reported_segment_gross_profit/reported_segment_revenue
     growth_percent: 100*(current/base−1), only positive base
     mechanical_cash_difference: CFO−cash PPE net purchases excluding finance leases
+clean_run:
+  run_id: earnings_tsla_2026q3-20261118T022512Z-67f3da6c
+  code_commit: 539fde371b4a5e6f0be786712f375341ab2fcb36
+  dirty: false
+  result_hash: 8c99a7540605b4c3784a47cbee81f3e0e3e03f9b329945ab56a9f196e03f45e4
+  verify: reproduced; 3 output artifacts integrity passed
+  parent_comparisons: 193
+  differences: 0
+archive:
+  branch: archive
+  commit: 50ffd961f017aa576b24e56cd9e8c32deaea2e26
+  paths_added: 6
+  run_ids_added:
+  - earnings_tsla_2026q3-20261118T022512Z-67f3da6c
+  original_documents_archived: false
+  input_dataset_archived: false
+  limit: earnings_evidence archive_data remains false; local fixed-input reproduction verified. Fresh-machine recomputation
+    requires allowed original HTML and reconstructing bundle, not a claim of publicly archived inputs.

@@ -110,3 +110,4 @@
 - 使用已发布 `methodology/records/sec-tsla-earnings-20261116.yaml` 同批 SEC HTML，不改该记录（SHA256 `a7ff27c03a131763d215d39cf05ad7048766238e75c338a077499956815647f0`）。原结果与走查已完成；本项仅补季度研究。
 - 已识别适配点：单季 CFO/现金 PPE 由累计期间相减；现有现金流入口只支持直接数值存在性，必须保留累计输入/减算式与源日期，不能拿派生值冒称原表直接披露。Tesla 正式分部以毛利润披露，不可套成分部营业利润或 EBIT。先核同批原件，再作必要代码/契约 PR。
 - 适配与准备核验：累计现金流双来源/期间校验、分部毛利润标签和显式机械现金差额均已实现；独立源表230项及配置/preview454项零差异，父走查对照193项一致。原四份文件无发行人 FCF 定义，不冒用该标签；旧 GOOGL/NVDA 正式固定输入仍可复现原结果。正式 clean run、归档与部署尚待最终核验。
+- 正式运行 `earnings_tsla_2026q3-20261118T022512Z-67f3da6c` 来自 clean commit `539fde371b4a5e6f0be786712f375341ab2fcb36`，dirty=false、verify reproduced，结果哈希 `8c99a7540605b4c3784a47cbee81f3e0e3e03f9b329945ab56a9f196e03f45e4`；完整测试586项通过（174.05s）。单独归档6路径至 archive `50ffd961f017aa576b24e56cd9e8c32deaea2e26`，不归档原件或未授权输入数据。当前 PR 合并和 Actions/中英实页/Tesla/TSLA 搜索仍是独立待核步骤，验证记录 `methodology/records/sec-tsla-site-20261117.yaml`。
