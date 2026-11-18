@@ -336,3 +336,8 @@ button.locate[hidden]{display:none}
 .home-matrix{margin:8px 0 16px}.home-matrix summary{cursor:pointer;font-weight:600;margin-bottom:6px}
 #time-coverage{padding:20px 0}
 figure.chart-card{margin:0 0 12px}
+
+/* Readable public report copies; wide source/field tables remain usable on narrow screens. */
+.research-note{max-width:100ch;line-height:1.75}
+.research-note table{display:block;overflow-x:auto;max-width:100%}
+.research-note code,.research-note a{overflow-wrap:anywhere}

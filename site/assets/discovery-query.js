@@ -13,7 +13,8 @@
   function textOf(record,routes,vocab,en) {
     const subjects=routes.flatMap(r=>r.entity_ids||[]).flatMap(id=>[vocab.entities[id]?.name,...(vocab.entities[id]?.aliases||[])]).join(' ');
     const title=typeof record.title==='object'?record.title[en?'en':'zh']:record.title||'';
-    return (subjects+' '+title+' '+routes.map(r=>[vocab.objects[r.object].name,vocab.objects[r.object].children[r.subject],vocab.questions[r.question].name,vocab.questions[r.question].children[r.topic],r.scope[en?'en':'zh']].join(' ')).join(' ')).toLowerCase();
+    const reportMeta=record.kind==='note'?[record.company,record.id,record.date].filter(Boolean).join(' '):'';
+    return (subjects+' '+title+' '+reportMeta+' '+routes.map(r=>[vocab.objects[r.object].name,vocab.objects[r.object].children[r.subject],vocab.questions[r.question].name,vocab.questions[r.question].children[r.topic],r.scope[en?'en':'zh']].join(' ')).join(' ')).toLowerCase();
   }
   // Words found in no record are reported, not silently dropped: the caller passes them back as q.ignore.
   function searchTerms(search,records,vocab,en=false) {
@@ -34,7 +35,7 @@
     let show=baseMatch&&(!record.routes.length||routes.length>0);
     const text=textOf(record,routes,vocab,en);
     show &&= !query||((!aliases.length||routes.length>0)&&(plain.every(t=>text.includes(t))||text.includes(query)));
-    if(record.kind==='study') {
+    if(record.kind==='study'||record.kind==='note') {
       show &&= !(q.start&&q.end&&q.start>q.end);
       show &&= (!q.result_type||record.result_type===q.result_type)&&(!q.market||record.scope.market===q.market)&&(!q.frequency||record.scope.frequency===q.frequency);
       show &&= (!q.start||endDate(String(record.scope.end||''))>=q.start)&&(!q.end||String(record.scope.start||'9999')<=q.end)&&(!q.cutoff||endDate(String(record.cutoff))>=q.cutoff);
@@ -42,7 +43,7 @@
     return {show,baseMatch,routes};
   }
   function state(counts,query,entities) {
-    if(counts.published)return 'results';
+    if(counts.published||counts.notes)return 'results';
     if(query.entity&&!entities[query.entity])return 'unknown_subject';
     if(counts.missing)return 'unavailable';
     if(counts.references)return 'references';

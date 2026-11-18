@@ -1,0 +1,6 @@
+schema_version: research-notes.v1
+# Explicit report subjects; no ticker/CIK inference from prose.
+companies:
+  AAPL: {cik: 320193, name: Apple}
+  GOOGL: {cik: 1652044, name: Alphabet}
+  NVDA: {cik: 1045810, name: NVIDIA}

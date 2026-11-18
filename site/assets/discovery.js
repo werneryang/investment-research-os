@@ -31,13 +31,14 @@
     const query=Object.fromEntries(fields.map(f=>[f.name,f.value]));
     const words=Q.searchTerms(query.search,records.map(r=>r.data),vocab,en);
     if(words.known.length)query.ignore=words.unknown;
-    const counts={published:0,missing:0,capabilities:0,references:0,base:0};
+    const counts={published:0,missing:0,capabilities:0,references:0,notes:0,base:0};
     for (const {el,data} of records) {
       const {show,baseMatch,routes:matched}=Q.match(data,query,vocab,en);
       if(baseMatch)counts.base++;
       if(show) {
         if(data.kind==='study') {if(matched.some(r=>r.available))counts.published++;else counts.missing++;}
         else if(data.kind==='reference')counts.references++;
+        else if(data.kind==='note')counts.notes++;
         else counts.capabilities++;
       }
       el.querySelectorAll('[data-route]').forEach(link=>{
@@ -50,10 +51,10 @@
       });
       el.hidden=!show;
       const status=el.querySelector('.result-status');
-      if(status)status.textContent=!data.published?(en?'Not published':'尚未发布'):matched.some(r=>r.available)?(en?'Matching results':'有匹配结果'):(en?'Matching content unavailable in this run':'本次未提供匹配内容');
+      if(status)status.textContent=data.kind==='note'?(en?'Research report (Chinese)':'研究报告（中文）'):!data.published?(en?'Not published':'尚未发布'):matched.some(r=>r.available)?(en?'Matching results':'有匹配结果'):(en?'Matching content unavailable in this run':'本次未提供匹配内容');
       const finding=el.querySelector('.general-finding');if(finding)finding.hidden=fields.some(x=>x.value);
     }
-    const {published,missing,capabilities,references}=counts;
+    const {published,missing,capabilities,references,notes}=counts;
     const active=fields.some(x=>x.value);
     host.querySelector('.data-plans').open=active&&capabilities>0;
     host.querySelectorAll('.result-group').forEach(group=>{
@@ -71,7 +72,7 @@
     const note=host.querySelector('.search-terms');
     if(note){
       const list=x=>x.join(en?', ':'、'),lines=[];
-      const text=words.known.filter(w=>!words.classes.includes(w)),shown=published+missing+capabilities+references;
+      const text=words.known.filter(w=>!words.classes.includes(w)),shown=published+missing+capabilities+references+notes;
       // A class word plus other words that match nothing together: say so, and how to see the rest.
       if(!shown&&words.classes.length&&text.length){
         const names=list([...new Set(words.classes.map(w=>Q.className(w,vocab)))]);
@@ -84,6 +85,7 @@
     }
     host.querySelector('.reference-filter-note').hidden=!Q.studyFilters.some(k=>query[k]);
     host.querySelector('.query-status').textContent=en?`${published} studies with matching results · ${missing} unavailable or unpublished · ${capabilities} data/planning entries · ${references} reference entries`:`${published} 项研究有匹配结果 · ${missing} 项内容缺失或未发布 · ${capabilities} 项数据或规划 · ${references} 项参照`;
+    if(notes)host.querySelector('.query-status').textContent+=(en?` · ${notes} research reports (Chinese)`:` · ${notes} 篇研究报告`);
     const subject=val('entity'), entry=host.querySelector('.subject-reference');
     entry.hidden=!subject;entry.replaceChildren();
     if(subject){
