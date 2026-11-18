@@ -90,3 +90,4 @@
 - 已登记 `config/earnings/nvda_fy27q3.yaml` 与 `config/studies/earnings_nvda_fy27q3.yaml`，研究 id `earnings_nvda_fy27q3`。仅直接比较 FY26 Q3、FY27 Q2、FY27 Q3；缺失的分部利润明确列出，不将合并利润伪装为分部。rounded 分部/平台收入保留原精度和出处。
 - 新登记使用 `release.disclosure_form` / `disclosure_date`，不将 8-K 日期写成 10-Q 日期。网页仍需最终干净运行、独立对照、单独归档及部署后中英页面/搜索核验，当前不能报告已发布。原走查记录字节保持不变。
 - 配置及适配验证：493 项完整测试通过（173.38s），财报专项 77 项通过；当前全体登记 check 为 15 文档、255 数值、63 恒等式、25 摘录。此前初轮的主体 id 与研究清单/数量测试失败已修复并完整重跑通过。独立只读复核确认数值和披露元数据，不代表人工审计。
+- 正式本地交付已完成：干净 commit `f0623d4bad69951a999e734d3c30f25e51a7963a` 的 run `earnings_nvda_fy27q3-20261118T004852Z-78b63678`，`dirty=false`、verify reproduced，结果哈希 `8821577900879784564de2b8dc91bc6838ff8354c77e0403ba9af319df588dcd`。85 项走查对照及独立 97 项数值核验零差异；中英当前结果链接指向正式 run。只归档该运行到 archive commit `26243a164e6db748f2f2b9887d5d357a92df624f`，未归档原始文件或未获登记许可的数据集。验证记录见 `methodology/records/sec-nvda-site-20261117.yaml`；最终部署/页面/检索证据随对应 main Actions 回报核对，不以本地构建冒充上线。
