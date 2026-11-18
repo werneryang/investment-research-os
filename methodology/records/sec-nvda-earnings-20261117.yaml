@@ -1,0 +1,885 @@
+# Public factual walkthrough; no private method bodies or investment conclusions.
+id: sec-nvda-earnings-20261117
+task_id: R-20261117-nvda-earnings
+record_type: application
+status: draft
+scope:
+  quarter: FY2027 Q3
+  period_end: '2026-10-25'
+  initial_publication_cutoff_NY: '2026-11-17T18:43:00-05:00'
+  financial_information: 8-K with furnished unaudited exhibits 99.1–99.3, not Q3 10-Q
+  retrieval_limit: Financial releases accepted before cutoff; later retrieval of transcript separately timestamped,
+    exact transcript publication time not supplied. No point-in-time archival completeness claim.
+  no_originals: Public SEC HTML/APIs and permitted transcript HTML read in memory; no audio/PDF/transcript original
+    saved or downloaded. No transcript republication.
+latest_period_evidence:
+  8K: &id001
+    form: 8-K
+    filingDate: '2026-11-17'
+    reportDate: '2026-11-17'
+    acceptanceDateTime: '2026-11-17T21:20:51.000Z'
+    accessionNumber: 0001045810-26-000088
+    primaryDocument: nvda-20261117.htm
+  latest_observed_10Q: &id002
+    form: 10-Q
+    filingDate: '2026-08-26'
+    reportDate: '2026-07-26'
+    acceptanceDateTime: '2026-08-26T20:36:00.000Z'
+    accessionNumber: 0001045810-26-000075
+    primaryDocument: nvda-20260726.htm
+  Q3_10Q_status: Not observed in submissions at retrieval; CFO says coming weeks. No assumption future filing has
+    occurred.
+  IR_event_url: https://investor.nvidia.com/events-and-presentations/events-and-presentations/event-details/2026/NVIDIA-3rd-Quarter-FY27-Financial-Results/default.aspx
+  call_time_NY: '2026-11-17T17:00:00-05:00'
+  IR_event_observation: Webcast link visible; dynamic quarterly page did not expose a corrected Q3 transcript in
+    parent read; lead observed only Q2 transcript.
+registered_sources:
+  financial: sec_edgar via existing SecClient; SEC contact identifier not reproduced
+  HTML_release: company_ir / SEC furnished HTML
+  transcript: Public attributable third-party HTML, not a registered primary financial numeric feed
+sources:
+  8k:
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/nvda-20261117.htm
+    access_utc: '2026-11-17T23:47:24.400615+00:00'
+    sha256: 6464a73505b401c4f9d20e5118fa5823d6cc2092c6b8a18542cf996dd5836d95
+  release:
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27pr.htm
+    access_utc: '2026-11-17T23:47:24.729658+00:00'
+    sha256: 69d68c7fdaa4b663bde7b68953ecfde9bc4ae4ae43a02c64be081235e82a6539
+  cfo:
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27cfocommentary.htm
+    access_utc: '2026-11-17T23:48:07.801159+00:00'
+    sha256: 243799b6c367369e00b45955fbad05184295c92eba4c05972ef9c55c270a89f9
+  supp:
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/supplementalfinancialinfor.htm
+    access_utc: '2026-11-17T23:48:07.999696+00:00'
+    sha256: b878b7a33705449aab5713f997a6787a4bd8550a419d0fa1e0e5a0869ab956b0
+  submissions:
+    url: https://data.sec.gov/submissions/CIK0001045810.json
+    retrieved_at: '2026-11-17T23:46:52.365194+00:00'
+    sha256: 9290cead11724c53b1db3675b98b0af6b49bc981eb34b4cef68a705ce48e83bc
+    filings:
+    - *id001
+    - form: 8-K
+      filingDate: '2026-11-12'
+      reportDate: '2026-11-11'
+      acceptanceDateTime: '2026-11-12T13:52:41.000Z'
+      accessionNumber: 0001045810-26-000082
+      primaryDocument: nvda-20261111.htm
+    - form: 8-K
+      filingDate: '2026-09-03'
+      reportDate: '2026-09-02'
+      acceptanceDateTime: '2026-09-03T12:03:56.000Z'
+      accessionNumber: 0001045810-26-000078
+      primaryDocument: nvda-20260902.htm
+    - *id002
+    - form: 8-K
+      filingDate: '2026-08-26'
+      reportDate: '2026-08-26'
+      acceptanceDateTime: '2026-08-26T20:21:19.000Z'
+      accessionNumber: 0001045810-26-000073
+      primaryDocument: nvda-20260826.htm
+    - form: 8-K
+      filingDate: '2026-08-17'
+      reportDate: '2026-08-17'
+      acceptanceDateTime: '2026-08-17T12:41:33.000Z'
+      accessionNumber: 0001045810-26-000069
+      primaryDocument: nvda-20260817.htm
+    - form: 8-K
+      filingDate: '2026-07-02'
+      reportDate: '2026-06-28'
+      acceptanceDateTime: '2026-07-02T13:23:16.000Z'
+      accessionNumber: 0001045810-26-000060
+      primaryDocument: nvda-20260628.htm
+    - form: 8-K
+      filingDate: '2026-06-30'
+      reportDate: '2026-06-24'
+      acceptanceDateTime: '2026-06-30T20:27:26.000Z'
+      accessionNumber: 0001045810-26-000056
+      primaryDocument: nvda-20260624.htm
+    - form: 8-K
+      filingDate: '2026-06-18'
+      reportDate: '2026-06-15'
+      acceptanceDateTime: '2026-06-18T20:00:24.000Z'
+      accessionNumber: 0001193125-26-275783
+      primaryDocument: d48176d8k.htm
+    - form: 10-Q
+      filingDate: '2026-05-20'
+      reportDate: '2026-04-26'
+      acceptanceDateTime: '2026-05-20T20:35:52.000Z'
+      accessionNumber: 0001045810-26-000052
+      primaryDocument: nvda-20260426.htm
+    - form: 8-K
+      filingDate: '2026-05-20'
+      reportDate: '2026-05-20'
+      acceptanceDateTime: '2026-05-20T20:21:19.000Z'
+      accessionNumber: 0001045810-26-000051
+      primaryDocument: nvda-20260520.htm
+    - form: 8-K
+      filingDate: '2026-05-08'
+      reportDate: '2026-05-07'
+      acceptanceDateTime: '2026-05-08T20:35:07.000Z'
+      accessionNumber: 0001045810-26-000028
+      primaryDocument: nvda-20260507.htm
+    - form: 8-K
+      filingDate: '2026-04-27'
+      reportDate: '2026-04-24'
+      acceptanceDateTime: '2026-04-27T20:10:30.000Z'
+      accessionNumber: 0001045810-26-000026
+      primaryDocument: nvda-20260424.htm
+    - form: 8-K
+      filingDate: '2026-03-06'
+      reportDate: '2026-03-02'
+      acceptanceDateTime: '2026-03-06T21:11:25.000Z'
+      accessionNumber: 0001045810-26-000024
+      primaryDocument: nvda-20260302.htm
+    - form: 10-K
+      filingDate: '2026-02-25'
+      reportDate: '2026-01-25'
+      acceptanceDateTime: '2026-02-25T21:42:19.000Z'
+      accessionNumber: 0001045810-26-000021
+      primaryDocument: nvda-20260125.htm
+  annual:
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000021/nvda-20260125.htm
+    access_utc: '2026-11-17T23:53:13.456847+00:00'
+    sha256: f9b6f56e8b4e8b28a8e2cf7b486dc73bdd7f11b0c72a8b3c5ccd4a173b0b0bf7
+  prior_guidance:
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/q2fy27pr.htm
+    access_utc: '2026-11-17T23:59:53.042551+00:00'
+    sha256: dc2f82fbec958c30d534468fd50f9f8b8fe892a12c960787c0d840e01787866c
+    published_on: '2026-08-26'
+    locator: Outlook for third quarter fiscal2027
+units:
+  statements: USD million except EPS/share counts explicitly labeled
+  CFO_platform_segment_tables: USD billion, rounded to one decimal; not exact USDm
+  commitments_guarantees: USD billion; contingent gross exposures not recognized debt or additive near-term cash
+    outflow
+quarter_inputs:
+  FY26Q3:
+    revenue: 57006
+    cost_revenue: 15157
+    gross_profit: 41849
+    opex: 5839
+    op_income: 36010
+    other_income: 1926
+    EBT: 37936
+    tax: 6026
+    NI: 31910
+    CFO: 23750
+    cash_PPE_intangibles: 1637
+    principal_PPE_intangibles: 24
+    issuer_FCF: 22089
+  FY26Q4:
+    revenue: 68127
+    cost_revenue: 17034
+    gross_profit: 51093
+    opex: 6794
+    op_income: 44299
+    other_income: 6099
+    EBT: 50398
+    tax: 7438
+    NI: 42960
+    CFO: 36188
+    cash_PPE_intangibles: 1284
+    principal_PPE_intangibles: 4
+    issuer_FCF: 34900
+  FY27Q1:
+    revenue: 81616
+    cost_revenue: 20458
+    gross_profit: 61158
+    opex: 7621
+    op_income: 53537
+    other_income: 16366
+    EBT: 69903
+    tax: 11581
+    NI: 58322
+    CFO: 50345
+    cash_PPE_intangibles: 1757
+    principal_PPE_intangibles: 34
+    issuer_FCF: 48554
+  FY27Q2:
+    revenue: 96221
+    cost_revenue: 24079
+    gross_profit: 72142
+    opex: 8408
+    op_income: 63734
+    other_income: 7773
+    EBT: 71507
+    tax: 11819
+    NI: 59688
+    CFO: 24077
+    cash_PPE_intangibles: 2677
+    principal_PPE_intangibles: 59
+    issuer_FCF: 21341
+  FY27Q3:
+    revenue: 115844
+    cost_revenue: 29168
+    gross_profit: 86676
+    opex: 9156
+    op_income: 77520
+    other_income: 1497
+    EBT: 79017
+    tax: 13730
+    NI: 65287
+    CFO: 48253
+    cash_PPE_intangibles: 4422
+    principal_PPE_intangibles: 54
+    issuer_FCF: 43777
+input_periods:
+  FY26Q3:
+    end: '2025-10-26'
+    source: release current comparative
+  FY26Q4:
+    end: '2026-01-25'
+    derive: annual FY26 minus current release comparative first9MFY26; mixed-source subtraction, not directly reported
+      quarter
+    source_vintage_limit: No independent direct Q4 release comparison completed; disclose derivation.
+  FY27Q1:
+    end: '2026-04-26'
+    derive: Current9MFY27−Q2−Q3, each from current release/reconciliation
+    source_vintage_limit: Printed Q1 in Q2 release differs by1 USDm for revenue/OP/NI; see historical_source_inconsistency.
+      Retain explicit current9M subtraction, do not treat as directly printed or infer restatement.
+  FY27Q2:
+    end: '2026-07-26'
+    source: release reconciliation exact million values; revenue=cost+grossprofit; EBT=op+other; tax=EBT−NI
+  FY27Q3:
+    end: '2026-10-25'
+    source: release statements/reconciliation; independently same in supplemental
+derivation_inputs:
+  FY27_9M:
+    revenue: 293681
+    cost_revenue: 73705
+    gross_profit: 219976
+    opex: 25185
+    op_income: 194791
+    other_income: 25636
+    EBT: 220427
+    tax: 37130
+    NI: 183297
+    CFO: 122675
+    cash_PPE_intangibles: 8856
+    principal_PPE_intangibles: 147
+    issuer_FCF: 113672
+  FY26_9M_comparative:
+    revenue: 147811
+    cost_revenue: 45441
+    gross_profit: 102370
+    opex: 16282
+    op_income: 86088
+    other_income: 4964
+    EBT: 91052
+    tax: 13945
+    NI: 77107
+    CFO: 66530
+    cash_PPE_intangibles: 4758
+    principal_PPE_intangibles: 97
+    issuer_FCF: 61675
+  FY26_annual:
+    revenue: 215938
+    cost_revenue: 62475
+    gross_profit: 153463
+    opex: 23076
+    op_income: 130387
+    other_income: 11063
+    EBT: 141450
+    tax: 21383
+    NI: 120067
+    CFO: 102718
+    cash_PPE_intangibles: 6042
+    principal_PPE_intangibles: 101
+    issuer_FCF: 96575
+  annual_other_income_caliber: 11063 computed as EBT−OP; includes all nonoperating income. Annual line Other income
+    net alone9022 excludes other items; not used as total.
+computed:
+  five_quarter_metrics:
+    FY26Q3:
+      gross_margin_pct: 73.41157071185489
+      operating_margin_pct: 63.168789250254356
+      CFO_to_NI: 0.7442807897210906
+      issuer_FCF_margin_pct: 38.74855278391748
+    FY26Q4:
+      gross_margin_pct: 74.99669734466511
+      operating_margin_pct: 65.02414608011507
+      CFO_to_NI: 0.842364990689013
+      issuer_FCF_margin_pct: 51.22785386117105
+    FY27Q1:
+      gross_margin_pct: 74.93383650264654
+      operating_margin_pct: 65.59620662615174
+      CFO_to_NI: 0.863224855114708
+      issuer_FCF_margin_pct: 59.490786120368554
+    FY27Q2:
+      gross_margin_pct: 74.97531723844067
+      operating_margin_pct: 66.23710000935347
+      CFO_to_NI: 0.40338091408658355
+      issuer_FCF_margin_pct: 22.17915008158302
+    FY27Q3:
+      gross_margin_pct: 74.8213114188046
+      operating_margin_pct: 66.91757881288629
+      CFO_to_NI: 0.7390904774304226
+      issuer_FCF_margin_pct: 37.789613618314284
+  Q3_growth_percent:
+    qoq:
+      revenue: 20.393677055944124
+      op_income: 21.63052687733391
+      NI: 9.380444980565606
+      CFO: 100.41118079494953
+      issuer_FCF: 105.1309685581744
+    yoy:
+      revenue: 103.2136968038452
+      op_income: 115.27353512913079
+      NI: 104.59730492008777
+      CFO: 103.17052631578947
+      issuer_FCF: 98.18461677758161
+  formulas:
+    growth: 100*(current/base−1)
+    gross_margin: 100*(revenue−cost_revenue)/revenue
+    operating_margin: 100*op_income/revenue
+    cash_conversion: CFO/GAAP NI
+    issuer_FCF: CFO−cash PPE/intangibles purchases−PPE/intangibles principal payments
+  note: Five-quarter trend consists of three direct/current-comparative quarters and two explicitly derived periods;
+    not five independent releases.
+  five_quarters_CFO_to_NI_below_one: true
+  cash_conversion_trend_caveat: All five selected ratios below1, not monotonically worsening; includes parent-derived
+    periods. No fraud/collection-loss inference.
+business_tables:
+  source: cfo
+  period_order:
+  - FY27Q3
+  - FY27Q2
+  - FY26Q3
+  unit: USD billion, rounded
+  reportable_segment_revenue:
+    Compute_and_Networking:
+    - 106.0
+    - 88.3
+    - 50.9
+    Graphics:
+    - 9.8
+    - 7.9
+    - 6.1
+  market_platform_revenue:
+    Data_Center:
+    - 107.6
+    - 89.0
+    - 51.2
+    Hyperscale:
+    - 60.1
+    - 48.7
+    - 35.1
+    AI_Clouds_Industrial_Enterprise:
+    - 47.5
+    - 40.3
+    - 16.1
+    Edge_Computing:
+    - 8.2
+    - 7.2
+    - 5.8
+  approximate_Data_Center_share_pct: 92.91882556131262
+  caliber_limit: Platform vs segment distinct; rounded source does not support exact million-level revenue, formal
+    segment OP or exact margins. No implied organic growth/acquisition bridge.
+non_GAAP:
+  source: release reconciliation
+  period_order:
+  - FY27Q3
+  - FY27Q2
+  - FY26Q3
+  NI:
+  - 64870
+  - 53954
+  - 30979
+  op_income:
+  - 77883
+  - 63956
+  - 36097
+  gross_profit:
+  - 86724
+  - 72188
+  - 41897
+  diluted_EPS:
+  - 2.68
+  - 2.22
+  - 1.27
+  GAAP_diluted_EPS:
+  - 2.7
+  - 2.46
+  - 1.3
+  diluted_WA_shares_millions:
+  - 24186
+  - 24285
+  - 24483
+  Q3_pre_tax_adjustment: -881
+  Q3_tax_adjustment: 464
+  Q3_NI_bridge: 65287−881+464=64870
+  Q2_NI_bridge: 59688−7251+1517=53954
+  SBC_policy: Beginning FY27Q1 non-GAAP no longer excludes SBC; historical comparison in current release restated;
+    do not mix old-vintage adjusted figures.
+  not_owner_earnings: true
+cash_and_quality:
+  source_refs:
+  - release
+  - supp
+  - cfo
+  Q3_CFO_reconciliation:
+    GAAP_NI: 65287
+    SBC: 2088
+    DA: 1254
+    deferred_taxes: 676
+    derivative_losses: 492
+    equity_gains: -1767
+    other: -183
+    AR: -18052
+    inventory: -8148
+    prepaids_other_assets: -1366
+    AP: 4424
+    accruals_current: 1651
+    other_longterm_liabilities: 1897
+  Q3_AR_inventory_cash_use: -26200
+  Q3_AP_accrual_cash_contribution: 6075
+  9M_equity_gains: 25474
+  Q3_RnD: 7454
+  Q3_SGandA: 1702
+  management_explanations:
+  - Gross margin Y/Y improved Blackwell Ultra mix; sequential initial Rubin ramp.
+  - Compute infrastructure and compensation drove opex; cash tax timing affected sequential CFO.
+  - AR/DSO reflects shipment timing and extended terms for certain investment-grade customers.
+  causality_limit: These are issuer explanations, not independently isolated causal bridges or proof collectible
+    future receivables.
+  9M_CFO: 122675
+  9M_NI: 183297
+  9M_SBC: 6042
+  cash_PPE_includes_intangibles: true
+  owner_cash_flow: null
+balance:
+  source: supp
+  dates:
+  - '2026-10-25'
+  - '2026-01-25'
+  cash:
+  - 29089
+  - 10605
+  marketable_debt_securities:
+  - 24423
+  - 39065
+  marketable_equity_securities:
+  - 44219
+  - 12886
+  AR:
+  - 81033
+  - 38466
+  inventory:
+  - 39724
+  - 21403
+  PPE_net:
+  - 19227
+  - 10383
+  nonmarketable_securities:
+  - 65528
+  - 22251
+  assets:
+  - 372188
+  - 206803
+  liabilities:
+  - 105522
+  - 49510
+  equity:
+  - 266666
+  - 157293
+  short_debt:
+  - 0
+  - 999
+  long_debt:
+  - 32371
+  - 7469
+  Q3_cash_plus_debt_securities: 53512
+  Q3_cash_only_net_debt: 3282
+  Q3_cash_plus_debt_securities_net_debt: -21141
+  inventory_composition_current:
+    raw_material: 15802
+    WIP: 17767
+    finished_goods: 6155
+  inventory_provision_Q3_current_prior:
+  - 680
+  - 378
+  private_equity_rollforward_Q3:
+    begin: 47898
+    additions: 15431
+    gains: 804
+    reclassification: -637
+    impairments_losses: -1846
+    end: 61650
+  private_vs_nonmarketable_limit: 61650 private equity rollforward is not whole nonmarketable securities65528. Public
+    equity and restricted holdings are not cash equivalents.
+  reported_DSO_days_current_previous:
+  - 64
+  - 60
+  DSO_status: Issuer metric, not rederived without exact daily convention
+commitments:
+  source: cfo
+  unit: USD billion
+  supply_and_capacity: 390
+  prior_supply: 279
+  cloud_services: 28
+  uncommenced_DC_leases: 74
+  prior_cloud_plus_DC_leases: 74
+  equity_investments: 20
+  capex: 6
+  table_total: 518
+  additional_neocloud_max: 32
+  neocloud_conditions:
+  - Customer financing
+  - Infrastructure deployed and operational
+  - Accepted by NVIDIA
+  maximum_gross_guarantees:
+    neocloud_land_power_shell: 3.5
+    SB_Energy: 105
+    power_systems: 9.5
+    total: 118
+  guarantees_paid_to_date: 0
+  guarantee_timing: SB Energy phases expected from FY2029, building readiness conditions; max not current debt.
+  no_additive_cash_sum: Do not add commitments, contingent neocloud maximum and guarantees as near-term cash payments;
+    overlap/contingency and timing differ.
+customer_geography:
+  source: supp
+  Q3_geographic_revenue_USDm:
+    US: 72899
+    Taiwan: 30295
+    China_HK: 11050
+    other: 1600
+  location_basis: Direct customer headquarters, not shipping destination/end customer.
+  three_direct_customers_Q3_revenue_pct:
+  - 14
+  - 11
+  - 11
+  two_direct_customers_AR_pct:
+  - 18
+  - 17
+  identity: null
+  China_Hopper_shipments_USDbn: 2.4
+  Hopper_source: cfo issuer description; not automatically identical to geography revenue.
+guidance:
+  source: release Outlook; cfo
+  issuer: NVIDIA management
+  published_on: '2026-11-17'
+  target: FY2027Q4
+  unit: USD billion except percentages
+  revenue_midpoint: 130
+  tolerance_pct: 3
+  computed_revenue_low: 126.1
+  computed_revenue_high: 133.9
+  computed_midpoint_vs_current_pct: 12.219881910155038
+  GAAP_and_nonGAAP_GM_range_pct:
+  - 71
+  - 72
+  GAAP_opex: 11
+  nonGAAP_opex: 10.7
+  FY27_tax_pct_range:
+  - 16
+  - 18
+  exclusions: Tax excludes discrete items/material tax-environment changes; no China Data Center compute revenue
+    assumed.
+  calendar_caveat: Q4 has one extra week; no assertion reported growth equals weekly organic growth.
+  fulfilment: Future target not due; not realized revenue.
+transcript:
+  url: https://stockanalysis.com/stocks/nvda/transcripts/739383-q3-2027/
+  publisher: StockAnalysis; credits Quartr
+  status: provisional third-party full transcript, not NVIDIA corrected
+  date_shown: '2026-11-17'
+  precise_publication_time: null
+  access_utc: '2026-11-17T23:49:03.224878Z'
+  response_sha256: 3cbf4bb4e0beb7c0f8296a2fc84bdf96dc6fd05c1e64ea7c6b7f912d5372e6c2
+  normalized_body_sha256: 4ea61a1630b97d8e3b69c6567c949be27c38e676831f7cbd9ab7c7d9dfb582d8
+  normalization: Visible paragraphs, collapsed whitespace, newline joined
+  characters: 40390
+  paragraphs: 68
+  full_QandA_structural_check: true
+  analysts:
+  - Joseph Moore
+  - Vivek Arya
+  - Timothy Arcuri
+  - CJ Muse
+  - Stacy Rasgon
+  - Ben Reitzes
+  - Joshua Buchalter
+  - Jim Schneider
+  completeness_evidence: Opening, prepared remarks, explicit Q&A transition, analyst blocks, no further questions,
+    management closing and operator disconnect.
+  coverage_summary: Questions cover growth, leadership transition, margins, financing guarantees, capacity allocation
+    and capital allocation. Full structural reading is not an audio audit.
+  precision_cautions:
+  - Arcuri question uses calendar2027; Kress margin response uses FY2028.
+  - Frontier-lab share denominator is Data Center, not consolidated revenue.
+  - Apparent speaker-transition/diarization error; uncertain passages are not authoritative quotations.
+  official_crosscheck: SEC99.1 revenue, Data Center, current margins, Q4 revenue/range, extra week and opex agree.
+    Call-only FY2028 claims not independently verified.
+  original_saved: false
+  official_audio_reviewed: false
+  terms:
+    url: https://stockanalysis.com/terms-of-use/
+    robots: https://stockanalysis.com/robots.txt
+    checked_window_UTC: 2026-11-17T23:46Z/23:47Z
+    basis: Automated access section excepts AI agents following robots; transcript route not disallowed. No content
+      republication or bulk collection.
+    excluded_source: SingjuPost not used; lead reports automated extraction prohibited.
+  cutoff_limit: First accessed23:47:24Z, later than initial23:43Z cutoff; date-only publication cannot prove visible
+    by initial cutoff. Separately disclosed later-source observation, not backdated.
+  analyst_count_QA_reconciliation:
+    count: 8
+    basis: Eight distinct operator question introductions verified; earlier separate reviewer reported seven groups,
+      reconciled as explicit named introductions rather than arbitrary grouped rounds.
+    access_utc: '2026-11-18T00:00:08.937834+00:00'
+    response_sha256: 01a60ea4a9ab4971bf334fb7654b738d4fc694f89f6f29e886132168f74fb288
+    limitation: This metadata recount is not an official audio verification or correction of transcript.
+site_study:
+  status: blocked
+  study_configs_created: false
+  fetch_check_bundle_run_verify_executed: false
+  source_availability: SEC99.1/99.3 HTML has financial statements; missing Q3 10-Q alone is not schema blocker.
+  schema_impediment: CASH_METRICS cfo/cash_ppe only; checker and quarter_rows hardcode CFO−cash_ppe; renderer/findings
+    label issuer-defined. NVIDIA requires additional principal deduction.
+  code_pointers:
+  - src/investment_os/earnings/__init__.py:47,298,405
+  - src/investment_os/research/earnings_quarter.py:66
+  - src/investment_os/site/earnings_quarter.py
+  independent_executed_example:
+    Q3_code_FCF: 43831
+    Q3_issuer_FCF: 43777
+    Q3_overstatement: 54
+    Q2_code_FCF: 21400
+    Q2_issuer_FCF: 21341
+    Q2_overstatement: 59
+  rejected_workaround: Do not omit issuer_fcf and retain false label or aggregate principal into cash_ppe.
+  needed_change: Explicit principal-payment input, FCF formula/checker/label support; code/contract change requires
+    separate bounded implementation and README PR workflow.
+  publication: No archive/site page created or claimed.
+method_execution:
+  library_commit: ea65b013157284c82b98950ae5fe47de10109d70
+  clean_gate: Direct status --porcelain empty; main...origin/main ahead1, committed local HEAD permitted by resume
+    request.
+  route: post_earnings first financial reading; no prior thesis score
+  route_status: Bounded step mapping finalized on resumed committed route; data-insufficient and unexecuted parts
+    explicit.
+  cards:
+  - id: guidance-tracking-playbook
+    steps:
+    - 1
+    - 2
+    - 3
+    - 6
+    status: partial
+    execution: Prior Q3 guidance vs actual and new Q4 outlook registered separately. No historical full-cycle fulfilment-rate
+      study; future Q4 not due.
+    committed_card_sha256: 93728319b7ca1c00adec4e92eed74c45ad47823aa64b28a7d71fd58265dc6ad6
+    task_test_status: 未实测 unless previously tested subset explicitly identified; this is an application not validation
+  - id: earnings-quality-checklist
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    status: partial
+    execution: 1 organic/acquisition bridge absent; 2 actual vs prior management range only, no consensus; 3 next-quarter
+      guide not same-target annual revision count; 4 no verified RPO trend, supplier/customer commitments not revenue;
+      5 five-quarter consolidated GAAP trend, issuer adjusted current/Q2/YoY only; 6 rounded market platform and
+      segment tables; 7 CFO/NI series with tax/working-capital caveats.
+    committed_card_sha256: d1c472bc076b2ec6c179ba02dbf259196f55aabc0e70a60aea6656180a8709c0
+    task_test_status: 未实测 unless previously tested subset explicitly identified; this is an application not validation
+  - id: earnings-call-forward-read
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    status: partial
+    execution: Same-quarter prepared/full Q&A structurally read, provisional transcription; current and next-quarter
+      numeric claims checked SEC; longer-term call-only assertions not promoted to filed guidance. Step4 market-price
+      reaction unsupported, no calculation.
+    committed_card_sha256: 11ed789c9c873d61c2952c42efd3273da88fc6b73c0723836df2aa9bc6b4e76f
+    task_test_status: 未实测 unless previously tested subset explicitly identified; this is an application not validation
+  - id: margin-forecast-drivers
+    steps:
+    - 1
+    - 4
+    - 5
+    status: partial historical only
+    execution: Issuer mix/ramp/expense explanation and disclosed adjustments retained. No product margins to make
+      a weighted segment margin bridge or forecast; no inferred basis-point attribution.
+    committed_card_sha256: 4318aa8dbc4e8e6f1b4edc5b9e352e2b24423ae24e9be34d9fed40917c6a3203
+    task_test_status: 未实测 unless previously tested subset explicitly identified; this is an application not validation
+  - id: normalized-earnings
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    status: partial; full normalization not produced
+    execution: Equity gains, impairments, acquisition/legal adjustments and SBC policy documented; issuer GAAP/nonGAAP
+      reconciled, not an independent sustainable earnings baseline. Persistence/forecast claims unsupported.
+    committed_card_sha256: 110f76659a5092ee86848b652f364e5a01e45e4ed771c59e4a0e8c59eb171113
+    task_test_status: 未实测 unless previously tested subset explicitly identified; this is an application not validation
+  - id: forensic-red-flags
+    steps:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    status: partial evidence screening only
+    execution: 1 CFO/NI and cash bridge; 2 reported DSO increase only, no long trend inferred; 3 inventory makeup/provisions;
+      4 changed issuer SBC exclusion policy and current adjustment table. 5 organic bridge absent; 6 full disclosure-reduction
+      audit not executed; 7 capitalization test absent; 8 leadership/governance investigation not independently
+      assessed here. No misconduct conclusion or score.
+    committed_card_sha256: 7a5d75c8a73271102331dfb01dd1adec047a63adc3e9a397681665bba42936bd
+    task_test_status: 未实测 unless previously tested subset explicitly identified; this is an application not validation
+  previously_tested_subset:
+  - earnings-quality-checklist 1/5/6/7
+  - guidance-tracking-playbook 1–3
+  not_executed:
+  - 'Market reaction: no compliant daily price source in this record'
+  - 'Valuation: explicitly excluded'
+  - 'Prior thesis update: no prior thesis scored'
+  - 'Five-year DuPont and full working-capital forecast: not executed'
+  - 'Full historical annual/quarterly guidance fulfilment statistics: not executed'
+  public_boundary: Only IDs, steps, commit/hash and execution/coverage state; no private card bodies or method provenance
+    judgments.
+verification:
+  independent_primary_numbers: 'PASS: separate registered-client read reconciles current Q3/Q2/YoY GAAP/nonGAAP
+    and CFO/FCF, release and supplemental same values.'
+  independent_call_lane: PASS structural complete same-quarter transcript; provisional and no audio verification.
+  independent_site_lane: PASS diagnosis through actual quarter_rows calculation; config-only repair not valid.
+  history_extension: Parent-derived Q4/Q1; independent followup hit usage limit; arithmetic identities checked but
+    full historical source-vintage comparison incomplete.
+  YAML: PASS, rechecked after committed-route update
+  public_boundary: 'PASS: full new record and HANDOFF addition checked; no private method bodies/provenance judgments,
+    personal holdings/theses, email, local absolute paths, credentials or original content.'
+  final_followup_limit: 'Native final read-only followup attempt blocked by PreToolUse: Native hook relay unavailable.
+    Completed independent source/number/call/site results retained; no claim added history received independent
+    final file signoff.'
+  unresolved_material_numeric_differences: No unresolved material difference in independently covered Q3/Q2/YoY
+    and issuerFCF inputs. Independent helper found Q1 historical printed-vs-derived1 USDm differences in revenue/OP/NI;
+    exact values and derivation retained in historical_source_inconsistency, cause unknown, not a restatement claim.
+    Site formula discrepancy54/59 remains blocked, no incorrect site output accepted.
+  prior_guidance_arithmetic: PASS local Decimal/exact rational cross-check; separate native final arithmetic review
+    unavailable (hook relay), inputs exposed for lead independent check.
+limitations:
+- Q3 10-Q not yet observed; disclosures furnished unaudited, not a substitute for forthcoming full notes.
+- No audited organic-growth or price/volume/acquisition bridge or current formal segment operating profit table;
+  rounded platform numbers kept rounded.
+- No consensus or stock reaction input; no assumed expectations beat.
+- Current transcript provisional and later accessed, not official corrected/audio aligned.
+- Site FCF schema incompatible; no invalid study built.
+- No full historical guidance fulfilment study or five-year DuPont/forecast; actual method coverage recorded, not
+  claimed complete.
+- Historical FY27Q1 printed vs derived revenue/OP/NI differ by1 USDm; cause unresolved, chosen current-release derivation
+  explicit; see historical_source_inconsistency.
+prior_guidance_check:
+  source: prior_guidance
+  issuer: NVIDIA management
+  made_on: '2026-08-26'
+  target: FY27Q3
+  unit: USD million except margins
+  revenue_midpoint: 108000
+  tolerance_pct: 2
+  range_low: 105840
+  range_high: 110160
+  actual_revenue: 115844
+  actual_minus_midpoint: 7844
+  actual_vs_midpoint_pct: 7.26296296296296
+  actual_minus_upper_bound: 5684
+  comparison: Above stated upper revenue range; not a consensus beat claim.
+  GAAP_and_nonGAAP_GM_midpoint_pct: 74
+  margin_tolerance_pp: 0.5
+  actual_GAAP_margin_pct: 74.8213114188046
+  reported_nonGAAP_margin_pct: 74.9
+  scope_caveat: Margin outlook conditioned on revenue outlook; actual higher revenue prevents isolating execution/mix
+    effects from simple range comparison.
+  GAAP_opex_approx: 9200
+  nonGAAP_opex_approx: 9000
+  actual_GAAP_opex: 9156
+  actual_nonGAAP_opex: 8841
+  approx_point_comparison: Differences only, no invented tolerance/pass threshold.
+  SEC_accession: 0001045810-26-000073
+  URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/q2fy27pr.htm
+  source_form: 8-K furnished Exhibit99.1 HTML
+  exact_short_excerpts:
+    revenue: Revenue is expected to be $108.0 billion, plus or minus 2%.
+    gross_margin_numeric_clause: 74.0%, plus or minus 50 basis points.
+  gross_margin_clause_scope: Applies to both GAAP and non-GAAP gross margins; source Outlook for FY2027 third quarter.
+  period_of_statement: Q2 FY2027 release made2026-08-26, outlook targets Q3FY2027 ended2026-10-25; not Q2 actual.
+  range_comparison_rule: Closed stated numeric intervals; report above/inside/below separately. Above upper is not
+    labeled failure or inside-range achievement. No consensus comparison.
+  revenue_range_result:
+    low_USDm: 105840
+    high_USDm: 110160
+    actual_USDm: 115844
+    inside_stated_range: false
+    at_least_lower_bound: true
+    above_upper_bound: true
+    outcome: Exceeded stated upper bound by5684 USDm; above midpoint by7844 USDm.
+    versus_midpoint_percent: 7.262962962962963
+  gross_margin_range_result:
+    low_percent: 73.5
+    high_percent: 74.5
+    GAAP_actual_unrounded_percent: 74.8213114188046
+    nonGAAP_actual_unrounded_percent: 74.86274645212528
+    GAAP_above_upper_pp: 0.3213114188045993
+    nonGAAP_above_upper_pp: 0.3627464521252719
+    GAAP_inside_range: false
+    nonGAAP_inside_range: false
+    outcome: Both actual margins above stated upper bound; reported74.8%/74.9% give same directional result.
+  bounded_arithmetic_QA:
+    decimal_implementation: 108000*(1±0.02), actual−midpoint/upper; 100*GP/revenue
+    separate_exact_rational_implementation: fractions.Fraction independently checks interval endpoints, 1961/270
+      percent midpoint excess, and each GP/revenue >74.5 percent.
+    result: 'PASS: Decimal and exact rational arithmetic agree.'
+    independent_agent_status: Existing source/actual independent verification retained; native followup for this
+      added arithmetic blocked by Native hook relay unavailable. Local dual-implementation QA is not independent-agent
+      signoff.
+historical_source_inconsistency:
+  id: FY27Q1_printed_vs_derived
+  unit: USD million
+  evidence_status: Reported by lead independent numeric helper; no additional refetch in this bounded correction
+  source_refs:
+  - release
+  - prior_guidance
+  Q2_release_URL: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/q2fy27pr.htm
+  Q2_release_accession: 0001045810-26-000073
+  fields:
+    revenue:
+      Q2_release_printed_Q1: 81615
+      current_Q3_9M: 293681
+      Q2: 96221
+      Q3: 115844
+      chosen_derived_Q1: 81616
+      derived_minus_printed: 1
+    op_income:
+      Q2_release_printed_Q1: 53536
+      chosen_derived_Q1: 53537
+      derived_minus_printed: 1
+    NI:
+      Q2_release_printed_Q1: 58321
+      chosen_derived_Q1: 58322
+      derived_minus_printed: 1
+  additional_same_document_check:
+    Q2_release_6M_revenue: 177837
+    Q2_release_Q2_revenue: 96221
+    6M_minus_Q2: 81616
+    printed_Q1_revenue: 81615
+    difference: 1
+  chosen_policy: Retain current-release9M−Q2−Q3 derivation in quarter_inputs FY27Q1 and its derived metrics. The
+    Q1 row is derived, not a directly printed Q1 figure. Printed comparison values are retained here; no silent
+    plug.
+  classification: Small filing-table arithmetic/source-vintage inconsistency; cause not established. Not proof of
+    a restatement.
+  materiality_scope: Each difference1 USDm is below0.002% of its printed Q1 base; immaterial to qualitative consolidated
+    trend at displayed precision. Q3/Q2/YoY headline inputs and prior-guidance check unchanged. This does not establish
+    all source discrepancies immaterial.
+  derived_minus_printed_pct:
+    revenue: 0.0012252649635483674
+    op_income: 0.001867901972504483
+    NI: 0.0017146482399135817
