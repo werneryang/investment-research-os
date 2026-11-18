@@ -6,6 +6,28 @@
 # patterns：运行时带日期、数字生成的句子。zh 是整句匹配的正则，命名分组在 en 中以 {name} 引用；
 #   分组内容本身再查 phrases（列表中的「、」换成英文逗号）。
 phrases:
+  完整正常化和可持续利润: Complete normalization and sustainable earnings
+  未取得/处理电话会及 Q&A: Call and Q&A not obtained or processed
+  市场反应、价格及隐含预期未覆盖: Market reaction, prices and implied expectations not covered
+  Tesla：2026 年第三季度财报研究: 'Tesla: third-quarter 2026 earnings study'
+  Tesla Q3 2026 的报告收入、分部毛利润、合并及普通股股东净利润、季度现金流相对上季与去年同期如何变化？累计减算与机械现金差额有哪些限制？: How did Tesla Q3 2026 reported revenue, segment
+    gross profit, consolidated and common-stockholder earnings, and quarterly cash flow compare with the prior quarter and year?
+    What limits apply to cumulative subtraction and the mechanical cash difference?
+  仅同批 SEC 10-Q/10-K HTML，报告口径；不引入后续申报或电话会: Only the same SEC 10-Q/10-K HTML, reported basis; no later filing or call inputs
+  固定原文 SHA、逐字数值存在性、会计恒等式及来源期间核验: Pinned source SHA, number existence, accounting identities and source-period checks
+  与已发布走查逐字段对照并独立复核源行列与减算: Field-by-field walkthrough comparison and independent source-row and subtraction review
+  固定证据包 iros verify 复现: Fixed-bundle iros verify reproduction
+  现金流季度值由累计相减；2025 Q4 利润表由全年减 9M 比较数，非直接季度披露: Quarterly cash flow is cumulative subtraction; Q4 2025 income is annual less nine-month
+    comparatives, not a directly reported quarter
+  正式汽车分部包含服务及其他，利润指标是毛利润，不是分部营业利润: Automotive includes Services and other; segment profit means gross profit, not operating
+    income
+  同批 SEC 文件未找到发行人 FCF 定义，CFO−现金 PPE 仅为机械差额，非可分配现金: No issuer FCF definition was found in these SEC files; CFO less cash PPE
+    is a mechanical difference, not distributable cash
+  关税退款、公允价值及股份支付影响报告可比性；不作完整正常化、预测或投资判断: Tariff refunds, fair values and SBC affect comparability; no full normalization, forecast
+    or investment judgment
+  电话会、股价反应、估值与隐含预期不在本页范围: Calls, market reaction, valuation and implied expectations are outside this page
+  模型复核不是人工审计；本页数据截止日沿用原任务 2026-11-16，技术取得时间另记: Model review is not a human audit; the original data cutoff remains 2026-11-16
+    and technical retrieval timestamps are recorded separately
   "Intel 的上下游关系链（2025 财年申报）": "Intel's upstream and downstream relationship chain (fiscal 2025 filings)"
   "从 Intel 2025 财年年报披露的直接关系出发，按登记的关系向上游、下游各展开两层，需求可能沿哪些公司与业务传导？ 链在哪里断开、为什么断开？Intel 营收变化期间，链上供应方在各自年报中的营收是否同期变化？": "Starting from the direct relationships disclosed in Intel's fiscal 2025 annual report and expanding two layers upstream and downstream along registered relationships, through which companies and businesses could demand pass? Where does the chain stop, and why? While Intel's revenue changed, did the revenue of suppliers on the chain change over the same period in their own annual reports?"
   "关系来自公司年报的披露：Intel 称其供应链有数千家供应商，原文只点名 ASML 与台积电，没有点名不等于没有关系": "Relationships come from annual-report disclosures: Intel says its supply chain has thousands of suppliers, and the filing names only ASML and TSMC; not being named does not mean no relationship exists"

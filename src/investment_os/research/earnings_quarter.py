@@ -34,6 +34,10 @@ PRINCIPAL_FCF_CALIBER = {
     "zh": "自由现金流按发行人定义：经营活动现金流减购置固定资产/无形资产的现金支出，再减相关本金支付。购置支出与本金分列，资本开支/收入与经营现金流/资本开支比率中的资本开支仅指购置支出；不是可分配现金，也未计入证券买卖、并购或其他融资。",
     "en": "Free cash flow as the issuer defines it: operating cash flow less cash purchases of property, equipment and intangible assets, less related principal payments. Purchases and principal are separate; capex/revenue and operating cash flow/capex ratios use purchases only. Not distributable cash; securities transactions, acquisitions and other financing are outside it.",
 }
+MECHANICAL_CASH_CALIBER = {
+    "zh": "经营活动现金流减购置固定资产现金支出的机械差额；未核实为发行人定义的自由现金流，不是可分配现金或持续性 owner cash。累计披露相减的单季值另标推导来源。",
+    "en": "Mechanical difference of operating cash flow less cash purchases of property and equipment; not verified as issuer-defined free cash flow, distributable cash or sustainable owner cash. Quarters derived by subtracting cumulative disclosures are separately identified with their sources.",
+}
 NUMERALS = "零一二三四五六七八九十"
 NUMERALS_EN = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]
 
@@ -59,7 +63,7 @@ def _load(inp: StudyInput, earnings_id: str) -> tuple[dict[tuple[str, str], dict
     return table, bundle, (bundle.get("earnings") or {}).get(earnings_id) or {}
 
 
-def quarter_rows(table: dict[tuple[str, str], dict[str, float]], p: dict[str, Any]) -> list[dict[str, Any]]:
+def quarter_rows(table: dict[tuple[str, str], dict[str, float]], p: dict[str, Any], cash_derivations: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     """profile.quarters 的各季度合并指标；没有直接披露的季度 = derive.total − derive.less（推导）。"""
     rows = []
     for q in p["quarters"]:
@@ -68,6 +72,9 @@ def quarter_rows(table: dict[tuple[str, str], dict[str, float]], p: dict[str, An
         c = table[("cash_flow", q["id"])]
         r: dict[str, Any] = {"period": q["id"], "label": q["label"], "end": q["end"], "derived": bool(d), **v,
                              **{m: c[m] for m in cash_metrics(p)}, "free_cash_flow": free_cash_flow(c, p)}
+        if q["id"] in (cash_derivations or {}):
+            r["cash_derived"] = True
+            r["cash_derivation"] = cash_derivations[q["id"]]
         r["gross_profit"] = v["revenue"] - v["cost_of_revenues"]
         r["gross_margin"] = _ratio(r["gross_profit"], v["revenue"])
         r["op_margin"] = _ratio(v["op_income"], v["revenue"])
@@ -126,7 +133,8 @@ def cash_conversion(rows: list[dict[str, Any]], table: dict[tuple[str, str], dic
                     p: dict[str, Any]) -> dict[str, Any]:
     by = {r["period"]: r for r in rows}
     out: dict[str, Any] = {"current_free_cash_flow": by[p["current"]]["free_cash_flow"],
-                           "issuer_fcf": {k: v for k, v in (fcf or {}).items() if k != "document"}, "caliber": PRINCIPAL_FCF_CALIBER if p.get("fcf_deduct_principal") is True else CALIBER["fcf"]}
+                           "issuer_fcf": {k: v for k, v in (fcf or {}).items() if k != "document"}, "caliber": (MECHANICAL_CASH_CALIBER if p.get("fcf_caliber") == "mechanical" else
+                                       PRINCIPAL_FCF_CALIBER if p.get("fcf_deduct_principal") is True else CALIBER["fcf"])}
     ytd = p.get("year_to_date")
     if ytd:
         cf = table[("cash_flow", ytd["id"])]
@@ -206,6 +214,9 @@ def method_text(p: dict[str, Any], n_quarters: int) -> dict[str, str]:
           + "".join(f"{q['name']['en']} is derived as {q['derive']['method']['en']}. " for q in derived)
           + f"Margins are percent of same-period revenue; year over year compares with {by[p['yoy_base']]['name']['en']} and quarter over quarter with "
             f"{by[p['qoq_base']]['name']['en']}; free cash flow follows the issuer definition. ")
+    if p.get("fcf_caliber") == "mechanical":
+        zh = zh.replace("自由现金流按发行人定义。", "经营现金流减现金购置支出仅为算术差额，未核实为发行人 FCF 定义。")
+        en = en.replace("free cash flow follows the issuer definition.", "operating cash flow less cash purchases is an arithmetic difference, not verified as an issuer FCF definition.")
     clause = p.get("bridge_clause")
     if clause:
         zh += clause["zh"]
@@ -226,7 +237,7 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
     p = reg.get("profile")
     if not p:
         raise ValueError(f"财报证据包中的 {earnings_id} 没有 profile；用 iros earnings bundle 重新生成")
-    rows = quarter_rows(table, p)
+    rows = quarter_rows(table, p, reg.get("cash_derivations"))
     comp = comparisons(rows, p)
     notes = reg["notes"]
     ytd = p.get("year_to_date")
@@ -252,6 +263,8 @@ def run(study: StudySpec, inputs: dict[str, StudyInput], registry: Registry) -> 
         "summary": {"quarters": len(rows), "derived_quarters": sum(r["derived"] for r in rows), "notes": len(notes),
                     "coverage": {s: sum(c["status"] == s for c in coverage_items) for s in ("done", "data_gap", "judgment")}},
     }
+    if reg.get("cash_derivations"):
+        results["cash_derivations"] = reg["cash_derivations"]
     return ResearchResult(
         study_id=study.study_id, title=study.title, question=study.question, result_type=study.result_type,
         branch=study.branch, scope=study.scope, data_cutoff=max(published) if published else None,

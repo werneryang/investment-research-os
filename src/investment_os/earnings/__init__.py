@@ -23,7 +23,7 @@ import json
 import math
 import re
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable
 
@@ -124,6 +124,99 @@ def free_cash_flow(cash: dict[str, Any], p: dict[str, Any]) -> float:
     return cash["cfo"] - cash["cash_ppe"] - (cash["cash_ppe_principal"] if p.get("fcf_deduct_principal") is True else 0)
 
 
+def cash_flow_label(p: dict[str, Any], *, qualified: bool = True) -> dict[str, str]:
+    """Distinguish a mechanical difference from a verified issuer FCF definition."""
+    if p.get("fcf_caliber") == "mechanical":
+        return {"zh": "经营现金流−现金购置支出（算术差额）", "en": "Operating cash flow less cash purchases (arithmetic difference)"}
+    return {"zh": "自由现金流（发行人定义）" if qualified else "自由现金流",
+            "en": "Free cash flow (issuer definition)" if qualified else "Free cash flow"}
+
+
+def cash_derivations(reg: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    """Provenance for single-level subtraction, never a fabricated direct filing row."""
+    cash = reg.get("cash_flow") or {}
+    docs = {d["id"]: d for d in reg.get("documents") or []}
+    out = {}
+    for pid, cf in cash.items():
+        d = cf.get("derive")
+        if not d:
+            continue
+        parents = [{"period": d[k], "document": cash[d[k]]["document"],
+                    "start": str(cash[d[k]]["start"]), "end": str(cash[d[k]]["end"]),
+                    **{m: docs[cash[d[k]]["document"]][m] for m in ("accession", "form", "url", "accepted_at")}}
+                   for k in ("total", "less")]
+        out[pid] = {**d, "expression": f"{d['total']} - {d['less']}", "start": str(cf["start"]), "end": str(cf["end"]),
+                    "sources": parents, "accepted_at": max(parents, key=lambda x: pd.Timestamp(x["accepted_at"]))["accepted_at"]}
+    return out
+
+
+def resolved_cash(reg: dict[str, Any], pid: str) -> dict[str, float]:
+    """Compute only from direct parents; callers validate the graph first."""
+    cash, p = reg["cash_flow"], reg["profile"]
+    cf = cash[pid]
+    if not cf.get("derive"):
+        return {m: cf[m] for m in cash_metrics(p)}
+    d = cf["derive"]
+    return {m: cash[d["total"]][m] - cash[d["less"]][m] for m in cash_metrics(p)}
+
+
+def _cash_errors(reg: dict[str, Any]) -> list[str]:
+    cash, p = reg.get("cash_flow") or {}, reg["profile"]
+    docs = {d.get("id"): d for d in reg.get("documents") or []}
+    errs = []
+    for pid, cf in cash.items():
+        where = f"cash_flow.{pid}"
+        d = cf.get("derive")
+        if "derive" not in cf:
+            if "cash_ppe_principal" in cf and p.get("fcf_deduct_principal") is not True:
+                errs.append(f"{where}.cash_ppe_principal 需要显式启用 profile.fcf_deduct_principal")
+            for m in cash_metrics(p):
+                v = cf.get(m)
+                if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
+                    errs.append(f"{where}.{m} 需要有限数值（不能缺失）")
+                elif m != "cfo" and v < 0:
+                    errs.append(f"{where}.{m} 应为非负现金支出")
+            continue
+        if not isinstance(d, dict) or set(d) != {"total", "less", "method", "note"} or not _bi(d.get("method")) or not _bi(d.get("note")):
+            errs.append(f"{where}.derive 需要 total、less、中英文 method 与 note，且不能有其他字段")
+            continue
+        if set(cf) - {"label", "start", "end", "derive"}:
+            errs.append(f"{where} 推导值不能混入 document、数值或其他直接披露字段")
+        ids = [d.get("total"), d.get("less")]
+        if any(not isinstance(k, str) or k not in cash for k in ids):
+            errs.append(f"{where}.derive 引用了不存在的现金流期间")
+            continue
+        parents = [cash[k] for k in ids]
+        if len(set(ids)) != 2 or pid in ids or any("derive" in c for c in parents):
+            errs.append(f"{where}.derive 只能用两个不同的直接期间，不能嵌套或循环")
+            continue
+        for c in parents:
+            doc = docs.get(c.get("document"))
+            if not doc or not doc.get("accepted_at"):
+                errs.append(f"{where}.derive 父期间需要已登记的原文与 accepted_at")
+            else:
+                try:
+                    if pd.Timestamp(doc["accepted_at"]).tzinfo is None:
+                        raise ValueError
+                except (TypeError, ValueError):
+                    errs.append(f"{where}.derive 父原文 accepted_at 需要带时区时间")
+        try:
+            a, b = parents
+            start, end, a_start, a_end, b_start, b_end = [date.fromisoformat(str(x)) for x in
+                (cf["start"], cf["end"], a["start"], a["end"], b["start"], b["end"])]
+            if not (a_start == b_start <= b_end < a_end == end and start == b_end + timedelta(days=1)):
+                raise ValueError
+        except (KeyError, TypeError, ValueError):
+            errs.append(f"{where}.derive 期间必须同起点，终点嵌套，差额紧接 less 终点至 total 终点")
+        # Parent numeric errors are reported separately; avoid arithmetic on invalid data.
+        if all(isinstance(c.get(m), (int, float)) and not isinstance(c.get(m), bool) and math.isfinite(c[m])
+               for c in parents for m in cash_metrics(p)):
+            for m in cash_metrics(p):
+                if m != "cfo" and parents[0][m] - parents[1][m] < 0:
+                    errs.append(f"{where}.{m} 推导现金支出不能为负")
+    return errs
+
+
 def display_keys(p: dict[str, Any]) -> set[str]:
     """页面、图表与比率可以引用的行键：利润表科目、现金流、研究分支算出的指标。"""
     keys = set(p.get("income_metrics") or []) | set(cash_metrics(p)) | set(COMPUTED_KEYS) | {r.get("key") for r in p.get("ratios") or []}
@@ -160,15 +253,14 @@ def profile_errors(reg: dict[str, Any]) -> list[str]:
         for m in ("cash_ppe", "cash_ppe_principal"):
             if not _bi((p.get("metrics") or {}).get(m)):
                 errs.append(f"profile.metrics.{m} 需要中英文标签（本金与购置支出分列）")
-    for pid, cf in cash.items():
-        if "cash_ppe_principal" in cf and p.get("fcf_deduct_principal") is not True:
-            errs.append(f"cash_flow.{pid}.cash_ppe_principal 需要显式启用 profile.fcf_deduct_principal")
-        for m in cash_metrics(p):
-            v = cf.get(m)
-            if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
-                errs.append(f"cash_flow.{pid}.{m} 需要有限数值（不能缺失）")
-            elif m != "cfo" and v < 0:
-                errs.append(f"cash_flow.{pid}.{m} 应为非负现金支出")
+    if "fcf_caliber" in p and p["fcf_caliber"] not in ("issuer", "mechanical"):
+        errs.append("profile.fcf_caliber 应为 issuer 或 mechanical")
+    if p.get("fcf_caliber") == "mechanical":
+        if p.get("fcf_deduct_principal") or reg.get("issuer_fcf"):
+            errs.append("mechanical 口径不能同时登记发行人 FCF 或本金扣除")
+        if not _bi((p.get("metrics") or {}).get("cash_ppe")):
+            errs.append("mechanical 口径需要 profile.metrics.cash_ppe 中英文真实购置支出口径")
+    errs += _cash_errors(reg)
     for q in qs:
         where = f"profile.quarters {q.get('id')}"
         if not q.get("id") or not q.get("label") or not q.get("end") or not _bi(q.get("name")):
@@ -184,12 +276,25 @@ def profile_errors(reg: dict[str, Any]) -> list[str]:
             errs.append(f"{where} 不在 income 中；没有直接披露的季度要写 derive")
         if q.get("id") not in cash:
             errs.append(f"{where} 不在 cash_flow 中")
+        elif cash[q["id"]].get("derive"):
+            if str(cash[q["id"]].get("end")) != str(q.get("end")):
+                errs.append(f"{where} 的现金流推导终点必须与季度终点一致")
+            if q.get("start") and str(cash[q["id"]].get("start")) != str(q["start"]):
+                errs.append(f"{where} 的现金流推导起点必须与明确的季度起点一致")
     for k in ("current", "yoy_base", "qoq_base"):
         if p.get(k) not in ids:
             errs.append(f"profile.{k} 应是 quarters 中的 id")
     ytd = p.get("year_to_date")
     if ytd and not (ytd.get("id") in cash and set(ytd.get("quarters") or []) <= set(ids) and ytd.get("quarters") and _bi(ytd.get("label")) and _bi(ytd.get("short"))):
         errs.append("profile.year_to_date 需要现金流期间 id、所含季度与中英文 label、short")
+    if ytd and ytd.get("id") in cash and ytd.get("quarters"):
+        ytd_quarters = [q for q in qs if q.get("id") in ytd["quarters"]]
+        if any(cf.get("derive") for cf in cash.values()) and ytd_quarters:
+            if str(cash[ytd["id"]].get("end")) != max(str(q.get("end")) for q in ytd_quarters):
+                errs.append("profile.year_to_date 现金流终点必须与所含季度终点一致")
+            starts = [str(q["start"]) for q in ytd_quarters if q.get("start")]
+            if len(starts) == len(ytd_quarters) and str(cash[ytd["id"]].get("start")) != min(starts):
+                errs.append("profile.year_to_date 现金流起点必须与所含季度起点一致")
     if p.get("trailing") and p["trailing"] not in cash:
         errs.append("profile.trailing 不在 cash_flow 中")
     for ident in p.get("identities") or []:
@@ -235,8 +340,14 @@ def profile_errors(reg: dict[str, Any]) -> list[str]:
         if p.get("segment_ops") or p.get("unallocated") or p.get("share") or (p.get("findings") or {}).get("segment"):
             errs.append("没有分部利润时不能登记分部分解、分部利润发现或未分摊行")
     for sg in p.get("segments") or []:
-        if not sg.get("name") or any(sg.get(k) not in keys for k in ("revenue", "op", "margin")):
-            errs.append(f"profile.segments {sg.get('name')} 需要 name、revenue、op、margin（行键）")
+        custom = "profit" in sg
+        profit = sg.get("profit") if custom else sg.get("op")
+        if not sg.get("name") or sg.get("revenue") not in keys or profit not in keys or sg.get("margin") not in keys:
+            errs.append(f"profile.segments {sg.get('name')} 需要 name、revenue、op 或 profit、margin（行键）")
+        if custom and ("op" in sg or not _bi(sg.get("profit_label")) or not _bi(sg.get("margin_label"))):
+            errs.append("profile.segments.profit 需要明确中英文 profit_label、margin_label，且不能同时写 op")
+        if custom and (p.get("segment_ops") or (p.get("findings") or {}).get("segment")):
+            errs.append("非营业利润分部不能登记 segment_ops 或营业利润率分部发现")
     for k in ("unallocated", "share"):
         if p.get(k) and (p[k].get("key") not in keys or not _bi(p[k].get("label"))):
             errs.append(f"profile.{k} 需要可显示的 key 与中英文 label")
@@ -328,6 +439,8 @@ def check(root: Path, registry: dict[str, dict[str, Any]] | None = None) -> Repo
                 derived = sub(reg["income"][d["total"]]["values"], reg["income"][d["less"]]["values"])
                 _identities(f"{eid}：{q['name']['zh']}（{d['method']['zh']}）", derived, rep, p["identities"])
         for pid, per in reg["cash_flow"].items():
+            if per.get("derive"):
+                continue  # derived values need not occur in either original; direct inputs are checked below
             for m in cash_metrics(p):
                 has(per["document"], per[m], f"现金流 {pid}.{m}")
         fcf = reg.get("issuer_fcf") or {}
@@ -335,7 +448,7 @@ def check(root: Path, registry: dict[str, dict[str, Any]] | None = None) -> Repo
             if pid not in reg["cash_flow"]:
                 rep.errors.append(f"{eid}：发行人自由现金流的期间 {pid} 不在 cash_flow 中")
                 continue
-            cf = reg["cash_flow"][pid]
+            cf = resolved_cash(reg, pid)
             if free_cash_flow(cf, p) != fcf[pid]:
                 rep.errors.append(f"{eid}：{pid} 的登记 FCF 公式不等于发行人披露的自由现金流")
             else:
@@ -443,9 +556,17 @@ def build_bundle(root: Path, clock: Callable[[], datetime] = now_utc) -> dict[st
         for pid, p in reg["income"].items():
             for m in reg["profile"]["income_metrics"]:
                 add("income", pid, m, p["values"][m], p["end"], p["document"])
+        derivations = cash_derivations(reg)
         for pid, p in reg["cash_flow"].items():
-            for m in cash_metrics(reg["profile"]):
-                add("cash_flow", pid, m, p[m], p["end"], p["document"])
+            for m, value in resolved_cash(reg, pid).items():
+                if pid not in derivations:
+                    add("cash_flow", pid, m, value, p["end"], p["document"])
+                else:
+                    provenance = derivations[pid]
+                    records.append({"id": f"{eid}|cash_flow|{pid}|{m}", "date": str(p["end"]), "value": value,
+                                    "published_at": _et_day(provenance["accepted_at"]), "earnings": eid,
+                                    "record": "cash_flow", "period": pid, "metric": m, "derived": True,
+                                    "derivation": provenance})
         for date_, b in reg["balance"].items():
             for m in BALANCE_METRICS:
                 add("balance", date_, m, b["values"][m], date_, b["document"])
@@ -459,6 +580,8 @@ def build_bundle(root: Path, clock: Callable[[], datetime] = now_utc) -> dict[st
             "rpo": reg.get("rpo"), "fx": reg.get("fx"), "per_share": reg.get("per_share"),
             "annual_cash_ppe": reg.get("annual_cash_ppe"), "guidance": reg.get("guidance") or [], "notes": reg["notes"],
             "coverage": reg["coverage"]}
+        if derivations:
+            snapshot[eid]["cash_derivations"] = derivations
     files = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(earnings_dir(root).glob("*.yaml"))}
     return {"schema": BUNDLE_SCHEMA, "unit": UNIT, "records": sorted(records, key=lambda x: x["id"]),
             "metadata": {"purpose": "quarterly earnings studies", "built_at": clock().isoformat(), "earnings_files": files,

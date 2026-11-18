@@ -19,6 +19,7 @@ study_order:
 - event_nvda_ceo_transition_2026
 - earnings_googl_2026q3
 - earnings_nvda_fy27q3
+- earnings_tsla_2026q3
 collections:
   company_filings:
     name: 公司年度财报
@@ -914,6 +915,30 @@ studies:
       primary: true
     entity_ids:
     - co_nvidia
+  earnings_tsla_2026q3:
+    label: 季度财报研究
+    home_group: 公司季度财报
+    routes:
+    - object: company
+      subject: issuer
+      question: fundamentals
+      topic: financials
+      target: earnings-quarterly
+      scope:
+        zh: Tesla Q3 2026 报告财务、分部毛利润及累计减算现金流
+        en: Tesla Q3 2026 reported financials, segment gross profit and cash flow derived from cumulative periods
+      primary: true
+    - object: company
+      subject: issuer
+      question: data
+      topic: comparability
+      target: earnings-comparability
+      scope:
+        zh: Tesla 的分部/产品线、现金差额定义及关税和公允价值可比性
+        en: Tesla segment/product definitions, mechanical cash difference, tariffs and fair-value comparability
+      primary: false
+    entity_ids:
+    - cik_1318605
   earnings_nvda_fy27q3:
     label: 季度财报研究
     home_group: 公司季度财报
@@ -2193,6 +2218,7 @@ entity_aliases:
   - GOOG
   cik_1318605:
   - Tesla
+  - TSLA
   - 特斯拉
   cik_19617:
   - JPMorgan

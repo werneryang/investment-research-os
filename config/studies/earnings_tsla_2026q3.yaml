@@ -1,0 +1,28 @@
+study_id: earnings_tsla_2026q3
+title: Tesla：2026 年第三季度财报研究
+question: Tesla Q3 2026 的报告收入、分部毛利润、合并及普通股股东净利润、季度现金流相对上季与去年同期如何变化？累计减算与机械现金差额有哪些限制？
+result_type: descriptive
+branch: earnings_quarter
+scope:
+  market: US
+  currency: USD
+  start: '2025-07-01'
+  end: '2026-09-30'
+  frequency: quarterly
+  vintage_policy: latest
+data:
+  evidence: earnings_evidence
+method:
+  earnings: tsla_2026q3
+benchmark: 仅同批 SEC 10-Q/10-K HTML，报告口径；不引入后续申报或电话会
+evaluation:
+- 固定原文 SHA、逐字数值存在性、会计恒等式及来源期间核验
+- 与已发布走查逐字段对照并独立复核源行列与减算
+- 固定证据包 iros verify 复现
+limitations:
+- 现金流季度值由累计相减；2025 Q4 利润表由全年减 9M 比较数，非直接季度披露
+- 正式汽车分部包含服务及其他，利润指标是毛利润，不是分部营业利润
+- 同批 SEC 文件未找到发行人 FCF 定义，CFO−现金 PPE 仅为机械差额，非可分配现金
+- 关税退款、公允价值及股份支付影响报告可比性；不作完整正常化、预测或投资判断
+- 电话会、股价反应、估值与隐含预期不在本页范围
+- 模型复核不是人工审计；本页数据截止日沿用原任务 2026-11-16，技术取得时间另记

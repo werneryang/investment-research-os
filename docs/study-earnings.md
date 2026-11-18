@@ -127,3 +127,12 @@ uv run iros run config/studies/earnings_googl_2026q3.yaml
 若只有收入披露、没有可核对的分部营业利润，可设 `profile.segments: []` 并填写双语 `profile.segment_unavailable`；同时不得配置分部利润发现、利润分解、未分摊行或占比行。原披露的 rounded 分部与市场平台收入保留在带出处及逐字数值摘录的 `notes`，不写入精确百万美元利润表，不计算虚构利润率。该选项不放宽已有利润分部的核验。
 
 8-K 附件研究使用 `release.disclosure_form: 8-K` 与 `release.disclosure_date`，不将 8-K 日期写入名为 `form_10q_filed` 的字段。页面与文字报告显示真实表单，furnished/未经审计及未见当季 10-Q 的状态另列在双语 notes；旧 10-Q 登记仍可读取旧字段，不改变其显示。
+
+### 累计现金流减算、毛利润分部与机械现金差额
+
+- `cash_flow.<quarter>.derive: {total, less, method: {zh, en}, note: {zh, en}}` 仅引用两个直接披露的累计期间。父期间及派生期间都需 `start/end`，父期间同起点、终点嵌套，派生期紧接 `less` 终点至 `total` 终点，并与页面季度一致。不能同时填单个 `document` 或声称直接披露的数值，不允许嵌套/循环；支出差额不得为负。
+- `check` 核对父原表数值与期间，证据包保存两个来源、accession、接受时间及减算式，派生值的可得日取较晚来源。运行与现金表保留 `cash_derivations` 并独立标星，不借用利润表的推导标志。
+- 发行人只披露分部毛利润时，分部表用 `profit`、双语 `profit_label` 与 `margin_label`，不冒充 `op`，也不作分部营业利润分解。旧 `op` 登记不变。
+- 未核实发行人 FCF 定义时用 `profile.fcf_caliber: mechanical`，本期仅显示 CFO 减现金 PPE 的机械差额；不能同时登记 `issuer_fcf` 或本金扣除。不是 owner cash，页面、摘要、报告和中英文关键发现均不得称发行人定义 FCF。
+- 该口径采用单独 `earnings_quarter-mechanical-cash.v1` 发现规则；旧发行人定义规则核心源码及指纹不变，既有 GOOGL/NVDA 正式运行仍可复现。
+- 首个实际应用为 Tesla 2026 Q3：同四份原 SEC HTML，Q3 CFO=14,897−8,634=6,263、现金 PPE=13,014−8,282=4,732，差额1,531（百万美元）。Automotive 正式分部含 Services and other，毛利润4,540；不是产品线汽车收入或分部 EBIT。
