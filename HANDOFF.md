@@ -75,3 +75,10 @@
 
 - [已处理 2026-11-15] 2026-11-15 · 词表（不是某张卡）· — · 本仓库的研究问题词表增加了第 11 类「事件与反应」，方法卡的 question 字段沿用这份词表，请决定是否同步 · docs/research-classification.md §2.2
 - [已处理 2026-11-16] 2026-11-15 · event-study-abnormal-return · 所需数据 · 卡写日收益取自「公开行情，复权」，但没写怎样取得、许可有什么限制：准备执行时没找到免注册的免费复权日价（有的来源对脚本下载加了浏览器验证，有的要注册、免费版限个人内部使用），市场指数在 FRED 只有不含股息的价格指数、标普 500 只有最近 10 年；请补「取得方式与许可」或列为执行前提 · HANDOFF.md 第 6 项、config/sources.yaml 的 fred_sp500 核验记录 · 处理结果：已列为执行前提，来源由本仓库定
+
+## 8. NVIDIA FY27 Q3 季度研究：FCF 口径支持待补
+
+- 任务 R-20261117-nvda-earnings，证据见 `methodology/records/sec-nvda-earnings-20261117.yaml` 的 `site_study`。SEC 8-K 的 99.1/99.3 HTML 已有当季报表；缺 Q3 10-Q 不是当前配置的主要阻碍。
+- NVIDIA 发行人 FCF 从 CFO 同时扣现金购置固定资产/无形资产及相关本金支付。现有 `earnings/__init__.py` 的 CASH_METRICS、核对和导入，以及 `research/earnings_quarter.py` 的季度公式，只支持 CFO−cash_ppe；页面/发现仍标发行人定义。独立实测会多报本金支付部分，不能直接套用。
+- 未创建无效 earnings/study 配置，未执行 fetch/check/bundle/run/verify，未发布研究页。不要把本金混进 cash_ppe，或省略 issuer_fcf 核对后沿用错误标签。
+- 待限定实现：增加本金支付科目、FCF 公式与核对/标签支持，补真实科目差异的测试，再按 README 的研究计算/公共契约 PR 流程处理，之后构建并逐字段对照走查。本任务的私有财报结果不因该 site 阻碍而被视为已发布网站研究。
