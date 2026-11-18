@@ -16,12 +16,12 @@ from __future__ import annotations
 from typing import Any
 
 from ..contracts import ResultType
-from ..earnings import sub
+from ..earnings import cash_metrics, free_cash_flow, sub
 from ..quality import ok_rows
 from ..registry import Registry, StudySpec
 from .base import ResearchResult, StudyInput, input_record, register_branch
 
-# 口径说明：这两条对所有公司相同；示意算术与剩余额算术的口径随公司写在 profile.calibers
+# 默认口径说明；本金扣除由 profile.fcf_deduct_principal 显式启用。
 CALIBER = {
     "segment_delta": {"zh": "分部营业利润同比变动合计等于营业利润变动，只是算术分解；不区分价格、规模、产品组合或并购等原因。",
                       "en": "Year-over-year changes of segment operating income sum to the change in operating income; this is an arithmetic split only and "
@@ -29,6 +29,10 @@ CALIBER = {
     "fcf": {"zh": "自由现金流按发行人定义：经营活动现金流减购置固定资产的现金支出。不是可分配现金，也未计入有价证券买卖、并购与融资。",
             "en": "Free cash flow as the issuer defines it: operating cash flow less cash purchases of property and equipment. Not distributable cash; "
                   "purchases of securities, acquisitions and financing are outside it."},
+}
+PRINCIPAL_FCF_CALIBER = {
+    "zh": "自由现金流按发行人定义：经营活动现金流减购置固定资产/无形资产的现金支出，再减相关本金支付。购置支出与本金分列，资本开支/收入与经营现金流/资本开支比率中的资本开支仅指购置支出；不是可分配现金，也未计入证券买卖、并购或其他融资。",
+    "en": "Free cash flow as the issuer defines it: operating cash flow less cash purchases of property, equipment and intangible assets, less related principal payments. Purchases and principal are separate; capex/revenue and operating cash flow/capex ratios use purchases only. Not distributable cash; securities transactions, acquisitions and other financing are outside it.",
 }
 NUMERALS = "零一二三四五六七八九十"
 NUMERALS_EN = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]
@@ -63,7 +67,7 @@ def quarter_rows(table: dict[tuple[str, str], dict[str, float]], p: dict[str, An
         v = sub(table[("income", d["total"])], table[("income", d["less"])]) if d else table[("income", q["id"])]
         c = table[("cash_flow", q["id"])]
         r: dict[str, Any] = {"period": q["id"], "label": q["label"], "end": q["end"], "derived": bool(d), **v,
-                             "cfo": c["cfo"], "cash_ppe": c["cash_ppe"], "free_cash_flow": c["cfo"] - c["cash_ppe"]}
+                             **{m: c[m] for m in cash_metrics(p)}, "free_cash_flow": free_cash_flow(c, p)}
         r["gross_profit"] = v["revenue"] - v["cost_of_revenues"]
         r["gross_margin"] = _ratio(r["gross_profit"], v["revenue"])
         r["op_margin"] = _ratio(v["op_income"], v["revenue"])
@@ -122,17 +126,17 @@ def cash_conversion(rows: list[dict[str, Any]], table: dict[tuple[str, str], dic
                     p: dict[str, Any]) -> dict[str, Any]:
     by = {r["period"]: r for r in rows}
     out: dict[str, Any] = {"current_free_cash_flow": by[p["current"]]["free_cash_flow"],
-                           "issuer_fcf": {k: v for k, v in (fcf or {}).items() if k != "document"}, "caliber": CALIBER["fcf"]}
+                           "issuer_fcf": {k: v for k, v in (fcf or {}).items() if k != "document"}, "caliber": PRINCIPAL_FCF_CALIBER if p.get("fcf_deduct_principal") is True else CALIBER["fcf"]}
     ytd = p.get("year_to_date")
     if ytd:
         cf = table[("cash_flow", ytd["id"])]
         ni = sum(by[q]["consolidated_NI"] for q in ytd["quarters"])
-        out["year_to_date"] = {"cfo": cf["cfo"], "cash_ppe": cf["cash_ppe"], "consolidated_ni": ni,
+        out["year_to_date"] = {**{m: cf[m] for m in cash_metrics(p)}, "consolidated_ni": ni,
                                "cfo_to_consolidated_ni": cf["cfo"] / ni if ni > 0 else None,
-                               "cfo_to_cash_ppe": cf["cfo"] / cf["cash_ppe"], "label": ytd["label"]}
+                               "cfo_to_cash_ppe": cf["cfo"] / cf["cash_ppe"] if cf["cash_ppe"] > 0 else None, "label": ytd["label"]}
     if p.get("trailing"):
         t = table[("cash_flow", p["trailing"])]
-        out["trailing"] = {"cfo": t["cfo"], "cash_ppe": t["cash_ppe"], "free_cash_flow": t["cfo"] - t["cash_ppe"]}
+        out["trailing"] = {**{m: t[m] for m in cash_metrics(p)}, "free_cash_flow": free_cash_flow(t, p)}
     return out
 
 

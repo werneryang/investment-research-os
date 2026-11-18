@@ -176,10 +176,12 @@ def _cash_table(res):
     heads = [L('指标', 'Metric')] + [r['label'] + ('*' if r['derived'] else '') for r in rows]
     cash = res['cash']
     lines = [[e(L('经营活动现金流', 'Operating cash flow')), *[bn(r['cfo']) for r in rows]],
-             [e(L('现金资本开支（购置固定资产）', 'Cash capital expenditure (purchases of property and equipment)')), *[bn(r['cash_ppe']) for r in rows]],
+             [e(tl(p['metrics']['cash_ppe']) if p.get('fcf_deduct_principal') is True else L('现金资本开支（购置固定资产）', 'Cash capital expenditure (purchases of property and equipment)')), *[bn(r['cash_ppe']) for r in rows]],
              [e(L('自由现金流（发行人定义）', 'Free cash flow (issuer definition)')), *[bn(r['free_cash_flow']) for r in rows]],
              [e(L('现金资本开支 / 收入', 'Cash capex / revenue')), *[pct(r['capex_to_sales']) for r in rows]],
              [e(L('经营现金流 / 合并净利润', 'Operating cash flow / consolidated net income')), *[_times(r['cfo_to_consolidated_ni']) for r in rows]]]
+    if p.get('fcf_deduct_principal') is True:
+        lines.insert(2, [e(tl(p['metrics']['cash_ppe_principal'])), *[bn(r['cash_ppe_principal']) for r in rows]])
     html = '<h3 id="earnings-cash">' + L('现金流与资本开支', 'Cash flow and capital expenditure') + '</h3>' + table(heads, lines)
     ytd, ttm = cash.get('year_to_date'), cash.get('trailing')
     zh = en = ''
@@ -189,6 +191,9 @@ def _cash_table(res):
                f'经营现金流 / 合并净利润 {_times(ytd["cfo_to_consolidated_ni"])}。')
         en += (f'{lab}: operating cash flow USD {bn(ytd["cfo"])} bn, cash capex USD {bn(ytd["cash_ppe"])} bn, operating cash flow / cash capex '
                f'{_times(ytd["cfo_to_cash_ppe"])}; operating cash flow / consolidated net income {_times(ytd["cfo_to_consolidated_ni"])}. ')
+        if p.get('fcf_deduct_principal') is True:
+            zh += f'{tl(p["metrics"]["cash_ppe_principal"])} {bn(ytd["cash_ppe_principal"])} 十亿美元（另列，不含在购置支出中）。'
+            en += f'{tl(p["metrics"]["cash_ppe_principal"])} USD {bn(ytd["cash_ppe_principal"])} bn (separate from purchases). '
     if ttm:
         zh += f'近四个季度自由现金流 {bn(ttm["free_cash_flow"])} 十亿美元。'
         en += f'Free cash flow over the last four quarters: USD {bn(ttm["free_cash_flow"])} bn.'
