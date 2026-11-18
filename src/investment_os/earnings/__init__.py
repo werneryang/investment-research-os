@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -106,9 +107,19 @@ def _bi(x: Any) -> bool:
     return isinstance(x, dict) and set(x) == {"zh", "en"} and bool(x["zh"]) and bool(x["en"])
 
 
+def cash_metrics(p: dict[str, Any]) -> tuple[str, ...]:
+    """本金只在显式启用后进入核对、证据包与计算，不混入 cash_ppe。"""
+    return CASH_METRICS + (("cash_ppe_principal",) if p.get("fcf_deduct_principal") is True else ())
+
+
+def free_cash_flow(cash: dict[str, Any], p: dict[str, Any]) -> float:
+    """发行人 FCF：购置支出与相关本金分别扣除；启用时本金不能缺省为零。"""
+    return cash["cfo"] - cash["cash_ppe"] - (cash["cash_ppe_principal"] if p.get("fcf_deduct_principal") is True else 0)
+
+
 def display_keys(p: dict[str, Any]) -> set[str]:
     """页面、图表与比率可以引用的行键：利润表科目、现金流、研究分支算出的指标。"""
-    keys = set(p.get("income_metrics") or []) | set(CASH_METRICS) | set(COMPUTED_KEYS) | {r.get("key") for r in p.get("ratios") or []}
+    keys = set(p.get("income_metrics") or []) | set(cash_metrics(p)) | set(COMPUTED_KEYS) | {r.get("key") for r in p.get("ratios") or []}
     if p.get("non_operating"):
         keys.add("ebt_ex_equity_securities")
     return keys
@@ -131,6 +142,21 @@ def profile_errors(reg: dict[str, Any]) -> list[str]:
     if len(qs) < 3 or len(set(ids)) != len(ids):
         errs.append("profile.quarters 至少 3 个且 id 不重复（从旧到新）")
     income, cash = reg.get("income") or {}, reg.get("cash_flow") or {}
+    if "fcf_deduct_principal" in p and not isinstance(p["fcf_deduct_principal"], bool):
+        errs.append("profile.fcf_deduct_principal 必须是布尔值")
+    if p.get("fcf_deduct_principal") is True:
+        for m in ("cash_ppe", "cash_ppe_principal"):
+            if not _bi((p.get("metrics") or {}).get(m)):
+                errs.append(f"profile.metrics.{m} 需要中英文标签（本金与购置支出分列）")
+    for pid, cf in cash.items():
+        if "cash_ppe_principal" in cf and p.get("fcf_deduct_principal") is not True:
+            errs.append(f"cash_flow.{pid}.cash_ppe_principal 需要显式启用 profile.fcf_deduct_principal")
+        for m in cash_metrics(p):
+            v = cf.get(m)
+            if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v):
+                errs.append(f"cash_flow.{pid}.{m} 需要有限数值（不能缺失）")
+            elif m != "cfo" and v < 0:
+                errs.append(f"cash_flow.{pid}.{m} 应为非负现金支出")
     for q in qs:
         where = f"profile.quarters {q.get('id')}"
         if not q.get("id") or not q.get("label") or not q.get("end") or not _bi(q.get("name")):
@@ -164,7 +190,7 @@ def profile_errors(reg: dict[str, Any]) -> list[str]:
             errs.append(f"profile.ratios {r.get('key')} 需要 key、num、den（科目在 income_metrics 中）")
     keys = display_keys(p)
     rk = {r.get("key") for r in p.get("ratios") or []} | {"gross_margin", "op_margin"}
-    for name, allowed in (("growth", set(mets) | set(CASH_METRICS)), ("margins", rk), ("segment_ops", set(mets))):
+    for name, allowed in (("growth", set(mets) | set(cash_metrics(p))), ("margins", rk), ("segment_ops", set(mets))):
         bad = [m for m in p.get(name) or [] if m not in allowed]
         if bad:
             errs.append(f"profile.{name} 引用了不存在的科目 {'、'.join(map(str, bad))}")
@@ -287,7 +313,7 @@ def check(root: Path, registry: dict[str, dict[str, Any]] | None = None) -> Repo
                 derived = sub(reg["income"][d["total"]]["values"], reg["income"][d["less"]]["values"])
                 _identities(f"{eid}：{q['name']['zh']}（{d['method']['zh']}）", derived, rep, p["identities"])
         for pid, per in reg["cash_flow"].items():
-            for m in CASH_METRICS:
+            for m in cash_metrics(p):
                 has(per["document"], per[m], f"现金流 {pid}.{m}")
         fcf = reg.get("issuer_fcf") or {}
         for pid in (k for k in fcf if k != "document"):
@@ -295,8 +321,8 @@ def check(root: Path, registry: dict[str, dict[str, Any]] | None = None) -> Repo
                 rep.errors.append(f"{eid}：发行人自由现金流的期间 {pid} 不在 cash_flow 中")
                 continue
             cf = reg["cash_flow"][pid]
-            if cf["cfo"] - cf["cash_ppe"] != fcf[pid]:
-                rep.errors.append(f"{eid}：{pid} 的经营现金流减资本开支不等于发行人披露的自由现金流")
+            if free_cash_flow(cf, p) != fcf[pid]:
+                rep.errors.append(f"{eid}：{pid} 的登记 FCF 公式不等于发行人披露的自由现金流")
             else:
                 rep.checked["identities"] += 1
             has(fcf["document"], fcf[pid], f"发行人自由现金流 {pid}")
@@ -403,7 +429,7 @@ def build_bundle(root: Path, clock: Callable[[], datetime] = now_utc) -> dict[st
             for m in reg["profile"]["income_metrics"]:
                 add("income", pid, m, p["values"][m], p["end"], p["document"])
         for pid, p in reg["cash_flow"].items():
-            for m in CASH_METRICS:
+            for m in cash_metrics(reg["profile"]):
                 add("cash_flow", pid, m, p[m], p["end"], p["document"])
         for date_, b in reg["balance"].items():
             for m in BALANCE_METRICS:

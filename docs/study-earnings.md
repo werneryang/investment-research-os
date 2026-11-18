@@ -97,6 +97,7 @@ uv run iros run config/studies/earnings_googl_2026q3.yaml
 | `quarters` | 页面各季度列，从旧到新（至少 3 个）：`id`、`label`、`end`（任意日期，支持 52/53 周与非日历财年）、中英文 `name`；没有直接披露的季度写 `derive: {total, less, method, note}`（全年减前几季度，`total`/`less` 是 `income` 里的期间 id，`note` 是页面脚注） |
 | `current` / `yoy_base` / `qoq_base` | 本季度、同比基数、环比基数（`quarters` 里的 id） |
 | `year_to_date` / `trailing` | 可选：年初至今的现金流期间（含所含季度、中英文 `label`、`short`）与近四季度现金流期间 |
+| `fcf_deduct_principal` | 可选布尔值，默认 `false`：`true` 时，FCF = `cfo − cash_ppe − cash_ppe_principal`，并要求每个现金流期间（包括年初至今与近四季）显式登记相关本金支出及其来源；购置支出和本金的中英文标签填在 `metrics.cash_ppe` 与 `metrics.cash_ppe_principal` |
 | `income_metrics` | `income` 每期必须有的科目；必备 `revenue`、`cost_of_revenues`、`op_income`、`EBT`、`consolidated_NI`，其余按公司（分部收入、分部营业利润、产品线、套期、优先股……） |
 | `identities` | 会计恒等式：`name`、`terms`（科目 → ±1）、`equals` |
 | `ratios` | 额外比率 `key = 100 × num / den`（分部利润率、占收入比例） |
@@ -108,6 +109,10 @@ uv run iros run config/studies/earnings_googl_2026q3.yaml
 | `metrics` / `table` / `report` / `charts` / `segments` / `unallocated` / `share` | 页面：科目的中英文标签、主表的行（`growth: false` 的行不显示同比环比）、文字报告的行、图表（`usd_bn` 或 `pct`）、分部表（`digits` 控制利润率小数位）、未分摊行与占比行 |
 
 没有的可选项就不写：没有展望、积压订单、恒定汇率、每股收益或示意算术时，页面对应章节只写「没有登记」，不编造；`profile.segments` 至少一个（单一分部的公司列出它）。`profile` 里的双语文字必须恰好有 `zh`、`en` 两个键（YAML 流式写法里英文含逗号时要加引号，否则会被截断，`check` 会报错）。
+
+**购置支出与相关本金的 FCF 口径。** 默认仍为 `cfo − cash_ppe`，旧登记不用迁移。发行人的定义若同时扣除购置固定资产/无形资产的现金支出及相关本金支付，则设 `profile.fcf_deduct_principal: true`，在 `cash_flow` 每个期间分列非负有限数值 `cash_ppe` 与 `cash_ppe_principal`（无支付也须明确填 `0`，不能用缺失值代替）。本金不可并入 `cash_ppe`；未启用而出现本金字段、漏填、负数、布尔值或非有限数值均拒绝。`check` 核对本金数值出现在所引原文，`bundle` 保留独立科目，季度与近四季的 FCF 共用同一公式；`issuer_fcf` 若登记则必须按该公式勾稽。页面分列购置支出和本金，并在中英文口径说明中列出公式；资本开支/收入、经营现金流/资本开支中的资本开支只指购置支出，不含本金。这只支持发行人明确披露的相关本金扣除，不等于扣除全部债务偿还或计算可分配现金。其他发行人定义仍需单独适配，不能把未匹配的公式标作发行人 FCF。
+
+本项支持不修改既有关键发现规则或其版本/指纹；未启用本金的旧登记，研究结果与措辞不变。新增配置仍须按上述流程与走查逐项对照、运行并归档，代码支持本身不表示任何新研究已上线。
 
 **关键发现的规则版本与指纹。** 规则代码的指纹是结果校验值的一部分，所以改动规则代码（`research/findings.py` 的季度财报规则、`site/findings_en.py`）后，旧运行用新代码重算的校验值会不同，`iros verify` 如实报告，旧记录不改写（见 [实现说明](implementation.md)）。本次配置化把规则升到 `earnings_quarter-findings.v2`，Alphabet 的运行因此重新运行并归档；早于 profile 的旧运行仍在档案里，网站对它们只显示记录的发现与一条提示。
 
