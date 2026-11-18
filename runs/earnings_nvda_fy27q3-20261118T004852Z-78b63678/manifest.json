@@ -1,0 +1,115 @@
+{
+  "run_id": "earnings_nvda_fy27q3-20261118T004852Z-78b63678",
+  "study_id": "earnings_nvda_fy27q3",
+  "study_path": "config/studies/earnings_nvda_fy27q3.yaml",
+  "study_config": {
+    "study_id": "earnings_nvda_fy27q3",
+    "title": "NVIDIA：2027 财年第三季度财报研究",
+    "question": "NVIDIA FY27 Q3 的报告收入、利润率、现金流与发行人自由现金流相对上季和去年同期如何变化？哪些分部与市场平台披露可以比较，哪些数据不足？",
+    "result_type": "descriptive",
+    "branch": "earnings_quarter",
+    "scope": {
+      "market": "US",
+      "currency": "USD",
+      "start": "2025-07-28",
+      "end": "2026-10-25",
+      "frequency": "quarterly",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-11-18T00:48:52+00:00",
+      "data_checked_at": {
+        "earnings_evidence": "2026-11-18T00:44:03+00:00"
+      }
+    },
+    "data": {
+      "evidence": "earnings_evidence"
+    },
+    "method": {
+      "earnings": "nvda_fy27q3"
+    },
+    "benchmark": "仅使用登记的 SEC 8-K furnished HTML 附件；不引入电话会、行情或估值输入",
+    "evaluation": [
+      "固定原文字节哈希、原文数值存在性、会计恒等式与 issuer FCF 勾稽",
+      "与公开走查逐字段对照及独立数值复核",
+      "固定证据包版本 iros verify 复现"
+    ],
+    "limitations": [
+      "仅三期直接比较（FY26 Q3、FY27 Q2、FY27 Q3），不是连续三季或独立五季验证",
+      "8-K 附件 furnished、未经审计，未将 Q3 10-Q 当作已申报",
+      "分部与市场平台收入仅披露一位小数十亿美元，未披露分部营业利润，不计算分部利润率",
+      "FCF 同时扣购置支出与相关本金，不是可分配或持续性 owner cash",
+      "本网页不含电话会、股价反应、估值或个人判断；Q4 指引为未实现的未来展望",
+      "原文数值存在性不证明行列来源正确；模型独立核对不是人工审计"
+    ]
+  },
+  "study_config_hash": "da45fdf46d035112a530589aa41661b30efef370c05412a5e46d6d0bab9d67b5",
+  "started_at": "2026-11-18T00:48:52+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "cd740094d7a4f5569ddfef980b2f450af073080e4a8562e512eef4b3355e20e9",
+    "git_commit": "f0623d4bad69951a999e734d3c30f25e51a7963a",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.13",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "partial",
+  "inputs": [
+    {
+      "role": "evidence",
+      "used": true,
+      "dataset_id": "earnings_evidence",
+      "version_id": "v20261118T004403Z-c0ebcc23",
+      "content_hash": "c0ebcc23447528e623c178a5f97198063d13b1b1948c350d05202a89945aacc5",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "2024-01-31",
+            "2026-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-11-16"
+        ]
+      }
+    }
+  ],
+  "result_hash": "8821577900879784564de2b8dc91bc6838ff8354c77e0403ba9af319df588dcd",
+  "warnings": [],
+  "unsupported": [
+    {
+      "item": "正式分部营业利润、利润率及精确百万美元收入",
+      "kind": "data",
+      "reason": "发行人没有披露所需数据，或本研究没有取得可核验的数据"
+    },
+    {
+      "item": "完整附注、电话会、行情反应、估值及持续性判断不在本网页范围",
+      "kind": "scope",
+      "reason": "需要人工判断或本研究未处理的外部材料；不在公开财报算术的范围内"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runs/earnings_nvda_fy27q3-20261118T004852Z-78b63678/result.json",
+      "sha256": "9261053068041f4ed599a246e0ace96889ef177f2a8afe521d79e95dca4025a4"
+    },
+    {
+      "path": "reports/earnings_nvda_fy27q3/earnings_nvda_fy27q3-20261118T004852Z-78b63678/report.md",
+      "sha256": "7cf7a0f595d1d73bb0c9c00f6fb883e8dcce5421334adc4734af3f35ba26c8ab"
+    },
+    {
+      "path": "reports/earnings_nvda_fy27q3/earnings_nvda_fy27q3-20261118T004852Z-78b63678/report.html",
+      "sha256": "c625daaaf4e2e783a2a7559a8bfc7602253ac1981e1917b29024be96fb3645d5"
+    }
+  ],
+  "finished_at": "2026-11-18T00:48:52+00:00"
+}
