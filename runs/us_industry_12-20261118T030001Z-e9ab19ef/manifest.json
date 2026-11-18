@@ -1,0 +1,545 @@
+{
+  "run_id": "us_industry_12-20261118T030001Z-e9ab19ef",
+  "study_id": "us_industry_12",
+  "study_path": "config/studies/us_industry_12.yaml",
+  "study_config": {
+    "study_id": "us_industry_12",
+    "title": "美国 12 行业的长期回报、风险与经济背景",
+    "question": "哪些行业回报有经营支持，哪些差异体现风险、样本和估值？",
+    "result_type": "descriptive",
+    "branch": "industry",
+    "scope": {
+      "market": "US",
+      "currency": "USD",
+      "start": "1926-07-01",
+      "end": "2025-12-31",
+      "frequency": "monthly",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-11-18T03:00:01+00:00",
+      "data_checked_at": {
+        "french_ind12_vw": "2026-11-18T02:59:42+00:00",
+        "french_ind12_ew": "2026-11-18T02:59:24+00:00",
+        "french_ind12_firms": "2026-11-18T02:59:24+00:00",
+        "french_ind12_size": "2026-11-18T02:59:24+00:00",
+        "french_ind12_bm": "2026-11-18T02:59:24+00:00",
+        "french_ind12_annual": "2026-11-18T02:59:25+00:00",
+        "french_ff3": "2026-11-18T02:59:42+00:00",
+        "french_ff5": "2026-11-18T02:59:42+00:00",
+        "french_mom": "2026-11-18T02:59:42+00:00",
+        "fred_cpiaucns": "2026-11-18T02:59:34+00:00",
+        "fred_rvam": "2026-11-18T02:59:29+00:00",
+        "fred_usmine": "2026-11-18T02:59:31+00:00",
+        "fred_rvar": "2026-11-18T02:59:29+00:00",
+        "fred_rvaw": "2026-11-18T02:59:30+00:00",
+        "fred_ustrade": "2026-11-18T02:59:32+00:00",
+        "fred_rvai": "2026-11-18T02:59:30+00:00",
+        "fred_usinfo": "2026-11-18T02:59:32+00:00",
+        "fred_rvama": "2026-11-18T02:59:29+00:00",
+        "fred_manemp": "2026-11-18T02:59:31+00:00",
+        "fred_awhaeman": "2026-11-18T02:59:32+00:00",
+        "fred_ces3000000003": "2026-11-18T02:59:33+00:00",
+        "fred_ipman": "2026-11-18T02:59:33+00:00",
+        "fred_mcumfn": "2026-11-18T02:59:33+00:00",
+        "fred_usrec": "2026-11-18T02:59:34+00:00",
+        "fred_dff": "2026-11-18T02:59:36+00:00",
+        "fred_dcoilwtico": "2026-11-18T02:59:23+00:00"
+      }
+    },
+    "data": {
+      "returns": "french_ind12_vw",
+      "equal_weight": "french_ind12_ew",
+      "firms": "french_ind12_firms",
+      "size": "french_ind12_size",
+      "bm": "french_ind12_bm",
+      "annual_check": "french_ind12_annual",
+      "ff3": "french_ff3",
+      "ff5": "french_ff5",
+      "momentum": "french_mom",
+      "cpi": "fred_cpiaucns",
+      "econ_rvam": "fred_rvam",
+      "econ_usmine": "fred_usmine",
+      "econ_rvar": "fred_rvar",
+      "econ_rvaw": "fred_rvaw",
+      "econ_ustrade": "fred_ustrade",
+      "econ_rvai": "fred_rvai",
+      "econ_usinfo": "fred_usinfo",
+      "econ_rvama": "fred_rvama",
+      "econ_manemp": "fred_manemp",
+      "econ_awhaeman": "fred_awhaeman",
+      "econ_ces3000000003": "fred_ces3000000003",
+      "econ_ipman": "fred_ipman",
+      "econ_mcumfn": "fred_mcumfn",
+      "recession": "fred_usrec",
+      "policy_rate": "fred_dff",
+      "oil_price": "fred_dcoilwtico"
+    },
+    "method": {
+      "windows": [
+        [
+          "1926–2025",
+          "1926-07",
+          "2025-12"
+        ],
+        [
+          "2001–2025",
+          "2001-01",
+          "2025-12"
+        ],
+        [
+          "2016–2025",
+          "2016-01",
+          "2025-12"
+        ],
+        [
+          "2010–2025",
+          "2010-01",
+          "2025-12"
+        ]
+      ],
+      "mapping_version": "2026-10-25.v1",
+      "topics": {
+        "energy": {
+          "label": "能源",
+          "sic_ranges": [
+            [
+              1200,
+              1399
+            ],
+            [
+              2900,
+              2999
+            ]
+          ],
+          "market12": "Enrgy",
+          "market49": [
+            "Coal",
+            "Oil"
+          ],
+          "economy": {
+            "rva": "RVAM",
+            "employment": "USMINE"
+          },
+          "correspondence": "partial",
+          "reason": "采矿增加值含金属与非金属矿，不含炼油；股票能源含炼油，BLS USMINE 还含伐木。不得把矿业产出当作能源股票收入。"
+        },
+        "trade": {
+          "label": "批发零售",
+          "sic_ranges": [
+            [
+              5000,
+              5999
+            ]
+          ],
+          "market12": "Shops",
+          "market49": [
+            "Whlsl",
+            "Rtail"
+          ],
+          "economy": {
+            "rva": "RVAR",
+            "wholesale": "RVAW",
+            "employment": "USTRADE"
+          },
+          "correspondence": "partial",
+          "reason": "SEC 样本含餐饮；French Shops 还含部分服务，BEA 零售与批发分别列示，不直接相加链式美元。"
+        },
+        "technology": {
+          "label": "半导体、软件与计算机服务",
+          "sic_ranges": [
+            [
+              3674,
+              3674
+            ],
+            [
+              7370,
+              7379
+            ]
+          ],
+          "market12": "BusEq",
+          "market49": [
+            "Chips",
+            "Softw"
+          ],
+          "economy": {
+            "rva": "RVAI",
+            "employment": "USINFO"
+          },
+          "correspondence": "contextual",
+          "reason": "SEC SIC 7370–7379 包含软件和计算机服务，3674 为半导体；BEA 信息业含出版、电信、数据服务等，半导体属于制造业。信息业只作背景，不作为半导体产出代理。"
+        },
+        "manufacturing": {
+          "label": "制造业背景",
+          "market12": "Manuf",
+          "market49": [
+            "Mach"
+          ],
+          "economy": {
+            "rva": "RVAMA",
+            "employment": "MANEMP",
+            "hours": "AWHAEMAN",
+            "wage": "CES3000000003",
+            "output": "IPMAN",
+            "utilization": "MCUMFN"
+          },
+          "correspondence": "contextual",
+          "reason": "BEA 制造业包含 French 的多个行业；French Manuf 不是制造业总量。"
+        }
+      },
+      "description": "四层行业研究：连续月度总收益、CPI 端点实际回报、HAC 因子暴露、实体行业相关、历史 SIC 财报样本与指引事件。各层对象分别定义，不作因果推断。"
+    },
+    "benchmark": "French FF3 Mkt-RF + RF",
+    "evaluation": [
+      "连续月份完整性",
+      "独立年度表复利核对",
+      "固定输入版本重现",
+      "HAC 协方差与多重比较"
+    ],
+    "limitations": [
+      "当前修订版本的事后研究，不支持历史可交易性或因果推断",
+      "BE/ME 按 French 源年份列示，不能充当行业市盈率或年末估值",
+      "等权与市值加权差异不是成分集中度；行业定义和样本随时间变化",
+      "1926–2025 窗口有行业尚未形成，缺失窗口不输出完整期间收益",
+      "市场统计止于 2025；2026 仅另列不完整年度累计收益"
+    ]
+  },
+  "study_config_hash": "bbed85bc18dd4fca6f85168cca87988a04e2f982883309b19db148e847233037",
+  "started_at": "2026-11-18T03:00:01+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "7e0417cc0c9822148ce78dc6538bfdd8aa8ad19fe6853f07d8ed25b926a7fe75",
+    "git_commit": "35b400b67761c638d35a72098712eb01599622d7",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.16",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "partial",
+  "inputs": [
+    {
+      "role": "returns",
+      "used": true,
+      "dataset_id": "french_ind12_vw",
+      "version_id": "v20261118T025942Z-f4045ef3",
+      "content_hash": "f4045ef3765c608d7b964c6644d4565b644838e6e8e02917687600fd3a632fe4",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "equal_weight",
+      "used": true,
+      "dataset_id": "french_ind12_ew",
+      "version_id": "v20261118T025924Z-d0acb482",
+      "content_hash": "d0acb48279fc3ba4b825eda4c327b1b788f331be106583ebc1086a184c081d37",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "firms",
+      "used": true,
+      "dataset_id": "french_ind12_firms",
+      "version_id": "v20261118T025924Z-c67cdaa4",
+      "content_hash": "c67cdaa4cecf10e1d51991a67555d7df731ea481dbfadde6364737c3c3d5ebe4",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "size",
+      "used": true,
+      "dataset_id": "french_ind12_size",
+      "version_id": "v20261118T025924Z-07231a17",
+      "content_hash": "07231a17e5700945c822edbf7d4667e55b75279444454bef3dd819129ea33c2a",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "bm",
+      "used": true,
+      "dataset_id": "french_ind12_bm",
+      "version_id": "v20261118T025924Z-692b23d1",
+      "content_hash": "692b23d1c11dfd994305805f4c3b42e873543ba9f063df6ecd0aaa89407e3754",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "annual_check",
+      "used": true,
+      "dataset_id": "french_ind12_annual",
+      "version_id": "v20261118T025925Z-9c12f291",
+      "content_hash": "9c12f291895ed3b7712486c28e68de2ac46ffa2ae787e96b3394897d943b27e4",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "ff3",
+      "used": true,
+      "dataset_id": "french_ff3",
+      "version_id": "v20261118T025941Z-c7e0022f",
+      "content_hash": "c7e0022fd9460aa944c366e1e6d4b4ad8dfc867b669751af8b5f0b99408a472c",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "partial",
+        "uncovered": [
+          [
+            "1926-07-01",
+            "1927-12-31"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "1928-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-25"
+        ]
+      }
+    },
+    {
+      "role": "ff5",
+      "used": true,
+      "dataset_id": "french_ff5",
+      "version_id": "v20261118T025942Z-3bb67435",
+      "content_hash": "3bb67435f847c9e5d50706ce05dcc7e3f1cbb47977591b21ca4f3ce8d498bbf7",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "momentum",
+      "used": true,
+      "dataset_id": "french_mom",
+      "version_id": "v20261118T025942Z-49bafc15",
+      "content_hash": "49bafc15c8119d07f8e322a04b480a1b3eafc02798691c3ba73b8ae2228df3ab",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "cpi",
+      "used": true,
+      "dataset_id": "fred_cpiaucns",
+      "version_id": "v20261118T025934Z-c7f503b1",
+      "content_hash": "c7f503b11583f4aa1af217f535d7a4f00e418dd50d3b0ed61b4c65a9e4043c75",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_rvam",
+      "used": true,
+      "dataset_id": "fred_rvam",
+      "version_id": "v20261118T025929Z-89a76224",
+      "content_hash": "89a76224870c3db258a33408aed1d7866082ca08dcaaf1fddbddf7618d44bfed",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_usmine",
+      "used": true,
+      "dataset_id": "fred_usmine",
+      "version_id": "v20261118T025931Z-9becdf98",
+      "content_hash": "9becdf98e5fa19c681cc80649396a4c27d7afb5bfea1d85b360be2338c4774ff",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_rvar",
+      "used": true,
+      "dataset_id": "fred_rvar",
+      "version_id": "v20261118T025929Z-c1985b8d",
+      "content_hash": "c1985b8d44f930a5a43be48675894ee0e8878ae64ee9f8634d1f144ba6e8908d",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_rvaw",
+      "used": true,
+      "dataset_id": "fred_rvaw",
+      "version_id": "v20261118T025930Z-5e991b15",
+      "content_hash": "5e991b15291251c93c87e5d0ede6b706ddecac971eb373789637999e82c8ae4a",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_ustrade",
+      "used": true,
+      "dataset_id": "fred_ustrade",
+      "version_id": "v20261118T025932Z-935d457d",
+      "content_hash": "935d457d7db5a1fbaaccb7d7ccd1589ed5d8bdca78ac2b6c1021edd9f1b0ae75",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_rvai",
+      "used": true,
+      "dataset_id": "fred_rvai",
+      "version_id": "v20261118T025930Z-6d16e61d",
+      "content_hash": "6d16e61def703726046fb1ba31f5d78b8f9626c1370ec8dd533d6ca4462445e0",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_usinfo",
+      "used": true,
+      "dataset_id": "fred_usinfo",
+      "version_id": "v20261118T025932Z-d257032c",
+      "content_hash": "d257032c52719d4d88c7e9ec0db3126483a448da23d92a57229773550c574377",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_rvama",
+      "used": true,
+      "dataset_id": "fred_rvama",
+      "version_id": "v20261118T025929Z-5b3113cf",
+      "content_hash": "5b3113cf7b7a8f26cc5f60515fa286b702a150316a3610255d2eb95d73a940bd",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_manemp",
+      "used": true,
+      "dataset_id": "fred_manemp",
+      "version_id": "v20261118T025931Z-cc5d47cf",
+      "content_hash": "cc5d47cf578e48b0c0e8ea7ac4a31ddc6b79623233a5a4c41b068906cf1d4d10",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_awhaeman",
+      "used": true,
+      "dataset_id": "fred_awhaeman",
+      "version_id": "v20261118T025932Z-7a4e8119",
+      "content_hash": "7a4e8119d4643862b71dab42649ad384cae7eb9f672bb52306da1672b266b43b",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_ces3000000003",
+      "used": true,
+      "dataset_id": "fred_ces3000000003",
+      "version_id": "v20261118T025933Z-5ed5a89d",
+      "content_hash": "5ed5a89d1d0cf836c37c53bf4b490dad3338dd31e30c1ec2b4a639565ba3e7c1",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_ipman",
+      "used": true,
+      "dataset_id": "fred_ipman",
+      "version_id": "v20261118T025933Z-14f128f0",
+      "content_hash": "14f128f0694296b1cac18a195645e89413c6c8e90fb8eaf43487d4aa650b2b1b",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "econ_mcumfn",
+      "used": true,
+      "dataset_id": "fred_mcumfn",
+      "version_id": "v20261118T025933Z-ae0c1268",
+      "content_hash": "ae0c12686d822cecd56d28696f35e9edf6b0057d66a2bafefa5fe27c455f3168",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "recession",
+      "used": true,
+      "dataset_id": "fred_usrec",
+      "version_id": "v20261118T025934Z-532f8100",
+      "content_hash": "532f81001aab267991e843748ce92d0ee76e4bd7435d85994759b7f1f6cdfda3",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    },
+    {
+      "role": "policy_rate",
+      "used": true,
+      "dataset_id": "fred_dff",
+      "version_id": "v20261118T025935Z-83d31312",
+      "content_hash": "83d3131280578b2799a44c8de3eea5f9cc196c98a64ffe4ca8a53386949c20ea",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "partial",
+        "uncovered": [
+          [
+            "1926-07-01",
+            "2023-12-31"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "2024-01-01",
+            "2026-10-22"
+          ]
+        ],
+        "record_dates": [
+          "2026-11-15"
+        ]
+      }
+    },
+    {
+      "role": "oil_price",
+      "used": true,
+      "dataset_id": "fred_dcoilwtico",
+      "version_id": "v20261118T025923Z-54951f60",
+      "content_hash": "54951f606abc1e9c9eca10880350a324e050da00e7fbe2e70fc0facefabc5b54",
+      "source_status": "access_verified",
+      "use": "descriptive"
+    }
+  ],
+  "result_hash": "9a4dd328c288ae922275b72942179e9628a5cff54d1b593d751dbdfd8bdf84b4",
+  "warnings": [],
+  "unsupported": [
+    {
+      "item": "精确的行业盈利—估值回报分解",
+      "kind": "scope",
+      "reason": "缺少对应各期 CRSP 成分、权重、价格与公司行动；BE/ME 只作估值背景"
+    },
+    {
+      "item": "历史一致预期与公告日超额回报",
+      "kind": "scope",
+      "reason": "只有选定管理层指引案例和月度收益；不能替代分析师一致预期或日度事件研究"
+    },
+    {
+      "item": "因果关系",
+      "kind": "scope",
+      "reason": "因子暴露、同步和领先滞后相关均为事后描述；宏观数据为当前修订版本"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "runs/us_industry_12-20261118T030001Z-e9ab19ef/result.json",
+      "sha256": "06be4b39395c3a060a942110526629c05fdf248c63d8565989d599b8dc91da6c"
+    },
+    {
+      "path": "reports/us_industry_12/us_industry_12-20261118T030001Z-e9ab19ef/report.md",
+      "sha256": "7396ce0d3bc47c18284c3e869506f18e31a8ad71d3f106c1d37d541a990d5c57"
+    },
+    {
+      "path": "reports/us_industry_12/us_industry_12-20261118T030001Z-e9ab19ef/report.html",
+      "sha256": "af1ff8f2597b25c32ebf1bb363885a8726764efcf0b5829b1540ecfbbdc3bd62"
+    },
+    {
+      "path": "reports/us_industry_12/us_industry_12-20261118T030001Z-e9ab19ef/figures/industry_risk.png",
+      "sha256": "16c7837716a2bb86a8879b9e73ac3683b46e25f8ede4f571cad6d0315458d85d"
+    },
+    {
+      "path": "reports/us_industry_12/us_industry_12-20261118T030001Z-e9ab19ef/figures/industry_wealth.png",
+      "sha256": "ffc31e365d00d306cf09d996371699fe1bd6a8bef420d146dec0930a1f15a6b4"
+    },
+    {
+      "path": "reports/us_industry_12/us_industry_12-20261118T030001Z-e9ab19ef/figures/industry_rolling.png",
+      "sha256": "105d885b7f402fe07ca367148f7378897b165cae72e6d32bd95a1becaeb096bc"
+    },
+    {
+      "path": "reports/us_industry_12/us_industry_12-20261118T030001Z-e9ab19ef/figures/industry_economy.png",
+      "sha256": "346e193d5f38feaca116439eb3222897b3971893cb01e0d0d2a7d915e295c487"
+    }
+  ],
+  "finished_at": "2026-11-18T03:00:04+00:00"
+}
