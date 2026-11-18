@@ -128,7 +128,7 @@ def test_noindex_chinese_only_markdown_tables_safe_links_and_metadata_catalog(pr
     assert '<meta name="robots" content="noindex">' in page and '<table>' in page
     assert '<html lang="zh-CN">' in page and 'localStorage.getItem("lang")' not in page
     assert 'hreflang="en"' not in page and '<img' not in page.replace('<img class="badge"','<badge')
-    robots=(out/'robots.txt').read_text();assert 'Disallow: /investment-research-os/notes/' in robots
+    assert not (out/'robots.txt').exists()  # Project-path robots cannot govern the host.
     assert (out/'notes/companies/AAPL/2026-11-17/index.html').exists()
     records=note_catalog(notes,{'by_cik':{'320193':'cik_320193'}})
     assert records[0]['kind']=='note' and records[0]['entity_ids']==['cik_320193']
