@@ -121,3 +121,9 @@ uv run iros run config/studies/earnings_googl_2026q3.yaml
 ## 9. 首页入口
 
 首页公司卡片的「公司季度财报」一行（含直达研究的链接）由 `site/content.yaml` 中研究条目的 `home_group` 字段生成，不在代码里点名公司：任何登记了 `home_group: 公司季度财报` 且已有运行的研究都会列在该行，链接文字是公司名加「截至」数据截止日（披露日）。新增季度研究（下一季度或另一家公司）时给它同样的 `home_group`，并在 `site/en.yaml` 保留该组名的译文即可；没有 `home_group` 的研究只计入子类数量。
+
+### 分部利润尚未披露的季度
+
+若只有收入披露、没有可核对的分部营业利润，可设 `profile.segments: []` 并填写双语 `profile.segment_unavailable`；同时不得配置分部利润发现、利润分解、未分摊行或占比行。原披露的 rounded 分部与市场平台收入保留在带出处及逐字数值摘录的 `notes`，不写入精确百万美元利润表，不计算虚构利润率。该选项不放宽已有利润分部的核验。
+
+8-K 附件研究使用 `release.disclosure_form: 8-K` 与 `release.disclosure_date`，不将 8-K 日期写入名为 `form_10q_filed` 的字段。页面与文字报告显示真实表单，furnished/未经审计及未见当季 10-Q 的状态另列在双语 notes；旧 10-Q 登记仍可读取旧字段，不改变其显示。

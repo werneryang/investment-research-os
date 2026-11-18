@@ -657,6 +657,40 @@ phrases:
   "股价的事件窗口反应、历史预期与估值（需要可展示的日度价格来源，尚未选定；估值与预期不在本研究范围）": "Event-window price reaction, past expectations and valuation (needs a daily price source that may be displayed, not yet chosen; valuation and expectations are outside this study)"
   "证据包生成前逐份核对原文 SHA256、数值出现在所引原文中、会计恒等式成立、文字摘录逐字出现在原文中": "Before the bundle was built each filing's SHA256, the presence of each value in the cited filing, the accounting identities and the verbatim text excerpts were checked"
 
+  NVIDIA：2027 财年第三季度财报研究: 'NVIDIA: fiscal 2027 third-quarter earnings study'
+  NVIDIA FY27 Q3 的报告收入、利润率、现金流与发行人自由现金流相对上季和去年同期如何变化？哪些分部与市场平台披露可以比较，哪些数据不足？: How did
+    NVIDIA FY27 Q3 reported revenue, margins, cash flow and issuer free cash flow change
+    against the prior quarter and prior year? Which segment and market-platform disclosures
+    are comparable, and which data are unavailable?
+  仅使用登记的 SEC 8-K furnished HTML 附件；不引入电话会、行情或估值输入: Registered SEC furnished 8-K HTML
+    exhibits only; no call, market-price or valuation inputs
+  固定原文字节哈希、原文数值存在性、会计恒等式与 issuer FCF 勾稽: Fixed source-byte hashes, numeric existence,
+    accounting identities and issuer FCF reconciliation
+  与公开走查逐字段对照及独立数值复核: Field-by-field walkthrough comparison and independent numeric review
+  固定证据包版本 iros verify 复现: Reproduce the fixed evidence-bundle version with iros verify
+  仅三期直接比较（FY26 Q3、FY27 Q2、FY27 Q3），不是连续三季或独立五季验证: Only FY26 Q3, FY27 Q2 and FY27 Q3
+    are directly compared; not consecutive quarters or five independently verified periods
+  8-K 附件 furnished、未经审计，未将 Q3 10-Q 当作已申报: 8-K exhibits are furnished and unaudited;
+    Q3 10-Q is not assumed filed
+  分部与市场平台收入仅披露一位小数十亿美元，未披露分部营业利润，不计算分部利润率: Segment and platform revenue is rounded to
+    one decimal USD billion; segment operating income is unavailable, so no segment
+    margin is calculated
+  FCF 同时扣购置支出与相关本金，不是可分配或持续性 owner cash: FCF deducts purchases and related principal;
+    it is not distributable or sustainable owner cash
+  本网页不含电话会、股价反应、估值或个人判断；Q4 指引为未实现的未来展望: This page excludes the call, price reaction,
+    valuation and personal judgments; Q4 outlook is forward-looking, not realized
+  原文数值存在性不证明行列来源正确；模型独立核对不是人工审计: Numeric existence does not establish the right row
+    and column; independent model checks are not a human audit
+
+  三个直接比较季度的合并财务、现金与发行人 FCF: Consolidated financials, cash and issuer FCF for three directly
+    comparable quarters
+  原披露精度的正式分部／市场平台收入与指引: Reportable-segment/market-platform revenue and outlook at disclosed
+    precision
+  正式分部营业利润、利润率及精确百万美元收入: Reportable-segment operating income, margin and exact USD-million
+    revenue
+  完整附注、电话会、行情反应、估值及持续性判断不在本网页范围: Full footnotes, call, market reaction, valuation and
+    sustainability judgments are outside this page
+
 patterns:
 - zh: 研究窗口内有 (?P<n>\d+) 个预期观测日未取得（(?P<dates>.*?)）：数据最近一次下载时尚未到保守可用时点（(?P<rule>.+)），不计入覆盖；这不代表已确认尚未发布。结果截至 (?P<last>\S+)
   en: '{n} expected observation date(s) in the study window were not yet retrieved ({dates}): when the data was last downloaded they were not yet past the conservative availability time ({rule}), so they are not counted in coverage; this does not confirm they were unpublished. Results run through {last}'

@@ -1,6 +1,7 @@
 """Quarterly earnings pages: the quarters, comparability notes, outlooks against actuals, and what is not covered.
 
 Every company-specific row, label, chart and sentence comes from the registration profile carried in the result (results.profile)."""
+from ..earnings import disclosure_info
 from .common import e, stat
 from .company import table
 from .i18n import L, is_en
@@ -144,6 +145,8 @@ def _quarter_table(res):
 def _segment_table(res):
     rows = res['quarters']
     p = _prof(res)
+    if not p.get('segments'):
+        return '<h3 id="earnings-segments">' + L('分部经营', 'Segment operations') + '</h3><p>' + e(tl(p['segment_unavailable'])) + '</p>'
     heads = [L('分部', 'Segment')] + [r['label'] + ('*' if r['derived'] else '') for r in rows]
     lines, names = [], {}
     for sg in p['segments']:
@@ -320,10 +323,10 @@ def _coverage(res):
 def _sources(res):
     heads = [L('文件', 'Document'), L('期末', 'Period end'), 'Accession', L('EDGAR 接受时间', 'EDGAR accepted'), 'SHA256']
     rel, p = res['release'], _prof(res)
-    form = rel.get('periodic_form', '10-Q')
+    form, disclosed = disclosure_info(rel)
     short, cur = p['short_name'], _qname(res, p['current'])
-    note = L(f'{short} 于 {rel["ir_date"]} 发布{cur}业绩，{form} 于 {rel["form_10q_filed"]} 申报。',
-             f'{short} released {cur} results on {rel["ir_date"]}; the {form} was filed on {rel["form_10q_filed"]}.')
+    note = L(f'{short} 于 {rel["ir_date"]} 发布{cur}业绩，{form} 于 {disclosed} 申报。',
+             f'{short} released {cur} results on {rel["ir_date"]}; the {form} was filed on {disclosed}.')
     return ('<h3 id="earnings-sources">' + L('来源文件', 'Source documents') + '</h3><p>' + note + ' '
             + L('原文只保存在本机（不入库），登记里的 SHA256 固定了版本；数值核对在生成证据包时完成。',
                 'The originals are kept only on the maintainer’s machine (not in the repository); the registered SHA256 pins each version and the checks run when the evidence bundle is built.') + '</p>'

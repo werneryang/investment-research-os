@@ -1,6 +1,8 @@
 """季度财报研究的报告段落；行与标签来自结果里的 profile。"""
 from typing import Any
 
+from ..earnings import disclosure_info
+
 
 def _bn(v: float | None) -> str:
     return "—" if v is None else f"{v / 1e3:,.2f}".replace("-", "−")
@@ -21,8 +23,9 @@ def sections(r: dict[str, Any]) -> tuple[list[Any], str, list[Any]]:
     keys = p.get("report") or [t if isinstance(t, str) else t["key"] for t in p["table"]]
     spec = [(p["metrics"][k]["zh"], k, _pct if k in pct_keys else _bn) for k in keys]
     cur = res["latest_period"]
+    form, disclosed = disclosure_info(res["release"])
     body: list[Any] = [f"最新季度 {cur['label']}（{cur['start']} 至 {cur['end']}），"
-                       f"{res['release'].get('periodic_form', '10-Q')} 于 {res['release']['form_10q_filed']} 申报。全部为报告口径，不是有机增长。"
+                       f"{form} 于 {disclosed} 申报。全部为报告口径，不是有机增长。"
                        "* 为全年减前几季度的推导值。",
                        ("table", heads, [[label] + [fmt(q[key]) for q in rows] for label, key, fmt in spec])]
     yoy, qoq = res["comparison"]["yoy"], res["comparison"]["qoq"]

@@ -1,0 +1,508 @@
+schema_version: earnings.v1
+earnings_id: nvda_fy27q3
+entity: cik_1045810
+company:
+  zh: NVIDIA（英伟达）
+  en: NVIDIA
+cik: 1045810
+tickers:
+- NVDA
+latest_period:
+  label: FY27 Q3
+  start: '2026-07-27'
+  end: '2026-10-25'
+as_of: '2026-11-17'
+unit: USD million
+release:
+  ir_date: '2026-11-17'
+  ir_url: https://investor.nvidia.com/events-and-presentations/events-and-presentations/event-details/2026/NVIDIA-3rd-Quarter-FY27-Financial-Results/default.aspx
+  disclosure_form: 8-K
+  disclosure_date: '2026-11-17'
+  disclosure_status: 8-K filed; exhibits furnished and unaudited; Q3 10-Q not observed
+related_studies:
+- study: company_nvidia
+  label:
+    zh: NVIDIA 年度财报研究
+    en: NVIDIA annual financial study
+documents:
+- id: release
+  form: 8-K Exhibit 99.1 (furnished, unaudited)
+  period_end: '2026-10-25'
+  accession: 0001045810-26-000088
+  accepted_at: '2026-11-17T21:20:51Z'
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27pr.htm
+  file: nvda-fy27q3-release.htm
+  sha256: 699e2bf368f8a57fd056d7edb7d9d97f8abf4e57ec086fe988fd4933a169ef35
+  retrieved_at: '2026-11-18T00:33:50.088161+00:00'
+  size_bytes: 348178
+  retrieval_representation: SEC DOCUMENT wrapper containing HTML; SHA256 pins local
+    retrieved bytes, not the earlier record response
+  walkthrough_response_sha256: 69d68c7fdaa4b663bde7b68953ecfde9bc4ae4ae43a02c64be081235e82a6539
+- id: cfo
+  form: 8-K Exhibit 99.2 (furnished, unaudited)
+  period_end: '2026-10-25'
+  accession: 0001045810-26-000088
+  accepted_at: '2026-11-17T21:20:51Z'
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27cfocommentary.htm
+  file: nvda-fy27q3-cfo.htm
+  sha256: 1d1e1fc9c2500058535956bacecb8718cb305c565b97b5716c86e8506572b75a
+  retrieved_at: '2026-11-18T00:33:50.281904+00:00'
+  size_bytes: 251579
+  retrieval_representation: SEC DOCUMENT wrapper containing HTML; SHA256 pins local
+    retrieved bytes, not the earlier record response
+  walkthrough_response_sha256: 243799b6c367369e00b45955fbad05184295c92eba4c05972ef9c55c270a89f9
+- id: supp
+  form: 8-K Exhibit 99.3 (furnished, unaudited)
+  period_end: '2026-10-25'
+  accession: 0001045810-26-000088
+  accepted_at: '2026-11-17T21:20:51Z'
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/supplementalfinancialinfor.htm
+  file: nvda-fy27q3-supp.htm
+  sha256: f19a674ae26d2d8f941ca8cb9aecc195a5db9ca70ee4a1df179207301e865f99
+  retrieved_at: '2026-11-18T00:33:50.465007+00:00'
+  size_bytes: 240681
+  retrieval_representation: SEC DOCUMENT wrapper containing HTML; SHA256 pins local
+    retrieved bytes, not the earlier record response
+  walkthrough_response_sha256: b878b7a33705449aab5713f997a6787a4bd8550a419d0fa1e0e5a0869ab956b0
+- id: prior_guidance
+  form: 8-K Exhibit 99.1 (furnished, unaudited)
+  period_end: '2026-07-26'
+  accession: 0001045810-26-000073
+  accepted_at: '2026-08-26T20:21:19Z'
+  url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/q2fy27pr.htm
+  file: nvda-fy27q3-prior_guidance.htm
+  sha256: 972e6c1d066a7ed8f114fcd866c89177c6bfb3f54a80c318b71a8d936fb0d164
+  retrieved_at: '2026-11-18T00:33:50.768426+00:00'
+  size_bytes: 341228
+  retrieval_representation: SEC DOCUMENT wrapper containing HTML; SHA256 pins local
+    retrieved bytes, not the earlier record response
+  walkthrough_response_sha256: dc2f82fbec958c30d534468fd50f9f8b8fe892a12c960787c0d840e01787866c
+profile:
+  short_name: NVIDIA
+  quarters:
+  - id: FY26Q3
+    label: FY26 Q3
+    end: '2025-10-26'
+    name:
+      zh: FY26 Q3
+      en: FY26 Q3
+  - id: FY27Q2
+    label: FY27 Q2
+    end: '2026-07-26'
+    name:
+      zh: FY27 Q2
+      en: FY27 Q2
+  - id: FY27Q3
+    label: FY27 Q3
+    end: '2026-10-25'
+    name:
+      zh: FY27 Q3
+      en: FY27 Q3
+  current: FY27Q3
+  yoy_base: FY26Q3
+  qoq_base: FY27Q2
+  fcf_deduct_principal: true
+  income_metrics:
+  - revenue
+  - cost_of_revenues
+  - opex
+  - op_income
+  - other_income
+  - EBT
+  - income_tax
+  - consolidated_NI
+  identities:
+  - name: 收入−营业成本−营业费用=营业利润
+    terms:
+      revenue: 1
+      cost_of_revenues: -1
+      opex: -1
+    equals: op_income
+  - name: 营业利润+其他收支=税前利润
+    terms:
+      op_income: 1
+      other_income: 1
+    equals: EBT
+  - name: 税前利润−所得税=合并净利润
+    terms:
+      EBT: 1
+      income_tax: -1
+    equals: consolidated_NI
+  growth:
+  - revenue
+  - op_income
+  - consolidated_NI
+  - cfo
+  - cash_ppe
+  margins:
+  - gross_margin
+  - op_margin
+  ratios: []
+  segments: []
+  segment_unavailable:
+    zh: 本次已公开的业绩附件未提供可核验的分部营业利润，故不计算分部利润率，也不把合并利润冒充任何分部。下方“分部与市场平台”列示原披露的四舍五入收入，单位十亿美元，三个比较期分别为
+      FY27 Q3／FY27 Q2／FY26 Q3。
+    en: The available earnings exhibits do not provide verifiable segment operating
+      income. No segment margin is calculated and consolidated income is not assigned
+      to a segment. The “Segments and market platforms” note below preserves rounded
+      reported revenue in USD billions for FY27 Q3 / FY27 Q2 / FY26 Q3.
+  findings:
+    revenue_caveat:
+      zh: 报告口径，非有机增长；分部与市场平台的口径不同。
+      en: Reported basis, not organic growth; reportable segments and market platforms
+        have different definitions.
+  metrics:
+    revenue: &id001
+      zh: 收入
+      en: Revenue
+    gross_profit:
+      zh: 毛利润
+      en: Gross profit
+    op_income: &id002
+      zh: 营业利润
+      en: Operating income
+    consolidated_NI:
+      zh: 合并净利润
+      en: Consolidated net income
+    gross_margin: &id003
+      zh: 毛利率
+      en: Gross margin
+    op_margin: &id004
+      zh: 营业利润率
+      en: Operating margin
+    cfo:
+      zh: 经营活动现金流
+      en: Operating cash flow
+    cash_ppe:
+      zh: 购置固定资产及无形资产的现金支出
+      en: Cash purchases of property, equipment and intangible assets
+    cash_ppe_principal:
+      zh: 相关固定资产及无形资产本金支付
+      en: Related principal payments on property, equipment and intangible assets
+    free_cash_flow:
+      zh: 自由现金流（发行人定义）
+      en: Free cash flow (issuer definition)
+  table:
+  - revenue
+  - gross_profit
+  - op_income
+  - consolidated_NI
+  - gross_margin
+  - op_margin
+  report:
+  - revenue
+  - op_income
+  - consolidated_NI
+  - cfo
+  - cash_ppe
+  - cash_ppe_principal
+  - free_cash_flow
+  charts:
+  - title:
+      zh: 收入与营业利润
+      en: Revenue and operating income
+    unit: usd_bn
+    series:
+    - key: revenue
+      label: *id001
+    - key: op_income
+      label: *id002
+  - title:
+      zh: 报告利润率
+      en: Reported margins
+    unit: pct
+    series:
+    - key: gross_margin
+      label: *id003
+    - key: op_margin
+      label: *id004
+  balance_note:
+    zh: 有价证券在此仅指可交易债务证券，不包括权益证券；长期债务不含租赁或或有担保。
+    en: Marketable securities here means marketable debt securities only, excluding
+      equity securities; long-term debt excludes leases and contingent guarantees.
+income:
+  FY26Q3:
+    label: FY26 Q3
+    start: '2025-07-28'
+    end: '2025-10-26'
+    document: release
+    values:
+      revenue: 57006
+      cost_of_revenues: 15157
+      opex: 5839
+      op_income: 36010
+      other_income: 1926
+      EBT: 37936
+      income_tax: 6026
+      consolidated_NI: 31910
+  FY27Q2:
+    label: FY27 Q2
+    start: '2026-04-27'
+    end: '2026-07-26'
+    document: prior_guidance
+    values:
+      revenue: 96221
+      cost_of_revenues: 24079
+      opex: 8408
+      op_income: 63734
+      other_income: 7773
+      EBT: 71507
+      income_tax: 11819
+      consolidated_NI: 59688
+  FY27Q3:
+    label: FY27 Q3
+    start: '2026-07-27'
+    end: '2026-10-25'
+    document: release
+    values:
+      revenue: 115844
+      cost_of_revenues: 29168
+      opex: 9156
+      op_income: 77520
+      other_income: 1497
+      EBT: 79017
+      income_tax: 13730
+      consolidated_NI: 65287
+cash_flow:
+  FY26Q3:
+    end: '2025-10-26'
+    document: release
+    cfo: 23750
+    cash_ppe: 1637
+    cash_ppe_principal: 24
+  FY27Q2:
+    end: '2026-07-26'
+    document: release
+    cfo: 24077
+    cash_ppe: 2677
+    cash_ppe_principal: 59
+  FY27Q3:
+    end: '2026-10-25'
+    document: release
+    cfo: 48253
+    cash_ppe: 4422
+    cash_ppe_principal: 54
+issuer_fcf:
+  FY26Q3: 22089
+  FY27Q2: 21341
+  FY27Q3: 43777
+  document: release
+balance:
+  '2026-10-25':
+    document: supp
+    values:
+      cash: 29089
+      marketable_securities: 24423
+      total_assets: 372188
+      total_equity: 266666
+      longterm_debt: 32371
+      PPE_net: 19227
+  '2026-01-25':
+    document: supp
+    values:
+      cash: 10605
+      marketable_securities: 39065
+      total_assets: 206803
+      total_equity: 157293
+      longterm_debt: 7469
+      PPE_net: 10383
+notes:
+- id: status
+  document: cfo
+  title:
+    zh: 披露范围与申报状态
+    en: Disclosure scope and filing status
+  fact:
+    zh: 本页来自 2026-11-17 接受的 8-K 附件 99.1–99.3，均为 furnished、未经审计。2026-11-18 00:33:51
+      UTC 复查 SEC submissions，最新 10-Q 仍为截至 2026-07-26 的 Q2，非 Q3。
+    en: 'This page uses the 8-K exhibits 99.1–99.3 accepted on November 17, 2026:
+      furnished and unaudited. The SEC submissions recheck at 00:33:51 UTC on November
+      18 still shows the latest 10-Q for Q2 ended July 26, not Q3.'
+  limit:
+    zh: 不冒称 Q3 10-Q 附注或完整审计覆盖；财务发布日期早于原研究截止，网页取得时间晚于截止，不声称完整时点档案。
+    en: No claim of Q3 10-Q footnote coverage or audit. Financial disclosure predates
+      the original research cutoff, retrieval is later, and point-in-time archival
+      completeness is not claimed.
+  excerpts: []
+- id: rounded_segments
+  document: cfo
+  title:
+    zh: 分部与市场平台（四舍五入收入）
+    en: Segments and market platforms (rounded revenue)
+  fact:
+    zh: 顺序为 FY27 Q3／FY27 Q2／FY26 Q3，单位十亿美元：正式分部 Compute & Networking 106.0／88.3／50.9，Graphics
+      9.8／7.9／6.1。市场平台 Data Center 107.6／89.0／51.2，其中 Hyperscale 60.1／48.7／35.1、AI
+      Clouds, Industrial, & Enterprise 47.5／40.3／16.1；Edge Computing 8.2／7.2／5.8。
+    en: 'Order: FY27 Q3 / FY27 Q2 / FY26 Q3, USD billions. Reportable segments: Compute
+      & Networking 106.0 / 88.3 / 50.9; Graphics 9.8 / 7.9 / 6.1. Market platforms:
+      Data Center 107.6 / 89.0 / 51.2, comprising Hyperscale 60.1 / 48.7 / 35.1 and
+      AI Clouds, Industrial, & Enterprise 47.5 / 40.3 / 16.1; Edge Computing 8.2 /
+      7.2 / 5.8.'
+  limit:
+    zh: 保留一位小数原精度，不转成精确百万美元、不要求四舍五入值精确加总、不由平台收入推断分部利润率。原披露增长率以未四舍五入的百万美元计算，本页不以 rounded
+      数值重造该增长率。
+    en: Original one-decimal precision is retained, not converted into exact USD millions
+      or forced to sum exactly. Platform revenue does not establish segment margins.
+      Issuer growth percentages use unrounded USD millions and are not reconstructed
+      from the rounded amounts.
+  excerpts:
+  - Compute & Networking $106.0 $88.3 $50.9
+  - Graphics 9.8 7.9 6.1
+  - Data Center $107.6 $89.0 $51.2
+  - Hyperscale 60.1 48.7 35.1
+  - AI Clouds, Industrial, & Enterprise 47.5 40.3 16.1
+  - Edge Computing 8.2 7.2 5.8
+  reported_rounded_revenue_usd_bn:
+    reportable_segment_revenue:
+      Compute_and_Networking:
+      - 106.0
+      - 88.3
+      - 50.9
+      Graphics:
+      - 9.8
+      - 7.9
+      - 6.1
+    market_platform_revenue:
+      Data_Center:
+      - 107.6
+      - 89.0
+      - 51.2
+      Hyperscale:
+      - 60.1
+      - 48.7
+      - 35.1
+      AI_Clouds_Industrial_Enterprise:
+      - 47.5
+      - 40.3
+      - 16.1
+      Edge_Computing:
+      - 8.2
+      - 7.2
+      - 5.8
+  period_order:
+  - FY27Q3
+  - FY27Q2
+  - FY26Q3
+- id: fcf
+  document: release
+  title:
+    zh: 自由现金流与现金税时点
+    en: Free cash flow and cash timing
+  fact:
+    zh: 发行人 FCF = CFO−购置固定资产及无形资产的现金支出−相关本金支付。FY27 Q3 为 48,253−4,422−54=43,777；FY27
+      Q2 为 24,077−2,677−59=21,341；FY26 Q3 为 23,750−1,637−24=22,089（百万美元）。
+    en: 'Issuer FCF = CFO less cash purchases of property, equipment and intangible
+      assets less related principal. FY27 Q3: 48,253−4,422−54=43,777; FY27 Q2: 24,077−2,677−59=21,341;
+      FY26 Q3: 23,750−1,637−24=22,089 (USD millions).'
+  limit:
+    zh: 不是可分配或持续性 owner cash。现金税及营运资本时点影响 CFO；本金独立列示，不合并进购置支出。
+    en: Not distributable or sustainable owner cash. Cash taxes and working-capital
+      timing affect CFO; principal is separate from purchases.
+  excerpts:
+  - Free cash flow is calculated as GAAP net cash provided by operating activities
+    less both purchases related to property and equipment and intangible assets and
+    principal payments on property and equipment and intangible assets.
+- id: nongaap
+  document: release
+  title:
+    zh: GAAP 与非 GAAP 可比性
+    en: GAAP and non-GAAP comparability
+  fact:
+    zh: FY27 Q3 GAAP／非 GAAP 净利润为 65,287／64,870，Q2 为 59,688／53,954（百万美元）。自 FY27 Q1
+      起，发行人非 GAAP 不再剔除股份薪酬，所示历史非 GAAP 比较也已改为包含股份薪酬。
+    en: FY27 Q3 GAAP/non-GAAP net income is 65,287/64,870 and Q2 is 59,688/53,954
+      (USD millions). Starting FY27 Q1, issuer non-GAAP measures no longer exclude
+      stock-based compensation; presented historical comparisons were updated to include
+      it.
+  limit:
+    zh: 本表计算仅采用 GAAP；不混用旧版剔除股份薪酬的非 GAAP，不由局部调整声称完整正常化盈利。
+    en: Calculated tables use GAAP only. Old non-GAAP definitions excluding SBC are
+      not mixed in; partial adjustments are not full normalized earnings.
+  excerpts:
+  - NVIDIA’s non-GAAP financial measures no longer exclude stock-based compensation
+    expense.
+  check:
+    document: release
+    gaap_ni_q3: 65287
+    non_gaap_ni_q3: 64870
+    gaap_ni_q2: 59688
+    non_gaap_ni_q2: 53954
+- id: q4_outlook
+  document: release
+  title:
+    zh: FY27 Q4 展望（尚未实现）
+    en: FY27 Q4 outlook (not realized)
+  fact:
+    zh: 11/17 管理层预计 Q4 收入 130.0 十亿美元±3%，区间算术 126.1–133.9；GAAP/非 GAAP 毛利率 71%–72%，营业费用约
+      11.0/10.7 十亿美元。Q4 多一周；不假设中国 Data Center compute 收入。 FY27 全年税率展望 16%–18%，不含离散事项及税务环境重大变化。
+    en: On November 17, management guided Q4 revenue to USD 130.0bn±3% (mechanical
+      range 126.1–133.9), GAAP/non-GAAP gross margin 71%–72%, and operating expenses
+      about USD 11.0/10.7bn. Q4 includes an extra week and assumes no China Data Center
+      compute revenue. FY27 full-year tax-rate outlook is 16%–18%, excluding discrete
+      items and material changes in the tax environment.
+  limit:
+    zh: 为未来条件式展望，非收入承诺或已实现值；同比/环比不等于每周有机增长。本页资本开支展望栏未把收入展望错填成 capex。
+    en: Conditional forward outlook, not a revenue commitment or realized result.
+      Growth is not weekly organic growth. Revenue guidance is not misregistered as
+      capex guidance.
+  excerpts:
+  - Revenue is expected to be $130.0 billion, plus or minus 3%.
+  - GAAP and non-GAAP gross margins are expected to be between 71.0% and 72.0%.
+- id: prior_outlook
+  document: prior_guidance
+  title:
+    zh: 上季 Q3 指引核对
+    en: Prior-quarter Q3 guidance check
+  fact:
+    zh: 8/26 原 Q3 收入指引 108.0 十亿美元±2%，即 105.84–110.16；实际 115.844，高于上界 5.684 十亿美元。GAAP
+      毛利率指引 74%±0.5 个百分点，实际 74.8213% 高于 74.5% 上界。
+    en: The August 26 Q3 revenue outlook was USD 108.0bn±2%, or 105.84–110.16; actual
+      115.844 is 5.684 above the upper bound. GAAP gross-margin guidance was 74%±0.5pp;
+      actual 74.8213% exceeds the 74.5% upper bound.
+  limit:
+    zh: 按原定义区间判定为高于上界、非落在区间内；这不是一致预期 surprise 或失败判定。
+    en: Above the stated upper bound, not inside the range. This is not a consensus
+      surprise or failure verdict.
+  excerpts:
+  - Revenue is expected to be $108.0 billion, plus or minus 2%.
+- id: historical
+  document: release
+  title:
+    zh: 季度选择与历史小差
+    en: Quarter selection and small historical discrepancy
+  fact:
+    zh: 主表仅使用直接可核对的 FY26 Q3、FY27 Q2、FY27 Q3，不是连续三季。未将走查中的 FY27 Q1 减算值或跨来源 FY26 Q4
+      减算值伪称直接披露。季度起始日按对应 13 周季度由期末减 90 日推定。
+    en: The main table uses directly checkable FY26 Q3, FY27 Q2 and FY27 Q3, not three
+      consecutive quarters. Derived FY27 Q1 and cross-source FY26 Q4 figures in the
+      walkthrough are not presented as direct disclosures. Quarter starts are inferred
+      as 90 days before the corresponding 13-week quarter end.
+  limit:
+    zh: FY27 Q1 的收入/营业利润/净利在 Q2 简表与累计减算间各差 1 百万美元，原因未确定，不证明重述；本页不扩展为五季均独立核验的声明。
+    en: FY27 Q1 revenue, operating income and net income each differ by USD 1m between
+      the Q2 summary and cumulative subtraction. Cause is unknown, not proof of restatement.
+      This page does not claim five independently verified quarters.
+  excerpts: []
+coverage:
+- id: direct
+  status: done
+  item:
+    zh: 三个直接比较季度的合并财务、现金与发行人 FCF
+    en: Consolidated financials, cash and issuer FCF for three directly comparable
+      quarters
+- id: rounded
+  status: done
+  item:
+    zh: 原披露精度的正式分部／市场平台收入与指引
+    en: Reportable-segment/market-platform revenue and outlook at disclosed precision
+- id: segment_profit
+  status: data_gap
+  item:
+    zh: 正式分部营业利润、利润率及精确百万美元收入
+    en: Reportable-segment operating income, margin and exact USD-million revenue
+- id: not_scope
+  status: judgment
+  item:
+    zh: 完整附注、电话会、行情反应、估值及持续性判断不在本网页范围
+    en: Full footnotes, call, market reaction, valuation and sustainability judgments
+      are outside this page

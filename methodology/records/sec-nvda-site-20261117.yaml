@@ -1,0 +1,447 @@
+# Public validation checkpoint; deployment evidence is reported separately.
+id: sec-nvda-site-20261117
+task_id: R-20261117-nvda-earnings
+record_type: site_validation
+status: local_verified_and_archived
+checked_at: '2026-11-18T00:52:16.282949+00:00'
+walkthrough:
+  path: methodology/records/sec-nvda-earnings-20261117.yaml
+  sha256: 5ecf4a6f60f42d6dae232797504b46b9d6053546e97238ab99dfbb00272cee22
+  unchanged: true
+study_id: earnings_nvda_fy27q3
+registration: config/earnings/nvda_fy27q3.yaml
+study_definition: config/studies/earnings_nvda_fy27q3.yaml
+scope:
+  current: FY2027 Q3 ended 2026-10-25
+  comparison_quarters:
+  - FY26Q3
+  - FY27Q2
+  - FY27Q3
+  not_consecutive_quarters: true
+  source: SEC furnished unaudited 8-K exhibits, not Q3 10-Q
+  financial_publication_cutoff_NY: '2026-11-17T18:43:00-05:00'
+  retrieval_after_cutoff: Published financial documents precede cutoff; site retrieval
+    timestamps are later. No point-in-time archival completeness claim.
+  excluded_from_table: Derived FY27Q1 and mixed-source FY26Q4 remain in the earlier
+    walkthrough with source-vintage limits; this site does not claim five direct quarters.
+sources:
+  release:
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27pr.htm
+    sha256: 699e2bf368f8a57fd056d7edb7d9d97f8abf4e57ec086fe988fd4933a169ef35
+    record_source_sha256: 69d68c7fdaa4b663bde7b68953ecfde9bc4ae4ae43a02c64be081235e82a6539
+    same_bytes_as_record: false
+    file: nvda-fy27q3-release.htm
+    retrieved_at: '2026-11-18T00:33:50.088161+00:00'
+    size_bytes: 348178
+  cfo:
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/q3fy27cfocommentary.htm
+    sha256: 1d1e1fc9c2500058535956bacecb8718cb305c565b97b5716c86e8506572b75a
+    record_source_sha256: 243799b6c367369e00b45955fbad05184295c92eba4c05972ef9c55c270a89f9
+    same_bytes_as_record: false
+    file: nvda-fy27q3-cfo.htm
+    retrieved_at: '2026-11-18T00:33:50.281904+00:00'
+    size_bytes: 251579
+  supp:
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/supplementalfinancialinfor.htm
+    sha256: f19a674ae26d2d8f941ca8cb9aecc195a5db9ca70ee4a1df179207301e865f99
+    record_source_sha256: b878b7a33705449aab5713f997a6787a4bd8550a419d0fa1e0e5a0869ab956b0
+    same_bytes_as_record: false
+    file: nvda-fy27q3-supp.htm
+    retrieved_at: '2026-11-18T00:33:50.465007+00:00'
+    size_bytes: 240681
+  prior_guidance:
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000073/q2fy27pr.htm
+    sha256: 972e6c1d066a7ed8f114fcd866c89177c6bfb3f54a80c318b71a8d936fb0d164
+    record_source_sha256: dc2f82fbec958c30d534468fd50f9f8b8fe892a12c960787c0d840e01787866c
+    same_bytes_as_record: false
+    file: nvda-fy27q3-prior_guidance.htm
+    retrieved_at: '2026-11-18T00:33:50.768426+00:00'
+    size_bytes: 341228
+  current_submissions:
+    retrieved_at: '2026-11-18T00:33:51.123654+00:00'
+    sha256: 9290cead11724c53b1db3675b98b0af6b49bc981eb34b4cef68a705ce48e83bc
+    latest:
+    - form: 8-K
+      filingDate: '2026-11-17'
+      reportDate: '2026-11-17'
+      acceptanceDateTime: '2026-11-17T21:20:51.000Z'
+      accessionNumber: 0001045810-26-000088
+      primaryDocument: nvda-20261117.htm
+    - form: 8-K
+      filingDate: '2026-11-12'
+      reportDate: '2026-11-11'
+      acceptanceDateTime: '2026-11-12T13:52:41.000Z'
+      accessionNumber: 0001045810-26-000082
+      primaryDocument: nvda-20261111.htm
+    - form: 8-K
+      filingDate: '2026-09-03'
+      reportDate: '2026-09-02'
+      acceptanceDateTime: '2026-09-03T12:03:56.000Z'
+      accessionNumber: 0001045810-26-000078
+      primaryDocument: nvda-20260902.htm
+    - form: 10-Q
+      filingDate: '2026-08-26'
+      reportDate: '2026-07-26'
+      acceptanceDateTime: '2026-08-26T20:36:00.000Z'
+      accessionNumber: 0001045810-26-000075
+      primaryDocument: nvda-20260726.htm
+run:
+  id: earnings_nvda_fy27q3-20261118T004852Z-78b63678
+  status: partial
+  code:
+    package_version: 0.1.0
+    source_hash: cd740094d7a4f5569ddfef980b2f450af073080e4a8562e512eef4b3355e20e9
+    git_commit: f0623d4bad69951a999e734d3c30f25e51a7963a
+    dirty: false
+  result_hash: 8821577900879784564de2b8dc91bc6838ff8354c77e0403ba9af319df588dcd
+  input_version: v20261118T004403Z-c0ebcc23
+  verify: reproduced
+  artifact_integrity: pass
+  required_output_files_checked: 3
+registration_check:
+  all_registered_companies:
+    documents: 15
+    values: 255
+    identities: 63
+    excerpts: 25
+    errors: 0
+  nvda_only:
+    documents: 4
+    values: 52
+    identities: 12
+    excerpts: 11
+    errors: 0
+  fetch: Registered SecClient retrieved four allowed SEC HTML documents into local-only
+    filings; iros earnings fetch then found 0 missing documents.
+comparison:
+  automated_field_checks: 85
+  all_match: true
+  absolute_tolerance: 1.0e-09
+  checks:
+  - field: quarters.FY26Q3.revenue
+    actual: 57006.0
+    walkthrough: 57006
+  - field: quarters.FY26Q3.cost_of_revenues
+    actual: 15157.0
+    walkthrough: 15157
+  - field: quarters.FY26Q3.opex
+    actual: 5839.0
+    walkthrough: 5839
+  - field: quarters.FY26Q3.op_income
+    actual: 36010.0
+    walkthrough: 36010
+  - field: quarters.FY26Q3.other_income
+    actual: 1926.0
+    walkthrough: 1926
+  - field: quarters.FY26Q3.EBT
+    actual: 37936.0
+    walkthrough: 37936
+  - field: quarters.FY26Q3.income_tax
+    actual: 6026.0
+    walkthrough: 6026
+  - field: quarters.FY26Q3.consolidated_NI
+    actual: 31910.0
+    walkthrough: 31910
+  - field: quarters.FY26Q3.cfo
+    actual: 23750.0
+    walkthrough: 23750
+  - field: quarters.FY26Q3.cash_ppe
+    actual: 1637.0
+    walkthrough: 1637
+  - field: quarters.FY26Q3.cash_ppe_principal
+    actual: 24.0
+    walkthrough: 24
+  - field: quarters.FY26Q3.free_cash_flow
+    actual: 22089.0
+    walkthrough: 22089
+  - field: quarters.FY26Q3.gross_margin
+    actual: 73.41157071185489
+    walkthrough: 73.41157071185489
+  - field: quarters.FY26Q3.op_margin
+    actual: 63.16878925025436
+    walkthrough: 63.168789250254356
+  - field: quarters.FY26Q3.cfo_to_consolidated_ni
+    actual: 0.7442807897210906
+    walkthrough: 0.7442807897210906
+  - field: quarters.FY27Q2.revenue
+    actual: 96221.0
+    walkthrough: 96221
+  - field: quarters.FY27Q2.cost_of_revenues
+    actual: 24079.0
+    walkthrough: 24079
+  - field: quarters.FY27Q2.opex
+    actual: 8408.0
+    walkthrough: 8408
+  - field: quarters.FY27Q2.op_income
+    actual: 63734.0
+    walkthrough: 63734
+  - field: quarters.FY27Q2.other_income
+    actual: 7773.0
+    walkthrough: 7773
+  - field: quarters.FY27Q2.EBT
+    actual: 71507.0
+    walkthrough: 71507
+  - field: quarters.FY27Q2.income_tax
+    actual: 11819.0
+    walkthrough: 11819
+  - field: quarters.FY27Q2.consolidated_NI
+    actual: 59688.0
+    walkthrough: 59688
+  - field: quarters.FY27Q2.cfo
+    actual: 24077.0
+    walkthrough: 24077
+  - field: quarters.FY27Q2.cash_ppe
+    actual: 2677.0
+    walkthrough: 2677
+  - field: quarters.FY27Q2.cash_ppe_principal
+    actual: 59.0
+    walkthrough: 59
+  - field: quarters.FY27Q2.free_cash_flow
+    actual: 21341.0
+    walkthrough: 21341
+  - field: quarters.FY27Q2.gross_margin
+    actual: 74.97531723844068
+    walkthrough: 74.97531723844067
+  - field: quarters.FY27Q2.op_margin
+    actual: 66.23710000935347
+    walkthrough: 66.23710000935347
+  - field: quarters.FY27Q2.cfo_to_consolidated_ni
+    actual: 0.40338091408658355
+    walkthrough: 0.40338091408658355
+  - field: quarters.FY27Q3.revenue
+    actual: 115844.0
+    walkthrough: 115844
+  - field: quarters.FY27Q3.cost_of_revenues
+    actual: 29168.0
+    walkthrough: 29168
+  - field: quarters.FY27Q3.opex
+    actual: 9156.0
+    walkthrough: 9156
+  - field: quarters.FY27Q3.op_income
+    actual: 77520.0
+    walkthrough: 77520
+  - field: quarters.FY27Q3.other_income
+    actual: 1497.0
+    walkthrough: 1497
+  - field: quarters.FY27Q3.EBT
+    actual: 79017.0
+    walkthrough: 79017
+  - field: quarters.FY27Q3.income_tax
+    actual: 13730.0
+    walkthrough: 13730
+  - field: quarters.FY27Q3.consolidated_NI
+    actual: 65287.0
+    walkthrough: 65287
+  - field: quarters.FY27Q3.cfo
+    actual: 48253.0
+    walkthrough: 48253
+  - field: quarters.FY27Q3.cash_ppe
+    actual: 4422.0
+    walkthrough: 4422
+  - field: quarters.FY27Q3.cash_ppe_principal
+    actual: 54.0
+    walkthrough: 54
+  - field: quarters.FY27Q3.free_cash_flow
+    actual: 43777.0
+    walkthrough: 43777
+  - field: quarters.FY27Q3.gross_margin
+    actual: 74.8213114188046
+    walkthrough: 74.8213114188046
+  - field: quarters.FY27Q3.op_margin
+    actual: 66.91757881288629
+    walkthrough: 66.91757881288629
+  - field: quarters.FY27Q3.cfo_to_consolidated_ni
+    actual: 0.7390904774304226
+    walkthrough: 0.7390904774304226
+  - field: comparison.yoy.revenue
+    actual: 103.2136968038452
+    walkthrough: 103.2136968038452
+  - field: comparison.yoy.op_income
+    actual: 115.27353512913079
+    walkthrough: 115.27353512913079
+  - field: comparison.yoy.consolidated_NI
+    actual: 104.59730492008777
+    walkthrough: 104.59730492008777
+  - field: comparison.yoy.cfo
+    actual: 103.17052631578947
+    walkthrough: 103.17052631578947
+  - field: comparison.yoy.op_margin_pp
+    actual: 3.748789562631927
+    walkthrough: 3.7487895626319343
+  - field: comparison.qoq.revenue
+    actual: 20.393677055944124
+    walkthrough: 20.393677055944124
+  - field: comparison.qoq.op_income
+    actual: 21.63052687733391
+    walkthrough: 21.63052687733391
+  - field: comparison.qoq.consolidated_NI
+    actual: 9.380444980565606
+    walkthrough: 9.380444980565606
+  - field: comparison.qoq.cfo
+    actual: 100.41118079494953
+    walkthrough: 100.41118079494953
+  - field: comparison.qoq.op_margin_pp
+    actual: 0.6804788035328215
+    walkthrough: 0.6804788035328215
+  - field: balance.2026-10-25.cash
+    actual: 29089.0
+    walkthrough: 29089
+  - field: balance.2026-10-25.marketable_securities
+    actual: 24423.0
+    walkthrough: 24423
+  - field: balance.2026-10-25.total_assets
+    actual: 372188.0
+    walkthrough: 372188
+  - field: balance.2026-10-25.total_equity
+    actual: 266666.0
+    walkthrough: 266666
+  - field: balance.2026-10-25.longterm_debt
+    actual: 32371.0
+    walkthrough: 32371
+  - field: balance.2026-10-25.PPE_net
+    actual: 19227.0
+    walkthrough: 19227
+  - field: balance.2026-01-25.cash
+    actual: 10605.0
+    walkthrough: 10605
+  - field: balance.2026-01-25.marketable_securities
+    actual: 39065.0
+    walkthrough: 39065
+  - field: balance.2026-01-25.total_assets
+    actual: 206803.0
+    walkthrough: 206803
+  - field: balance.2026-01-25.total_equity
+    actual: 157293.0
+    walkthrough: 157293
+  - field: balance.2026-01-25.longterm_debt
+    actual: 7469.0
+    walkthrough: 7469
+  - field: balance.2026-01-25.PPE_net
+    actual: 10383.0
+    walkthrough: 10383
+  - field: notes.rounded.reportable_segment_revenue.Compute_and_Networking.0
+    actual: 106.0
+    walkthrough: 106.0
+  - field: notes.rounded.reportable_segment_revenue.Compute_and_Networking.1
+    actual: 88.3
+    walkthrough: 88.3
+  - field: notes.rounded.reportable_segment_revenue.Compute_and_Networking.2
+    actual: 50.9
+    walkthrough: 50.9
+  - field: notes.rounded.reportable_segment_revenue.Graphics.0
+    actual: 9.8
+    walkthrough: 9.8
+  - field: notes.rounded.reportable_segment_revenue.Graphics.1
+    actual: 7.9
+    walkthrough: 7.9
+  - field: notes.rounded.reportable_segment_revenue.Graphics.2
+    actual: 6.1
+    walkthrough: 6.1
+  - field: notes.rounded.market_platform_revenue.Data_Center.0
+    actual: 107.6
+    walkthrough: 107.6
+  - field: notes.rounded.market_platform_revenue.Data_Center.1
+    actual: 89.0
+    walkthrough: 89.0
+  - field: notes.rounded.market_platform_revenue.Data_Center.2
+    actual: 51.2
+    walkthrough: 51.2
+  - field: notes.rounded.market_platform_revenue.Hyperscale.0
+    actual: 60.1
+    walkthrough: 60.1
+  - field: notes.rounded.market_platform_revenue.Hyperscale.1
+    actual: 48.7
+    walkthrough: 48.7
+  - field: notes.rounded.market_platform_revenue.Hyperscale.2
+    actual: 35.1
+    walkthrough: 35.1
+  - field: notes.rounded.market_platform_revenue.AI_Clouds_Industrial_Enterprise.0
+    actual: 47.5
+    walkthrough: 47.5
+  - field: notes.rounded.market_platform_revenue.AI_Clouds_Industrial_Enterprise.1
+    actual: 40.3
+    walkthrough: 40.3
+  - field: notes.rounded.market_platform_revenue.AI_Clouds_Industrial_Enterprise.2
+    actual: 16.1
+    walkthrough: 16.1
+  - field: notes.rounded.market_platform_revenue.Edge_Computing.0
+    actual: 8.2
+    walkthrough: 8.2
+  - field: notes.rounded.market_platform_revenue.Edge_Computing.1
+    actual: 7.2
+    walkthrough: 7.2
+  - field: notes.rounded.market_platform_revenue.Edge_Computing.2
+    actual: 5.8
+    walkthrough: 5.8
+independent_read_only_model_review:
+  status: pass
+  not_human_audit: true
+  checked_fields: 97
+  differences: 0
+  groups:
+    income_cash_issuer_fcf: 36
+    balance: 12
+    rounded_segments_platforms: 18
+    gross_profit_margins_cash_ratios: 15
+    growth: 10
+    margin_pp: 4
+    cash_plus_debt_securities: 2
+  source_row_column_periods_checked: true
+  separate_profile_and_CN_EN_render_review: pass; current-result links point to the
+    clean run, 8-K source date, no invented segment profit, separate principal and
+    FCF labels; English CJK only language switch
+formulas:
+  issuer_FCF: CFO - cash purchases of property/equipment/intangibles - related principal
+    payments
+  growth_percent: 100*(current/base-1)
+  gross_margin_percent: 100*(revenue-cost_of_revenues)/revenue
+  operating_margin_percent: 100*op_income/revenue
+  CFO_to_NI: CFO/consolidated_NI
+caliber_limits:
+- Reportable segments and market platforms differ; one-decimal USD billion revenue
+  preserved in sourced notes rather than converted into exact USD millions.
+- No segment operating profit or margins invented; absence explicitly displayed.
+- 8-K filing date uses disclosure_form/disclosure_date, not form_10q_filed. Exhibits
+  are furnished and unaudited.
+- FCF is issuer-defined, not distributable or sustainable owner cash.
+- Revenue guidance remains in sourced outlook notes, not misregistered as capex guidance.
+- No transcript republication, market reaction, valuation or personal conclusions
+  in the site study.
+tests:
+  full_suite:
+    passed: 493
+    seconds: 173.38
+  earnings:
+    passed: 77
+    seconds: 11.99
+  archive:
+    passed: 12
+    seconds: 23.76
+  discovery_navigation:
+    passed: 23
+    seconds: 4.38
+  initial_full_suite_failures:
+    count: 4
+    resolved: Corrected canonical NVIDIA subject and updated reviewed study inventory/count/routes;
+      all 493 passed on final full rerun.
+  legacy_GOOGL_fixed_run: reproduced with original and recomputed hash b68d759e10fcd3f2
+archive:
+  branch: archive
+  commit: 26243a164e6db748f2f2b9887d5d357a92df624f
+  run_ids_added:
+  - earnings_nvda_fy27q3-20261118T004852Z-78b63678
+  paths_added: 6
+  original_filings_archived: false
+  data_archived: []
+  local_only_input_data_limit: Current earnings_evidence registration does not archive
+    the input dataset. Local fixed-version reproduction passed; fresh-machine recomputation
+    requires permitted SEC HTML and evidence-bundle reconstruction, not an assertion
+    that all inputs are publicly archived.
+publication_checkpoint:
+  meaning: This record captures local validation and isolated archive, not proof of
+    deployment. Final Actions and live CN/EN/search evidence are reported separately.
+  site_pending_until: Successful main workflow plus live CN/EN page and company/ticker
+    search verification.
+public_boundary:
+  diff_checked: true
+  no_private_method_text_personal_judgments_secrets_local_absolute_paths_or_original_files: true
