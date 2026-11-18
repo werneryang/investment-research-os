@@ -1,0 +1,183 @@
+id: sec-aapl-supplier-concentration-20261117
+task_id: R-20261117-aapl-value-chain
+record_type: supplemental-primary-source-verification
+status: independently verified; released by main
+supplements:
+  path: methodology/records/sec-aapl-value-chain-20261117.yaml
+  sha256: cbfdda1bcfad073781cfbe4f0b06edd843c4f36d81f80fb3290c129abdaf2b47
+  unchanged: true
+scope:
+  cutoff_utc: '2026-11-17T21:26:00Z'
+  selection: Five requested representative suppliers only; not a procurement ranking, complete supplier census or
+    product bill of materials
+  source: Registered sec_edgar connector, rate-limited SecClient; latest original annual filing accepted by cutoff
+    selected from SEC submissions API
+  retrieval_limit: Technical retrieval after cutoff; only original pre-cutoff accessions, not amendments. No complete
+    historical website snapshot claimed.
+  originals_policy: Public SEC HTML read and parsed in memory; no full originals persisted or redistributed. Only
+    source hashes and factual paraphrases in record.
+units: percent of the respective supplier revenue; fiscal years follow supplier calendars, not Apple fiscal year
+sources:
+  cirrus:
+    cik: 772406
+    form: 10-K
+    filingDate: '2026-05-21'
+    reportDate: '2026-03-28'
+    acceptanceDateTime: '2026-05-21T20:11:56.000Z'
+    accessionNumber: 0000772406-26-000018
+    primaryDocument: crus-20260328.htm
+    url: https://www.sec.gov/Archives/edgar/data/772406/000077240626000018/crus-20260328.htm
+    retrieved_at_utc: '2026-11-18T02:50:04.463011+00:00'
+    sha256_response: 633b2d625b8e19f77238a8559ad5d17c62a4be6981fffd8e93bd056033a6ee0e
+    bytes_in_memory: 1688324
+  skyworks:
+    cik: 4127
+    form: 10-K
+    filingDate: '2026-11-10'
+    reportDate: '2026-10-02'
+    acceptanceDateTime: '2026-11-10T21:17:18.000Z'
+    accessionNumber: 0000004127-26-000055
+    primaryDocument: swks-20261002.htm
+    url: https://www.sec.gov/Archives/edgar/data/4127/000000412726000055/swks-20261002.htm
+    retrieved_at_utc: '2026-11-18T02:50:05.137510+00:00'
+    sha256_response: 2fa3d8b67f088bf30c5ec14c86d8be6b65b2fbcbeaf788bd7ad4e52f621811eb
+    bytes_in_memory: 1787396
+  qorvo:
+    cik: 1604778
+    form: 10-K
+    filingDate: '2026-05-08'
+    reportDate: '2026-03-28'
+    acceptanceDateTime: '2026-05-08T20:12:24.000Z'
+    accessionNumber: 0001628280-26-032873
+    primaryDocument: rfmd-20260328.htm
+    url: https://www.sec.gov/Archives/edgar/data/1604778/000162828026032873/rfmd-20260328.htm
+    retrieved_at_utc: '2026-11-18T02:50:05.966553+00:00'
+    sha256_response: f336385fd9dc2c20df1c764bb91abf9a82bea5cf1d812592282d0168dacd3bc5
+    bytes_in_memory: 1914796
+  broadcom:
+    cik: 1730168
+    form: 10-K
+    filingDate: '2025-12-18'
+    reportDate: '2025-11-02'
+    acceptanceDateTime: '2025-12-18T21:04:47.000Z'
+    accessionNumber: 0001730168-25-000121
+    primaryDocument: avgo-20251102.htm
+    url: https://www.sec.gov/Archives/edgar/data/1730168/000173016825000121/avgo-20251102.htm
+    retrieved_at_utc: '2026-11-18T02:50:06.708891+00:00'
+    sha256_response: bc39bc0f90f0dd36ba75c1c0328f60516642d11c05b956439d8723f7371fa58d
+    bytes_in_memory: 2700143
+  qualcomm:
+    cik: 804328
+    form: 10-K
+    filingDate: '2026-11-04'
+    reportDate: '2026-09-27'
+    acceptanceDateTime: '2026-11-04T21:04:51.000Z'
+    accessionNumber: 0000804328-26-000128
+    primaryDocument: qcom-20260927.htm
+    url: https://www.sec.gov/Archives/edgar/data/804328/000080432826000128/qcom-20260927.htm
+    retrieved_at_utc: '2026-11-18T02:50:07.392361+00:00'
+    sha256_response: 63cda1141553bd06adaa52369095d4b29f918ed5531fd20ffc640e1df23188fe
+    bytes_in_memory: 1917181
+findings:
+  cirrus:
+    locator: Item 1 Customers; significant accounting policies / Concentration of Credit Risk
+    named_apple: true
+    periods:
+    - FY2026
+    - FY2025
+    - FY2024
+    percent_supplier_revenue:
+    - 91
+    - 89
+    - 87
+    precision: approximately
+    denominator: Cirrus total net sales
+    channel: Apple end-customer purchases through multiple contract manufacturers
+  skyworks:
+    locator: Item 1 Customer Concentration; Note 14 Segment Information and Concentrations
+    named_apple: true
+    periods:
+    - FY2026
+    - FY2025
+    - FY2024
+    percent_supplier_revenue:
+    - 61
+    - 67
+    - 69
+    denominator: Skyworks net revenue
+    channel: Apple end-customer sales through multiple distributors and contract manufacturers; multiple device
+      applications
+  qorvo:
+    locator: Item 1 Customers; Note 3 Concentrations of Credit Risk
+    named_apple: true
+    periods:
+    - FY2026
+    - FY2025
+    - FY2024
+    percent_supplier_revenue:
+    - 50
+    - 47
+    - 46
+    precision: approximately
+    denominator: Qorvo total revenue
+    channel: Apple end-customer sales through multiple contract manufacturers; primarily RF solutions in ACG
+  broadcom:
+    locator: Note 13 Segment Information / Significant Customer Information
+    named_apple: false
+    apple_percent: null
+    anonymous_customer_percent:
+      FY2025: 32
+      FY2024: 28
+      FY2023: 21
+    denominator: Broadcom net revenue, not semiconductor segment revenue
+    identity_limit: The named customer is not disclosed. Full filing case-insensitive Apple text search has zero
+      matches. Neither the anonymous customer nor its revenue share is attributed to Apple; no denial of an Apple
+      relationship is implied.
+    latest_annual_limit: FY2025 is latest annual filing available by cutoff; do not label FY2026.
+  qualcomm:
+    locator: Item 1 Revenue Concentrations and Significant Customers; Note 2 Concentrations
+    named_apple: true
+    period: FY2026
+    apple_percent_lower_bound: 10
+    denominator: Qualcomm consolidated revenues from customers/licensees; QCT and QTL
+    anonymous_table:
+      FY2026:
+        x: 22
+        y: 20
+        z: less than 10
+      FY2025:
+        x: 21
+        y: 20
+        z: 13
+      FY2024:
+        x: 22
+        y: 19
+        z: 12
+    identity_limit: Apple and Samsung are each named as at least 10 percent in FY2026, but the x/y/z rows are not
+      mapped to names. Do not select 20 or 22 percent for Apple. Revenue concentration is not necessarily chip sales
+      alone.
+limitations:
+- No Apple procurement share, ranking or exclusivity can be inferred from supplier revenue concentration.
+- OEM end-customer attribution through intermediaries does not imply direct billing to Apple.
+- Broadcom anonymous share cannot be mapped to Apple. Qualcomm named threshold does not map Apple to anonymous numeric
+  row.
+- Annual percentages are rounded as disclosed and do not identify individual component or device revenues.
+- No valuation, investment conclusion, personal position or trading instruction.
+verification:
+  independent_review:
+    status: PASS; temporary read-only model review, not human audit
+    fields_compared: 62
+    metadata_url_hash_fields: 40
+    numeric_fields: 22
+    differences: 0
+    method: Independent SEC submissions and original annual HTML retrieval; five response hashes equal; named attribution,
+      fiscal periods, channels and denominators separately reviewed
+    locator_corrections_applied:
+    - Qorvo Note 3 Concentrations of Credit Risk
+    - Cirrus accounting policies / Concentration of Credit Risk
+  public_boundary: PASS; complete new record reviewed, no original excerpts, method text, personal judgments, private
+    links, credentials, emails or local absolute paths; YAML parsed and original record hash unchanged
+  original_record_unchanged: true
+publication:
+  status: released by main; exact supplemental record path only
+  site_study: false
