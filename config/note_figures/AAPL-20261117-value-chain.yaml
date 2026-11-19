@@ -1,0 +1,92 @@
+# 报告图块：Apple 产业链与业务结构。规则见 docs/note-figures.md。
+# 数值与归类全部引用公开记录的字段：R 走查记录，S 供应商集中度补证，L 层次/时态归类补充（只新增归类，不新增事实）。
+schema_version: note-figures.v1
+note: AAPL-20261117-value-chain
+records:
+  R: methodology/records/sec-aapl-value-chain-20261117.yaml
+  S: methodology/records/sec-aapl-supplier-concentration-20261117.yaml
+  L: methodology/records/sec-aapl-value-chain-layout-20261119.yaml
+
+figures:
+  - id: kpis
+    section: 一句话结论
+    position: end
+    type: kpi
+    items:
+      - label: 总净销售额
+        value: {ref: "R:financial_context.reported_total", scale: 0.001}
+        unit: 十亿美元
+        note: FY2026，截至 2026-09-26
+        evidence: fact
+      - label: iPhone 占比
+        value: "R:financial_context.categories.iPhone.computed_share_percent"
+        unit: "%"
+        note: "收入 {R:financial_context.categories.iPhone.reported_revenue*0.001:.1f} 十亿美元"
+        evidence: calc
+      - label: Services 占比
+        value: "R:financial_context.categories.Services.computed_share_percent"
+        unit: "%"
+        note: "收入 {R:financial_context.categories.Services.reported_revenue*0.001:.1f} 十亿美元"
+        evidence: calc
+      - label: 间接渠道占比
+        value: "R:financial_context.reported_indirect_channel_share.approx_percent"
+        unit: "%"
+        digits: 0
+        note: 约数，整体间接渠道，不是具名运营商份额
+        evidence: fact
+
+  - id: revenue-mix
+    section: 业务体量与渠道
+    position: start
+    type: stack
+    title: "iPhone 占 FY2026 净销售额 {R:financial_context.categories.iPhone.computed_share_percent:.1f}%，Services 以 {R:financial_context.categories.Services.computed_share_percent:.1f}% 居第二"
+    subtitle: 产品与服务类别，百万美元；不是五个法定分部（法定分部按地区），也不是盈利、出货量或采购占比
+    unit: 百万美元
+    total: "R:financial_context.reported_total"
+    parts:
+      - {label: iPhone, value: "R:financial_context.categories.iPhone.reported_revenue", share: "R:financial_context.categories.iPhone.computed_share_percent"}
+      - label: Services
+        value: "R:financial_context.categories.Services.reported_revenue"
+        share: "R:financial_context.categories.Services.computed_share_percent"
+        note: 含与部分产品捆绑销售的递延服务价值摊销
+      - {label: Mac, value: "R:financial_context.categories.Mac.reported_revenue", share: "R:financial_context.categories.Mac.computed_share_percent"}
+      - {label: 穿戴、家居及配件, value: "R:financial_context.categories.Wearables_Home_Accessories.reported_revenue", share: "R:financial_context.categories.Wearables_Home_Accessories.computed_share_percent"}
+      - {label: iPad, value: "R:financial_context.categories.iPad.reported_revenue", share: "R:financial_context.categories.iPad.computed_share_percent"}
+    note: "产品类（iPhone、Mac、iPad、穿戴）合计占 {R:financial_context.calculation.products_share_percent:.1f}%，余下为 Services。"
+    source: Apple FY2026 Form 10-K
+    evidence: fact
+
+  - id: layer-tense
+    section: 一手具名关系
+    position: start
+    type: matrix
+    title: "已登记的 {#n_total} 条具名关系中，{#n_current} 条有现行证据，{#n_announced} 条仍是已签或已公告，{#n_historical} 条只有历史实例"
+    subtitle: 按层次与证据时态归类，格内是对方名称，* 表示同一来源另含未来扩产或承诺。空格只表示记录里没有这一类，不表示现实中不存在；数的是具名关系条数，不是重要性或份额
+    note: 归类写在补充记录 L 里（AI 辅助整理，尚待原作者确认），图只负责排版；原走查记录没有改动。
+    items: "L:items"
+    layers: "L:layers"
+    tenses: "L:tenses"
+    universe: "R:relationships"
+    source: 走查记录 32 条关系
+    evidence: infer
+
+  - id: supplier-dependency
+    section: 供应商收入对 Apple 的依赖
+    position: start
+    type: slope
+    title: "供应商对 Apple 的依赖在分化：Cirrus 约 {S:findings.cirrus.percent_supplier_revenue[0]:g}%、Qorvo 约 {S:findings.qorvo.percent_supplier_revenue[0]:g}% 仍在升，Skyworks 降到 {S:findings.skyworks.percent_supplier_revenue[0]:g}%"
+    subtitle: Apple 作为最终客户，占各供应商自身收入的比例。各供应商财年不同，经合同制造商或分销商；不是 Apple 的采购份额，也不是供应商排名
+    note: "Qualcomm 只披露 FY2026 至少 {S:findings.qualcomm.apple_percent_lower_bound:g}%（下限，空心点），其余年份没有 Apple 具名比例。Broadcom 的匿名客户（FY2025 占净收入 {S:findings.broadcom.anonymous_customer_percent.FY2025:g}%）身份未披露，不能归于 Apple，故不画。这五家是指定样本，不是供应商全集；各家分母不同，不相加。"
+    x: [FY2024, FY2025, FY2026]
+    y_min: 0
+    y_max: 100
+    unit: "%"
+    legend: []
+    series:
+      - {label: Cirrus Logic, prefix: 约, values: "S:findings.cirrus.percent_supplier_revenue", periods: "S:findings.cirrus.periods"}
+      - {label: Skyworks, values: "S:findings.skyworks.percent_supplier_revenue", periods: "S:findings.skyworks.periods"}
+      - {label: Qorvo, prefix: 约, values: "S:findings.qorvo.percent_supplier_revenue", periods: "S:findings.qorvo.periods"}
+    lower_bounds:
+      - {label: Qualcomm, value: "S:findings.qualcomm.apple_percent_lower_bound", period: "S:findings.qualcomm.period"}
+    source: 各供应商 SEC 年报
+    evidence: fact

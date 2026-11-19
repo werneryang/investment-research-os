@@ -23,11 +23,12 @@ SCHEMA = "note-figures.v1"
 SPEC_DIR = "config/note_figures"
 RECORD_DIR = "methodology/records/"
 PUBLIC_REPO = "https://github.com/werneryang/investment-research-os"
-TYPES = {"kpi", "bar", "line", "hbar", "group"}
+TYPES = {"kpi", "bar", "line", "hbar", "group", "stack", "slope", "matrix"}
 EVIDENCE = {"fact": "事实", "calc": "计算", "infer": "推断", "fwd": "展望"}
 # 报告正文里的证据标签，渲染时换成带颜色的标签
 BODY_TAGS = {"【事实】": "fact", "【计算】": "calc", "【推断】": "infer", "【展望】": "fwd"}
 REF = re.compile(r"(?P<rec>[A-Z]):(?P<path>[A-Za-z0-9_.{}\[\]-]+)\Z")
+VAR = re.compile(r"\{#(?P<name>[a-z_]+)\}")
 TEMPLATE = re.compile(r"\{(?P<rec>[A-Z]):(?P<path>[A-Za-z0-9_.\[\]-]+)(?:\*(?P<factor>[0-9.]+))?(?::(?P<fmt>[^}]+))?\}")
 
 
@@ -65,9 +66,10 @@ def load_spec(root: Path, note: dict) -> dict | None:
         if not (re.fullmatch(r"[A-Z]", str(key)) and rel.startswith(RECORD_DIR) and rel.endswith(".yaml")
                 and ".." not in rel and full.is_file() and not full.is_symlink()):
             raise FigureError(f"{path.name}: 记录 {key} 必须是 {RECORD_DIR} 下的 yaml 文件")
-        if rel not in note["body"]:
+        data = yaml.safe_load(full.read_text(encoding="utf-8"))
+        if rel not in note["body"] and not supplements_linked_record(root, data, note["body"]):
             raise FigureError(f"{path.name}: 报告正文没有链接记录 {rel}")
-        records[key] = {"path": rel, "data": yaml.safe_load(full.read_text(encoding="utf-8"))}
+        records[key] = {"path": rel, "data": data}
     if not records:
         raise FigureError(f"{path.name}: 没有声明 records")
     ctx = Ctx(records)
@@ -85,12 +87,28 @@ def load_spec(root: Path, note: dict) -> dict | None:
     return {"figures": figures}
 
 
+def supplements_linked_record(root: Path, data: Any, body: str) -> bool:
+    """补充记录（supplemental-*）可以不在正文里直接链接，条件是：它声明补充的记录已被正文链接，
+    且那份记录的哈希与声明一致（原记录没有被改过）。"""
+    import hashlib
+
+    if not isinstance(data, dict) or not str(data.get("record_type", "")).startswith("supplemental"):
+        return False
+    sup = data.get("supplements") or {}
+    rel = str(sup.get("path", ""))
+    full = Path(root) / rel
+    if not (rel.startswith(RECORD_DIR) and rel in body and full.is_file() and not full.is_symlink()):
+        return False
+    return hashlib.sha256(full.read_bytes()).hexdigest() == sup.get("sha256")
+
+
 class Ctx:
     """取数上下文：记下每张图用到的字段，用于出处行。"""
 
     def __init__(self, records: dict):
         self.records = records
         self.used: list[tuple[str, str]] = []
+        self.vars: dict[str, int] = {}  # 图自己数出来的条数，只供标题代入（{#n_total}）
 
     def get(self, ref: str, x: str | None = None) -> float:
         m = REF.match(str(ref))
@@ -111,12 +129,26 @@ class Ctx:
         self.used.append((rec, m["path"]))
         return float(value)
 
+    def raw(self, ref: str) -> Any:
+        """取记录里的列表或文字（图里的名称、分类、期间标签），同样记入出处行。"""
+        m = REF.match(str(ref))
+        if not m or m["rec"] not in self.records:
+            raise ValueError(f"引用格式或记录不成立：{ref!r}")
+        value: Any = self.records[m["rec"]]["data"]
+        for part in re.findall(r"[^.\[\]]+|\[\d+\]", m["path"]):
+            value = value[int(part[1:-1])] if part.startswith("[") else value[part]
+        self.used.append((m["rec"], m["path"]))
+        return value
+
     def num(self, spec: Any, x: str | None = None) -> float:
-        """数值只能来自记录：字符串引用，或 {ref, scale}，或 {sum: [...], scale}。"""
+        """数值只能来自记录：字符串引用，或 {ref, scale}，或 {sum: [...], scale}，
+        或 {by_x: {期间: 引用}}（个别期间的字段位置不同，例如由累计数推得的季度）。"""
         if isinstance(spec, str):
             return self.get(spec, x)
         if isinstance(spec, dict):
             scale = float(spec.get("scale", 1))
+            if "by_x" in spec:
+                return self.num(spec["by_x"][x], x) * scale
             if "sum" in spec:
                 return sum(self.num(s, x) for s in spec["sum"]) * scale
             return self.get(spec["ref"], x) * scale
@@ -127,7 +159,7 @@ class Ctx:
         def sub(m: re.Match) -> str:
             v = self.get(f"{m['rec']}:{m['path']}") * float(m["factor"] or 1)
             return format(v, m["fmt"] or "g")
-        return TEMPLATE.sub(sub, template or "")
+        return VAR.sub(lambda m: str(self.vars[m["name"]]), TEMPLATE.sub(sub, template or ""))
 
     def take_used(self) -> list[tuple[str, str]]:
         used, self.used = list(dict.fromkeys(self.used)), []
@@ -145,7 +177,7 @@ def evidence_tags(html_text: str) -> str:
 def render_body(md, body: str, spec: dict | None) -> str:
     """按二级标题把图块插到节首（标题之后）或节末（下一个二级标题之前）。每个图块的节都必须存在。"""
     tokens = md.parse(body)
-    heads = [i for i, t in enumerate(tokens) if t.type == "heading_open" and t.tag == "h2"]
+    heads = [i for i, t in enumerate(tokens) if t.type == "heading_open" and t.tag in ("h2", "h3")]
     figures = (spec or {}).get("figures", [])
     inserts: dict[int, list[str]] = {}
     for fig in figures:
@@ -155,8 +187,8 @@ def render_body(md, body: str, spec: dict | None) -> str:
         i = hit[0]
         if fig["position"] == "start":
             at = i + 3  # heading_open, inline, heading_close
-        else:
-            later = [h for h in heads if h > i]
+        else:  # 节末 = 下一个同级或更高级标题之前（三级标题只到下一个二、三级标题）
+            later = [h for h in heads if h > i and (tokens[i].tag == "h3" or tokens[h].tag == "h2")]
             at = later[0] if later else len(tokens)
         inserts.setdefault(at, []).append(fig["html"])
     out, last = [], 0
@@ -211,7 +243,7 @@ def frame(fig: dict, ctx: Ctx, body: str, table: str) -> str:
                      for rec, paths in by_rec.items())
     lead = f'{e(fig["source"])} · ' if fig.get("source") else ""
     note = f'<p class="nf-note">{e(note_text)}</p>' if note_text else ""
-    return (f'<figure class="nf" id="fig-{e(fig.get("id", ""))}" aria-label="{e(fig["title"])}">'
+    return (f'<figure class="nf" id="fig-{e(fig.get("id", ""))}" aria-label="{e(title)}">'
             f'<p class="nf-title">{e(title)}{tag(fig.get("evidence"))}</p>'
             f'<p class="nf-sub">{e(sub)}</p>{body}{note}'
             f'<details class="nf-data"><summary>数据表与字段</summary>{table}{fields}</details>'
@@ -405,4 +437,117 @@ def hbar(fig: dict, ctx: Ctx) -> tuple[str, str]:
     return "".join(out), table
 
 
-PLOTS = {"bar": bar, "line": line, "hbar": hbar}
+def stack(fig: dict, ctx: Ctx) -> tuple[str, str]:
+    """收入结构条：一根 100% 横条，各类相加必须等于总额，占比必须等于各类 ÷ 总额。"""
+    d, unit = fig.get("digits", 1), fig.get("unit", "")
+    total = ctx.num(fig["total"])
+    parts = [{"label": p["label"], "v": ctx.num(p["value"]), "share": ctx.num(p["share"]), "note": ctx.text(p.get("note", ""))}
+             for p in fig["parts"]]
+    if abs(sum(p["v"] for p in parts) - total) > 1e-6:
+        raise ValueError("各类合计与总额不符")
+    for p in parts:
+        if abs(p["share"] - p["v"] / total * 100) > 0.01:
+            raise ValueError(f"{p['label']} 的占比与 数值÷总额 不符")
+    W, H, gap = 400, 32, 2  # 单根横条按手机宽度画，不触发图内横向滚动
+    x0, out = 0.0, [svg_open(W, H, fig["title"])]
+    for k, p in enumerate(parts, 1):
+        w = W * p["v"] / total
+        tip = f'{p["label"]}：{p["v"]:,.0f}，占 {p["share"]:.{d}f}%'
+        out.append(f'<g><title>{e(tip)}</title><rect class="nf-s{k}" x="{x0:.1f}" y="4" width="{max(w - gap, 1):.1f}" height="{H - 8}" rx="2"/></g>')
+        x0 += w
+    out.append("</svg>")
+    rows = "".join(f'<li><i class="nf-sw nf-s{k}"></i><span class="nf-r-name">{e(p["label"])}</span>'
+                   f'<b>{p["v"]:,.0f}</b><b>{p["share"]:.{d}f}%</b>'
+                   + (f'<span class="nf-r-note">{e(p["note"])}</span>' if p["note"] else "") + "</li>"
+                   for k, p in enumerate(parts, 1))
+    table = table_html(["类别", f'数值（{unit}）' if unit else "数值", "占比"],
+                       [[p["label"], f'{p["v"]:,.0f}', f'{p["share"]:.{d}f}%'] for p in parts]
+                       + [["合计", f"{total:,.0f}", "100%"]])
+    return "".join(out) + f'<ul class="nf-rows">{rows}</ul>', table
+
+
+def slope(fig: dict, ctx: Ctx) -> tuple[str, str]:
+    """依赖斜率图：每家一条线；期间与数值按记录里的两张并列列表配对，不假设顺序。
+    下限值（只披露「至少 x%」）画空心点，不画进折线。"""
+    xs = [str(x) for x in fig["x"]]
+    lo, hi = float(fig["y_min"]), float(fig["y_max"])
+    unit = fig.get("unit", "%")
+    series = []
+    for k, s in enumerate(fig["series"], 1):
+        periods, vals = ctx.raw(s["periods"]), ctx.raw(s["values"])
+        if len(periods) != len(vals):
+            raise ValueError(f"{s['label']}：期间与数值个数不同")
+        by = {str(p): float(v) for p, v in zip(periods, vals)}
+        if any(x not in by for x in xs):
+            raise ValueError(f"{s['label']}：记录里没有期间 {xs}")
+        series.append({"label": s["label"], "slot": s.get("slot", k), "vals": [by[x] for x in xs], "prefix": s.get("prefix", "")})
+    bounds = []
+    for b in fig.get("lower_bounds", []):
+        period = str(ctx.raw(b["period"]))
+        if period not in xs:
+            raise ValueError(f"{b['label']}：下限的期间 {period} 不在 x 中")
+        bounds.append({"label": b["label"], "v": ctx.num(b["value"]), "i": xs.index(period), "slot": b.get("slot", 4)})
+    allv = [v for s in series for v in s["vals"]] + [b["v"] for b in bounds]
+    if min(allv) < lo or max(allv) > hi:
+        raise ValueError("数据超出 y_min/y_max")
+    W, H, L, R, T, B = 640, fig.get("height", 270), 84, 190, 14, 28  # 左侧留出刻度与起点数值两列
+    y = lambda v: T + (H - T - B) * (1 - (v - lo) / (hi - lo))
+    x = lambda i: L + 10 + (W - L - R - 10) * i / max(1, len(xs) - 1)
+    out = [svg_open(W, H, fig["title"])]
+    for t in ticks(lo, hi, 4):
+        out.append(f'<line class="nf-grid" x1="40" x2="{W - R + 6}" y1="{y(t):.1f}" y2="{y(t):.1f}"/>'
+                   f'<text class="nf-axis" x="34" y="{y(t) + 4:.1f}" text-anchor="end">{tick_text(t)}{unit}</text>')
+    for i, lab in enumerate(xs):
+        out.append(f'<text class="nf-axis" x="{x(i):.1f}" y="{H - 8}" text-anchor="middle">{e(lab)}</text>')
+    for s in series:
+        pts = " ".join(f"{x(i):.1f},{y(v):.1f}" for i, v in enumerate(s["vals"]))
+        tip = f'{s["label"]}：' + "；".join(f"{lab} {s['prefix']}{v:g}{unit}" for lab, v in zip(xs, s["vals"]))
+        last = len(xs) - 1
+        out.append(f'<g><title>{e(tip)}</title><polyline class="nf-line nf-s{s["slot"]}" points="{pts}"/>'
+                   + "".join(f'<circle class="nf-dot nf-s{s["slot"]}" cx="{x(i):.1f}" cy="{y(v):.1f}" r="{4 if i == last else 3}"/>'
+                             for i, v in enumerate(s["vals"]))
+                   + f'<text class="nf-lbl" x="{x(0) - 8:.1f}" y="{y(s["vals"][0]) + 4:.1f}" text-anchor="end">{s["prefix"]}{s["vals"][0]:g}</text>'
+                   f'<text class="nf-lbl" x="{x(last) + 10:.1f}" y="{y(s["vals"][last]) + 4:.1f}">{e(s["label"])} {s["prefix"]}{s["vals"][last]:g}{unit}</text>'
+                   f'<rect class="nf-hit" x="{L}" y="{y(max(s["vals"])) - 8:.1f}" width="{W - L - R:.1f}" height="{y(min(s["vals"])) - y(max(s["vals"])) + 16:.1f}"/></g>')
+    for b in bounds:
+        out.append(f'<g><title>{e(b["label"])}：至少 {b["v"]:g}{unit}（下限，非点值）</title>'
+                   f'<circle class="nf-lb nf-s{b["slot"]}" cx="{x(b["i"]):.1f}" cy="{y(b["v"]):.1f}" r="5"/>'
+                   f'<text class="nf-lbl" x="{x(b["i"]) + 10:.1f}" y="{y(b["v"]) + 4:.1f}">{e(b["label"])} ≥{b["v"]:g}{unit}</text></g>')
+    out.append("</svg>")
+    rows = [[s["label"]] + [f'{s["prefix"]}{v:g}{unit}' for v in s["vals"]] for s in series]
+    rows += [[b["label"]] + ["" if i != b["i"] else f'≥{b["v"]:g}{unit}（下限）' for i in range(len(xs))] for b in bounds]
+    return "".join(out), table_html(["供应商"] + xs, rows)
+
+
+def matrix(fig: dict, ctx: Ctx) -> tuple[str, str]:
+    """层次 × 时态矩阵：归类来自记录里的结构化字段，图只负责排版。
+    校验：每个关系恰好归一个格子，且与走查记录登记的关系完全一致。"""
+    items, layers, tenses = ctx.raw(fig["items"]), ctx.raw(fig["layers"]), ctx.raw(fig["tenses"])
+    ids = [i["id"] for i in items]
+    universe = [r["id"] for r in ctx.raw(fig["universe"])]
+    if len(set(ids)) != len(ids) or set(ids) != set(universe):
+        raise ValueError(f"归类的关系 id 与走查记录不一致：缺 {sorted(set(universe) - set(ids))}，多 {sorted(set(ids) - set(universe))}")
+    lay, ten = {x["id"]: x["label"] for x in layers}, {x["id"]: x["label"] for x in tenses}
+    for i in items:
+        if i["layer"] not in lay or i["tense"] not in ten:
+            raise ValueError(f"{i['id']}：层次或时态不在登记的取值里")
+    ctx.vars.update({"n_total": len(items), **{f"n_{t}": sum(i["tense"] == t for i in items) for t in ten}})
+    head = "".join(f'<th scope="col" class="nf-t-{t}">{e(ten[t])}<span>{ctx.vars[f"n_{t}"]}</span></th>' for t in ten)
+    body = []
+    for lid in lay:
+        cells = []
+        for tid in ten:
+            hit = [i for i in items if i["layer"] == lid and i["tense"] == tid]
+            if not hit:
+                cells.append('<td class="nf-mx-0">—</td>')
+                continue
+            names = "、".join(e(i["label"]) + ("*" if i.get("future_component") else "") for i in hit)
+            cells.append(f'<td class="nf-mx-c nf-t-{tid}"><b>{len(hit)}</b><span>{names}</span></td>')
+        body.append(f'<tr><th scope="row">{e(lay[lid])}</th>{"".join(cells)}</tr>')
+    html_text = f'<table class="nf-mx"><thead><tr><th></th>{head}</tr></thead><tbody>{"".join(body)}</tbody></table>'
+    table = table_html(["关系 id", "名称", "层次", "时态", "另含未来条款"],
+                       [[i["id"], i["label"], lay[i["layer"]], ten[i["tense"]], "是" if i.get("future_component") else ""] for i in items])
+    return html_text, table
+
+
+PLOTS = {"bar": bar, "line": line, "hbar": hbar, "stack": stack, "slope": slope, "matrix": matrix}

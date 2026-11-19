@@ -1,0 +1,68 @@
+# 补充记录：给 AAPL 产业链走查记录里的 32 条关系标注「层次」与「时态类别」，供报告图块（层次 × 时态矩阵）使用。
+# 原走查记录不改（见 supplements.sha256）；本文件只新增结构化归类，不新增任何事实、数字或关系。
+id: sec-aapl-value-chain-layout-20261119
+task_id: R-20261117-aapl-value-chain
+record_type: supplemental-structured-classification
+status: AI-assisted classification of existing relationships; not independently reviewed; owner confirmation pending
+supplements:
+  path: methodology/records/sec-aapl-value-chain-20261117.yaml
+  sha256: cbfdda1bcfad073781cfbe4f0b06edd843c4f36d81f80fb3290c129abdaf2b47
+  unchanged: true
+scope:
+  purpose: Chart layout only (layer x tense matrix in the published AAPL report). No new fact, figure or relationship.
+  universe: Every id in the parent record's relationships list (32), each classified exactly once.
+  not_claimed: Not a procurement ranking, not share, not exclusivity; a cell count is a count of named relationships, not importance.
+classification_rules:
+  layer: Taken from the id prefix used in the parent record (u_ component and manufacturing, t_ upstream-of-upstream chain, h_ final assembly, d_ channel and end use, e_ software and financial ecosystem). Display order runs along the chain, upstream first.
+  tense: |
+    Read from the parent record's temporal_status wording and its limits field.
+    current = the source describes the relationship as existing or in operation, or a dated 2026 arrangement in force.
+    announced = a signed agreement, announcement or plan whose delivery or rollout is not confirmed by the source.
+    historical = the source evidence is a past instance only and does not show the relationship in the latest period.
+  future_component: true when a current relationship also carries a stated future expansion, goal or prospective commitment in the same source.
+layers:
+  - {id: materials_equipment, label: 上上游：材料与设备}
+  - {id: components, label: 上游：芯片、组件与材料}
+  - {id: assembly, label: 总装}
+  - {id: channel, label: 渠道与终端使用}
+  - {id: ecosystem, label: 软件、AI 与金融生态}
+tenses:
+  - {id: current, label: 现有（披露为现行或在产）}
+  - {id: announced, label: 已签或已公告，交付未核}
+  - {id: historical, label: 仅历史实例}
+items:
+  - {id: t_gwa, label: GlobalWafers America, layer: materials_equipment, tense: announced, future_component: false}
+  - {id: t_amat, label: Applied Materials, layer: materials_equipment, tense: announced, future_component: false}
+  - {id: u_tsmc, label: TSMC, layer: components, tense: current, future_component: false}
+  - {id: u_broadcom_rf, label: Broadcom（射频）, layer: components, tense: current, future_component: true}
+  - {id: u_broadcom_asic, label: Broadcom（定制芯片）, layer: components, tense: announced, future_component: false}
+  - {id: u_qualcomm, label: Qualcomm, layer: components, tense: announced, future_component: false}
+  - {id: u_corning, label: Corning, layer: components, tense: current, future_component: true}
+  - {id: u_coherent, label: Coherent, layer: components, tense: current, future_component: false}
+  - {id: u_perryman, label: Perryman, layer: components, tense: current, future_component: true}
+  - {id: u_qnity, label: Qnity, layer: components, tense: current, future_component: true}
+  - {id: u_tdk, label: TDK, layer: components, tense: current, future_component: true}
+  - {id: u_amkor_existing, label: Amkor（现有封装）, layer: components, tense: historical, future_component: false}
+  - {id: u_amkor_future, label: Amkor Peoria（拟议）, layer: components, tense: announced, future_component: false}
+  - {id: u_mp, label: MP Materials, layer: components, tense: announced, future_component: false}
+  - {id: u_bosch, label: Bosch, layer: components, tense: announced, future_component: false}
+  - {id: u_cirrus, label: Cirrus Logic, layer: components, tense: announced, future_component: false}
+  - {id: u_gf, label: GlobalFoundries, layer: components, tense: announced, future_component: false}
+  - {id: u_ti, label: Texas Instruments, layer: components, tense: announced, future_component: false}
+  - {id: u_samsung, label: Samsung, layer: components, tense: announced, future_component: false}
+  - {id: h_foxconn, label: Foxconn, layer: assembly, tense: historical, future_component: false}
+  - {id: h_quanta, label: Quanta, layer: assembly, tense: historical, future_component: false}
+  - {id: h_pegatron, label: Pegatron, layer: assembly, tense: historical, future_component: false}
+  - {id: d_att, label: AT&T, layer: channel, tense: current, future_component: false}
+  - {id: d_tmobile, label: T-Mobile, layer: channel, tense: current, future_component: false}
+  - {id: d_verizon, label: Verizon, layer: channel, tense: current, future_component: false}
+  - {id: d_cdw, label: CDW, layer: channel, tense: current, future_component: false}
+  - {id: d_united, label: United Airlines, layer: channel, tense: historical, future_component: false}
+  - {id: e_openai, label: OpenAI, layer: ecosystem, tense: current, future_component: false}
+  - {id: e_mastercard, label: Mastercard, layer: ecosystem, tense: current, future_component: false}
+  - {id: e_goldman, label: Goldman Sachs, layer: ecosystem, tense: current, future_component: true}
+  - {id: e_google, label: Google（Gemini）, layer: ecosystem, tense: announced, future_component: false}
+  - {id: e_chase, label: Chase, layer: ecosystem, tense: announced, future_component: false}
+publication:
+  status: public; classification supplement only
+  site_study: false
