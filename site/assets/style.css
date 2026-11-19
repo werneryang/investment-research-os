@@ -341,3 +341,50 @@ figure.chart-card{margin:0 0 12px}
 .research-note{max-width:100ch;line-height:1.75}
 .research-note table{display:block;overflow-x:auto;max-width:100%}
 .research-note code,.research-note a{overflow-wrap:anywhere}
+
+/* ---- Report figures (config/note_figures): conclusion title, caliber subtitle, SVG, data table, source line.
+ * Evidence tags: fact / calc / infer / forward-looking. Forward-looking values are light dashed outlines, never solid. ---- */
+:root{--ev-fact:#2b5a87;--ev-fact-bg:#e4edf6;--ev-calc:#1f7a4d;--ev-calc-bg:#e3f2ea;--ev-infer:#8a5a00;--ev-infer-bg:#fbefd5;
+--ev-fwd:#6b4fa8;--ev-fwd-bg:#ece6f7}
+@media (prefers-color-scheme:dark){:root{--ev-fact:#8fb6dd;--ev-fact-bg:#1c2a38;--ev-calc:#7fd1a5;--ev-calc-bg:#183326;
+--ev-infer:#f0c46b;--ev-infer-bg:#3a2e14;--ev-fwd:#b9a6ee;--ev-fwd-bg:#2a2340}}
+.ev{display:inline-block;font-size:.72rem;font-weight:600;padding:0 6px;border-radius:4px;line-height:1.6;margin:0 2px;
+vertical-align:1px;white-space:nowrap}
+.ev-fact{background:var(--ev-fact-bg);color:var(--ev-fact)}.ev-calc{background:var(--ev-calc-bg);color:var(--ev-calc)}
+.ev-infer{background:var(--ev-infer-bg);color:var(--ev-infer)}.ev-fwd{background:var(--ev-fwd-bg);color:var(--ev-fwd)}
+figure.nf{margin:1.2rem 0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px 10px;
+max-width:760px}
+.nf-title{font-weight:650;font-size:1rem;line-height:1.45;margin:0;text-wrap:balance}
+.nf-sub,.nf-note{color:var(--muted);font-size:.8rem;line-height:1.55;margin:.15rem 0 .5rem}
+.nf-note{margin:.4rem 0 0}
+.nf-src{color:var(--muted);font-size:.75rem;line-height:1.55;border-top:1px solid var(--line);margin:.5rem 0 0;padding-top:.4rem;
+overflow-wrap:anywhere}
+.nf-data{font-size:.8rem;margin-top:.4rem}.nf-data summary{cursor:pointer;color:var(--accent)}
+.research-note .nf-data table{display:table;width:auto;margin-top:.3rem}
+.nf-svg{display:block;width:100%;height:auto}.nf-plot{overflow-x:auto}.nf-svg.nf-wide{min-width:520px}
+.nf-fields{color:var(--muted);font-size:.75rem;margin:.3rem 0 0;overflow-wrap:anywhere}
+.nf-svg text{font-size:11px}.nf-axis{fill:var(--muted)}.nf-lbl{fill:var(--fg);font-weight:600}
+.nf-grid{stroke:var(--grid)}.nf-axisline{stroke:var(--line)}.nf-ref{stroke:var(--muted);stroke-dasharray:3 3}
+.nf-hit{fill:transparent}
+.nf-svg .nf-s1{fill:var(--c1)}.nf-svg .nf-s2{fill:var(--c2)}.nf-svg .nf-s3{fill:var(--c3)}.nf-svg .nf-s4{fill:var(--c4)}
+.nf-svg g:hover path,.nf-svg g:hover rect:not(.nf-hit){opacity:.82}
+.nf-guide{fill:color-mix(in srgb,var(--c1) 18%,transparent);stroke:var(--c1);stroke-width:1.2;stroke-dasharray:4 3}
+.nf-whisker{stroke:var(--fg);stroke-width:1.5}
+.nf-prior{stroke:var(--fg);stroke-width:2;opacity:.5}
+.nf-svg .nf-line{fill:none;stroke-width:2;stroke-linejoin:round}
+.nf-svg .nf-line.nf-s1{stroke:var(--c1)}.nf-svg .nf-line.nf-s2{stroke:var(--c2)}.nf-svg .nf-line.nf-s3{stroke:var(--c3)}
+.nf-dot{stroke:var(--panel);stroke-width:2}
+.nf-legend{display:flex;flex-wrap:wrap;gap:2px 14px;font-size:.78rem;color:var(--muted);margin:0 0 .3rem}
+.nf-legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.nf-legend .nf-s1{background:var(--c1)}.nf-legend .nf-s2{background:var(--c2)}.nf-legend .nf-s3{background:var(--c3)}
+.nf-legend .nf-s4{background:var(--c4)}
+.nf-legend i.nf-k-line{height:2px;width:14px;vertical-align:3px;border-radius:0}
+.nf-legend i.nf-k-hatch{background:color-mix(in srgb,var(--c1) 18%,transparent);border:1px dashed var(--c1)}
+.nf-legend i.nf-k-prior{width:2px;height:12px;background:var(--fg);opacity:.5;border-radius:0;vertical-align:-2px}
+.nf-multi{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px}
+.nf-multi>div{min-width:0}.nf-mini{font-size:.84rem;font-weight:600;margin:0 0 .2rem}
+.nf-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:10px;margin:1rem 0 .3rem;max-width:760px}
+.nf-kpi{border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:var(--panel);min-width:0}
+.nf-k{font-size:.78rem;color:var(--muted)}.nf-v{font-size:1.35rem;font-weight:650;font-variant-numeric:tabular-nums;line-height:1.3}
+.nf-n{font-size:.75rem;color:var(--muted);line-height:1.5}
+.nf-kpis+.nf-src{max-width:760px;border-top:0;padding-top:0}
