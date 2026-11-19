@@ -159,6 +159,7 @@ def test_site_integration_lists_notes_without_study_run_or_bad_note_leak(project
     from investment_os.site.references import company_reference_part
 
     shutil.copytree(PROJECT_ROOT/'site',project/'site')
+    shutil.rmtree(project/'config'/'note_figures',ignore_errors=True)  # 合成报告与真实 AAPL 报告同 id；它没有图块，也没有记录可引用
     first=import_report(project,source(tmp_path))
     other=import_report(project,source(tmp_path,identifier='AAPL-20261118-value-chain'))
     bad=project/other['path'];bad.write_text(bad.read_text()+'\n你的判断\n')

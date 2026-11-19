@@ -1,0 +1,114 @@
+# 报告图块：Alphabet 2026 年第三季度。规则见 docs/note-figures.md。
+# 数值全部引用公开走查记录 R 的字段，标题与说明里的数字用 {R:路径:格式} 代入。
+schema_version: note-figures.v1
+note: GOOGL-20261116-q3-26
+records:
+  R: methodology/records/sec-googl-earnings-20261116.yaml
+
+figures:
+  - id: kpis
+    section: 一句话结论
+    position: end
+    type: kpi
+    items:
+      - label: 总收入
+        value: {ref: "R:method_output.quarter_inputs_disclosed.2026Q3.revenue", scale: 0.001}
+        unit: 十亿美元
+        note: "同比 {R:method_output.computed_latest_comparison.Y_Y.pct_changes.revenue:+.1f}% · 环比 {R:method_output.computed_latest_comparison.Q_Q.pct_changes.revenue:+.1f}%"
+        evidence: fact
+      - label: Google Cloud 收入
+        value: {ref: "R:method_output.quarter_inputs_disclosed.2026Q3.Cloud_revenue", scale: 0.001}
+        unit: 十亿美元
+        note: "同比 {R:method_output.computed_latest_comparison.Y_Y.pct_changes.Cloud_revenue:+.1f}%，含 TPU 系统销售与并购"
+        evidence: fact
+      - label: Cloud 利润率
+        value: "R:method_output.computed_five_quarter_metrics.2026Q3.Cloud_margin_pct"
+        unit: "%"
+        note: "去年同期 {R:method_output.computed_five_quarter_metrics.2025Q3.Cloud_margin_pct:.1f}%"
+        evidence: calc
+      - label: 发行人定义 FCF
+        value: {ref: "R:method_output.cash_flow_inputs_and_derived_quarters.2026Q3.CFO_minus_cash_PPE", scale: 0.001}
+        unit: 十亿美元
+        note: "CFO {R:method_output.cash_flow_inputs_and_derived_quarters.2026Q3.CFO*0.001:.1f} − 现金资本开支 {R:method_output.cash_flow_inputs_and_derived_quarters.2026Q3.cash_PPE*0.001:.1f}"
+        evidence: fact
+
+  - id: cloud-5q
+    section: 发生了什么
+    position: start
+    type: group
+    title: "Cloud 收入同比 {R:method_output.computed_latest_comparison.Y_Y.pct_changes.Cloud_revenue:+.1f}%，占总收入比由 {R:method_output.computed_five_quarter_metrics.2025Q3.Cloud_sales_share_pct:.1f}% 升到 {R:method_output.computed_five_quarter_metrics.2026Q3.Cloud_sales_share_pct:.1f}%，利润率已高于集团营业利润率"
+    subtitle: 左：Google Cloud 收入，十亿美元；右：Cloud 分部利润率与集团营业利润率，%，五个季度
+    note: Cloud 增长含 TPU 系统销售，Wiz 已并入，发行人没有给出完整分拆，所以不能把增幅全当作经常性云服务消费。2025Q4 收入为年度数减前三季累计推得，其余为各季披露值。
+    evidence: fact
+    panels:
+      - type: bar
+        title: Cloud 收入
+        evidence: fact
+        x: [2025Q3, 2025Q4, 2026Q1, 2026Q2, 2026Q3]
+        x_short: {2025Q3: 25Q3, 2025Q4: 25Q4, 2026Q1: 26Q1, 2026Q2: 26Q2, 2026Q3: 26Q3}
+        value:
+          scale: 0.001
+          by_x:
+            2025Q3: "R:method_output.quarter_inputs_disclosed.{x}.Cloud_revenue"
+            2025Q4: "R:method_output.Q4_2025_derived_inputs.values.Cloud_revenue"
+            2026Q1: "R:method_output.quarter_inputs_disclosed.{x}.Cloud_revenue"
+            2026Q2: "R:method_output.quarter_inputs_disclosed.{x}.Cloud_revenue"
+            2026Q3: "R:method_output.quarter_inputs_disclosed.{x}.Cloud_revenue"
+        value_name: Cloud 收入（十亿美元）
+        label: [2025Q3, 2026Q3]
+        width: 320
+        height: 200
+        legend: []
+      - type: line
+        title: 利润率
+        evidence: calc
+        x: [2025Q3, 2025Q4, 2026Q1, 2026Q2, 2026Q3]
+        x_short: {2025Q3: 25Q3, 2025Q4: 25Q4, 2026Q1: 26Q1, 2026Q2: 26Q2, 2026Q3: 26Q3}
+        series:
+          - label: Cloud 利润率
+            value: "R:method_output.computed_five_quarter_metrics.{x}.Cloud_margin_pct"
+          - label: 集团营业利润率
+            value: "R:method_output.computed_five_quarter_metrics.{x}.op_margin_pct"
+        unit: "%"
+        y_min: 20
+        y_max: 40
+    source: SEC 8-K Exhibit 99.1 与 10-Q
+
+  - id: cash-vs-capex
+    section: 质量与可持续性
+    position: start
+    type: line
+    title: "现金资本开支从 {R:method_output.cash_flow_inputs_and_derived_quarters.2025Q3.cash_PPE*0.001:.1f} 升到 {R:method_output.cash_flow_inputs_and_derived_quarters.2026Q3.cash_PPE*0.001:.1f}（十亿美元），自 2026Q2 起超过经营现金流，Q3 发行人口径 FCF 为 {R:method_output.cash_flow_inputs_and_derived_quarters.2026Q3.CFO_minus_cash_PPE*0.001:.1f}"
+    subtitle: 经营现金流（CFO）与现金资本开支，十亿美元；除 2026Q1 外，单季现金流均由累计期间相减得到。发行人口径 FCF 为 CFO 减现金资本开支
+    note: FCF 为负不等于所有者现金永久亏损；非现金固定资产应付、融资现金与长期承诺需另看，见正文。
+    x: [2025Q3, 2025Q4, 2026Q1, 2026Q2, 2026Q3]
+    x_short: {2025Q3: 25Q3, 2025Q4: 25Q4, 2026Q1: 26Q1, 2026Q2: 26Q2, 2026Q3: 26Q3}
+    series:
+      - label: 经营现金流
+        value: {ref: "R:method_output.cash_flow_inputs_and_derived_quarters.{x}.CFO", scale: 0.001}
+      - label: 现金资本开支
+        value: {ref: "R:method_output.cash_flow_inputs_and_derived_quarters.{x}.cash_PPE", scale: 0.001}
+    y_min: 0
+    y_max: 60
+    ticks: 3
+    width: 640
+    height: 240
+    source: SEC 8-K Exhibit 99.1 与 10-Q
+    evidence: calc
+
+  - id: rpo-3q
+    section: 指引与待验证的判断
+    position: start
+    type: bar
+    title: "未确认收入合同余额（RPO）连续三季上升，2026Q3 达 {R:method_output.RPO_and_contracts.Q3_total:.1f}（十亿美元），环比 +{R:method_output.RPO_and_contracts.Q_Q_total_growth_pct:.1f}%"
+    subtitle: RPO 总额，十亿美元。2026Q1 起口径含原始期限较短的合同，去年同期口径不同，所以不画同比；也不能折算成逐季收入、利润或现金流
+    note: "其中 Cloud 为 {R:method_output.RPO_and_contracts.Q3_Cloud:.1f}。记录披露的确认期限为 {R:method_output.RPO_and_contracts.recognition_horizon_months:g} 个月，只对应汇总余额，没有逐合同的时间表。"
+    x: ["1", "2", "3"]
+    x_short: {"1": 26Q1, "2": 26Q2, "3": 26Q3}
+    value: "R:method_output.RPO_and_contracts.Q{x}_total"
+    value_name: RPO 总额（十亿美元）
+    label: ["1", "2", "3"]
+    width: 480
+    height: 220
+    source: SEC 10-Q 附注
+    evidence: fact
