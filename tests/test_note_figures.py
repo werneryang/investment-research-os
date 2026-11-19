@@ -208,3 +208,29 @@ def test_googl_figures_use_derived_q4_cloud_revenue_and_stay_in_their_sections()
     assert f"{rec['Q4_2025_derived_inputs']['values']['Cloud_revenue'] / 1000:.1f}" in cloud  # 17.7：推得的 2025Q4
     assert page.index('<h2>发生了什么</h2>') < page.index('id="fig-cloud-5q"') < page.index('<h2>质量与可持续性</h2>') \
         < page.index('id="fig-cash-vs-capex"') < page.index('<h2>指引与待验证的判断</h2>') < page.index('id="fig-rpo-3q"')
+
+
+def test_nvda_guidance_figure_compares_prior_range_with_actual_and_flags_outside():
+    note = real_notes()[NVDA]
+    page = render_body(parser(), note['body'], load_spec(PROJECT_ROOT, note))
+    rec = yaml.safe_load((PROJECT_ROOT / 'methodology/records/sec-nvda-earnings-20261117.yaml').read_text())
+    prior = rec['prior_guidance_check']
+    fig = figure_html(page, 'guidance-vs-prior')
+    assert f"{prior['actual_revenue'] / 1000:.1f}" in fig and f"{prior['actual_minus_upper_bound'] / 1000:.1f}" in fig
+    assert page.index('<h2>质量与可持续性</h2>') < page.index('id="fig-guidance-vs-prior"')
+    # 营收与毛利率的上季实际都在上季区间外（用第 2 色），Q4 只有区间没有实际点
+    assert fig.count('class="nf-dot nf-s2"') == 2 and 'nf-dot nf-s1' not in fig
+    assert '71–72' in fig  # 没有中点时标区间两端
+    assert '指引区间 126.1–133.9，中点 130.0' in fig
+
+
+def test_range_rejects_inverted_or_out_of_axis_values(sandbox):
+    root, note = sandbox
+    row = {'label': 'FY27Q4', 'low': 'R:guidance.computed_revenue_high', 'high': 'R:guidance.computed_revenue_low'}
+    write_spec(root, note, [{'type': 'range', 'section': '发生了什么', 'title': 't', 'y_min': 100, 'y_max': 140, 'rows': [row]}])
+    with pytest.raises(FigureError, match='下限大于上限'):
+        load_spec(root, note)
+    row = {'label': 'FY27Q4', 'low': 'R:guidance.computed_revenue_low', 'high': 'R:guidance.computed_revenue_high'}
+    write_spec(root, note, [{'type': 'range', 'section': '发生了什么', 'title': 't', 'y_min': 100, 'y_max': 130, 'rows': [row]}])
+    with pytest.raises(FigureError, match='超出'):
+        load_spec(root, note)

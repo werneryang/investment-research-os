@@ -23,7 +23,7 @@ SCHEMA = "note-figures.v1"
 SPEC_DIR = "config/note_figures"
 RECORD_DIR = "methodology/records/"
 PUBLIC_REPO = "https://github.com/werneryang/investment-research-os"
-TYPES = {"kpi", "bar", "line", "hbar", "group", "stack", "slope", "matrix"}
+TYPES = {"kpi", "bar", "line", "hbar", "group", "stack", "slope", "matrix", "range"}
 EVIDENCE = {"fact": "事实", "calc": "计算", "infer": "推断", "fwd": "展望"}
 # 报告正文里的证据标签，渲染时换成带颜色的标签
 BODY_TAGS = {"【事实】": "fact", "【计算】": "calc", "【推断】": "infer", "【展望】": "fwd"}
@@ -550,4 +550,54 @@ def matrix(fig: dict, ctx: Ctx) -> tuple[str, str]:
     return html_text, table
 
 
-PLOTS = {"bar": bar, "line": line, "hbar": hbar, "stack": stack, "slope": slope, "matrix": matrix}
+def range_plot(fig: dict, ctx: Ctx) -> tuple[str, str]:
+    """指引对比图：每个期间一个虚线框（管理层给的区间，横线为中点），有实际值的画实心点。
+    实际值落在区间外用第 2 色，只表示「在区间外」，不称失败或达成。纵轴不从零开始，由 y_min/y_max 声明。"""
+    d, unit = fig.get("digits", 1), fig.get("unit", "")
+    lo, hi = float(fig["y_min"]), float(fig["y_max"])
+    rows = []
+    for r in fig["rows"]:
+        row = {"label": r["label"], "low": ctx.num(r["low"]), "high": ctx.num(r["high"]),
+               "mid": ctx.num(r["mid"]) if r.get("mid") is not None else None,
+               "actual": ctx.num(r["actual"]) if r.get("actual") is not None else None}
+        if row["low"] > row["high"]:
+            raise ValueError(f"{r['label']}：区间下限大于上限")
+        rows.append(row)
+    allv = [v for r in rows for v in (r["low"], r["high"], r["mid"], r["actual"]) if v is not None]
+    if min(allv) < lo or max(allv) > hi:
+        raise ValueError("数据超出 y_min/y_max")
+    W, H, L, R, T, B = fig.get("width", 320), fig.get("height", 220), 40, 12, 20, 28
+    y = lambda v: T + (H - T - B) * (1 - (v - lo) / (hi - lo))
+    band = (W - L - R) / len(rows)
+    bw = band * 0.46
+    out = [svg_open(W, H, fig.get("title", ""))]
+    for t in ticks(lo, hi, int(fig.get("ticks", 4))):
+        out.append(f'<line class="nf-grid" x1="{L}" x2="{W - R}" y1="{y(t):.1f}" y2="{y(t):.1f}"/>'
+                   f'<text class="nf-axis" x="{L - 6}" y="{y(t) + 4:.1f}" text-anchor="end">{tick_text(t)}</text>')
+    table = []
+    for i, r in enumerate(rows):
+        cx = L + band * i + band / 2
+        outside = r["actual"] is not None and not (r["low"] <= r["actual"] <= r["high"])
+        tip = f'{r["label"]}：指引区间 {fmt(r["low"], d)}–{fmt(r["high"], d)}' + (f'，中点 {fmt(r["mid"], d)}' if r["mid"] is not None else "") \
+            + (f'；实际 {fmt(r["actual"], d)}（{"在区间外" if outside else "在区间内"}）' if r["actual"] is not None else "")
+        g = [f'<title>{e(tip)}</title>',
+             f'<rect class="nf-guide" x="{cx - bw / 2:.1f}" y="{y(r["high"]):.1f}" width="{bw:.1f}" height="{y(r["low"]) - y(r["high"]):.1f}" rx="2"/>']
+        if r["mid"] is not None:
+            g.append(f'<line class="nf-whisker" x1="{cx - bw / 2:.1f}" x2="{cx + bw / 2:.1f}" y1="{y(r["mid"]):.1f}" y2="{y(r["mid"]):.1f}"/>')
+        if r["actual"] is not None:
+            g.append(f'<circle class="nf-dot nf-s{2 if outside else 1}" cx="{cx:.1f}" cy="{y(r["actual"]):.1f}" r="5"/>'
+                     f'<text class="nf-lbl" x="{cx + 10:.1f}" y="{y(r["actual"]) + 4:.1f}">{fmt(r["actual"], d)}</text>')
+        elif r["mid"] is not None:
+            g.append(f'<text class="nf-lbl" x="{cx:.1f}" y="{y(r["high"]) - 6:.1f}" text-anchor="middle">{fmt(r["mid"], d)}</text>')
+        else:  # 没有中点也没有实际值：直接标区间两端
+            g.append(f'<text class="nf-lbl" x="{cx:.1f}" y="{y(r["high"]) - 6:.1f}" text-anchor="middle">{fmt(r["low"], d)}–{fmt(r["high"], d)}</text>')
+        g.append(f'<rect class="nf-hit" x="{cx - band / 2:.1f}" y="{T}" width="{band:.1f}" height="{H - T - B}"/>')
+        out.append("<g>" + "".join(g) + "</g>")
+        out.append(f'<text class="nf-axis" x="{cx:.1f}" y="{H - 9}" text-anchor="middle">{e(fig.get("x_short", {}).get(r["label"], r["label"]))}</text>')
+        table.append([r["label"], fmt(r["low"], d), fmt(r["high"], d), "" if r["mid"] is None else fmt(r["mid"], d),
+                      "" if r["actual"] is None else fmt(r["actual"], d) + ("（区间外）" if outside else "（区间内）")])
+    out.append("</svg>")
+    return "".join(out), table_html(["期间", "区间下限", "区间上限", "中点", "实际"], table)
+
+
+PLOTS = {"range": range_plot, "bar": bar, "line": line, "hbar": hbar, "stack": stack, "slope": slope, "matrix": matrix}

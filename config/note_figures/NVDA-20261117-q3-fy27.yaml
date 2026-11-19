@@ -115,3 +115,56 @@ figures:
         value: "R:commitments.additional_neocloud_max"
         note: 需客户融资、部署运行并经 NVIDIA 验收
     source: SEC 8-K Exhibit 99.2 CFO commentary
+
+  - id: guidance-vs-prior
+    section: 指引与待验证的判断
+    position: start
+    type: group
+    title: "Q3 实际营收 {R:prior_guidance_check.actual_revenue*0.001:.1f} 超出上季指引上限 {R:prior_guidance_check.actual_minus_upper_bound*0.001:.1f}；Q4 指引中点 {R:guidance.revenue_midpoint:.1f}，毛利率区间 {R:guidance.GAAP_and_nonGAAP_GM_range_pct[0]:g}–{R:guidance.GAAP_and_nonGAAP_GM_range_pct[1]:g}% 低于 Q3 实际 {R:prior_guidance_check.actual_GAAP_margin_pct:.1f}%"
+    subtitle: 左：营收，十亿美元；右：GAAP 毛利率，%。虚线框是管理层给的区间（横线为中点），实心点是实际值，橙色（第 2 色）表示落在区间外。纵轴不从零开始，只看相对区间的位置。Q3 区间是 2026-08-26 发布的上季指引，Q4 是本次指引，含额外一周
+    note: 在区间外不称作失败或达成，也不是对分析师共识的比较。Q3 毛利率指引同时适用于 GAAP 与非 GAAP；实际营收更高，毛利率的差异不能拆成执行与产品结构。Q4 毛利率区间没有给中点，不自行推算。
+    evidence: fwd
+    panels:
+      - type: range
+        title: 营收
+        x_short: {FY27Q3: Q3（上季指引→实际）, FY27Q4: Q4（本次指引）}
+        y_min: 100
+        y_max: 140
+        ticks: 4
+        legend:
+          - {label: 指引区间（横线为中点）, mark: hatch}
+          - {label: 实际值, slot: 1}
+          - {label: 实际在区间外, slot: 2}
+        rows:
+          - label: FY27Q3
+            low: {ref: "R:prior_guidance_check.range_low", scale: 0.001}
+            high: {ref: "R:prior_guidance_check.range_high", scale: 0.001}
+            mid: {ref: "R:prior_guidance_check.revenue_midpoint", scale: 0.001}
+            actual: {ref: "R:prior_guidance_check.actual_revenue", scale: 0.001}
+          - label: FY27Q4
+            low: "R:guidance.computed_revenue_low"
+            high: "R:guidance.computed_revenue_high"
+            mid: "R:guidance.revenue_midpoint"
+        evidence: fact
+      - type: range
+        title: GAAP 毛利率
+        x_short: {FY27Q3: Q3（上季指引→实际）, FY27Q4: Q4（本次指引）}
+        y_min: 70
+        y_max: 76
+        ticks: 3
+        legend:
+          - {label: 指引区间（横线为中点）, mark: hatch}
+          - {label: 实际值, slot: 1}
+          - {label: 实际在区间外, slot: 2}
+        rows:
+          - label: FY27Q3
+            low: "R:prior_guidance_check.gross_margin_range_result.low_percent"
+            high: "R:prior_guidance_check.gross_margin_range_result.high_percent"
+            mid: "R:prior_guidance_check.GAAP_and_nonGAAP_GM_midpoint_pct"
+            actual: "R:prior_guidance_check.actual_GAAP_margin_pct"
+          - label: FY27Q4
+            low: "R:guidance.GAAP_and_nonGAAP_GM_range_pct[0]"
+            high: "R:guidance.GAAP_and_nonGAAP_GM_range_pct[1]"
+        unit: "%"
+        evidence: fwd
+    source: SEC 8-K 业绩公告（Q2 与 Q3）
