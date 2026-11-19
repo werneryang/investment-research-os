@@ -1,0 +1,117 @@
+# 报告图块：NVDA FY2027 Q3。规则见 docs/note-figures.md。
+# 数值全部引用公开走查记录 R 的字段；标题与说明里的数字用 {R:路径:格式} 代入，不手填。
+schema_version: note-figures.v1
+note: NVDA-20261117-q3-fy27
+records:
+  R: methodology/records/sec-nvda-earnings-20261117.yaml
+
+figures:
+  - id: kpis
+    section: 一句话结论
+    position: end
+    type: kpi
+    items:
+      - label: GAAP 营收
+        value: {ref: "R:quarter_inputs.FY27Q3.revenue", scale: 0.001}
+        unit: 十亿美元
+        note: "环比 {R:computed.Q3_growth_percent.qoq.revenue:+.1f}% · 同比 {R:computed.Q3_growth_percent.yoy.revenue:+.1f}%"
+        evidence: fact
+      - label: GAAP 毛利率
+        value: "R:computed.five_quarter_metrics.FY27Q3.gross_margin_pct"
+        unit: "%"
+        note: "上季 {R:computed.five_quarter_metrics.FY27Q2.gross_margin_pct:.1f}%"
+        evidence: calc
+      - label: 发行人定义 FCF
+        value: {ref: "R:quarter_inputs.FY27Q3.issuer_FCF", scale: 0.001}
+        unit: 十亿美元
+        note: "上季 {R:quarter_inputs.FY27Q2.issuer_FCF*0.001:.1f}"
+        evidence: fact
+      - label: Q4 收入指引中点
+        value: "R:guidance.revenue_midpoint"
+        unit: 十亿美元
+        note: "±{R:guidance.tolerance_pct:g}% · Q4 多一周"
+        evidence: fwd
+
+  - id: revenue-5q
+    section: 发生了什么
+    type: bar
+    title: "营收连续五季增长，Q4 指引中点比 Q3 再高 {R:guidance.computed_midpoint_vs_current_pct:.1f}%"
+    subtitle: GAAP 营收，十亿美元；Q4 为公司指引中点与 ±3% 区间，含额外一周，未作周数校正
+    x: [FY26Q3, FY26Q4, FY27Q1, FY27Q2, FY27Q3]
+    value: {ref: "R:quarter_inputs.{x}.revenue", scale: 0.001}
+    unit: 十亿美元
+    value_name: GAAP 营收（十亿美元）
+    tip_change: true
+    guide:
+      label: FY27Q4E
+      mid: "R:guidance.revenue_midpoint"
+      low: "R:guidance.computed_revenue_low"
+      high: "R:guidance.computed_revenue_high"
+    source: SEC 8-K 0001045810-26-000088
+    evidence: fact
+
+  - id: quality-5q
+    section: 质量与可持续性
+    type: group
+    title: "利润率稳定在高位；现金转化 Q2 降到 {R:computed.five_quarter_metrics.FY27Q2.CFO_to_NI:.2f}，Q3 回到 {R:computed.five_quarter_metrics.FY27Q3.CFO_to_NI:.2f}"
+    subtitle: 左：GAAP 毛利率与营业利润率，%；右：经营现金流 ÷ GAAP 净利润，虚线 1.0 为全部转化。五季比值均低于 1，FY27 Q1 与 FY26 Q4 含由累计数减算的期间
+    note: Q2 低点的原因，发行人归于现金税付款时点与应收增加，属发行人解释，不是独立识别的因果。
+    panels:
+      - type: line
+        title: 利润率
+        x: [FY26Q3, FY26Q4, FY27Q1, FY27Q2, FY27Q3]
+        x_short: {FY26Q3: 26Q3, FY26Q4: 26Q4, FY27Q1: 27Q1, FY27Q2: 27Q2, FY27Q3: 27Q3}
+        series:
+          - label: 毛利率
+            value: "R:computed.five_quarter_metrics.{x}.gross_margin_pct"
+          - label: 营业利润率
+            value: "R:computed.five_quarter_metrics.{x}.operating_margin_pct"
+        unit: "%"
+        y_min: 60
+        y_max: 80
+        evidence: calc
+      - type: bar
+        title: CFO ÷ 净利润
+        x: [FY26Q3, FY26Q4, FY27Q1, FY27Q2, FY27Q3]
+        x_short: {FY26Q3: 26Q3, FY26Q4: 26Q4, FY27Q1: 27Q1, FY27Q2: 27Q2, FY27Q3: 27Q3}
+        value: "R:computed.five_quarter_metrics.{x}.CFO_to_NI"
+        value_name: CFO ÷ GAAP 净利润
+        digits: 2
+        ref_line: 1
+        highlight: [FY27Q2]
+        label: [FY27Q3]
+        width: 320
+        height: 200
+        legend: []
+        evidence: calc
+
+  - id: commitments
+    section: 质量与可持续性
+    position: end
+    type: hbar
+    title: 四类承诺与敞口的性质和期限不同，各自看，不相加
+    subtitle: "十亿美元，CFO commentary 披露；竖线为上季值。另有股权投资 {R:commitments.equity_investments:g}、资本开支 {R:commitments.capex:g} 未画"
+    legend:
+      - {label: 承诺 / 服务与租赁, slot: 1}
+      - {label: 或有 · 最高额, slot: 4}
+      - {label: 上季值, mark: prior}
+    rows:
+      - label: 供应与产能承诺
+        kind: 采购承诺
+        value: "R:commitments.supply_and_capacity"
+        prior: "R:commitments.prior_supply"
+      - label: 最高保证总敞口
+        kind: 或有 · 最高额
+        contingent: true
+        value: "R:commitments.maximum_gross_guarantees.total"
+        note: "至今已付 {R:commitments.guarantees_paid_to_date:g}；SB Energy 部分预计 FY2029 起"
+      - label: 云服务 + 未开始数据中心租赁
+        kind: 服务 / 租赁，跨期
+        value: {sum: ["R:commitments.cloud_services", "R:commitments.uncommenced_DC_leases"]}
+        prior: "R:commitments.prior_cloud_plus_DC_leases"
+      - label: 附条件 neocloud 安排
+        kind: 或有 · 最高额
+        contingent: true
+        value: "R:commitments.additional_neocloud_max"
+        note: 需客户融资、部署运行并经 NVIDIA 验收
+    source: SEC 8-K Exhibit 99.2 CFO commentary

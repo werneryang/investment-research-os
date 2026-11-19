@@ -223,7 +223,7 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
     calendar_checks = _calendar_checks(root, registry)
     cap = summary(content, registry, ds_by_id, latest)
     # 中文页面在根目录，英文页面在 en/；英文页面上没有译文的原文记入 untranslated
-    write_pages(out, notes, build)
+    write_pages(out, notes, build, root)
     for language in LANGS:
         base = out if language == "zh" else out / language
         base.mkdir(exist_ok=True)

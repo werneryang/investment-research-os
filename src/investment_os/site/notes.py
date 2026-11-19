@@ -4,6 +4,7 @@ from pathlib import Path
 from ..notes import load_notes, parser
 from .common import e, shell
 from .i18n import L, is_en, use
+from .note_figures import load_spec, render_body
 
 
 def note_catalog(notes, subjects):
@@ -51,7 +52,7 @@ def company_notes(eid, records, prefix='../../'):
             + '</ul></section>')
 
 
-def write_pages(out: Path, notes, build):
+def write_pages(out: Path, notes, build, root: Path | None = None):
     def write(page, title, body):
         dest = out / page / 'index.html'
         dest.parent.mkdir(parents=True, exist_ok=True)
@@ -62,7 +63,8 @@ def write_pages(out: Path, notes, build):
     groups = {}
     md = parser()
     for n in notes:
-        write(n['href'], n['title'], f'<p>{e(n["company"])} · {e(n["date"])}</p><article class="research-note">{md.render(n["body"])}</article>')
+        spec = load_spec(root, n) if root is not None else None
+        write(n['href'], n['title'], f'<p>{e(n["company"])} · {e(n["date"])}</p><article class="research-note">{render_body(md, n["body"], spec)}</article>')
         groups.setdefault(f'notes/companies/{n["company"]}/{n["date"]}/', []).append(n)
         groups.setdefault(f'notes/companies/{n["company"]}/', []).append(n)
     groups['notes/'] = list(notes)

@@ -117,3 +117,9 @@
 - TSLA PR #30 merge `a3b3bff8ee591c6b6f12c3455be21574206f1a11`，[Actions 44223350617](https://github.com/werneryang/investment-research-os/actions/runs/44223350617) success。中英文 live study 均 HTTP 200、指向正式 run；实际中文 Tesla/TSLA 与英文 TSLA 搜索及点击季度研究通过，study `earnings_tsla_2026q3` 状态 published。原走查及验证 checkpoint 不改写。
 - AAPL 供应商新补证已独立复核并回传 lead，原走查不改；新记录在任务 ledger 中，未提交待 main 重新放行。
 - 队尾清理：不再生成项目子路径 robots.txt；报告/目录继续 meta noindex，入口 nofollow，不向域名根添加 notes Disallow。部署及 live 文件移除仍待本次 main 推送后的 Actions 核验。
+
+## 11. 研究报告图块（首例 NVDA 已实现，其余待补）
+
+- 新增 `config/note_figures/<报告 id>.yaml`，由 `site/note_figures.py` 从公开走查记录取数，画成不依赖脚本的 SVG，插入报告页。规则与写法见 [docs/note-figures.md](docs/note-figures.md)。报告正文不改；正文中的【事实】等标签渲染成带颜色的标签（对全部报告生效）。
+- 首例 NVDA FY27 Q3：数字条、五季营收加 Q4 指引虚框、利润率与 CFO/净利润小图、承诺分行不相加，共 4 个图块。
+- 待办：（1）AAPL 产业链需要三种新图型：收入结构条、层次 × 时态矩阵、供应商依赖斜率图。矩阵的时态分类要先写进记录的结构化字段，网站不自行归类。（2）GOOGL Q3'26 补图块。（3）方法库的分析结果模版加「每节首选图」，要由方法库会话来做，本仓库不改。
