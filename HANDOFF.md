@@ -105,6 +105,9 @@
 
 - notes 上线完成：PR #29 merge `5ce1627f6f3a3aff7eb6d801541acbb7e53d4210`，[Actions 44218144615](https://github.com/werneryang/investment-research-os/actions/runs/44218144615) success。三份报告、公司/日期目录 noindex 及实际 ticker/公司/日期查询已核验。项目 robots 不等于域名根策略，移除无效文件/文档澄清已另排在 TSLA 与 AAPL 补证之后；不向域名根新增 Disallow。
 
+- 2026-11-19 报告间引用：company-dossiers 结果新增 `builds_on`/`see_also` 后，报告里会有指向其他报告或结果的相对链接。`clean_report` 现在把已发布报告的链接换成站内页 `../../../<代码>/<日期>/<id>/`，未发布报告、结果文件和其他私有文件只留「（见 <id>，未公开）」纯文本，走查记录链接保留为公开 GitHub 链接；构建时站内链接目标不在本次发布中的报告记 `unresolved_note_link` 不发布。网站工作流构建后加了 `iros notes check --site _site`，任何页面链接私有仓库或本机路径即停止发布。规则见 README「公开边界与研究报告」。已发布的三份报告检查过，没有违规链接，未改动。
+- 待办：被引用的报告晚于引用方发布时，引用方里只有纯文本 id；那时重新导入引用方（固定 owner 已推送字节）才会换成链接，目前没有自动重导。
+
 ## 10. TSLA 2026 Q3 site backfill（进行中）
 
 - 使用已发布 `methodology/records/sec-tsla-earnings-20261116.yaml` 同批 SEC HTML，不改该记录（SHA256 `a7ff27c03a131763d215d39cf05ad7048766238e75c338a077499956815647f0`）。原结果与走查已完成；本项仅补季度研究。

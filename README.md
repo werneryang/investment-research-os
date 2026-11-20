@@ -192,10 +192,18 @@ uv run iros notes import REPORT.md
 uv run iros notes check
 ```
 
-输入必须是 `companies/<TICKER>/reports/<report-id>.md`，公司在 `config/notes.yaml` 登记。不得用 results 冒充报告或通过符号链接导入；先与原 owner 确认已放行、已推送的修正版。工具只做确定性清洗：已知 research-os 记录路径转成与公开跟踪分支字节一致的 GitHub 链接；私有 result 指针转成纯结果 ID。未知路径、私有仓库链接、未核验的其他 GitHub/GitLab 等代码仓库链接、邮箱、key、用户专属字样（含第十节）或危险/不支持的内容残留时拒绝写入，不擅自删除分析段落来过关。拒绝诊断仅给类别与行号，不回显敏感片段。
+输入必须是 `companies/<TICKER>/reports/<report-id>.md`，公司在 `config/notes.yaml` 登记。不得用 results 冒充报告或通过符号链接导入；先与原 owner 确认已放行、已推送的修正版。工具只做确定性清洗：已知 research-os 记录路径转成与公开跟踪分支字节一致的 GitHub 链接；私有 result 指针转成纯结果 ID；报告间引用按下面的规则换链接。未知路径、私有仓库链接、未核验的其他 GitHub/GitLab 等代码仓库链接、邮箱、key、用户专属字样（含第十节）或危险/不支持的内容残留时拒绝写入，不擅自删除分析段落来过关。拒绝诊断仅给类别与行号，不回显敏感片段。
+
+**报告间引用。** company-dossiers 的结果有 `builds_on`（依赖另一份结果）和 `see_also`（相关）两种引用，报告里因此会出现指向其他报告或结果的相对链接（例如 `../../INTC/reports/<结果 id>.md`），可以跨公司。导入时逐个处理：
+
+- 被引用的报告**已发布**（`notes/companies/<代码>/<日期>/<id>.md` 已在本仓库）：改成站内相对链接 `../../../<代码>/<日期>/<id>/`，即网站上那份报告页；锚点去掉。
+- 被引用的报告**未发布**，或指向结果文件（`results/`）、公司索引等其他私有文件：去掉链接，只留纯文本，如 `INTC Q3（见 INTC-20261114-q3-26，未公开）`；没有结果 id 的写成 `链接文字（未公开）`。
+- 指向本仓库走查记录（`methodology/records/`）的链接本来公开，转成固定提交的 GitHub 链接保留。
+
+指向私有仓库的网址不改写，留给边界检查拒绝。站内报告链接在构建时还要核对目标报告确在本次发布中，否则引用方记作 `unresolved_note_link` 不发布。所以先导入被引用的报告，再导入引用它的；被引用的报告后来才发布时，重新导入引用方即可换成链接。
 
 报告保存在公司/日期目录，渲染 Markdown 标题、表格、列表与引用；原始 HTML 和图片不接受。图表不写进正文，由本仓库 `config/note_figures/<报告 id>.yaml` 引用公开走查记录字段生成，见 [docs/note-figures.md](docs/note-figures.md)。自动引文门槛为累计 25 个英文词或 100 个汉字，超过即标作 `long_quote_review`、拒绝自动发布，需原 owner 改为摘要或另外完成有依据的人工版权审阅；没有自动绕过开关。此保守检查不能替代出处、许可与完整内容审阅。
 
-报告页及公司/日期目录页为中文，设置 `<meta name="robots" content="noindex">`，不会因记住英文语言而重定向到不存在的译页。全部研究、公司页、公司/关键词/报告日期筛选可找到报告（报告入口使用 nofollow），但报告数量与可复现 study 数量分开。构建时逐份重新检查：失败副本不进入页面或目录，其他已放行内容照常发布；失败原稿也不得加入 git 提交。提交前仍须检查完整 diff 并运行 `iros notes check`。
+报告页及公司/日期目录页为中文，设置 `<meta name="robots" content="noindex">`，不会因记住英文语言而重定向到不存在的译页。全部研究、公司页、公司/关键词/报告日期筛选可找到报告（报告入口使用 nofollow），但报告数量与可复现 study 数量分开。构建时逐份重新检查：失败副本不进入页面或目录，其他已放行内容照常发布；失败原稿也不得加入 git 提交。提交前仍须检查完整 diff 并运行 `iros notes check`。发布页面中不得有指向 company-dossiers 或 research-method-extraction 的链接或本机路径：网站工作流构建后运行 `iros notes check --site _site`，扫描所有页面的链接属性与报告页正文，命中即停止发布；本地构建后也可同样运行。
 
 **不主动索引不是保密。** 报告与公司/日期目录以页面 `<meta name="robots" content="noindex">` 请求搜索引擎不索引；入口 nofollow 仅为补充，不是访问控制。GitHub 项目子路径的 `robots.txt` 不在域名根，不能作为有效爬虫策略，因此不再生成。不要在域名根为 notes 添加 Disallow，以免阻止爬虫读取页面 noindex。链接与 GitHub 中的 Markdown 仍可公开访问，noindex 不能保证搜索引擎绝不列出，也不能阻止他人保存、分享链接。

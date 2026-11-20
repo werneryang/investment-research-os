@@ -89,7 +89,7 @@ def test_only_verified_public_record_paths_rewritten_private_results_become_plai
     clean,n=clean_report(project,text)
     assert n==2 and ('/'+'Users/') not in clean and '../results/' not in clean
     assert 'https://github.com/werneryang/investment-research-os/blob/' in clean
-    assert '结果 ID：AAPL-20261117-value-chain' in clean and not boundary_issues(clean)
+    assert 'private（见 AAPL-20261117-value-chain，未公开）' in clean and not boundary_issues(clean)
     (project/rel).write_text('unpublished: true\n')
     with pytest.raises(NoteRejected):clean_report(project,text)
 
@@ -214,3 +214,40 @@ def test_unverified_repository_urls_fail_closed_even_without_known_private_name(
 def test_bad_title_and_control_characters_reject_before_write(project,tmp_path):
     with pytest.raises(NoteRejected):import_report(project,source(tmp_path,'# '+'x'*301))
     with pytest.raises(NoteRejected):import_report(project,source(tmp_path,BODY+'\x00'))
+
+
+def test_report_cross_links_point_to_published_pages_else_plain_id(project,tmp_path):
+    import_report(project,source(tmp_path))
+    text=('# INTC\n\n见 [AAPL 产业链](../../AAPL/reports/AAPL-20261117-value-chain.md#收入)、'
+          '[INTC Q3](INTC-20261114-q3-26.md)、[结果](../../AAPL/results/AAPL-20261117-value-chain.md)、'
+          '[索引](../README.md)、[本机](/'+'Users/x/company-dossiers/companies/INTC/reports/INTC-20261114-q3-26.md)。\n')
+    clean,n=clean_report(project,text,'INTC')
+    assert n==5 and '](../../../AAPL/2026-11-17/AAPL-20261117-value-chain/)' in clean
+    assert 'INTC Q3（见 INTC-20261114-q3-26，未公开）' in clean and '结果（见 AAPL-20261117-value-chain，未公开）' in clean
+    assert '索引（未公开）' in clean and '本机（见 INTC-20261114-q3-26，未公开）' in clean and 'company-dossiers' not in clean and 'README' not in clean
+    assert not boundary_issues(clean)
+
+
+def test_relative_link_to_private_repo_rejected(project):
+    for target in ['../../../'+'research-method-extraction/cards/x.md','../../../../'+'company-dossiers/README.md']:
+        assert 'private_link' in {i.code for i in boundary_issues(f'# T\n\n[x]({target})\n')}
+
+
+def test_internal_report_link_must_resolve_to_published_note(project,tmp_path):
+    a=import_report(project,source(tmp_path))
+    body=BODY+'\n见 [AAPL](../../AAPL/reports/AAPL-20261117-value-chain.md)。\n'
+    b=import_report(project,source(tmp_path,body=body,identifier='AAPL-20261118-value-chain'))
+    assert len(load_notes(project)[0])==2
+    (project/a['path']).unlink()
+    notes,rejected=load_notes(project)
+    assert not notes and rejected==[{'path':b['path'],'issues':['unresolved_note_link']}]
+
+
+def test_site_grep_finds_private_links_and_local_paths(tmp_path):
+    from investment_os.notes import site_boundary_issues
+    (tmp_path/'notes').mkdir()
+    (tmp_path/'ok.html').write_text('<a href="notes/">x</a> 文中提到 '+'company-dossiers 不算链接')
+    (tmp_path/'bad.html').write_text('<a href="https://github.com/x/'+'research-method-extraction">x</a>')
+    (tmp_path/'notes'/'n.html').write_text('<p>'+'/'+'Users/x/y</p>')
+    assert site_boundary_issues(tmp_path)==[{'path':'bad.html','issue':'private_link'},{'path':'notes/n.html','issue':'local_path'}]
+    assert main(['notes','check','--site',str(tmp_path)])==2

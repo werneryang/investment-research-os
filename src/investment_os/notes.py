@@ -25,6 +25,9 @@ SCHEMA = 'research-notes.v1'
 PUBLIC_REPO = 'https://github.com/werneryang/investment-research-os'
 REPORT_ID = re.compile(r'(?P<company>[A-Z][A-Z0-9.-]{0,11})-(?P<date>\d{8})-(?P<slug>[a-z0-9][a-z0-9-]*)\Z')
 PRIVATE_REPOS = ('company-dossiers', 'research-method-extraction')
+# Site-relative link from one report page (notes/companies/<C>/<day>/<id>/) to another published report.
+NOTE_LINK = re.compile(r'\.\./\.\./\.\./(?P<company>[A-Z][A-Z0-9.-]{0,11})/(?P<day>\d{4}-\d{2}-\d{2})/(?P<id>[A-Z][A-Z0-9.-]{0,11}-\d{8}-[a-z0-9][a-z0-9-]*)/(?:#[A-Za-z0-9_-]*)?\Z')
+NOTE_LINK_INLINE = r'\.\./\.\./\.\./[A-Z][A-Z0-9.-]{0,11}/\d{4}-\d{2}-\d{2}/[A-Z][A-Z0-9.-]{0,11}-\d{8}-[a-z0-9][a-z0-9-]*/(?:#[A-Za-z0-9_-]*)?'
 MAX_BYTES = 200_000
 # Deliberately conservative automatic-publication threshold; no bypass flag.
 QUOTE_WORDS, QUOTE_CJK = 25, 100
@@ -90,7 +93,7 @@ def boundary_issues(text: str) -> list[Issue]:
             'email': r'[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}|(?i:mailto:)',
             'secret': r'(?i)(?:sk-(?:proj-|ant-)?[A-Za-z0-9_-]{12,}|gh[pousr]_[A-Za-z0-9]{15,}|github_pat_[A-Za-z0-9_]{15,}|AKIA[A-Z0-9]{16}|BEGIN (?:RSA |OPENSSH )?PRIVATE KEY|Bearer\s+[A-Za-z0-9._-]{12,}|(?:api[_-]?key|access[_-]?token|secret|password|passwd|token|密[钥鑰]|令牌)\s*[:=]\s*[\"\']?[A-Za-z0-9_./+-]{8,})',
             'user_private': r'(?:你|我)\s*的\s*判\s*[断斷]|[个個]\s*人\s*判\s*[断斷]|持\s*[仓倉]|第\s*(?:10|十)\s*[节節章]|(?i:\b(?:my|your)\s+(?:holdings|portfolio|thesis)\b)|^\s*#{1,6}\s*(?:10|十)[.、\s]',
-            'private_link': r'(?i)(?:https?://|git@)[^\s<>`]*(?:company-dossiers|research-method-extraction)|(?:\.\./|companies/)[^\s<>`]*results/',
+            'private_link': r'(?i)(?:https?://|git@)[^\s<>`]*(?:company-dossiers|research-method-extraction)|(?:\.\./|companies/)[^\s<>`]*results/|\]\([^)\s]*(?:company-dossiers|research-method-extraction)',
         }
         for code, pattern in checks.items():
             if re.search(pattern, line):
@@ -121,6 +124,7 @@ def boundary_issues(text: str) -> list[Issue]:
                     issues.append(Issue('user_private', (t.map or [0])[0]+1))
         # An arbitrary absolute filesystem path is not a permitted repository-relative citation.
         no_urls = re.sub(r'https?://[^\s<>`]+', '', whole, flags=re.I)
+        no_urls = re.sub(rf'\]\({NOTE_LINK_INLINE}\)', '](', no_urls)
         if re.search(r'(?<![\w/])/(?:[A-Za-z0-9_.-]+/)+[A-Za-z0-9_.-]+', no_urls):
             issues.append(Issue('local_path'))
         for url in re.findall(r'https?://[^\s`<>\)]+', whole, re.I):
@@ -154,7 +158,11 @@ def boundary_issues(text: str) -> list[Issue]:
             if t.type == 'link_open':
                 url = canonical(t.attrGet('href') or '')
                 parts = urlsplit(url)
-                if parts.scheme not in ('http', 'https') or not parts.netloc or parts.username or parts.password:
+                if any(p in url.lower() for p in PRIVATE_REPOS):
+                    issues.append(Issue('private_link'))
+                elif NOTE_LINK.fullmatch(url):
+                    pass  # internal link to another report page; load_notes checks the target is published
+                elif parts.scheme not in ('http', 'https') or not parts.netloc or parts.username or parts.password:
                     issues.append(Issue('unsafe_or_unresolved_link'))
                 elif any(p in parts.path.lower() for p in PRIVATE_REPOS):
                     issues.append(Issue('private_link'))
@@ -180,17 +188,81 @@ def _public_target(root: Path, rel: str) -> str:
     return f'{PUBLIC_REPO}/blob/{commit}/{quote(rel, safe="/")}'
 
 
-def clean_report(root: Path, text: str) -> tuple[str, int]:
-    """Only deterministic path/link cleanup; no silent deletion of user-private prose."""
+def _published_note(root: Path, identifier: str) -> str | None:
+    """Site-relative link to an already published report copy, or None."""
+    try:
+        company, day = _parts(identifier)
+    except NoteRejected:
+        return None
+    f = root / 'notes/companies' / company / day / (identifier + '.md')
+    if f.is_file() and not f.is_symlink() and f.resolve().is_relative_to((root / 'notes/companies').resolve()):
+        return f'../../../{company}/{day}/{identifier}/'
+    return None
+
+
+def _dossier_target(root: Path, company: str | None, target: str):
+    """Classify a relative link written in companies/<C>/reports/<id>.md of company-dossiers.
+
+    Returns ('note', href) for a published report, ('private', id-or-None) for an unpublished
+    report, a result file or any other dossiers file, ('record', rel) for a research-os record,
+    or None when the target is not a relative dossiers path (left for the boundary check).
+    """
+    target = unquote(target.split('#', 1)[0])
+    if not target or urlsplit(target).scheme:
+        return None  # URLs (including ones into a private repo) are left for the boundary check
+    if target.startswith(('/', '~')):
+        m = re.search(r'company-dossiers/(companies/.+)', target)
+        if not m:
+            return None
+        resolved = m.group(1)
+    else:
+        m = re.fullmatch(r'(?:(?:\.\./)*investment-research-os/)?(methodology/records/[A-Za-z0-9_.-]+\.ya?ml)', target)
+        if m:
+            return ('record', m.group(1))
+        # The source company only matters for same-company links; their ids carry the company anyway.
+        resolved = posixpath.normpath(posixpath.join('companies', company or 'SELF', 'reports', target))
+    if not resolved.startswith('companies/'):
+        return None
+    m = re.fullmatch(r'companies/[A-Z0-9.-]+/(reports|results)/([^/]+)\.md', resolved)
+    if m and REPORT_ID.fullmatch(m.group(2)):
+        if m.group(1) == 'reports':
+            href = _published_note(root, m.group(2))
+            if href:
+                return ('note', href)
+        return ('private', m.group(2))
+    return ('private', None)
+
+
+def clean_report(root: Path, text: str, company: str | None = None) -> tuple[str, int]:
+    """Only deterministic path/link cleanup; no silent deletion of user-private prose.
+
+    Links between reports (builds_on / see_also) point to the published page when the other
+    report is on the site; otherwise, and for results or other private files, only plain text stays.
+    """
     count = 0
-    # Private result links become a plain identifier, never a link into the private repo.
-    ident = r'[A-Z][A-Z0-9.-]*-\d{8}-[a-z0-9-]+'
-    private_target = rf'(?:[^\s)<>`]*company-dossiers/companies/[A-Z0-9.-]+/results/|\.\./results/)({ident})\.md'
-    def plain_link(m):
+    def unpublished(label: str, ident: str | None) -> str:
+        label = label.strip()
+        if ident is None:
+            return f'{label}（未公开）' if label else '（未公开）'
+        if not label or label.strip('`') in (ident, ident + '.md') or '/' in label:
+            return f'（见 {ident}，未公开）'
+        return f'{label}（见 {ident}，未公开）'
+    def link(m):
         nonlocal count
+        label, target = m.group(1), m.group(2)
+        kind = _dossier_target(root, company, target)
+        if kind is None:
+            return m.group(0)
         count += 1
-        return f'结果 ID：{m.group(1)}'
-    text = re.sub(rf'\[[^\]\n]*\]\({private_target}(?:#[^\s)]*)?\)', plain_link, text)
+        if kind[0] == 'note':
+            return f'[{label}]({kind[1]})'
+        if kind[0] == 'record':
+            return f'[{label}]({_public_target(root, kind[1])})'
+        return unpublished(label, kind[1])
+    text = re.sub(r'(?<!!)\[([^\]\n]*)\]\(([^)\s]+)\)', link, text)
+    # Bare (unlinked) private result or report paths become a plain identifier.
+    ident = r'[A-Z][A-Z0-9.-]*-\d{8}-[a-z0-9-]+'
+    private_target = rf'(?:[^\s)<>`]*company-dossiers/companies/[A-Z0-9.-]+/(?:results|reports)/|(?<![\w/.])(?:\.\./)?(?:\.\./[A-Z0-9.-]+/)?(?:results|reports)/)({ident})\.md'
     def plain_path(m):
         nonlocal count
         count += 1
@@ -241,7 +313,7 @@ def import_report(root: Path, source: Path) -> dict:
         raise NoteRejected([Issue('not_utf8')]) from None
     if text.startswith('---'):
         raise NoteRejected([Issue('source_frontmatter_not_allowed')])
-    cleaned, rewrites = clean_report(root, text)
+    cleaned, rewrites = clean_report(root, text, company)
     issues = boundary_issues(cleaned)
     if issues:
         raise NoteRejected(issues)
@@ -321,4 +393,45 @@ def load_notes(root: Path) -> tuple[list[dict], list[dict]]:
             if boundary_issues(label):
                 label = 'notes/rejected-' + hashlib.sha256(label.encode()).hexdigest()[:12]
             rejected.append({'path': label, 'issues': sorted(set(codes))})
-    return good, rejected
+    # A link to another report must land on a report page that is itself published in this build.
+    while True:
+        hrefs = {n['href'] for n in good}
+        broken = [n for n in good if any(f"notes/companies/{m['company']}/{m['day']}/{m['id']}/" not in hrefs
+                                         for m in (NOTE_LINK.fullmatch(h) for h in re.findall(r'\]\(([^)\s]+)\)', n['body'])) if m)]
+        if not broken:
+            return good, rejected
+        for n in broken:
+            good.remove(n)
+            rejected.append({'path': n['path'], 'issues': ['unresolved_note_link']})
+
+
+SITE_LOCAL_PATH = re.compile(r'(?i)file:|~/|/(?:Users|home)/|\b[A-Z]:\\\\')
+SITE_ATTR = re.compile(r'''(?i)\b(?:href|src|action)\s*=\s*(?:"([^"]*)"|'([^']*)')''')
+
+
+def site_boundary_issues(out: Path) -> list[dict]:
+    """Grep the built site: no page may link to a private repository or a local path.
+
+    Report pages (notes/) are also checked in their visible text. Diagnostics give the page and
+    the category only.
+    """
+    out = Path(out)
+    found = []
+    for page in sorted(out.rglob('*.html')):
+        rel = page.relative_to(out).as_posix()
+        text = page.read_text(encoding='utf-8', errors='replace')
+        codes = set()
+        for m in SITE_ATTR.finditer(text):
+            value = canonical(m.group(1) or m.group(2) or '')
+            if any(p in value.lower() for p in PRIVATE_REPOS):
+                codes.add('private_link')
+            if SITE_LOCAL_PATH.search(value):
+                codes.add('local_path')
+        if rel.startswith('notes/'):
+            plain = canonical(text)
+            if any(p in plain.lower() for p in PRIVATE_REPOS):
+                codes.add('private_link')
+            if SITE_LOCAL_PATH.search(plain):
+                codes.add('local_path')
+        found += [{'path': rel, 'issue': c} for c in sorted(codes)]
+    return found
