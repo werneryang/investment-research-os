@@ -25,15 +25,19 @@
 
 ## 3. 每节首选图形
 
-| 报告节 | 季度财报 | 产业链 / 结构 |
-| --- | --- | --- |
-| 一句话结论（节末） | `kpi` 3–4 个数字，带证据标签 | `kpi`：总额、最大类别占比、渠道占比 |
-| 发生了什么 | `bar` 五季加指引虚框；`group` 收入加利润率 | `stack` 收入结构条；`matrix` 层次 × 时态矩阵 |
-| 质量与可持续性 | `group`：利润率 `line` 加 CFO/净利润 `bar`；`line` 画 CFO 与资本开支 | `slope` 供应商依赖斜率图 |
-| 指引与待验证 | `bar` 画积压订单类的多季余额（口径变了就不画同比）；`range` 指引对比上季区间 | 待兑现事项时间线（待实现） |
-| 主要风险 | `hbar` 承诺分行，不相加 | 不画 |
+按报告所属的结果类型选图。下表是起点，不是必须：没有数据支撑的节不硬画图，标「不画」的节通常只有文字。
 
-没有数据支撑的节不硬画图。
+| 报告节 | 财报后更新 | 产业链 | 从头研究（产业链以外部分） | 估值检查 | 突发事件 | 持仓复核 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 一句话结论（节末） | `kpi` 3–4 个数字，带证据标签 | `kpi` 总额、最大类别占比、渠道占比 | `kpi` 市场规模、份额、增速 | `kpi` 现价、现价隐含的增速或份额、最关键的假设 | `kpi` 事件直接改变的几个量 | `kpi` 每条论点支柱当前的数 |
+| 发生了什么 / 现状 | `bar` 五季加指引虚框；`group` 收入加利润率 | `stack` 收入结构条；`matrix` 层次 × 时态 | `tree` 大类 → 子类 → 交易市场；`stack` 分部收入 | `bar` 历史收入与利润率 | `timeline` 事件经过 | `range` 当初的假设对比实际 |
+| 增长从哪里来 | `waterfall` 拆成数量、份额、价格、组合 | 不画 | `waterfall` 同左，另可拆业务范围 | `waterfall` 画现价隐含的拆分（标展望） | 不画 | `waterfall` 同财报后更新 |
+| 质量与可持续性 | `group`：利润率 `line` 加 CFO/净利润 `bar`；`line` CFO 与资本开支 | `slope` 供应商依赖 | `line` 利润率、资本回报 | 不画 | 不画 | `line` 关键指标的趋势 |
+| 估值与预期 | 不画 | 不画 | 不画 | `scenario` 悲观 / 基准 / 乐观区间叠现价；或 `scenario` 敏感性条 | `bar` 事件前后的估值或隐含预期 | `range` 估值所在区间 |
+| 指引与待验证 | `range` 指引对比上季区间；`bar` 积压订单类的多季余额（口径变了就不画同比） | `timeline` 待兑现事项 | `funnel` 客户转化阶段 | 不画 | `timeline` 后续节点 | `range` 到期判断的区间与实际 |
+| 主要风险 | `hbar` 承诺分行，不相加 | 不画 | `hbar` | `hbar` 对结论影响最大的输入，或并入 `scenario` 敏感性条 | `hbar` 受影响业务的收入占比 | `hbar` |
+
+市场规模类研究另有几处常用图：基期规模的几种估算路径用 `hbar` 每条一行并标差额（不画平均值）；增长情景用 `bar` 加虚框；反推所需份额用 `kpi` 和 `range`；对外收入按交易市场分用 `stack`，分部间收入单列一行 `hbar`，不和对外收入放进同一根条。
 
 ## 4. 写法
 
@@ -46,7 +50,7 @@ figures:
   - id: revenue-5q
     section: 发生了什么                  # 二级标题的开头，必须恰好匹配一处
     position: start                     # start = 标题后；end = 下一个二级标题前
-    type: bar                           # kpi / bar / line / hbar / group
+    type: bar                           # 图型见下文各小节
     title: "营收连续五季增长，Q4 指引中点比 Q3 再高 {R:guidance.computed_midpoint_vs_current_pct:.1f}%"
     subtitle: GAAP 营收，十亿美元；…
     x: [FY26Q3, FY26Q4, FY27Q1, FY27Q2, FY27Q3]
@@ -63,7 +67,7 @@ figures:
 - 引用不成立就报错，网站构建也会失败，不会静默跳过：字段不存在、不是数值、记录不在 `methodology/records/`、正文没链接这份记录、节标题匹配不到或匹配到多处，都算不成立。`tests/test_note_figures.py` 会把每份图块和对应报告都渲染一遍。
 - 图块文件同样要过公开边界检查（本机路径、邮箱、key 等）。
 
-各类型的参数见 `src/investment_os/site/note_figures.py`。
+各类型的参数见 `src/investment_os/site/note_figures.py`。图型共 14 种：`kpi`、`bar`、`line`、`hbar`、`group`、`stack`、`matrix`、`slope`、`range`、`waterfall`、`funnel`、`tree`、`timeline`、`scenario`。除 `kpi`、`group` 外都可以放进 `group` 的小图。
 
 ### 产业链图型（`stack`、`matrix`、`slope`）
 
@@ -73,6 +77,16 @@ figures:
 - **补充记录**：原走查记录入库后不改写，所以归类写在新增的补充记录里（`record_type: supplemental-…`，`supplements` 指向原记录并带哈希）。图块可以引用这类记录，不需要报告正文直接链接它，条件是原记录被正文链接且哈希与声明一致，原记录一被改动就失效。AAPL 的归类见 `methodology/records/sec-aapl-value-chain-layout-20261119.yaml`，标为 AI 辅助整理、待原作者确认，图上标「推断」。
 - `range` 指引对比图：每个期间一个虚线框（管理层给的区间，可选中点横线），有实际值的画实心点，落在区间外用第 2 色，只表示「在区间外」，不称失败或达成，也不是对共识的比较。纵轴不从零开始，由 `y_min`/`y_max` 声明并在副标题写明；区间倒置或数据超出坐标范围就报错。没有中点也没有实际值的区间（如只给范围的下一季指引）直接标两端，不自行推算中点。上季区间引用走查记录里的 `prior_guidance_check`，本次指引引用 `guidance`。
 - 个别期间的字段位置不同（例如由年度数减前三季推得的第四季），数值可写 `{by_x: {期间: 引用}, scale: …}`，每个期间都要给出处，图下说明哪一期是推得的。
+
+### 归因、阶段、层级、时间与情景图型（`waterfall`、`funnel`、`tree`、`timeline`、`scenario`）
+
+2026-11-19 加。目前没有已发布报告用到这五种，写法以 `tests/test_note_figures.py` 的夹具为例。
+
+- `waterfall` 增长归因瀑布：`start`、`steps`、`end` 各给 `label` 与 `value` 引用，每项可单独写 `evidence`。起点加各项必须等于终点，对不上就报错；记录里各项已四舍五入时，可声明 `tolerance`（这是校验参数，不是数据），残差写在数据表最后一行。增项第 3 色、减项第 8 色、起止总额第 1 色，标「展望」的项画虚线框。价格和组合分不开时在记录里合成一项，不在图里硬拆。默认从零起画；`y_min` 可截断纵轴（累计值低于它会报错），截断时副标题要写明。
+- `funnel` 客户转化阶段条：必须声明 `unit`；每个阶段可写 `unit`，或用 `unit_ref` 从记录读单位，与图的单位不同就报错，所以项目数、金额、技术就绪程度不会画在同一组条上。后一阶段大于前一阶段时报错；口径确实如此（例如认证阶段含存量项目），给该阶段写 `allow_increase: true`，并且必须写 `note` 说明。图上标每阶段占上一阶段的比例。
+- `tree` 层级树：`nodes` 和 `relations` 都引用记录里的列表，网站不判断归类。节点有 `id`、`label`，可有 `parent`、`lifecycle`（`growth` 成长 / `mature` 成熟 / `cyclical` 周期 / `declining` 衰退）、`value`、`aggregation: sum`；关系有 `from`、`to`、`type`（`additive` 可加 / `substitute` 替代 / `upstream_downstream` 上下游 / `overlap` 部分重叠）。节点 id 重复、父节点不存在、层级成环、取值不在登记范围、关系指向不存在的节点、同一支上的祖先与后代标了非可加关系，都报错。只有声明 `aggregation: sum` 的节点表示「子项相加」：子项合计必须等于节点值，且子项之间不能有上下游、替代或重叠关系；其他有子项的节点标「子项不相加」。树里只写数值，不画堆叠或合计条，上下游画成带箭头的虚线弧，不会看成可以相加。
+- `timeline` 时间线：`events` 引用记录里的列表，每项有 `id`、`label`、`status`（`occurred` 已发生 / `pending` 待兑现），以及 `date`（事件点）或 `start`、`end`（区间），日期写 `YYYY-MM-DD`。日期不合法、区间倒置、id 重复都报错。给了 `as_of`（查阅日，引用记录字段）时画一条竖线，标「已发生」的事件晚于查阅日也报错。已发生画实心，待兑现画浅色虚线。
+- `scenario` 情景区间：默认 `mode: range`，`rows` 每行一个情景，`low`、`high` 必填，`mid` 可选（必须在区间内）；`mode: sensitivity` 是敏感性条（龙卷风式），`base` 给结论的基准值，`rows` 每行一个输入，`low`、`high` 是该输入取低、取高时的结论值，按幅度自动排序。两种都可以加 `reference`（如现价），画成实线；情景值和敏感性值一律浅色虚线框，不画实心。坐标范围由 `x_min`/`x_max` 声明，数据超出或区间倒置就报错。
 
 ## 5. 分工
 

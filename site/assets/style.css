@@ -414,3 +414,22 @@ overflow-wrap:anywhere}
 .nf-mx td.nf-t-current{background:color-mix(in srgb,var(--c1) 16%,var(--panel));border-color:var(--c1)}
 .nf-mx td.nf-t-announced{background:color-mix(in srgb,var(--c1) 6%,var(--panel));border:1px dashed var(--c1)}
 .nf-mx td.nf-t-historical{background:var(--mute-bg,#efeee9);border-color:var(--line)}
+/* 第三批图型：瀑布、阶段条、层级树、时间线、情景区间 / 敏感性 */
+.nf-guide2{fill:color-mix(in srgb,var(--c2) 18%,transparent);stroke:var(--c2);stroke-width:1.2;stroke-dasharray:4 3}
+.nf-legend i.nf-k-hatch2{background:color-mix(in srgb,var(--c2) 18%,transparent);border:1px dashed var(--c2)}
+.nf-refval{stroke:var(--c7);stroke-width:2}
+.nf-legend i.nf-k-refval{width:2px;height:12px;background:var(--c7);border-radius:0;vertical-align:-2px}
+.nf-tl-pend{fill:color-mix(in srgb,var(--c1) 18%,var(--panel));stroke:var(--c1);stroke-width:1.5;stroke-dasharray:3 2}
+.nf-tree-link{fill:none;stroke:var(--line);stroke-width:1.2}
+.nf-tree-node{fill:var(--c1)}.nf-tree-node.nf-tree-leaf{fill:var(--panel);stroke:var(--c1);stroke-width:1.5}
+.nf-svg .nf-tree-t{fill:var(--fg)}
+.nf-svg .nf-lc{font-weight:600}.nf-lc-growth{fill:var(--c6)}.nf-lc-mature{fill:var(--c1)}
+.nf-lc-cyclical{fill:var(--c7)}.nf-lc-declining{fill:var(--c8)}
+.nf-rel{fill:none;stroke-width:1.5}.nf-svg .nf-rel-t{fill:var(--fg);font-weight:600}
+.nf-rel-additive{stroke:var(--c1)}.nf-rel-substitute{stroke:var(--c2)}
+.nf-rel-upstream_downstream{stroke:var(--c7);stroke-dasharray:4 3}.nf-rel-overlap{stroke:var(--c5)}
+.nf-arrowhead{fill:var(--c7)}
+.nf-legend i.nf-k-rel{height:0;width:14px;border-radius:0;border-top:2px solid;vertical-align:3px;background:none}
+.nf-legend i.nf-rel-additive{border-color:var(--c1)}.nf-legend i.nf-rel-substitute{border-color:var(--c2)}
+.nf-legend i.nf-rel-upstream_downstream{border-top-style:dashed;border-color:var(--c7)}.nf-legend i.nf-rel-overlap{border-color:var(--c5)}
+.nf-legend .nf-s5{background:var(--c5)}.nf-legend .nf-s8{background:var(--c8)}
