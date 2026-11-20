@@ -467,6 +467,11 @@ def cmd_notes(args: argparse.Namespace) -> int:
             raise ValueError("notes import 需要 report 路径")
         print(json.dumps(import_report(root, Path(args.file)), ensure_ascii=False))
         return 0
+    if args.site:
+        from .notes import site_boundary_issues
+        found = site_boundary_issues(Path(args.site))
+        print(json.dumps({"site": args.site, "issues": found}, ensure_ascii=False))
+        return 2 if found else 0
     notes, rejected = load_notes(root)
     print(json.dumps({"accepted": len(notes), "rejected": rejected}, ensure_ascii=False))
     return 2 if rejected else 0
@@ -543,6 +548,7 @@ def build_parser() -> argparse.ArgumentParser:
     n = sub.add_parser("notes", help="研究报告：仅导入 reports，公开边界核对")
     n.add_argument("action", choices=["import", "check"])
     n.add_argument("file", nargs="?", help="import：companies/<TICKER>/reports/<report-id>.md")
+    n.add_argument("--site", help="check：扫描已构建的网站目录，页面不得链接私有仓库或本机路径")
     n.set_defaults(func=cmd_notes)
 
     w = sub.add_parser("earnings", help="季度财报登记：下载原文、核对数值与恒等式、生成并导入财报证据包")
