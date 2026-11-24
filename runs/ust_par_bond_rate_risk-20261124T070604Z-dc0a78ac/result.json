@@ -1,0 +1,1037 @@
+{
+  "study_id": "ust_par_bond_rate_risk",
+  "title": "假设平价国债的利率敏感性情景",
+  "question": "以最近一个交易日的美国国债票面收益率构造假设平价债券，收益率平移时价格如何变化？ 久期与久期 + 凸性近似相对完整重新定价的误差有多大？",
+  "result_type": "simulation",
+  "branch": "par_bond_scenarios",
+  "scope": {
+    "market": "US",
+    "currency": "USD",
+    "start": "2026-11-10",
+    "end": "2026-11-24",
+    "frequency": "daily",
+    "vintage_policy": "latest",
+    "relative_dates": {
+      "start": "today-14d",
+      "end": "today"
+    },
+    "evaluated_at": "2026-11-24T07:06:04+00:00",
+    "data_checked_at": {
+      "ust_par_yield_curve": "2026-11-24T07:05:42+00:00"
+    }
+  },
+  "data_cutoff": "2026-11-23",
+  "methods": {
+    "description": "以基准日各期限票面收益率为票息与到期收益率构造假设平价债券（每年 2 次付息、估值日为付息日、无应计利息）；对债券自身收益率施加平移冲击，比较完整重新定价与修正久期、久期 + 凸性近似。",
+    "benchmark": "完整重新定价（按冲击后收益率贴现全部现金流）",
+    "parameters": {
+      "tenors": [
+        "2Y",
+        "5Y",
+        "10Y",
+        "30Y"
+      ],
+      "coupon_frequency": 2,
+      "shocks_bp": [
+        -200,
+        -100,
+        -50,
+        -25,
+        25,
+        50,
+        100,
+        200
+      ],
+      "finite_difference_bp": 1
+    },
+    "availability_rule": "观测日次日 0 点（来源时区）"
+  },
+  "inputs": [
+    {
+      "role": "curve",
+      "dataset_id": "ust_par_yield_curve",
+      "version_id": "v20261124T070526Z-ed6c30a6",
+      "content_hash": "ed6c30a6b33f6ff98d9f492ed176a490646d1fd8cfa70083461856a6705a1677",
+      "source_id": "ust_treasury",
+      "source_status": "access_verified"
+    }
+  ],
+  "results": {
+    "base_date": "2026-11-23",
+    "bonds": {
+      "2Y": {
+        "years": 2.0,
+        "yield": 0.0463,
+        "yield_pct": 4.63,
+        "coupon_pct": 4.63,
+        "price": 99.99999999999999,
+        "macaulay_duration": 1.9331394882986133,
+        "modified_duration": 1.8893998810522536,
+        "convexity": 4.5638043983320316,
+        "dv01": 0.018893998810522533
+      },
+      "5Y": {
+        "years": 5.0,
+        "yield": 0.047400000000000005,
+        "yield_pct": 4.74,
+        "coupon_pct": 4.74,
+        "price": 99.99999999999996,
+        "macaulay_duration": 4.509987030560334,
+        "modified_duration": 4.405574905304614,
+        "convexity": 22.838816385731054,
+        "dv01": 0.04405574905304612
+      },
+      "10Y": {
+        "years": 10.0,
+        "yield": 0.0492,
+        "yield_pct": 4.92,
+        "coupon_pct": 4.92,
+        "price": 100.00000000000007,
+        "macaulay_duration": 8.016586892507586,
+        "modified_duration": 7.824113695595927,
+        "convexity": 74.03447670004003,
+        "dv01": 0.07824113695595933
+      },
+      "30Y": {
+        "years": 30.0,
+        "yield": 0.0529,
+        "yield_pct": 5.29,
+        "coupon_pct": 5.29,
+        "price": 99.99999999999974,
+        "macaulay_duration": 15.352107162300667,
+        "modified_duration": 14.956507537922613,
+        "convexity": 334.74098285541703,
+        "dv01": 0.14956507537922575
+      }
+    },
+    "scenarios": {
+      "2Y": [
+        {
+          "shock_bp": -200.0,
+          "full_pct": 3.8718805045216076,
+          "duration_pct": 3.7787997621045073,
+          "duration_convexity_pct": 3.870075850071148,
+          "duration_error_pp": -0.09308074241710029,
+          "duration_convexity_error_pp": -0.0018046544504595197
+        },
+        {
+          "shock_bp": -100.0,
+          "full_pct": 1.9124425500841147,
+          "duration_pct": 1.8893998810522536,
+          "duration_convexity_pct": 1.9122189030439138,
+          "duration_error_pp": -0.02304266903186103,
+          "duration_convexity_error_pp": -0.00022364704020083614
+        },
+        {
+          "shock_bp": -50.0,
+          "full_pct": 0.9504325323992369,
+          "duration_pct": 0.9446999405261268,
+          "duration_convexity_pct": 0.9504046960240419,
+          "duration_error_pp": -0.005732591873110038,
+          "duration_convexity_error_pp": -2.7836375194989493e-05
+        },
+        {
+          "shock_bp": -25.0,
+          "full_pct": 0.47377963125916356,
+          "duration_pct": 0.4723499702630634,
+          "duration_convexity_pct": 0.4737761591375422,
+          "duration_error_pp": -0.001429660996100146,
+          "duration_convexity_error_pp": -3.4721216213839945e-06
+        },
+        {
+          "shock_bp": 25.0,
+          "full_pct": -0.47092723874625486,
+          "duration_pct": -0.4723499702630634,
+          "duration_convexity_pct": -0.47092378138858465,
+          "duration_error_pp": -0.0014227315168085508,
+          "duration_convexity_error_pp": 3.4573576702112696e-06
+        },
+        {
+          "shock_bp": 50.0,
+          "full_pct": -0.9390227851783117,
+          "duration_pct": -0.9446999405261268,
+          "duration_convexity_pct": -0.9389951850282118,
+          "duration_error_pp": -0.005677155347815099,
+          "duration_convexity_error_pp": 2.7600150099948983e-05
+        },
+        {
+          "shock_bp": 100.0,
+          "full_pct": -1.866800726337492,
+          "duration_pct": -1.8893998810522536,
+          "duration_convexity_pct": -1.8665808590605935,
+          "duration_error_pp": -0.022599154714761704,
+          "duration_convexity_error_pp": 0.00021986727689848884
+        },
+        {
+          "shock_bp": 200.0,
+          "full_pct": -3.6892678420178515,
+          "duration_pct": -3.7787997621045073,
+          "duration_convexity_pct": -3.6875236741378665,
+          "duration_error_pp": -0.08953192008665578,
+          "duration_convexity_error_pp": 0.0017441678799849925
+        }
+      ],
+      "5Y": [
+        {
+          "shock_bp": -200.0,
+          "full_pct": 9.286021466129357,
+          "duration_pct": 8.811149810609228,
+          "duration_convexity_pct": 9.26792613832385,
+          "duration_error_pp": -0.4748716555201291,
+          "duration_convexity_error_pp": -0.01809532780550782
+        },
+        {
+          "shock_bp": -100.0,
+          "full_pct": 4.521995053080707,
+          "duration_pct": 4.405574905304614,
+          "duration_convexity_pct": 4.519768987233269,
+          "duration_error_pp": -0.11642014777609333,
+          "duration_convexity_error_pp": -0.002226065847438008
+        },
+        {
+          "shock_bp": -50.0,
+          "full_pct": 2.2316120364451075,
+          "duration_pct": 2.202787452652307,
+          "duration_convexity_pct": 2.231335973134471,
+          "duration_error_pp": -0.028824583792800507,
+          "duration_convexity_error_pp": -0.0002760633106366761
+        },
+        {
+          "shock_bp": -25.0,
+          "full_pct": 1.108565228576186,
+          "duration_pct": 1.1013937263261535,
+          "duration_convexity_pct": 1.1085308564466945,
+          "duration_error_pp": -0.007171502250032491,
+          "duration_convexity_error_pp": -3.437212949153334e-05
+        },
+        {
+          "shock_bp": 25.0,
+          "full_pct": -1.0942906995205282,
+          "duration_pct": -1.1013937263261535,
+          "duration_convexity_pct": -1.0942565962056126,
+          "duration_error_pp": -0.0071030268056253565,
+          "duration_convexity_error_pp": 3.4103314915601146e-05
+        },
+        {
+          "shock_bp": 50.0,
+          "full_pct": -2.1745106943146686,
+          "duration_pct": -2.202787452652307,
+          "duration_convexity_pct": -2.174238932170143,
+          "duration_error_pp": -0.02827675833763843,
+          "duration_convexity_error_pp": 0.0002717621445254004
+        },
+        {
+          "shock_bp": 100.0,
+          "full_pct": -4.293538062051194,
+          "duration_pct": -4.405574905304614,
+          "duration_convexity_pct": -4.29138082337596,
+          "duration_error_pp": -0.11203684325341978,
+          "duration_convexity_error_pp": 0.0021572386752346517
+        },
+        {
+          "shock_bp": 200.0,
+          "full_pct": -8.37136703081719,
+          "duration_pct": -8.811149810609228,
+          "duration_convexity_pct": -8.354373482894607,
+          "duration_error_pp": -0.43978277979203817,
+          "duration_convexity_error_pp": 0.01699354792258312
+        }
+      ],
+      "10Y": [
+        {
+          "shock_bp": -200.0,
+          "full_pct": 17.23652828353879,
+          "duration_pct": 15.648227391191854,
+          "duration_convexity_pct": 17.128916925192655,
+          "duration_error_pp": -1.5883008923469344,
+          "duration_convexity_error_pp": -0.10761135834613356
+        },
+        {
+          "shock_bp": -100.0,
+          "full_pct": 8.207363875574814,
+          "duration_pct": 7.824113695595927,
+          "duration_convexity_pct": 8.194286079096127,
+          "duration_error_pp": -0.38325017997888633,
+          "duration_convexity_error_pp": -0.013077796478686565
+        },
+        {
+          "shock_bp": -50.0,
+          "full_pct": 4.006212124879527,
+          "duration_pct": 3.9120568477979636,
+          "duration_convexity_pct": 4.004599943673013,
+          "duration_error_pp": -0.09415527708156324,
+          "duration_convexity_error_pp": -0.0016121812065135188
+        },
+        {
+          "shock_bp": -25.0,
+          "full_pct": 1.9793643359266477,
+          "duration_pct": 1.9560284238989818,
+          "duration_convexity_pct": 1.9791641978677443,
+          "duration_error_pp": -0.02333591202766594,
+          "duration_convexity_error_pp": -0.00020013805890339853
+        },
+        {
+          "shock_bp": 25.0,
+          "full_pct": -1.9330900663264372,
+          "duration_pct": -1.9560284238989818,
+          "duration_convexity_pct": -1.9328926499302193,
+          "duration_error_pp": -0.022938357572544588,
+          "duration_convexity_error_pp": 0.00019741639621795315
+        },
+        {
+          "shock_bp": 50.0,
+          "full_pct": -3.821082382743568,
+          "duration_pct": -3.9120568477979636,
+          "duration_convexity_pct": -3.8195137519229134,
+          "duration_error_pp": -0.09097446505439555,
+          "duration_convexity_error_pp": 0.0015686308206546151
+        },
+        {
+          "shock_bp": 100.0,
+          "full_pct": -7.466322060255259,
+          "duration_pct": -7.824113695595927,
+          "duration_convexity_pct": -7.453941312095727,
+          "duration_error_pp": -0.3577916353406678,
+          "duration_convexity_error_pp": 0.01238074815953194
+        },
+        {
+          "shock_bp": 200.0,
+          "full_pct": -14.26398092801101,
+          "duration_pct": -15.648227391191854,
+          "duration_convexity_pct": -14.167537857191054,
+          "duration_error_pp": -1.384246463180844,
+          "duration_convexity_error_pp": 0.09644307081995684
+        }
+      ],
+      "30Y": [
+        {
+          "shock_bp": -200.0,
+          "full_pct": 37.951494369869046,
+          "duration_pct": 29.91301507584523,
+          "duration_convexity_pct": 36.60783473295357,
+          "duration_error_pp": -8.038479294023816,
+          "duration_convexity_error_pp": -1.3436596369154756
+        },
+        {
+          "shock_bp": -100.0,
+          "full_pct": 16.785993422220336,
+          "duration_pct": 14.956507537922615,
+          "duration_convexity_pct": 16.6302124521997,
+          "duration_error_pp": -1.8294858842977213,
+          "duration_convexity_error_pp": -0.1557809700206363
+        },
+        {
+          "shock_bp": -50.0,
+          "full_pct": 7.91545855694078,
+          "duration_pct": 7.478253768961308,
+          "duration_convexity_pct": 7.896679997530579,
+          "duration_error_pp": -0.43720478797947226,
+          "duration_convexity_error_pp": -0.018778559410201012
+        },
+        {
+          "shock_bp": -25.0,
+          "full_pct": 3.846039292308512,
+          "duration_pct": 3.739126884480654,
+          "duration_convexity_pct": 3.8437334416229714,
+          "duration_error_pp": -0.10691240782785805,
+          "duration_convexity_error_pp": -0.002305850685540456
+        },
+        {
+          "shock_bp": 25.0,
+          "full_pct": -3.636746822629955,
+          "duration_pct": -3.739126884480654,
+          "duration_convexity_pct": -3.6345203273383357,
+          "duration_error_pp": -0.10238006185069892,
+          "duration_convexity_error_pp": 0.0022264952916191127
+        },
+        {
+          "shock_bp": 50.0,
+          "full_pct": -7.077335706897159,
+          "duration_pct": -7.478253768961308,
+          "duration_convexity_pct": -7.059827540392035,
+          "duration_error_pp": -0.4009180620641484,
+          "duration_convexity_error_pp": 0.017508166505123768
+        },
+        {
+          "shock_bp": 100.0,
+          "full_pct": -13.418212008837616,
+          "duration_pct": -14.956507537922615,
+          "duration_convexity_pct": -13.282802623645528,
+          "duration_error_pp": -1.5382955290849996,
+          "duration_convexity_error_pp": 0.13540938519208723
+        },
+        {
+          "shock_bp": 200.0,
+          "full_pct": -24.23299127319296,
+          "duration_pct": -29.91301507584523,
+          "duration_convexity_pct": -23.218195418736887,
+          "duration_error_pp": -5.6800238026522685,
+          "duration_convexity_error_pp": 1.0147958544560751
+        }
+      ]
+    },
+    "worst_duration_convexity_error": {
+      "2Y": {
+        "shock_bp": -200.0,
+        "full_pct": 3.8718805045216076,
+        "duration_pct": 3.7787997621045073,
+        "duration_convexity_pct": 3.870075850071148,
+        "duration_error_pp": -0.09308074241710029,
+        "duration_convexity_error_pp": -0.0018046544504595197
+      },
+      "5Y": {
+        "shock_bp": -200.0,
+        "full_pct": 9.286021466129357,
+        "duration_pct": 8.811149810609228,
+        "duration_convexity_pct": 9.26792613832385,
+        "duration_error_pp": -0.4748716555201291,
+        "duration_convexity_error_pp": -0.01809532780550782
+      },
+      "10Y": {
+        "shock_bp": -200.0,
+        "full_pct": 17.23652828353879,
+        "duration_pct": 15.648227391191854,
+        "duration_convexity_pct": 17.128916925192655,
+        "duration_error_pp": -1.5883008923469344,
+        "duration_convexity_error_pp": -0.10761135834613356
+      },
+      "30Y": {
+        "shock_bp": -200.0,
+        "full_pct": 37.951494369869046,
+        "duration_pct": 29.91301507584523,
+        "duration_convexity_pct": 36.60783473295357,
+        "duration_error_pp": -8.038479294023816,
+        "duration_convexity_error_pp": -1.3436596369154756
+      }
+    }
+  },
+  "coverage": {
+    "base_date": "2026-11-23",
+    "window_end": "2026-11-24",
+    "days_before_window_end": 1,
+    "tenors_requested": [
+      "2Y",
+      "5Y",
+      "10Y",
+      "30Y"
+    ],
+    "tenors_used": [
+      "2Y",
+      "5Y",
+      "10Y",
+      "30Y"
+    ],
+    "curve_days_in_window": 9
+  },
+  "unsupported": [],
+  "limitations": [
+    "假设债券：票息等于基准日票面收益率、恰在付息日估值、无应计利息；不是任何真实国债或债券基金（如 TLT）的风险",
+    "冲击施加在每只债券自身的收益率上（平移），不是对整条曲线的一致重定价；票面收益率不等于零息利率",
+    "冲击幅度是假设情景，不代表概率或预测",
+    "只计算价格变化，不含持有期票息收入、再投资与融资成本"
+  ],
+  "validation": {
+    "closed_form_checks": {
+      "status": "pass",
+      "checked": 16,
+      "failures": [],
+      "rows": [
+        {
+          "tenor": "2Y",
+          "check": "par_price",
+          "value": 99.99999999999999,
+          "reference": 100.0,
+          "pass": true
+        },
+        {
+          "tenor": "2Y",
+          "check": "duration_closed_form",
+          "value": 1.8893998810522536,
+          "reference": 1.8893998810522534,
+          "pass": true
+        },
+        {
+          "tenor": "2Y",
+          "check": "effective_duration",
+          "value": 1.8893998810522536,
+          "reference": 1.8893999032300715,
+          "pass": true
+        },
+        {
+          "tenor": "2Y",
+          "check": "effective_convexity",
+          "value": 4.5638043983320316,
+          "reference": 4.563804452573095,
+          "pass": true
+        },
+        {
+          "tenor": "5Y",
+          "check": "par_price",
+          "value": 99.99999999999996,
+          "reference": 100.0,
+          "pass": true
+        },
+        {
+          "tenor": "5Y",
+          "check": "duration_closed_form",
+          "value": 4.405574905304614,
+          "reference": 4.405574905304623,
+          "pass": true
+        },
+        {
+          "tenor": "5Y",
+          "check": "effective_duration",
+          "value": 4.405574905304614,
+          "reference": 4.405575124422258,
+          "pass": true
+        },
+        {
+          "tenor": "5Y",
+          "check": "effective_convexity",
+          "value": 22.838816385731054,
+          "reference": 22.83881727294102,
+          "pass": true
+        },
+        {
+          "tenor": "10Y",
+          "check": "par_price",
+          "value": 100.00000000000007,
+          "reference": 100.0,
+          "pass": true
+        },
+        {
+          "tenor": "10Y",
+          "check": "duration_closed_form",
+          "value": 7.824113695595927,
+          "reference": 7.824113695595914,
+          "pass": true
+        },
+        {
+          "tenor": "10Y",
+          "check": "effective_duration",
+          "value": 7.824113695595927,
+          "reference": 7.824114967719703,
+          "pass": true
+        },
+        {
+          "tenor": "10Y",
+          "check": "effective_convexity",
+          "value": 74.03447670004003,
+          "reference": 74.03448330478562,
+          "pass": true
+        },
+        {
+          "tenor": "30Y",
+          "check": "par_price",
+          "value": 99.99999999999974,
+          "reference": 100.0,
+          "pass": true
+        },
+        {
+          "tenor": "30Y",
+          "check": "duration_closed_form",
+          "value": 14.956507537922613,
+          "reference": 14.95650753792265,
+          "pass": true
+        },
+        {
+          "tenor": "30Y",
+          "check": "effective_duration",
+          "value": 14.956507537922613,
+          "reference": 14.956522037708492,
+          "pass": true
+        },
+        {
+          "tenor": "30Y",
+          "check": "effective_convexity",
+          "value": 334.74098285541703,
+          "reference": 334.74118663434723,
+          "pass": true
+        }
+      ],
+      "tolerances": {
+        "par_price_abs": 1e-08,
+        "duration_closed_form_rel": 1e-09,
+        "effective_rel": 0.0001,
+        "finite_difference_step": 0.0001
+      }
+    },
+    "raw_spot_check": {
+      "status": "pass",
+      "checked": 12,
+      "failures": [],
+      "samples": [
+        {
+          "series_id": "UST_PAR_10Y",
+          "date": "2024-01-02",
+          "normalized": 3.95,
+          "raw": "3.95"
+        },
+        {
+          "series_id": "UST_PAR_6M",
+          "date": "2024-04-10",
+          "normalized": 5.4,
+          "raw": "5.40"
+        },
+        {
+          "series_id": "UST_PAR_3Y",
+          "date": "2024-07-19",
+          "normalized": 4.28,
+          "raw": "4.28"
+        },
+        {
+          "series_id": "UST_PAR_30Y",
+          "date": "2024-10-28",
+          "normalized": 4.53,
+          "raw": "4.53"
+        },
+        {
+          "series_id": "UST_PAR_20Y",
+          "date": "2025-02-07",
+          "normalized": 4.75,
+          "raw": "4.75"
+        },
+        {
+          "series_id": "UST_PAR_3M",
+          "date": "2025-05-12",
+          "normalized": 4.42,
+          "raw": "4.42"
+        },
+        {
+          "series_id": "UST_PAR_2Y",
+          "date": "2025-08-13",
+          "normalized": 3.67,
+          "raw": "3.67"
+        },
+        {
+          "series_id": "UST_PAR_2M",
+          "date": "2025-11-14",
+          "normalized": 4.01,
+          "raw": "4.01"
+        },
+        {
+          "series_id": "UST_PAR_1Y",
+          "date": "2026-02-19",
+          "normalized": 3.5,
+          "raw": "3.50"
+        },
+        {
+          "series_id": "UST_PAR_1M",
+          "date": "2026-05-20",
+          "normalized": 3.65,
+          "raw": "3.65"
+        },
+        {
+          "series_id": "UST_PAR_1.5M",
+          "date": "2026-08-21",
+          "normalized": 3.77,
+          "raw": "3.77"
+        },
+        {
+          "series_id": "UST_PAR_7Y",
+          "date": "2026-11-23",
+          "normalized": 4.81,
+          "raw": "4.81"
+        }
+      ]
+    }
+  },
+  "tables": {
+    "bonds": [
+      {
+        "tenor": "2Y",
+        "years": 2.0,
+        "yield": 0.0463,
+        "yield_pct": 4.63,
+        "coupon_pct": 4.63,
+        "price": 99.99999999999999,
+        "macaulay_duration": 1.9331394882986133,
+        "modified_duration": 1.8893998810522536,
+        "convexity": 4.5638043983320316,
+        "dv01": 0.018893998810522533
+      },
+      {
+        "tenor": "5Y",
+        "years": 5.0,
+        "yield": 0.047400000000000005,
+        "yield_pct": 4.74,
+        "coupon_pct": 4.74,
+        "price": 99.99999999999996,
+        "macaulay_duration": 4.509987030560334,
+        "modified_duration": 4.405574905304614,
+        "convexity": 22.838816385731054,
+        "dv01": 0.04405574905304612
+      },
+      {
+        "tenor": "10Y",
+        "years": 10.0,
+        "yield": 0.0492,
+        "yield_pct": 4.92,
+        "coupon_pct": 4.92,
+        "price": 100.00000000000007,
+        "macaulay_duration": 8.016586892507586,
+        "modified_duration": 7.824113695595927,
+        "convexity": 74.03447670004003,
+        "dv01": 0.07824113695595933
+      },
+      {
+        "tenor": "30Y",
+        "years": 30.0,
+        "yield": 0.0529,
+        "yield_pct": 5.29,
+        "coupon_pct": 5.29,
+        "price": 99.99999999999974,
+        "macaulay_duration": 15.352107162300667,
+        "modified_duration": 14.956507537922613,
+        "convexity": 334.74098285541703,
+        "dv01": 0.14956507537922575
+      }
+    ],
+    "scenarios": [
+      {
+        "tenor": "2Y",
+        "shock_bp": -200.0,
+        "full_pct": 3.8718805045216076,
+        "duration_pct": 3.7787997621045073,
+        "duration_convexity_pct": 3.870075850071148,
+        "duration_error_pp": -0.09308074241710029,
+        "duration_convexity_error_pp": -0.0018046544504595197
+      },
+      {
+        "tenor": "2Y",
+        "shock_bp": -100.0,
+        "full_pct": 1.9124425500841147,
+        "duration_pct": 1.8893998810522536,
+        "duration_convexity_pct": 1.9122189030439138,
+        "duration_error_pp": -0.02304266903186103,
+        "duration_convexity_error_pp": -0.00022364704020083614
+      },
+      {
+        "tenor": "2Y",
+        "shock_bp": -50.0,
+        "full_pct": 0.9504325323992369,
+        "duration_pct": 0.9446999405261268,
+        "duration_convexity_pct": 0.9504046960240419,
+        "duration_error_pp": -0.005732591873110038,
+        "duration_convexity_error_pp": -2.7836375194989493e-05
+      },
+      {
+        "tenor": "2Y",
+        "shock_bp": -25.0,
+        "full_pct": 0.47377963125916356,
+        "duration_pct": 0.4723499702630634,
+        "duration_convexity_pct": 0.4737761591375422,
+        "duration_error_pp": -0.001429660996100146,
+        "duration_convexity_error_pp": -3.4721216213839945e-06
+      },
+      {
+        "tenor": "2Y",
+        "shock_bp": 25.0,
+        "full_pct": -0.47092723874625486,
+        "duration_pct": -0.4723499702630634,
+        "duration_convexity_pct": -0.47092378138858465,
+        "duration_error_pp": -0.0014227315168085508,
+        "duration_convexity_error_pp": 3.4573576702112696e-06
+      },
+      {
+        "tenor": "2Y",
+        "shock_bp": 50.0,
+        "full_pct": -0.9390227851783117,
+        "duration_pct": -0.9446999405261268,
+        "duration_convexity_pct": -0.9389951850282118,
+        "duration_error_pp": -0.005677155347815099,
+        "duration_convexity_error_pp": 2.7600150099948983e-05
+      },
+      {
+        "tenor": "2Y",
+        "shock_bp": 100.0,
+        "full_pct": -1.866800726337492,
+        "duration_pct": -1.8893998810522536,
+        "duration_convexity_pct": -1.8665808590605935,
+        "duration_error_pp": -0.022599154714761704,
+        "duration_convexity_error_pp": 0.00021986727689848884
+      },
+      {
+        "tenor": "2Y",
+        "shock_bp": 200.0,
+        "full_pct": -3.6892678420178515,
+        "duration_pct": -3.7787997621045073,
+        "duration_convexity_pct": -3.6875236741378665,
+        "duration_error_pp": -0.08953192008665578,
+        "duration_convexity_error_pp": 0.0017441678799849925
+      },
+      {
+        "tenor": "5Y",
+        "shock_bp": -200.0,
+        "full_pct": 9.286021466129357,
+        "duration_pct": 8.811149810609228,
+        "duration_convexity_pct": 9.26792613832385,
+        "duration_error_pp": -0.4748716555201291,
+        "duration_convexity_error_pp": -0.01809532780550782
+      },
+      {
+        "tenor": "5Y",
+        "shock_bp": -100.0,
+        "full_pct": 4.521995053080707,
+        "duration_pct": 4.405574905304614,
+        "duration_convexity_pct": 4.519768987233269,
+        "duration_error_pp": -0.11642014777609333,
+        "duration_convexity_error_pp": -0.002226065847438008
+      },
+      {
+        "tenor": "5Y",
+        "shock_bp": -50.0,
+        "full_pct": 2.2316120364451075,
+        "duration_pct": 2.202787452652307,
+        "duration_convexity_pct": 2.231335973134471,
+        "duration_error_pp": -0.028824583792800507,
+        "duration_convexity_error_pp": -0.0002760633106366761
+      },
+      {
+        "tenor": "5Y",
+        "shock_bp": -25.0,
+        "full_pct": 1.108565228576186,
+        "duration_pct": 1.1013937263261535,
+        "duration_convexity_pct": 1.1085308564466945,
+        "duration_error_pp": -0.007171502250032491,
+        "duration_convexity_error_pp": -3.437212949153334e-05
+      },
+      {
+        "tenor": "5Y",
+        "shock_bp": 25.0,
+        "full_pct": -1.0942906995205282,
+        "duration_pct": -1.1013937263261535,
+        "duration_convexity_pct": -1.0942565962056126,
+        "duration_error_pp": -0.0071030268056253565,
+        "duration_convexity_error_pp": 3.4103314915601146e-05
+      },
+      {
+        "tenor": "5Y",
+        "shock_bp": 50.0,
+        "full_pct": -2.1745106943146686,
+        "duration_pct": -2.202787452652307,
+        "duration_convexity_pct": -2.174238932170143,
+        "duration_error_pp": -0.02827675833763843,
+        "duration_convexity_error_pp": 0.0002717621445254004
+      },
+      {
+        "tenor": "5Y",
+        "shock_bp": 100.0,
+        "full_pct": -4.293538062051194,
+        "duration_pct": -4.405574905304614,
+        "duration_convexity_pct": -4.29138082337596,
+        "duration_error_pp": -0.11203684325341978,
+        "duration_convexity_error_pp": 0.0021572386752346517
+      },
+      {
+        "tenor": "5Y",
+        "shock_bp": 200.0,
+        "full_pct": -8.37136703081719,
+        "duration_pct": -8.811149810609228,
+        "duration_convexity_pct": -8.354373482894607,
+        "duration_error_pp": -0.43978277979203817,
+        "duration_convexity_error_pp": 0.01699354792258312
+      },
+      {
+        "tenor": "10Y",
+        "shock_bp": -200.0,
+        "full_pct": 17.23652828353879,
+        "duration_pct": 15.648227391191854,
+        "duration_convexity_pct": 17.128916925192655,
+        "duration_error_pp": -1.5883008923469344,
+        "duration_convexity_error_pp": -0.10761135834613356
+      },
+      {
+        "tenor": "10Y",
+        "shock_bp": -100.0,
+        "full_pct": 8.207363875574814,
+        "duration_pct": 7.824113695595927,
+        "duration_convexity_pct": 8.194286079096127,
+        "duration_error_pp": -0.38325017997888633,
+        "duration_convexity_error_pp": -0.013077796478686565
+      },
+      {
+        "tenor": "10Y",
+        "shock_bp": -50.0,
+        "full_pct": 4.006212124879527,
+        "duration_pct": 3.9120568477979636,
+        "duration_convexity_pct": 4.004599943673013,
+        "duration_error_pp": -0.09415527708156324,
+        "duration_convexity_error_pp": -0.0016121812065135188
+      },
+      {
+        "tenor": "10Y",
+        "shock_bp": -25.0,
+        "full_pct": 1.9793643359266477,
+        "duration_pct": 1.9560284238989818,
+        "duration_convexity_pct": 1.9791641978677443,
+        "duration_error_pp": -0.02333591202766594,
+        "duration_convexity_error_pp": -0.00020013805890339853
+      },
+      {
+        "tenor": "10Y",
+        "shock_bp": 25.0,
+        "full_pct": -1.9330900663264372,
+        "duration_pct": -1.9560284238989818,
+        "duration_convexity_pct": -1.9328926499302193,
+        "duration_error_pp": -0.022938357572544588,
+        "duration_convexity_error_pp": 0.00019741639621795315
+      },
+      {
+        "tenor": "10Y",
+        "shock_bp": 50.0,
+        "full_pct": -3.821082382743568,
+        "duration_pct": -3.9120568477979636,
+        "duration_convexity_pct": -3.8195137519229134,
+        "duration_error_pp": -0.09097446505439555,
+        "duration_convexity_error_pp": 0.0015686308206546151
+      },
+      {
+        "tenor": "10Y",
+        "shock_bp": 100.0,
+        "full_pct": -7.466322060255259,
+        "duration_pct": -7.824113695595927,
+        "duration_convexity_pct": -7.453941312095727,
+        "duration_error_pp": -0.3577916353406678,
+        "duration_convexity_error_pp": 0.01238074815953194
+      },
+      {
+        "tenor": "10Y",
+        "shock_bp": 200.0,
+        "full_pct": -14.26398092801101,
+        "duration_pct": -15.648227391191854,
+        "duration_convexity_pct": -14.167537857191054,
+        "duration_error_pp": -1.384246463180844,
+        "duration_convexity_error_pp": 0.09644307081995684
+      },
+      {
+        "tenor": "30Y",
+        "shock_bp": -200.0,
+        "full_pct": 37.951494369869046,
+        "duration_pct": 29.91301507584523,
+        "duration_convexity_pct": 36.60783473295357,
+        "duration_error_pp": -8.038479294023816,
+        "duration_convexity_error_pp": -1.3436596369154756
+      },
+      {
+        "tenor": "30Y",
+        "shock_bp": -100.0,
+        "full_pct": 16.785993422220336,
+        "duration_pct": 14.956507537922615,
+        "duration_convexity_pct": 16.6302124521997,
+        "duration_error_pp": -1.8294858842977213,
+        "duration_convexity_error_pp": -0.1557809700206363
+      },
+      {
+        "tenor": "30Y",
+        "shock_bp": -50.0,
+        "full_pct": 7.91545855694078,
+        "duration_pct": 7.478253768961308,
+        "duration_convexity_pct": 7.896679997530579,
+        "duration_error_pp": -0.43720478797947226,
+        "duration_convexity_error_pp": -0.018778559410201012
+      },
+      {
+        "tenor": "30Y",
+        "shock_bp": -25.0,
+        "full_pct": 3.846039292308512,
+        "duration_pct": 3.739126884480654,
+        "duration_convexity_pct": 3.8437334416229714,
+        "duration_error_pp": -0.10691240782785805,
+        "duration_convexity_error_pp": -0.002305850685540456
+      },
+      {
+        "tenor": "30Y",
+        "shock_bp": 25.0,
+        "full_pct": -3.636746822629955,
+        "duration_pct": -3.739126884480654,
+        "duration_convexity_pct": -3.6345203273383357,
+        "duration_error_pp": -0.10238006185069892,
+        "duration_convexity_error_pp": 0.0022264952916191127
+      },
+      {
+        "tenor": "30Y",
+        "shock_bp": 50.0,
+        "full_pct": -7.077335706897159,
+        "duration_pct": -7.478253768961308,
+        "duration_convexity_pct": -7.059827540392035,
+        "duration_error_pp": -0.4009180620641484,
+        "duration_convexity_error_pp": 0.017508166505123768
+      },
+      {
+        "tenor": "30Y",
+        "shock_bp": 100.0,
+        "full_pct": -13.418212008837616,
+        "duration_pct": -14.956507537922615,
+        "duration_convexity_pct": -13.282802623645528,
+        "duration_error_pp": -1.5382955290849996,
+        "duration_convexity_error_pp": 0.13540938519208723
+      },
+      {
+        "tenor": "30Y",
+        "shock_bp": 200.0,
+        "full_pct": -24.23299127319296,
+        "duration_pct": -29.91301507584523,
+        "duration_convexity_pct": -23.218195418736887,
+        "duration_error_pp": -5.6800238026522685,
+        "duration_convexity_error_pp": 1.0147958544560751
+      }
+    ]
+  },
+  "interpretation": {
+    "rule_version": "par_bond-findings.v1",
+    "rule_fingerprint": "e3b18941c97ade57",
+    "params": {
+      "error_bands_pp": [
+        0.1,
+        1.0
+      ]
+    },
+    "items": [
+      {
+        "id": "focus_bond",
+        "text": "以 2026-11-23 的票面收益率构造的 10Y 假设平价债券（票息 4.92%）修正久期 7.82 年、凸性 74.0；收益率上升 100 bp 时，完整重新定价的价格变化为 −7.47%，只用久期估计为 −7.82%（误差 −0.36 个百分点），加入凸性后误差为 +0.012 个百分点。",
+        "evidence": {
+          "results.bonds.10Y.modified_duration": 7.824113695595927,
+          "results.bonds.10Y.convexity": 74.03447670004003,
+          "results.scenarios.10Y[+100].full_pct": -7.466322060255259,
+          "results.scenarios.10Y[+100].duration_convexity_error_pp": 0.01238074815953194
+        }
+      },
+      {
+        "id": "durations",
+        "text": "各期限修正久期：2Y 1.89 年，5Y 4.41 年，10Y 7.82 年，30Y 14.96 年；期限越长，久期越大。",
+        "evidence": {
+          "results.bonds.2Y.modified_duration": 1.8893998810522536,
+          "results.bonds.5Y.modified_duration": 4.405574905304614,
+          "results.bonds.10Y.modified_duration": 7.824113695595927,
+          "results.bonds.30Y.modified_duration": 14.956507537922613
+        }
+      },
+      {
+        "id": "duration_understates",
+        "text": "只用久期时，所有期限与冲击下的估计都低于完整重新定价的价格（收益率下降时少算涨幅、上升时多算跌幅），与凸性为正一致。",
+        "evidence": {
+          "results.scenarios[*].duration_error_pp": -0.0014227315168085508
+        }
+      },
+      {
+        "id": "approximation_error",
+        "text": "在最大 ±200 bp 的冲击下，久期 + 凸性近似的最大绝对误差：2Y 0.002，5Y 0.018，10Y 0.108，30Y 1.344 个百分点；期限越长，误差越大。",
+        "evidence": {
+          "results.worst_duration_convexity_error.2Y": 0.0018046544504595197,
+          "results.worst_duration_convexity_error.5Y": 0.01809532780550782,
+          "results.worst_duration_convexity_error.10Y": 0.10761135834613356,
+          "results.worst_duration_convexity_error.30Y": 1.3436596369154756
+        }
+      }
+    ],
+    "state": {
+      "久期 + 凸性近似的最大误差": "≥ 1.0 个百分点",
+      "只用久期的误差方向": "全部低估价格"
+    }
+  },
+  "run_id": "ust_par_bond_rate_risk-20261124T070604Z-dc0a78ac",
+  "generated_at": "2026-11-24T07:06:04+00:00",
+  "result_hash": "b8fdeaec037292dc37c95560760fa0e0e517d447d6e9023b31cdf17198d30167"
+}
