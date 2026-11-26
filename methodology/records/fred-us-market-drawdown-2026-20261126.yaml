@@ -1,0 +1,151 @@
+# 方法卡 market-drawdown-layer-diagnosis 的复现：2026 年 10–11 月这一轮行情（E5）。
+# 只写步骤编号和执行结果，不含方法卡正文和视频内容。数值由 scripts/market_drawdown_replay.py 计算，
+# 汇总值见 market-drawdown-replay-metrics.json 的 E5。
+id: fred-us-market-drawdown-2026-20261126
+record_type: application
+status: draft
+
+nature: >-
+  复现，不是独立检验：这一段行情正是方法卡来源视频分析的同一段，来源偏差最强。诊断与作者一致只说明照卡能走到同样的结论，
+  不说明方法有效。独立的部分是同日提交的前瞻登记（methodology/playbooks/market-drawdown-us-20261126.yaml）。
+
+expected:
+  event: E5 2026 年 10 月见顶至 11-25（11-26 感恩节休市）
+  window: {peak: "2026-10-06", last_point: "2026-11-25"}
+  peak_note: "标普 500 收盘高点 2026-10-06（FRED SP500）；台股、韩股的见顶日没有取到数据，未核对。"
+  author_judgments_to_compare:
+    - {id: J1, text: "起点在第 1 层"}
+    - {id: J2, text: "美国主要在第 1 层"}
+    - {id: J3, text: "台股、韩股叠加了第 2、3 层"}
+    - {id: J4, text: "11-16 至 11-20 是抢现金"}
+    - {id: J5, text: "第 4 层整体未到，入口冒烟"}
+  author_judgments_note: "以上是发起会话转述的作者判断，只按“作者这样说”对照，不代表已被证实。作者引用的具体数字不写进本仓库，与官方数据的对照见下文 author_numbers_check，只写一致与否和官方值。"
+
+source:
+  type: official
+  title: "FRED / ALFRED 序列；用户手动下载、只在本机的黄金（World Gold Council）、ETF 每股净值（发行商）、FINRA 保证金债务；ICE 高收益债利差（FRED，只在本机）"
+  locator: "scripts/market_drawdown_replay.py；methodology/records/market-drawdown-replay-metrics.json"
+  outcome_known: false
+
+extraction:
+  extracted_on: "2026-11-26"
+  method: ai_assisted
+  tool: "Claude Code（Opus 5.5），investment-research-os 会话"
+  review: "pending：等用户复核"
+  quality_notes: "层级判定是执行者按卡的步骤作出的推导（ai_inference）。"
+
+point_in_time:
+  rule: "同 E1–E4：日度收盘值取观测日 ≤ 时点；NFCI 及分项、STLFSI4、美元广义指数和三种汇率取 ALFRED 当日版本；保证金债务按月末后 31 天取已发布月份（只能用到 2026-09）。"
+  data_end: "FRED 的标普 500、利率、VIX、利差在 11-25 当天只更新到 11-24；纳斯达克 100、比特币、黄金、SMH、HYG 到 11-25；SPY、XLU、XLP、XLV、XLF、XLK 净值到 11-24（发行商文件未更新，没有用收盘价代填）。周度美元指数与汇率到 11-20。"
+  splits: "XLU、XLK 每股净值在 2025-12-05 有 2:1 拆分，拆分前的值除以 2 后再算，避免把拆分当成下跌。"
+  nav_caveat: "ETF 用每股净值，不是成交价；债券 ETF 的市价折价看不到，HYG 净值跌幅不等于市价跌幅。"
+  ice: "ICE 高收益债利差（BAMLH0A0HYM2、CCC 级 BAMLH0A3HYC）只在 FRED 3 年窗口内取，许可受限，数值只在本机，这里只写定性结论。"
+
+markets:
+  US: "可诊断"
+  TW: "只能看新台币汇率：外资买卖超、融资余额和加权指数没有取数约定，用户未答复取数方式，记为缺口"
+  KR: "只能看韩元汇率：KRX 的外资和散户买卖超、KOSPI 同上，记为缺口"
+
+method_output:
+  as_of_points:
+    - as_of: "2026-11-06"
+      label: 见顶后一个月（11-05 急跌后）
+      layer_1:
+        earnings_expectation: "缺口（一致预期修正付费）。主跌板块是科技和半导体：SMH 净值自见顶 -26.6%，XLK -18.4%。"
+        rates: "10 年期名义 4.86%，自见顶 -41bp；实质 2.63%，-28bp。见顶后一个月利率在降。"
+        accelerators: [{event: "NVIDIA 首席执行官离任（8-K）", first_report: "2026-11-12", vs_peak: after}]
+        ledger: {removed: [], unchanged: [], added: []}
+      how_it_falls: "有涨有跌：XLP、XLV 自见顶 +10%，比 SPY 好 16 个百分点；SMH 下跌日防御三只平均上涨。第 1 层。"
+      everything_falls_split: "利率在降，黄金自见顶 -2.6%，比特币 -11%，美元 +0.6%：不是一起跌。"
+      flows: {US: "保证金债务只到 2026-09（见顶前），看不到这次下跌", TW: "缺口", KR: "缺口"}
+      fx: {TWD: "自见顶贬 2.5%（到 10-30）", KRW: "自见顶升 0.3%"}
+      credit: {aggregate: "Baa 利差 1.56%（1986 年以来第 10 百分位）；HY 利差扩大，仍低于 2024 年以来高点（ICE，本机）", local: ["HYG 净值自见顶 -0.1%"]}
+      layer_now: {US: [1], TW: [], KR: []}
+      note: "VIX/VIX3M 1.04，11-05 急跌后短暂倒挂（卡外指标）。"
+    - as_of: "2026-11-12"
+      label: NVIDIA 离任公告当日
+      layer_1:
+        rates: "10 年期名义 5.10%，近 1 周 +26bp；实质 2.86%，近 1 周 +26bp。利率回升。"
+      how_it_falls: "防御 ETF 自见顶仍领先 SPY 9–15 个百分点。第 1 层。"
+      everything_falls_split: "利率一周 +26bp，黄金一周 -5.9%，比特币一周 -7.0%，股市反弹：利率上升带来的一起重估，第 1 层。"
+      flows: {US: "缺口（保证金债务只到 2026-09）", TW: "缺口", KR: "缺口"}
+      credit: {aggregate: "Baa 利差 1.48%（第 4 百分位）", local: []}
+      layer_now: {US: [1], TW: [], KR: []}
+      note: "VIX/VIX3M 0.93，正常升水。"
+    - as_of: "2026-11-20"
+      label: 急跌（周五）
+      layer_1:
+        rates: "10 年期名义 4.92%，近 1 周 -23bp；实质 2.77%，-14bp。利率在降。"
+      how_it_falls: "SPY 一周 -8.6%，XLV -6.2%、XLU -3.1%、XLP -2.0%，一周都跌但跌得少；SMH 下跌日防御三只平均几乎不跌（比值 -0.02），自见顶仍领先 SPY 15–22 个百分点。按第 2 步仍是撑住。"
+      everything_falls_split: "利率在降、债券在涨，黄金一周 -8.3%、比特币一周 -13.7%：利率解释不了，照第 3 步字面是第 3 层的抢现金。美元广义指数到 11-13 一周 +0.6%。"
+      flows: {US: "缺口", TW: "缺口", KR: "缺口"}
+      fx: {TWD: "自见顶贬 3.4%（到 11-13）", KRW: "持平"}
+      credit: {aggregate: "Baa 利差 1.61%（第 14 百分位）；HY 利差仍低于 2024 年以来高点，CCC 级利差到 2024 年以来最高（ICE，本机）", local: ["HYG 净值一周 -0.9%"]}
+      layer_now: {US: [1, 3], TW: [], KR: []}
+      note: "第 2 步（防御股撑住，第 1 层）和第 3 步（黄金比特币在利率下降时大跌，第 3 层）给出不同的层；卡没说两步冲突时以哪步为准。VIX 35.89、VIX/VIX3M 1.16 倒挂（卡外）。"
+    - as_of: "2026-11-23"
+      label: 反弹日（NVIDIA 回任 8-K 开盘前公告）
+      how_it_falls: "SPY 单日 +4.7%，SMH +15.2%。"
+      everything_falls_split: "黄金单日 +2.7%，但一周仍 -5.4%。"
+      credit: {aggregate: "HY、CCC 级利差比 11-20 略收窄（ICE，本机）；CDS 缺口", local: []}
+      layer_now: {US: [1, 3], TW: [], KR: []}
+      note: "卡第 7 步：下跌途中的大涨不是止跌信号。卡的推翻条件“股价大涨而 CDS 不降”CDS 是缺口，用 HY 利差替代：略降，信用市场没有明显不买单。"
+    - as_of: "2026-11-25"
+      label: 回落（截至可得数据）
+      layer_1:
+        rates: "10 年期名义 4.91%（11-24）。联邦基金目标区间 3.75%–4.00%（DFEDTARL/DFEDTARU）。12 月加息的市场概率没有公开免费数据，缺口。"
+      how_it_falls: "11-24：SMH -7.1%，纳斯达克综合 -1.5%，道琼斯 +0.85%，XLV +2.9%，XLP +1.7%：主跌板块跌时道琼和防御股撑住，第 1 层的跌法。"
+      everything_falls_split: "黄金 11-25 单日 -4.3%、一周 -7.8%、自见顶 -16.6%，股市再跌时黄金仍跟跌：卡的“抢现金结束”信号没有出现。"
+      flows: {US: "缺口（保证金债务只到 2026-09，比 8 月 +1.8%）", TW: "缺口", KR: "缺口"}
+      fx: {TWD: "自见顶贬 3.7%（到 11-20），未止贬", KRW: "自见顶持平（+0.3%）"}
+      credit: {aggregate: "Baa 利差 1.61%（第 14 百分位）；HY 利差高于见顶时但低于 2024 年以来高点，CCC 级利差又创 2024 年以来新高（ICE，本机）", local: ["HYG 净值自见顶 -1.1%", "CDS、资料中心 ABS 利差：付费数据，缺口"]}
+      structure: {concentration: "缺口", leverage: "NFCI -0.44（到 11-20），杠杆分项 0.00", fx: "新台币持续贬值；韩元没有"}
+      layer_now: {US: [1, 3], TW: [], KR: []}
+      bottoms: {forced_selling: "未到：黄金仍跟着股市跌", valuation: "未到：利率从 5.15% 回落到 4.91%，但加息预期没有数据；获利变数（资本开支）没有新信息"}
+      watchlist: "见前瞻登记"
+
+  author_comparison:
+    - {id: J1, result: partial, note: "见顶后一个月利率在降（-41bp），起点在获利变数（科技、半导体领跌、防御股上涨）还说得通；“利率上升是起点”与 10-06 至 11-05 的 DGS10 不符，11-05 至 11-13 才回升 31bp"}
+    - {id: J2, result: consistent, note: "第 2 步四个时点都判第 1 层的跌法"}
+    - {id: J3, result: not_checkable, note: "台韩只有汇率：新台币贬 3.7%，韩元持平；外资、融资、指数都是缺口"}
+    - {id: J4, result: consistent, note: "11-16 至 11-20 利率降、黄金比特币大跌，照第 3 步字面就是抢现金；但同期防御股撑住，第 2 步不支持"}
+    - {id: J5, result: consistent, note: "整体利差在历史低位到中段；CCC 级利差到 2024 年以来最高，可读作入口冒烟（只在本机核对）"}
+
+  author_numbers_check:
+    note: "作者的数字不在此列出，只写对照结论和官方值（日期对齐到作者说的日子）。"
+    items:
+      - {item: "标普 500 自 10 月高点到 11-20 的跌幅", official: "FRED SP500 -11.62%", result: consistent}
+      - {item: "10 年期名义利率 11 月中的高点", official: "DGS10 11 月最高收盘 5.15%（11-13）", result: "不一致（作者的数比官方收盘高，可能是盘中值）"}
+      - {item: "10 年期名义利率 11-16 至 11-20 的起止", official: "DGS10 11-16 5.12%，11-20 4.92%", result: "终点一致，起点不一致（相差 2bp）"}
+      - {item: "10 年期实质利率区间", official: "DFII10 11 月 2.60%–2.92%", result: consistent}
+      - {item: "高收益债利差", official: "ICE 值只在本机", result: "与 11-18 的值一致；按视频发布前最后可得日（11-24）不一致，作者用的是几天前的数"}
+      - {item: "高收益债利差的 2020-03、2008 年对照值", official: "超出 FRED 的 3 年窗口", result: not_checkable}
+      - {item: "11-16 当周黄金跌幅", official: "World Gold Council 11-13 至 11-20 -8.3%", result: "不一致（作者的跌幅更大，可能是期货或盘中）"}
+      - {item: "比特币低点", official: "Coinbase 日度最低收盘在 11-20", result: "不可核（作者说的可能是盘中低点，FRED 只有日收盘）"}
+      - {item: "美元在 19 个月高点", official: "美元广义指数 11-20 为 2025-04-15 以来最高", result: "一致（作者可能指另一种美元指数）"}
+      - {item: "11-24 半导体、纳斯达克、道琼、医疗、必需消费的单日涨跌", official: "SMH -7.1%（作者用的是费城半导体指数，不同指数）；纳斯达克综合 -1.48%；道琼 +0.85%；XLV +2.93%；XLP +1.66%", result: "纳斯达克、道琼、医疗、必需消费一致；半导体指数不同，不可直接比"}
+      - {item: "联邦基金目标区间", official: "3.75%–4.00%", result: consistent}
+
+  g_issues:
+    G28: {topic: "第 3 层怎样认", result: "变好", note: "这次利率在降，照第 3 步字面就判得出抢现金，不用卡外推断；但第 2 步同期判第 1 层，两步冲突时以哪步为准卡没写（新问题）"}
+    G29: {topic: "防御股的量法", result: "照旧", note: "这次三种量法（累计、SPY 下跌日、SMH 下跌日）都说撑住，结论一致，没有暴露分歧；分歧在 E1 才出现，问题仍在"}
+    G30: {topic: "第 2 层的高频指标", result: "照旧", note: "保证金债务只到 2026-09；台股融资、外资没有取到。美股第 2 层仍没有可用的高频指标"}
+    G31: {topic: "起点在哪一层", result: "照旧", note: "见顶后一个月利率在降，起点只能落在获利变数；获利变数没有数据，起点是推断"}
+
+nvda_event_check: "待 NVDA 日度价格文件（用户补充中），见下一节"
+
+execution:
+  steps: [1, 2, 3, 4, 5, 6, 7, 8]
+  reached: "美国八步都有输出：第 1 层叠加第 3 层，第 4 层未到、入口冒烟；台韩只到汇率"
+  first_guess: "第 2、3 步冲突：11-20 防御股撑住（第 1 层的跌法），同时利率下降而黄金比特币大跌（第 3 层的抢现金），卡没说两步给出不同层时以哪步为准"
+  consistent_with_expected: "partial：J2、J4、J5 一致，J1 部分一致，J3 不可核"
+  data_gaps:
+    - "第 1 步：一致预期盈利修正、加息概率（付费或无公开免费数据）"
+    - "第 4 步：台股外资买卖超、融资余额，韩国外资和散户买卖超（未取得取数约定）；美国保证金债务滞后"
+    - "第 5 步：CDS、资料中心 ABS 利差（付费）；ICE 利差只在本机"
+    - "第 6 步：台股、韩股指数与集中度"
+  substitutes:
+    - "主跌板块 → SMH、XLK 每股净值"
+    - "CDS → ICE HY、CCC 级利差（本机）与 HYG 净值"
+    - "强制交易 → VIX / VIX3M（卡外）"
+  review: pending

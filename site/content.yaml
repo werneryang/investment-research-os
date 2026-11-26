@@ -910,8 +910,8 @@ studies:
       topic: timeline
       target: event-timeline
       scope:
-        zh: NVIDIA 首席执行官离任：申报原文写明的事实、披露时间与原文未提及的事项
-        en: 'NVIDIA chief executive resignation: facts stated in filings, filing times and items the filings do not mention'
+        zh: NVIDIA 首席执行官离任与回任：申报原文写明的事实、披露时间与原文未提及的事项
+        en: 'NVIDIA chief executive resignation and reinstatement: facts stated in filings, filing times and items the filings do not mention'
       primary: true
     entity_ids:
     - co_nvidia

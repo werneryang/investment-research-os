@@ -57,6 +57,9 @@ SERIES: dict[str, tuple[str, int, str | None]] = {
     "SP500": ("daily", 0, None),
     "DTWEXBGS": ("vintaged", 7, "2019-02-04"),
     "DEXJPUS": ("vintaged", 7, "2014-03-18"),
+    "DEXTAUS": ("vintaged", 7, "2014-03-18"),
+    "DEXKOUS": ("vintaged", 7, "2014-03-18"),
+    "NASDAQ100": ("daily", 0, None),
     "NFCI": ("vintaged", 5, "2011-05-25"),
     "NFCILEVERAGE": ("vintaged", 5, "2011-05-25"),
     "NFCICREDIT": ("vintaged", 5, "2011-05-25"),
@@ -73,6 +76,10 @@ EVENTS: list[dict[str, Any]] = [
      "index": "SP500", "obs": ["2020-03-09", "2020-03-18", "2020-03-23"]},
     {"id": "E4", "name": "2024 年 8 月日元套息平仓", "peak": "2024-07-10", "trough": "2024-08-19",
      "index": "SP500", "obs": ["2024-08-02", "2024-08-05", "2024-08-19"]},
+    # 复现：卡的来源视频分析的同一段行情（来源偏差最强），不是独立检验。11-26 感恩节休市，最后时点用 11-25。
+    {"id": "E5", "name": "2026 年 10–11 月（复现）", "peak": "2026-10-06", "trough": "2026-11-25",
+     "index": "SP500", "obs": ["2026-11-06", "2026-11-12", "2026-11-20", "2026-11-23", "2026-11-25"],
+     "ice_local": True},
 ]
 
 # 最近观测距截止日超过这么多天，视为当时没有可用值（如 TEDRATE 2022-01 停更）
@@ -82,13 +89,20 @@ STALE_DAYS = 21
 FULL_HISTORY_START = "1986-01-01"
 FRENCH_INDUSTRIES = ["Utils", "NoDur", "Hlth", "Money"]
 # 有版权、只在本机使用的价格序列：公开输出只留百分比变化，不留水平值
-LEVELS_LOCAL_ONLY = {"SP500", "NASDAQCOM", "CBBTCUSD"}
+LEVELS_LOCAL_ONLY = {"SP500", "NASDAQCOM", "NASDAQ100", "CBBTCUSD"}
+# ICE 高收益债利差：只在 3 年窗口内的复现（E5）取，数值只写本机文件，不进公开输出
+ICE_SERIES = ["BAMLH0A0HYM2", "BAMLH0A3HYC"]
+ICE_LOCAL = CACHE / "ice_local_E5.json"
 FRENCH_LOCAL = CACHE / "french_monthly_post_hoc.json"  # French 不再分发原始收益，只写本机
 
 # 用户手动下载、只在本机的补充数据（2026-11-26 下载；不入库，公开输出只留百分比与比值）
 MANUAL = CACHE / "manual"
 ETF_DEFENSIVE = ["XLU", "XLP", "XLV"]
-ETF_ALL = ["SPY", *ETF_DEFENSIVE, "XLF", "HYG"]
+ETF_ALL = ["SPY", *ETF_DEFENSIVE, "XLF", "HYG", "XLK", "SMH"]
+# 每股净值的拆分断点（用户提供）：拆分日之前的净值除以比例，换成拆分后的口径
+SPLITS = {"XLU": [("2025-12-05", 2.0)], "XLK": [("2025-12-05", 2.0)]}
+NVDA_FILE = MANUAL / "stocks" / "NVDA.csv"
+NVDA_EVENTS = {"resignation": "2026-11-12", "reinstatement": "2026-11-23"}  # 公告均在开盘前，第 0 天为公告当天
 DOWN_DAY_WINDOW = 20      # 最近 20 个交易日里看标普下跌日（执行者自定，卡没有给窗口）
 FINRA_LAG_DAYS = 31       # 月度保证金债务：月末后 31 天才算已发布（保守；FINRA 一般在次月第三周发布）
 
@@ -207,6 +221,13 @@ def load_csv(path: Path) -> list[tuple[str, float]]:
         return sorted((row[0], float(row[1])) for row in r if row and row[1].strip())
 
 
+def apply_splits(rows: list[tuple[str, float]], splits: list[tuple[str, float]]) -> list[tuple[str, float]]:
+    out = rows
+    for day, ratio in splits:
+        out = [(d, v / ratio if d < day else v) for d, v in out]
+    return out
+
+
 def load_manual() -> dict[str, Any]:
     out: dict[str, Any] = {}
     g = MANUAL / "gold_daily.csv"
@@ -215,7 +236,7 @@ def load_manual() -> dict[str, Any]:
     for t in ETF_ALL:
         f = MANUAL / "etf_daily" / f"{t}.csv"
         if f.exists():
-            out[t] = load_csv(f)
+            out[t] = apply_splits(load_csv(f), SPLITS.get(t, []))
     x = MANUAL / "finra_margin_statistics.xlsx"
     if x.exists():
         import pandas as pd
@@ -253,7 +274,12 @@ def manual_point(man: dict[str, Any], peak: str, d: str) -> dict[str, Any]:
             common = set.intersection(*(set(others[k]) for k in ETF_DEFENSIVE))
             others["DEFENSIVE_AVG"] = {x: sum(others[k][x] for k in ETF_DEFENSIVE) / 3 for x in common}
         res["spy_down_days_last20"] = down_day_stats(base, others, d)
-        for k in ["XLU", "XLP", "XLV", "XLF", "HYG", "GOLD"]:
+        if man.get("SMH") and last_on_or_before(man["SMH"], d) and not is_stale(last_on_or_before(man["SMH"], d)[0], d):
+            # 卡的第 2 步：主跌板块（半导体）跌的日子，大盘和防御股撑不撑得住
+            smh = daily_returns(man["SMH"])
+            res["smh_down_days_last20"] = down_day_stats(
+                smh, {k: v for k, v in {**others, "SPY": base}.items() if k != "XLF"}, d)
+        for k in ["XLU", "XLP", "XLV", "XLF", "HYG", "GOLD", "XLK", "SMH"]:
             if not res.get(k, {}).get("missing") and not res["SPY"].get("missing"):
                 res[k]["rel_to_spy_since_peak_pp"] = diff(res["SPY"]["pct_since_peak"], res[k]["pct_since_peak"])
                 res[k]["rel_to_spy_4w_pp"] = diff(res["SPY"]["pct_4w"], res[k]["pct_4w"])
@@ -276,6 +302,37 @@ def manual_point(man: dict[str, Any], peak: str, d: str) -> dict[str, Any]:
                 res["MARGIN_DEBIT"]["spy_nav_pct_same_months"] = pct_change(a[1] if a else None, b[1] if b else None)
                 res["MARGIN_DEBIT"]["spy_nav_pct_3m_same_months"] = pct_change(a3[1] if a3 else None, b[1] if b else None)
     return res
+
+
+def window_return(rows: list[tuple[str, float]], day0: str, start: int, end: int) -> float | None:
+    """第 start 到第 end 个交易日的累计收益（第 0 天为 day0，起点取第 start−1 天收盘）。"""
+    days = [d for d, _ in rows]
+    if day0 not in days:
+        return None
+    i = days.index(day0)
+    a, b = i + start - 1, i + end
+    if a < 0 or b >= len(rows):
+        return None
+    return round((rows[b][1] / rows[a][1] - 1) * 100, 2)
+
+
+def nvda_windows(man: dict[str, Any]) -> dict[str, Any]:
+    if not NVDA_FILE.exists():
+        return {"missing": True}
+    nv = load_csv(NVDA_FILE)
+    out: dict[str, Any] = {}
+    for name, d0 in NVDA_EVENTS.items():
+        w: dict[str, Any] = {"day0": d0}
+        for lab, (a, b) in {"d0": (0, 0), "d0_d1": (0, 1), "dm1_d1": (-1, 1)}.items():
+            r = {"NVDA": window_return(nv, d0, a, b)}
+            for bench in ["SPY", "SMH"]:
+                if man.get(bench):
+                    r[bench] = window_return(man[bench], d0, a, b)
+                    if r["NVDA"] is not None and r[bench] is not None:
+                        r[f"NVDA_minus_{bench}"] = round(r["NVDA"] - r[bench], 2)
+            w[lab] = r
+        out[name] = w
+    return out
 
 
 # ---------- 取数 ----------
@@ -315,8 +372,9 @@ def fetch_json(endpoint: str, params: dict[str, str], cache_file: Path, offline:
     return payload
 
 
-def series_rows(series: str, realtime: str | None, start: str, end: str, offline: bool) -> list[tuple[str, float]]:
-    assert series not in EXCLUDED
+def series_rows(series: str, realtime: str | None, start: str, end: str, offline: bool,
+                allow_ice: bool = False) -> list[tuple[str, float]]:
+    assert allow_ice or series not in EXCLUDED
     params = {"series_id": series, "observation_start": start, "observation_end": end}
     tag = "current"
     if realtime:
@@ -373,6 +431,7 @@ def compute(offline: bool) -> tuple[dict[str, Any], dict[str, Any]]:
         "events": [],
     }
     french_out: dict[str, Any] = {}
+    ice_out: dict[str, Any] = {}
     man = load_manual()
     result["manual_inputs"] = {k: ("present" if man.get(k) else "missing") for k in ["GOLD", *ETF_ALL, "MARGIN"]}
     for ev in EVENTS:
@@ -381,6 +440,9 @@ def compute(offline: bool) -> tuple[dict[str, Any], dict[str, Any]]:
         current: dict[str, list[tuple[str, float]]] = {}
         for s, (kind, _lag, _fv) in SERIES.items():
             start = FULL_HISTORY_START if s in ("BAA10Y", "VIXCLS", "NFCI", "TEDRATE") else win_start
+            if s == "NASDAQ100" and ev["id"] != "E5":
+                current[s] = []
+                continue
             try:
                 current[s] = series_rows(s, None, start, last_obs, offline)
             except Exception as e:  # noqa: BLE001 — 记缺口，不中断
@@ -436,6 +498,15 @@ def compute(offline: bool) -> tuple[dict[str, Any], dict[str, Any]]:
                 p["index_drawdown_from_peak_pct"] = max_drawdown_to(current[idx], ev["peak"], d)
             if man:
                 p["manual"] = manual_point(man, ev["peak"], d)
+            if ev.get("ice_local"):
+                for s_ in ICE_SERIES:
+                    rows = series_rows(s_, None, "2024-01-01", last_obs, offline, allow_ice=True)
+                    now = last_on_or_before(rows, d)
+                    pk = last_on_or_before(rows, ev["peak"])
+                    ice_out.setdefault(ev["id"], {}).setdefault(d, {})[s_] = {
+                        "obs_date": now[0] if now else None, "value": now[1] if now else None,
+                        "at_peak": pk[1] if pk else None,
+                        "max_since_2024": max((v for day, v in rows if day <= d), default=None)}
             points.append(p)
         fr = {}
         if french:
@@ -446,6 +517,10 @@ def compute(offline: bool) -> tuple[dict[str, Any], dict[str, Any]]:
             "index": idx, "index_peak_date": peak_px[0] if peak_px else None, "points": points,
         })
         french_out[ev["id"]] = fr
+    if man:
+        result["nvda_event_windows"] = nvda_windows(man)
+    ICE_LOCAL.parent.mkdir(parents=True, exist_ok=True)
+    ICE_LOCAL.write_text(json.dumps(ice_out, ensure_ascii=False, indent=1) + "\n")
     return result, french_out
 
 
