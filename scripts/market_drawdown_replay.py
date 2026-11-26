@@ -16,7 +16,12 @@
 
 缓存写在 data/drawdown_replay/（不入库）；输出写在 methodology/records/market-drawdown-replay-metrics.json
 （只含每个时点的汇总值，不含原始序列；标普 500、纳斯达克、比特币有版权，只留百分比变化）。
-French 月度对照写在本机 data/drawdown_replay/french_monthly_post_hoc.json。不取 ICE 高收益债利差（BAMLH0A0HYM2 等）。
+French 月度对照写在本机 data/drawdown_replay/french_monthly_post_hoc.json。
+
+补充数据（用户 2026-11-26 手动下载，放在 data/drawdown_replay/manual/，不入库）：World Gold Council
+金价、发行商公布的 ETF 每股净值（SPY、XLU、XLP、XLV、XLF、HYG）、FINRA 保证金债务 Excel。净值不是
+成交价，看不到市价折价；净值在除息日下跌，日收益含分红影响。保证金债务按月末后 31 天才算已发布取月份，
+只有当前版本，标 post_hoc_vintage。公开输出只留百分比与比值，不留水平值。不取 ICE 高收益债利差（BAMLH0A0HYM2 等）。
 """
 
 from __future__ import annotations
@@ -80,6 +85,13 @@ FRENCH_INDUSTRIES = ["Utils", "NoDur", "Hlth", "Money"]
 LEVELS_LOCAL_ONLY = {"SP500", "NASDAQCOM", "CBBTCUSD"}
 FRENCH_LOCAL = CACHE / "french_monthly_post_hoc.json"  # French 不再分发原始收益，只写本机
 
+# 用户手动下载、只在本机的补充数据（2026-11-26 下载；不入库，公开输出只留百分比与比值）
+MANUAL = CACHE / "manual"
+ETF_DEFENSIVE = ["XLU", "XLP", "XLV"]
+ETF_ALL = ["SPY", *ETF_DEFENSIVE, "XLF", "HYG"]
+DOWN_DAY_WINDOW = 20      # 最近 20 个交易日里看标普下跌日（执行者自定，卡没有给窗口）
+FINRA_LAG_DAYS = 31       # 月度保证金债务：月末后 31 天才算已发布（保守；FINRA 一般在次月第三周发布）
+
 
 # ---------- 纯计算（有测试） ----------
 
@@ -140,6 +152,130 @@ def max_drawdown_to(rows: list[tuple[str, float]], peak: str, d: str) -> float |
     if not seg:
         return None
     return round((min(seg) / seg[0] - 1) * 100, 2)
+
+
+def daily_returns(rows: list[tuple[str, float]]) -> dict[str, float]:
+    return {rows[i][0]: rows[i][1] / rows[i - 1][1] - 1 for i in range(1, len(rows))}
+
+
+def down_day_stats(base: dict[str, float], others: dict[str, dict[str, float]], end: str,
+                   n: int = DOWN_DAY_WINDOW) -> dict[str, Any] | None:
+    """最近 n 个 base 交易日中 base 下跌的日子：各序列平均日收益与 base 的比值、同跌比例。"""
+    days = sorted(d for d in base if d <= end)[-n:]
+    down = [d for d in days if base[d] < 0]
+    if not down:
+        return {"window_days": len(days), "down_days": 0}
+    b = sum(base[d] for d in down) / len(down)
+    out: dict[str, Any] = {"window_days": len(days), "down_days": len(down),
+                           "base_mean_pct": round(b * 100, 2)}
+    for name, r in others.items():
+        common = [d for d in down if d in r]
+        if not common:
+            continue
+        m = sum(r[d] for d in common) / len(common)
+        out[name] = {"mean_pct": round(m * 100, 2), "ratio_to_base": round(m / b, 2),
+                     "share_also_down": round(sum(1 for d in common if r[d] < 0) / len(common), 2),
+                     "days": len(common)}
+    return out
+
+
+def month_end(ym: str) -> date:
+    y, m = int(ym[:4]), int(ym[5:7])
+    nxt = date(y + (m == 12), m % 12 + 1, 1)
+    return nxt - timedelta(days=1)
+
+
+def latest_published_month(months: list[str], as_of: str, lag: int = FINRA_LAG_DAYS) -> str | None:
+    ok = [m for m in sorted(months) if month_end(m) + timedelta(days=lag) <= date.fromisoformat(as_of)]
+    return ok[-1] if ok else None
+
+
+def shift_month(ym: str, k: int) -> str:
+    y, m = int(ym[:4]), int(ym[5:7]) + k
+    while m < 1:
+        y, m = y - 1, m + 12
+    while m > 12:
+        y, m = y + 1, m - 12
+    return f"{y:04d}-{m:02d}"
+
+
+def load_csv(path: Path) -> list[tuple[str, float]]:
+    import csv
+    with path.open() as f:
+        r = csv.reader(f)
+        next(r)
+        return sorted((row[0], float(row[1])) for row in r if row and row[1].strip())
+
+
+def load_manual() -> dict[str, Any]:
+    out: dict[str, Any] = {}
+    g = MANUAL / "gold_daily.csv"
+    if g.exists():
+        out["GOLD"] = load_csv(g)
+    for t in ETF_ALL:
+        f = MANUAL / "etf_daily" / f"{t}.csv"
+        if f.exists():
+            out[t] = load_csv(f)
+    x = MANUAL / "finra_margin_statistics.xlsx"
+    if x.exists():
+        import pandas as pd
+        df = pd.read_excel(x, header=0)
+        col = [c for c in df.columns if str(c).startswith("Debit Balances")][0]
+        out["MARGIN"] = {str(r["Year-Month"])[:7]: float(r[col]) for _, r in df.iterrows()
+                         if str(r["Year-Month"])[:4].isdigit()}
+    return out
+
+
+def manual_point(man: dict[str, Any], peak: str, d: str) -> dict[str, Any]:
+    """一个观察时点的补充指标（日度数据取观测日 ≤ d，保证金债务按发布滞后取月份）。"""
+    res: dict[str, Any] = {}
+    for k in ["GOLD", *ETF_ALL]:
+        rows = man.get(k)
+        if not rows:
+            res[k] = {"missing": True}
+            continue
+        now = last_on_or_before(rows, d)
+        if now is None or is_stale(now[0], d):
+            res[k] = {"missing": True}
+            continue
+        pk = last_on_or_before(rows, peak)
+        a20 = last_on_or_before(rows, (date.fromisoformat(now[0]) - timedelta(days=28)).isoformat())
+        a5 = last_on_or_before(rows, (date.fromisoformat(now[0]) - timedelta(days=7)).isoformat())
+        res[k] = {"obs_date": now[0], "basis": "nav" if k in ETF_ALL else "spot",
+                  "pct_since_peak": pct_change(pk[1] if pk else None, now[1]),
+                  "pct_4w": pct_change(a20[1] if a20 else None, now[1]),
+                  "pct_1w": pct_change(a5[1] if a5 else None, now[1]),
+                  "max_drawdown_since_peak_pct": max_drawdown_to(rows, peak, d)}
+    if man.get("SPY"):
+        base = daily_returns(man["SPY"])
+        others = {k: daily_returns(man[k]) for k in [*ETF_DEFENSIVE, "XLF", "GOLD"] if man.get(k)}
+        if all(k in others for k in ETF_DEFENSIVE):
+            common = set.intersection(*(set(others[k]) for k in ETF_DEFENSIVE))
+            others["DEFENSIVE_AVG"] = {x: sum(others[k][x] for k in ETF_DEFENSIVE) / 3 for x in common}
+        res["spy_down_days_last20"] = down_day_stats(base, others, d)
+        for k in ["XLU", "XLP", "XLV", "XLF", "HYG", "GOLD"]:
+            if not res.get(k, {}).get("missing") and not res["SPY"].get("missing"):
+                res[k]["rel_to_spy_since_peak_pp"] = diff(res["SPY"]["pct_since_peak"], res[k]["pct_since_peak"])
+                res[k]["rel_to_spy_4w_pp"] = diff(res["SPY"]["pct_4w"], res[k]["pct_4w"])
+    m = man.get("MARGIN")
+    if m:
+        cur = latest_published_month(list(m), d)
+        pkm = latest_published_month(list(m), peak)
+        if cur:
+            g = lambda k: m.get(shift_month(cur, k))  # noqa: E731
+            res["MARGIN_DEBIT"] = {"month_used": cur, "basis": "post_hoc_vintage",
+                                   "peak_month_used": pkm,
+                                   "pct_1m": pct_change(g(-1), m[cur]), "pct_3m": pct_change(g(-3), m[cur]),
+                                   "pct_12m": pct_change(g(-12), m[cur]),
+                                   "pct_since_peak_month": pct_change(m.get(pkm) if pkm else None, m[cur])}
+            if man.get("SPY") and pkm:
+                spy = man["SPY"]
+                a = last_on_or_before(spy, month_end(pkm).isoformat())
+                b = last_on_or_before(spy, month_end(cur).isoformat())
+                a3 = last_on_or_before(spy, month_end(shift_month(cur, -3)).isoformat())
+                res["MARGIN_DEBIT"]["spy_nav_pct_same_months"] = pct_change(a[1] if a else None, b[1] if b else None)
+                res["MARGIN_DEBIT"]["spy_nav_pct_3m_same_months"] = pct_change(a3[1] if a3 else None, b[1] if b else None)
+    return res
 
 
 # ---------- 取数 ----------
@@ -237,6 +373,8 @@ def compute(offline: bool) -> tuple[dict[str, Any], dict[str, Any]]:
         "events": [],
     }
     french_out: dict[str, Any] = {}
+    man = load_manual()
+    result["manual_inputs"] = {k: ("present" if man.get(k) else "missing") for k in ["GOLD", *ETF_ALL, "MARGIN"]}
     for ev in EVENTS:
         last_obs = ev["obs"][-1]
         win_start = (date.fromisoformat(ev["peak"]) - timedelta(days=370)).isoformat()
@@ -296,6 +434,8 @@ def compute(offline: bool) -> tuple[dict[str, Any], dict[str, Any]]:
                 p["vix_over_vix3m"] = round(vix["value"] / vxv["value"], 3)
             if peak_px:
                 p["index_drawdown_from_peak_pct"] = max_drawdown_to(current[idx], ev["peak"], d)
+            if man:
+                p["manual"] = manual_point(man, ev["peak"], d)
             points.append(p)
         fr = {}
         if french:

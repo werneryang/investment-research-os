@@ -54,3 +54,28 @@ def test_committed_metrics_match_records_and_omit_local_levels():
     e3 = {p["as_of"]: p for p in out["events"][2]["points"]}
     assert e3["2020-03-18"]["values"]["DGS10"]["chg_1w_bp"] == 36.0
     assert e3["2020-03-23"]["values"]["NFCI"]["obs_date"] == "2020-03-13"  # 当日版本只到 3-13 那周
+
+
+def test_down_day_stats_ratio_and_share():
+    base = {"d1": -0.02, "d2": 0.01, "d3": -0.01}
+    other = {"d1": -0.01, "d2": 0.02, "d3": 0.0}
+    out = M["down_day_stats"](base, {"X": other}, "d3", n=20)
+    assert out["down_days"] == 2
+    assert out["X"]["ratio_to_base"] == 0.33  # (-0.005) / (-0.015)
+    assert out["X"]["share_also_down"] == 0.5
+
+
+def test_finra_month_respects_publication_lag():
+    months = ["2020-01", "2020-02", "2020-03"]
+    assert M["latest_published_month"](months, "2020-03-23") == "2020-01"
+    assert M["latest_published_month"](months, "2020-04-01") == "2020-02"
+    assert M["shift_month"]("2020-01", -3) == "2019-10"
+
+
+def test_manual_block_has_no_levels():
+    out = json.loads((ROOT / "methodology/records/market-drawdown-replay-metrics.json").read_text())
+    for e in out["events"]:
+        for p in e["points"]:
+            for k, v in p.get("manual", {}).items():
+                if isinstance(v, dict):
+                    assert "value" not in v and "at_peak" not in v, k
