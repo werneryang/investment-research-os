@@ -1,0 +1,1803 @@
+{
+ "generated_by": "scripts/market_drawdown_replay.py",
+ "method_card": "market-drawdown-layer-diagnosis",
+ "point_in_time_rule": "见脚本文档字符串",
+ "french_versions": {
+  "ind12": "v20261027T234558Z-f4045ef3",
+  "ff3": "v20261027T234555Z-c7e0022f"
+ },
+ "french_monthly_post_hoc": "本机 data/drawdown_replay/french_monthly_post_hoc.json（不入库）",
+ "events": [
+  {
+   "id": "E1",
+   "name": "2022 年加息熊市",
+   "peak": "2022-01-03",
+   "trough": "2022-10-12",
+   "index": "SP500",
+   "index_peak_date": "2022-01-03",
+   "points": [
+    {
+     "as_of": "2022-02-03",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2022-02-03",
+       "value": 1.82,
+       "at_peak": 1.63,
+       "chg_since_peak_bp": 19.0,
+       "chg_4w_bp": 9.0,
+       "chg_1w_bp": 1.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2022-02-03",
+       "value": -0.56,
+       "at_peak": -0.97,
+       "chg_since_peak_bp": 41.0,
+       "chg_4w_bp": 17.0,
+       "chg_1w_bp": 3.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2022-02-03",
+       "value": 1.92,
+       "at_peak": 1.82,
+       "chg_since_peak_bp": 10.0,
+       "chg_4w_bp": 14.0,
+       "chg_1w_bp": 6.0,
+       "pctile_since_1986": 33.7
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2022-02-03",
+       "value": 24.35,
+       "at_peak": 16.6,
+       "chg_since_peak": 7.75,
+       "chg_4w": 4.74,
+       "chg_1w": -6.14,
+       "pctile_since_1986": 80.2
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2022-02-03",
+       "value": 26.67,
+       "at_peak": 21.53,
+       "chg_since_peak": 5.14,
+       "chg_4w": 3.17,
+       "chg_1w": -4.2
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "obs_date": "2022-01-21",
+       "value": 0.09,
+       "at_peak": 0.15,
+       "chg_since_peak_bp": -6.0,
+       "chg_4w_bp": -5.0,
+       "chg_1w_bp": -2.0,
+       "pctile_since_1986": 1.1
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "obs_date": "2022-02-03",
+       "pct_since_peak": -19.95,
+       "pct_4w": -13.67,
+       "pct_1w": 0.27
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2022-02-03",
+       "pct_since_peak": -12.34,
+       "pct_4w": -7.97,
+       "pct_1w": 3.94
+      },
+      "SP500": {
+       "basis": "current",
+       "obs_date": "2022-02-03",
+       "pct_since_peak": -6.65,
+       "pct_4w": -4.66,
+       "pct_1w": 3.49
+      },
+      "DTWEXBGS": {
+       "basis": "alfred",
+       "obs_date": "2022-01-28",
+       "value": 116.0637,
+       "at_peak": 115.4344,
+       "pct_since_peak": 0.55,
+       "pct_4w": 0.65,
+       "pct_1w": 1.23
+      },
+      "DEXJPUS": {
+       "basis": "alfred",
+       "obs_date": "2022-01-28",
+       "value": 115.21,
+       "at_peak": 115.27,
+       "pct_since_peak": -0.05,
+       "pct_4w": 0.03,
+       "pct_1w": 1.31
+      },
+      "NFCI": {
+       "basis": "alfred",
+       "obs_date": "2022-01-28",
+       "value": -0.56722,
+       "at_peak": -0.59814,
+       "chg_since_peak": 0.03,
+       "chg_4w": 0.03,
+       "chg_1w": 0.02,
+       "pctile_since_1986": 42.8
+      },
+      "NFCILEVERAGE": {
+       "basis": "alfred",
+       "obs_date": "2022-01-28",
+       "value": -0.17127,
+       "at_peak": -0.15952,
+       "chg_since_peak": -0.01,
+       "chg_4w": -0.01,
+       "chg_1w": -0.0
+      },
+      "NFCICREDIT": {
+       "basis": "alfred",
+       "obs_date": "2022-01-28",
+       "value": -0.19352,
+       "at_peak": -0.20214,
+       "chg_since_peak": 0.01,
+       "chg_4w": 0.01,
+       "chg_1w": 0.01
+      },
+      "NFCIRISK": {
+       "basis": "alfred",
+       "obs_date": "2022-01-28",
+       "value": -0.58313,
+       "at_peak": -0.62223,
+       "chg_since_peak": 0.04,
+       "chg_4w": 0.04,
+       "chg_1w": 0.01
+      },
+      "STLFSI4": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2022-01-28",
+       "value": -0.1907,
+       "at_peak": -0.7597,
+       "chg_since_peak": 0.57,
+       "chg_4w": 0.57,
+       "chg_1w": 0.19
+      }
+     },
+     "vix_over_vix3m": 0.913,
+     "index_drawdown_from_peak_pct": -9.8
+    },
+    {
+     "as_of": "2022-06-16",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2022-06-16",
+       "value": 3.28,
+       "at_peak": 1.63,
+       "chg_since_peak_bp": 165.0,
+       "chg_4w_bp": 44.0,
+       "chg_1w_bp": 24.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2022-06-16",
+       "value": 0.66,
+       "at_peak": -0.97,
+       "chg_since_peak_bp": 163.0,
+       "chg_4w_bp": 41.0,
+       "chg_1w_bp": 37.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2022-06-16",
+       "value": 2.13,
+       "at_peak": 1.82,
+       "chg_since_peak_bp": 31.0,
+       "chg_4w_bp": -24.0,
+       "chg_1w_bp": 6.0,
+       "pctile_since_1986": 45.7
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2022-06-16",
+       "value": 32.95,
+       "at_peak": 16.6,
+       "chg_since_peak": 16.35,
+       "chg_4w": 3.6,
+       "chg_1w": 6.86,
+       "pctile_since_1986": 94.5
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2022-06-16",
+       "value": 33.49,
+       "at_peak": 21.53,
+       "chg_since_peak": 11.96,
+       "chg_4w": 2.7,
+       "chg_1w": 5.48
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "missing": true,
+       "last_obs": "2022-01-21"
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "obs_date": "2022-06-16",
+       "pct_since_peak": -56.28,
+       "pct_4w": -32.79,
+       "pct_1w": -32.37
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2022-06-16",
+       "pct_since_peak": -32.76,
+       "pct_4w": -6.52,
+       "pct_1w": -9.43
+      },
+      "SP500": {
+       "basis": "current",
+       "obs_date": "2022-06-16",
+       "pct_since_peak": -23.55,
+       "pct_4w": -6.0,
+       "pct_1w": -8.74
+      },
+      "DTWEXBGS": {
+       "basis": "alfred",
+       "obs_date": "2022-06-10",
+       "value": 120.1624,
+       "at_peak": 115.4344,
+       "pct_since_peak": 4.1,
+       "pct_4w": -0.69,
+       "pct_1w": 1.48
+      },
+      "DEXJPUS": {
+       "basis": "alfred",
+       "obs_date": "2022-06-10",
+       "value": 134.19,
+       "at_peak": 115.27,
+       "pct_since_peak": 16.41,
+       "pct_4w": 3.84,
+       "pct_1w": 2.66
+      },
+      "NFCI": {
+       "basis": "alfred",
+       "obs_date": "2022-06-10",
+       "value": -0.26397,
+       "at_peak": -0.5997,
+       "chg_since_peak": 0.34,
+       "chg_4w": -0.02,
+       "chg_1w": -0.02,
+       "pctile_since_1986": 72.5
+      },
+      "NFCILEVERAGE": {
+       "basis": "alfred",
+       "obs_date": "2022-06-10",
+       "value": 0.30175,
+       "at_peak": -0.17795,
+       "chg_since_peak": 0.48,
+       "chg_4w": -0.04,
+       "chg_1w": -0.03
+      },
+      "NFCICREDIT": {
+       "basis": "alfred",
+       "obs_date": "2022-06-10",
+       "value": 0.03131,
+       "at_peak": -0.2043,
+       "chg_since_peak": 0.24,
+       "chg_4w": 0.02,
+       "chg_1w": -0.0
+      },
+      "NFCIRISK": {
+       "basis": "alfred",
+       "obs_date": "2022-06-10",
+       "value": -0.23557,
+       "at_peak": -0.62792,
+       "chg_since_peak": 0.39,
+       "chg_4w": 0.01,
+       "chg_1w": -0.0
+      },
+      "STLFSI4": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2022-06-10",
+       "value": -0.0467,
+       "at_peak": -0.7597,
+       "chg_since_peak": 0.71,
+       "chg_4w": -0.62,
+       "chg_1w": 0.11
+      }
+     },
+     "vix_over_vix3m": 0.984,
+     "index_drawdown_from_peak_pct": -23.55
+    },
+    {
+     "as_of": "2022-10-12",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2022-10-12",
+       "value": 3.91,
+       "at_peak": 1.63,
+       "chg_since_peak_bp": 228.0,
+       "chg_4w_bp": 50.0,
+       "chg_1w_bp": 15.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2022-10-12",
+       "value": 1.62,
+       "at_peak": -0.97,
+       "chg_since_peak_bp": 259.0,
+       "chg_4w_bp": 67.0,
+       "chg_1w_bp": 8.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2022-10-12",
+       "value": 2.27,
+       "at_peak": 1.82,
+       "chg_since_peak_bp": 45.0,
+       "chg_4w_bp": 12.0,
+       "chg_1w_bp": 5.0,
+       "pctile_since_1986": 56.0
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2022-10-12",
+       "value": 33.57,
+       "at_peak": 16.6,
+       "chg_since_peak": 16.97,
+       "chg_4w": 7.41,
+       "chg_1w": 5.02,
+       "pctile_since_1986": 95.0
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2022-10-12",
+       "value": 33.13,
+       "at_peak": 21.53,
+       "chg_since_peak": 11.6,
+       "chg_4w": 5.67,
+       "chg_1w": 3.7
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "missing": true,
+       "last_obs": "2022-01-21"
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "obs_date": "2022-10-12",
+       "pct_since_peak": -58.82,
+       "pct_4w": -5.24,
+       "pct_1w": -4.94
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2022-10-12",
+       "pct_since_peak": -34.21,
+       "pct_4w": -11.11,
+       "pct_1w": -6.56
+      },
+      "SP500": {
+       "basis": "current",
+       "obs_date": "2022-10-12",
+       "pct_since_peak": -25.43,
+       "pct_4w": -9.35,
+       "pct_1w": -5.45
+      },
+      "DTWEXBGS": {
+       "basis": "alfred",
+       "obs_date": "2022-10-07",
+       "value": 127.4628,
+       "at_peak": 115.4344,
+       "pct_since_peak": 10.42,
+       "pct_4w": 2.83,
+       "pct_1w": -0.14
+      },
+      "DEXJPUS": {
+       "basis": "alfred",
+       "obs_date": "2022-10-07",
+       "value": 145.19,
+       "at_peak": 115.27,
+       "pct_since_peak": 25.96,
+       "pct_4w": 1.93,
+       "pct_1w": 0.33
+      },
+      "NFCI": {
+       "basis": "alfred",
+       "obs_date": "2022-09-30",
+       "value": -0.06267,
+       "at_peak": -0.60377,
+       "chg_since_peak": 0.54,
+       "chg_4w": 0.12,
+       "chg_1w": 0.03,
+       "pctile_since_1986": 81.6
+      },
+      "NFCILEVERAGE": {
+       "basis": "alfred",
+       "obs_date": "2022-09-30",
+       "value": 0.12747,
+       "at_peak": -0.22408,
+       "chg_since_peak": 0.35,
+       "chg_4w": -0.11,
+       "chg_1w": -0.02
+      },
+      "NFCICREDIT": {
+       "basis": "alfred",
+       "obs_date": "2022-09-30",
+       "value": 0.14724,
+       "at_peak": -0.19877,
+       "chg_since_peak": 0.35,
+       "chg_4w": 0.07,
+       "chg_1w": 0.02
+      },
+      "NFCIRISK": {
+       "basis": "alfred",
+       "obs_date": "2022-09-30",
+       "value": -0.00912,
+       "at_peak": -0.63002,
+       "chg_since_peak": 0.62,
+       "chg_4w": 0.13,
+       "chg_1w": 0.02
+      },
+      "STLFSI4": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2022-09-30",
+       "value": 0.5143,
+       "at_peak": -0.7597,
+       "chg_since_peak": 1.27,
+       "chg_4w": 0.65,
+       "chg_1w": 0.38
+      }
+     },
+     "vix_over_vix3m": 1.013,
+     "index_drawdown_from_peak_pct": -25.43
+    }
+   ]
+  },
+  {
+   "id": "E2",
+   "name": "2008 年金融危机",
+   "peak": "2007-10-09",
+   "trough": "2009-03-09",
+   "index": "NASDAQCOM",
+   "index_peak_date": "2007-10-09",
+   "points": [
+    {
+     "as_of": "2008-09-19",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2008-09-19",
+       "value": 3.78,
+       "at_peak": 4.67,
+       "chg_since_peak_bp": -89.0,
+       "chg_4w_bp": -9.0,
+       "chg_1w_bp": 4.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2008-09-19",
+       "value": 1.85,
+       "at_peak": 2.34,
+       "chg_since_peak_bp": -49.0,
+       "chg_4w_bp": 16.0,
+       "chg_1w_bp": 6.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2008-09-19",
+       "value": 3.77,
+       "at_peak": 1.9,
+       "chg_since_peak_bp": 187.0,
+       "chg_4w_bp": 50.0,
+       "chg_1w_bp": 34.0,
+       "pctile_since_1986": 99.8
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2008-09-19",
+       "value": 32.07,
+       "at_peak": 16.12,
+       "chg_since_peak": 15.95,
+       "chg_4w": 13.26,
+       "chg_1w": 6.41,
+       "pctile_since_1986": 96.2
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2008-09-19",
+       "value": 28.04,
+       "at_peak": null,
+       "chg_since_peak": null,
+       "chg_4w": 6.56,
+       "chg_1w": 3.02
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "obs_date": "2008-09-19",
+       "value": 2.24,
+       "at_peak": 1.29,
+       "chg_since_peak_bp": 95.0,
+       "chg_4w_bp": 110.0,
+       "chg_1w_bp": 88.0,
+       "pctile_since_1986": 99.6
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "missing": true,
+       "last_obs": null
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2008-09-19",
+       "pct_since_peak": -18.9,
+       "pct_4w": -5.83,
+       "pct_1w": 0.56
+      },
+      "SP500": {
+       "basis": "current",
+       "missing": true,
+       "last_obs": null
+      },
+      "DTWEXBGS": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-09-12",
+       "value": 91.4706,
+       "at_peak": 90.8609,
+       "pct_since_peak": 0.67,
+       "pct_4w": 1.95,
+       "pct_1w": 0.14
+      },
+      "DEXJPUS": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-09-12",
+       "value": 107.51,
+       "at_peak": 116.98,
+       "pct_since_peak": -8.1,
+       "pct_4w": -2.69,
+       "pct_1w": 0.51
+      },
+      "NFCI": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-09-12",
+       "value": 1.237,
+       "at_peak": 0.018,
+       "chg_since_peak": 1.22,
+       "chg_4w": 0.55,
+       "chg_1w": 0.22,
+       "pctile_since_1986": 100.0
+      },
+      "NFCILEVERAGE": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-09-12",
+       "value": 2.475,
+       "at_peak": 1.344,
+       "chg_since_peak": 1.13,
+       "chg_4w": -0.15,
+       "chg_1w": -0.01
+      },
+      "NFCICREDIT": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-09-12",
+       "value": 1.289,
+       "at_peak": 0.355,
+       "chg_since_peak": 0.93,
+       "chg_4w": 0.35,
+       "chg_1w": 0.13
+      },
+      "NFCIRISK": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-09-12",
+       "value": 1.186,
+       "at_peak": -0.05,
+       "chg_since_peak": 1.24,
+       "chg_4w": 0.67,
+       "chg_1w": 0.25
+      },
+      "STLFSI4": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-09-12",
+       "value": 2.0088,
+       "at_peak": 0.6491,
+       "chg_since_peak": 1.36,
+       "chg_4w": 0.45,
+       "chg_1w": 0.16
+      }
+     },
+     "vix_over_vix3m": 1.144,
+     "index_drawdown_from_peak_pct": -25.15
+    },
+    {
+     "as_of": "2008-10-10",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2008-10-10",
+       "value": 3.89,
+       "at_peak": 4.67,
+       "chg_since_peak_bp": -78.0,
+       "chg_4w_bp": 15.0,
+       "chg_1w_bp": 26.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2008-10-10",
+       "value": 2.97,
+       "at_peak": 2.34,
+       "chg_since_peak_bp": 63.0,
+       "chg_4w_bp": 118.0,
+       "chg_1w_bp": 79.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2008-10-10",
+       "value": 4.86,
+       "at_peak": 1.9,
+       "chg_since_peak_bp": 296.0,
+       "chg_4w_bp": 143.0,
+       "chg_1w_bp": 51.0,
+       "pctile_since_1986": 100.0
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2008-10-10",
+       "value": 69.95,
+       "at_peak": 16.12,
+       "chg_since_peak": 53.83,
+       "chg_4w": 44.29,
+       "chg_1w": 24.81,
+       "pctile_since_1986": 100.0
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2008-10-10",
+       "value": 50.91,
+       "at_peak": null,
+       "chg_since_peak": null,
+       "chg_4w": 25.89,
+       "chg_1w": 13.61
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "obs_date": "2008-10-10",
+       "value": 4.58,
+       "at_peak": 1.29,
+       "chg_since_peak_bp": 329.0,
+       "chg_4w_bp": 322.0,
+       "chg_1w_bp": 75.0,
+       "pctile_since_1986": 100.0
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "missing": true,
+       "last_obs": null
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2008-10-10",
+       "pct_since_peak": -41.17,
+       "pct_4w": -27.05,
+       "pct_1w": -15.3
+      },
+      "SP500": {
+       "basis": "current",
+       "missing": true,
+       "last_obs": null
+      },
+      "DTWEXBGS": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-10-03",
+       "value": 93.5414,
+       "at_peak": 90.8609,
+       "pct_since_peak": 2.95,
+       "pct_4w": 2.41,
+       "pct_1w": 3.15
+      },
+      "DEXJPUS": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-10-03",
+       "value": 105.76,
+       "at_peak": 116.98,
+       "pct_since_peak": -9.59,
+       "pct_4w": -1.12,
+       "pct_1w": -0.28
+      },
+      "NFCI": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-10-03",
+       "value": 2.078,
+       "at_peak": 0.018,
+       "chg_since_peak": 2.06,
+       "chg_4w": 1.06,
+       "chg_1w": 0.28,
+       "pctile_since_1986": 100.0
+      },
+      "NFCILEVERAGE": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-10-03",
+       "value": 2.564,
+       "at_peak": 1.344,
+       "chg_since_peak": 1.22,
+       "chg_4w": 0.08,
+       "chg_1w": 0.05
+      },
+      "NFCICREDIT": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-10-03",
+       "value": 1.792,
+       "at_peak": 0.355,
+       "chg_since_peak": 1.44,
+       "chg_4w": 0.63,
+       "chg_1w": 0.18
+      },
+      "NFCIRISK": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-10-03",
+       "value": 2.088,
+       "at_peak": -0.05,
+       "chg_since_peak": 2.14,
+       "chg_4w": 1.16,
+       "chg_1w": 0.3
+      },
+      "STLFSI4": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2008-10-03",
+       "value": 7.3041,
+       "at_peak": 0.6491,
+       "chg_since_peak": 6.66,
+       "chg_4w": 5.45,
+       "chg_1w": 2.71
+      }
+     },
+     "vix_over_vix3m": 1.374,
+     "index_drawdown_from_peak_pct": -41.33
+    },
+    {
+     "as_of": "2009-03-09",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2009-03-09",
+       "value": 2.89,
+       "at_peak": 4.67,
+       "chg_since_peak_bp": -178.0,
+       "chg_4w_bp": -18.0,
+       "chg_1w_bp": -2.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2009-03-09",
+       "value": 2.06,
+       "at_peak": 2.34,
+       "chg_since_peak_bp": -28.0,
+       "chg_4w_bp": 40.0,
+       "chg_1w_bp": 6.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2009-03-09",
+       "value": 5.4,
+       "at_peak": 1.9,
+       "chg_since_peak_bp": 350.0,
+       "chg_4w_bp": 31.0,
+       "chg_1w_bp": 11.0,
+       "pctile_since_1986": 98.8
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2009-03-09",
+       "value": 49.68,
+       "at_peak": 16.12,
+       "chg_since_peak": 33.56,
+       "chg_4w": 6.04,
+       "chg_1w": -2.97,
+       "pctile_since_1986": 98.8
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2009-03-09",
+       "value": 46.53,
+       "at_peak": null,
+       "chg_since_peak": null,
+       "chg_4w": 3.1,
+       "chg_1w": -2.14
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "obs_date": "2009-03-09",
+       "value": 1.08,
+       "at_peak": 1.29,
+       "chg_since_peak_bp": -21.0,
+       "chg_4w_bp": 17.0,
+       "chg_1w_bp": 9.0,
+       "pctile_since_1986": 83.5
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "missing": true,
+       "last_obs": null
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2009-03-09",
+       "pct_since_peak": -54.75,
+       "pct_4w": -20.29,
+       "pct_1w": -4.1
+      },
+      "SP500": {
+       "basis": "current",
+       "missing": true,
+       "last_obs": null
+      },
+      "DTWEXBGS": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2009-03-02",
+       "value": 105.9617,
+       "at_peak": 90.8609,
+       "pct_since_peak": 16.62,
+       "pct_4w": 3.37,
+       "pct_1w": 2.14
+      },
+      "DEXJPUS": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2009-03-02",
+       "value": 97.17,
+       "at_peak": 116.98,
+       "pct_since_peak": -16.93,
+       "pct_4w": 8.13,
+       "pct_1w": 2.68
+      },
+      "NFCI": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2009-02-27",
+       "value": 2.157,
+       "at_peak": 0.018,
+       "chg_since_peak": 2.14,
+       "chg_4w": 0.0,
+       "chg_1w": 0.02,
+       "pctile_since_1986": 98.7
+      },
+      "NFCILEVERAGE": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2009-02-27",
+       "value": 3.857,
+       "at_peak": 1.344,
+       "chg_since_peak": 2.51,
+       "chg_4w": -0.05,
+       "chg_1w": -0.06
+      },
+      "NFCICREDIT": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2009-02-27",
+       "value": 2.01,
+       "at_peak": 0.355,
+       "chg_since_peak": 1.65,
+       "chg_4w": -0.02,
+       "chg_1w": 0.01
+      },
+      "NFCIRISK": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2009-02-27",
+       "value": 1.956,
+       "at_peak": -0.05,
+       "chg_since_peak": 2.01,
+       "chg_4w": -0.07,
+       "chg_1w": -0.01
+      },
+      "STLFSI4": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2009-02-27",
+       "value": 4.1995,
+       "at_peak": 0.6491,
+       "chg_since_peak": 3.55,
+       "chg_4w": 0.12,
+       "chg_1w": -0.02
+      }
+     },
+     "vix_over_vix3m": 1.068,
+     "index_drawdown_from_peak_pct": -54.75
+    }
+   ]
+  },
+  {
+   "id": "E3",
+   "name": "2020 年 3 月",
+   "peak": "2020-02-19",
+   "trough": "2020-03-23",
+   "index": "SP500",
+   "index_peak_date": "2020-02-19",
+   "points": [
+    {
+     "as_of": "2020-03-09",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2020-03-09",
+       "value": 0.54,
+       "at_peak": 1.56,
+       "chg_since_peak_bp": -102.0,
+       "chg_4w_bp": -102.0,
+       "chg_1w_bp": -56.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2020-03-09",
+       "value": -0.45,
+       "at_peak": -0.09,
+       "chg_since_peak_bp": -36.0,
+       "chg_4w_bp": -35.0,
+       "chg_1w_bp": -14.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2020-03-09",
+       "value": 2.93,
+       "at_peak": 2.05,
+       "chg_since_peak_bp": 88.0,
+       "chg_4w_bp": 87.0,
+       "chg_1w_bp": 49.0,
+       "pctile_since_1986": 83.7
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2020-03-09",
+       "value": 54.46,
+       "at_peak": 14.38,
+       "chg_since_peak": 40.08,
+       "chg_4w": 39.42,
+       "chg_1w": 21.04,
+       "pctile_since_1986": 99.4
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2020-03-09",
+       "value": 43.05,
+       "at_peak": 15.82,
+       "chg_since_peak": 27.23,
+       "chg_4w": 26.92,
+       "chg_1w": 15.35
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "obs_date": "2020-03-09",
+       "value": 0.45,
+       "at_peak": 0.15,
+       "chg_since_peak_bp": 30.0,
+       "chg_4w_bp": 29.0,
+       "chg_1w_bp": 30.0,
+       "pctile_since_1986": 51.7
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "obs_date": "2020-03-09",
+       "pct_since_peak": -17.17,
+       "pct_4w": -19.38,
+       "pct_1w": -10.97
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2020-03-09",
+       "pct_since_peak": -19.01,
+       "pct_4w": -17.42,
+       "pct_1w": -11.19
+      },
+      "SP500": {
+       "basis": "current",
+       "obs_date": "2020-03-09",
+       "pct_since_peak": -18.89,
+       "pct_4w": -18.06,
+       "pct_1w": -11.12
+      },
+      "DTWEXBGS": {
+       "basis": "alfred",
+       "obs_date": "2020-03-06",
+       "value": 116.8982,
+       "at_peak": 116.8161,
+       "pct_since_peak": 0.07,
+       "pct_4w": 0.29,
+       "pct_1w": -0.74
+      },
+      "DEXJPUS": {
+       "basis": "alfred",
+       "obs_date": "2020-03-06",
+       "value": 105.31,
+       "at_peak": 111.17,
+       "pct_since_peak": -5.27,
+       "pct_4w": -4.1,
+       "pct_1w": -2.6
+      },
+      "NFCI": {
+       "basis": "alfred",
+       "obs_date": "2020-02-28",
+       "value": -0.76,
+       "at_peak": -0.79,
+       "chg_since_peak": 0.03,
+       "chg_4w": 0.04,
+       "chg_1w": 0.02,
+       "pctile_since_1986": 7.4
+      },
+      "NFCILEVERAGE": {
+       "basis": "alfred",
+       "obs_date": "2020-02-28",
+       "value": -0.28,
+       "at_peak": -0.3,
+       "chg_since_peak": 0.02,
+       "chg_4w": 0.03,
+       "chg_1w": 0.01
+      },
+      "NFCICREDIT": {
+       "basis": "alfred",
+       "obs_date": "2020-02-28",
+       "value": -0.77,
+       "at_peak": -0.76,
+       "chg_since_peak": -0.01,
+       "chg_4w": -0.02,
+       "chg_1w": 0.0
+      },
+      "NFCIRISK": {
+       "basis": "alfred",
+       "obs_date": "2020-02-28",
+       "value": -0.71,
+       "at_peak": -0.75,
+       "chg_since_peak": 0.04,
+       "chg_4w": 0.06,
+       "chg_1w": 0.02
+      },
+      "STLFSI4": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2020-02-28",
+       "value": 0.6862,
+       "at_peak": -0.5615,
+       "chg_since_peak": 1.25,
+       "chg_4w": 0.79,
+       "chg_1w": 1.12
+      }
+     },
+     "vix_over_vix3m": 1.265,
+     "index_drawdown_from_peak_pct": -18.89
+    },
+    {
+     "as_of": "2020-03-18",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2020-03-18",
+       "value": 1.18,
+       "at_peak": 1.56,
+       "chg_since_peak_bp": -38.0,
+       "chg_4w_bp": -38.0,
+       "chg_1w_bp": 36.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2020-03-18",
+       "value": 0.55,
+       "at_peak": -0.09,
+       "chg_since_peak_bp": 64.0,
+       "chg_4w_bp": 64.0,
+       "chg_1w_bp": 69.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2020-03-18",
+       "value": 3.81,
+       "at_peak": 2.05,
+       "chg_since_peak_bp": 176.0,
+       "chg_4w_bp": 176.0,
+       "chg_1w_bp": 82.0,
+       "pctile_since_1986": 97.9
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2020-03-18",
+       "value": 76.45,
+       "at_peak": 14.38,
+       "chg_since_peak": 62.07,
+       "chg_4w": 62.07,
+       "chg_1w": 22.55,
+       "pctile_since_1986": 99.9
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2020-03-18",
+       "value": 72.98,
+       "at_peak": 15.82,
+       "chg_since_peak": 57.16,
+       "chg_4w": 57.16,
+       "chg_1w": 28.61
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "obs_date": "2020-03-18",
+       "value": 1.1,
+       "at_peak": 0.15,
+       "chg_since_peak_bp": 95.0,
+       "chg_4w_bp": 95.0,
+       "chg_1w_bp": 74.0,
+       "pctile_since_1986": 89.1
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "obs_date": "2020-03-18",
+       "pct_since_peak": -43.42,
+       "pct_4w": -43.42,
+       "pct_1w": -31.8
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2020-03-18",
+       "pct_since_peak": -28.8,
+       "pct_4w": -28.8,
+       "pct_1w": -12.1
+      },
+      "SP500": {
+       "basis": "current",
+       "obs_date": "2020-03-18",
+       "pct_since_peak": -29.18,
+       "pct_4w": -29.18,
+       "pct_1w": -12.52
+      },
+      "DTWEXBGS": {
+       "basis": "alfred",
+       "obs_date": "2020-03-13",
+       "value": 120.7065,
+       "at_peak": 116.8161,
+       "pct_since_peak": 3.33,
+       "pct_4w": 3.66,
+       "pct_1w": 3.26
+      },
+      "DEXJPUS": {
+       "basis": "alfred",
+       "obs_date": "2020-03-13",
+       "value": 107.15,
+       "at_peak": 111.17,
+       "pct_since_peak": -3.62,
+       "pct_4w": -2.39,
+       "pct_1w": 1.75
+      },
+      "NFCI": {
+       "basis": "alfred",
+       "obs_date": "2020-03-13",
+       "value": -0.48,
+       "at_peak": -0.77,
+       "chg_since_peak": 0.29,
+       "chg_4w": 0.29,
+       "chg_1w": 0.1,
+       "pctile_since_1986": 54.4
+      },
+      "NFCILEVERAGE": {
+       "basis": "alfred",
+       "obs_date": "2020-03-13",
+       "value": -0.03,
+       "at_peak": -0.23,
+       "chg_since_peak": 0.2,
+       "chg_4w": 0.2,
+       "chg_1w": 0.05
+      },
+      "NFCICREDIT": {
+       "basis": "alfred",
+       "obs_date": "2020-03-13",
+       "value": -0.6,
+       "at_peak": -0.74,
+       "chg_since_peak": 0.14,
+       "chg_4w": 0.14,
+       "chg_1w": 0.04
+      },
+      "NFCIRISK": {
+       "basis": "alfred",
+       "obs_date": "2020-03-13",
+       "value": -0.43,
+       "at_peak": -0.71,
+       "chg_since_peak": 0.28,
+       "chg_4w": 0.28,
+       "chg_1w": 0.09
+      },
+      "STLFSI4": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2020-03-06",
+       "value": 1.3671,
+       "at_peak": -0.5615,
+       "chg_since_peak": 1.93,
+       "chg_4w": 1.82,
+       "chg_1w": 0.68
+      }
+     },
+     "vix_over_vix3m": 1.048,
+     "index_drawdown_from_peak_pct": -29.53
+    },
+    {
+     "as_of": "2020-03-23",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2020-03-23",
+       "value": 0.76,
+       "at_peak": 1.56,
+       "chg_since_peak_bp": -80.0,
+       "chg_4w_bp": -62.0,
+       "chg_1w_bp": 3.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2020-03-23",
+       "value": -0.04,
+       "at_peak": -0.09,
+       "chg_since_peak_bp": 5.0,
+       "chg_4w_bp": 17.0,
+       "chg_1w_bp": -4.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2020-03-23",
+       "value": 4.31,
+       "at_peak": 2.05,
+       "chg_since_peak_bp": 226.0,
+       "chg_4w_bp": 218.0,
+       "chg_1w_bp": 93.0,
+       "pctile_since_1986": 98.1
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2020-03-23",
+       "value": 61.59,
+       "at_peak": 14.38,
+       "chg_since_peak": 47.21,
+       "chg_4w": 36.56,
+       "chg_1w": -21.1,
+       "pctile_since_1986": 99.6
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2020-03-23",
+       "value": 56.64,
+       "at_peak": 15.82,
+       "chg_since_peak": 40.82,
+       "chg_4w": 34.72,
+       "chg_1w": -11.06
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "obs_date": "2020-03-23",
+       "value": 1.2,
+       "at_peak": 0.15,
+       "chg_since_peak_bp": 105.0,
+       "chg_4w_bp": 105.0,
+       "chg_1w_bp": 55.0,
+       "pctile_since_1986": 91.5
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "obs_date": "2020-03-23",
+       "pct_since_peak": -31.36,
+       "pct_4w": -31.91,
+       "pct_1w": 29.74
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2020-03-23",
+       "pct_since_peak": -30.12,
+       "pct_4w": -25.6,
+       "pct_1w": -0.64
+      },
+      "SP500": {
+       "basis": "current",
+       "obs_date": "2020-03-23",
+       "pct_since_peak": -33.92,
+       "pct_4w": -30.64,
+       "pct_1w": -6.23
+      },
+      "DTWEXBGS": {
+       "basis": "alfred",
+       "obs_date": "2020-03-20",
+       "value": 125.2308,
+       "at_peak": 116.8161,
+       "pct_since_peak": 7.2,
+       "pct_4w": 6.95,
+       "pct_1w": 3.75
+      },
+      "DEXJPUS": {
+       "basis": "alfred",
+       "obs_date": "2020-03-20",
+       "value": 111.3,
+       "at_peak": 111.17,
+       "pct_since_peak": 0.12,
+       "pct_4w": -0.39,
+       "pct_1w": 3.87
+      },
+      "NFCI": {
+       "basis": "alfred",
+       "obs_date": "2020-03-13",
+       "value": -0.48,
+       "at_peak": -0.77,
+       "chg_since_peak": 0.29,
+       "chg_4w": 0.29,
+       "chg_1w": 0.1,
+       "pctile_since_1986": 54.4
+      },
+      "NFCILEVERAGE": {
+       "basis": "alfred",
+       "obs_date": "2020-03-13",
+       "value": -0.03,
+       "at_peak": -0.23,
+       "chg_since_peak": 0.2,
+       "chg_4w": 0.2,
+       "chg_1w": 0.05
+      },
+      "NFCICREDIT": {
+       "basis": "alfred",
+       "obs_date": "2020-03-13",
+       "value": -0.6,
+       "at_peak": -0.74,
+       "chg_since_peak": 0.14,
+       "chg_4w": 0.14,
+       "chg_1w": 0.04
+      },
+      "NFCIRISK": {
+       "basis": "alfred",
+       "obs_date": "2020-03-13",
+       "value": -0.43,
+       "at_peak": -0.71,
+       "chg_since_peak": 0.28,
+       "chg_4w": 0.28,
+       "chg_1w": 0.09
+      },
+      "STLFSI4": {
+       "basis": "post_hoc_vintage",
+       "obs_date": "2020-03-13",
+       "value": 3.5146,
+       "at_peak": -0.5615,
+       "chg_since_peak": 4.08,
+       "chg_4w": 4.08,
+       "chg_1w": 2.15
+      }
+     },
+     "vix_over_vix3m": 1.087,
+     "index_drawdown_from_peak_pct": -33.92
+    }
+   ]
+  },
+  {
+   "id": "E4",
+   "name": "2024 年 8 月日元套息平仓",
+   "peak": "2024-07-10",
+   "trough": "2024-08-19",
+   "index": "SP500",
+   "index_peak_date": "2024-07-10",
+   "points": [
+    {
+     "as_of": "2024-08-02",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2024-08-02",
+       "value": 3.8,
+       "at_peak": 4.28,
+       "chg_since_peak_bp": -48.0,
+       "chg_4w_bp": -48.0,
+       "chg_1w_bp": -40.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2024-08-02",
+       "value": 1.76,
+       "at_peak": 2.01,
+       "chg_since_peak_bp": -25.0,
+       "chg_4w_bp": -24.0,
+       "chg_1w_bp": -17.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2024-08-02",
+       "value": 1.8,
+       "at_peak": 1.56,
+       "chg_since_peak_bp": 24.0,
+       "chg_4w_bp": 24.0,
+       "chg_1w_bp": 15.0,
+       "pctile_since_1986": 26.4
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2024-08-02",
+       "value": 23.39,
+       "at_peak": 12.85,
+       "chg_since_peak": 10.54,
+       "chg_4w": 10.91,
+       "chg_1w": 7.0,
+       "pctile_since_1986": 76.8
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2024-08-02",
+       "value": 23.34,
+       "at_peak": 14.5,
+       "chg_since_peak": 8.84,
+       "chg_4w": 8.99,
+       "chg_1w": 6.1
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "missing": true,
+       "last_obs": "2022-01-21"
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "obs_date": "2024-08-02",
+       "pct_since_peak": 6.61,
+       "pct_4w": 8.55,
+       "pct_1w": -9.51
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2024-08-02",
+       "pct_since_peak": -10.04,
+       "pct_4w": -8.59,
+       "pct_1w": -3.35
+      },
+      "SP500": {
+       "basis": "current",
+       "obs_date": "2024-08-02",
+       "pct_since_peak": -5.1,
+       "pct_4w": -3.96,
+       "pct_1w": -2.06
+      },
+      "DTWEXBGS": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": 123.9862,
+       "at_peak": 123.5508,
+       "pct_since_peak": 0.35,
+       "pct_4w": -0.43,
+       "pct_1w": 0.39
+      },
+      "DEXJPUS": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": 153.86,
+       "at_peak": 161.73,
+       "pct_since_peak": -4.87,
+       "pct_4w": -4.36,
+       "pct_1w": -2.24
+      },
+      "NFCI": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": -0.58299,
+       "at_peak": -0.55209,
+       "chg_since_peak": -0.03,
+       "chg_4w": -0.04,
+       "chg_1w": -0.01,
+       "pctile_since_1986": 36.4
+      },
+      "NFCILEVERAGE": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": -0.08124,
+       "at_peak": -0.09397,
+       "chg_since_peak": 0.01,
+       "chg_4w": 0.03,
+       "chg_1w": 0.0
+      },
+      "NFCICREDIT": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": -0.10773,
+       "at_peak": -0.08509,
+       "chg_since_peak": -0.02,
+       "chg_4w": -0.03,
+       "chg_1w": -0.01
+      },
+      "NFCIRISK": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": -0.67169,
+       "at_peak": -0.64806,
+       "chg_since_peak": -0.02,
+       "chg_4w": -0.04,
+       "chg_1w": -0.0
+      },
+      "STLFSI4": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": -0.5959,
+       "at_peak": -0.821,
+       "chg_since_peak": 0.23,
+       "chg_4w": 0.22,
+       "chg_1w": 0.03
+      }
+     },
+     "vix_over_vix3m": 1.002,
+     "index_drawdown_from_peak_pct": -5.1
+    },
+    {
+     "as_of": "2024-08-05",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2024-08-05",
+       "value": 3.78,
+       "at_peak": 4.28,
+       "chg_since_peak_bp": -50.0,
+       "chg_4w_bp": -50.0,
+       "chg_1w_bp": -39.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2024-08-05",
+       "value": 1.71,
+       "at_peak": 2.01,
+       "chg_since_peak_bp": -30.0,
+       "chg_4w_bp": -30.0,
+       "chg_1w_bp": -21.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2024-08-05",
+       "value": 1.85,
+       "at_peak": 1.56,
+       "chg_since_peak_bp": 29.0,
+       "chg_4w_bp": 31.0,
+       "chg_1w_bp": 19.0,
+       "pctile_since_1986": 30.4
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2024-08-05",
+       "value": 38.57,
+       "at_peak": 12.85,
+       "chg_since_peak": 25.72,
+       "chg_4w": 26.2,
+       "chg_1w": 21.97,
+       "pctile_since_1986": 97.3
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2024-08-05",
+       "value": 33.71,
+       "at_peak": 14.5,
+       "chg_since_peak": 19.21,
+       "chg_4w": 19.42,
+       "chg_1w": 16.55
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "missing": true,
+       "last_obs": "2022-01-21"
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "obs_date": "2024-08-05",
+       "pct_since_peak": -6.29,
+       "pct_4w": -4.69,
+       "pct_1w": -19.16
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2024-08-05",
+       "pct_since_peak": -13.12,
+       "pct_4w": -11.97,
+       "pct_1w": -6.74
+      },
+      "SP500": {
+       "basis": "current",
+       "obs_date": "2024-08-05",
+       "pct_since_peak": -7.94,
+       "pct_4w": -6.94,
+       "pct_1w": -5.07
+      },
+      "DTWEXBGS": {
+       "basis": "alfred",
+       "obs_date": "2024-08-02",
+       "value": 123.7169,
+       "at_peak": 123.5508,
+       "pct_since_peak": 0.13,
+       "pct_4w": -0.08,
+       "pct_1w": -0.22
+      },
+      "DEXJPUS": {
+       "basis": "alfred",
+       "obs_date": "2024-08-02",
+       "value": 146.98,
+       "at_peak": 161.73,
+       "pct_since_peak": -9.12,
+       "pct_4w": -8.55,
+       "pct_1w": -4.47
+      },
+      "NFCI": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": -0.58299,
+       "at_peak": -0.55209,
+       "chg_since_peak": -0.03,
+       "chg_4w": -0.04,
+       "chg_1w": -0.01,
+       "pctile_since_1986": 36.4
+      },
+      "NFCILEVERAGE": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": -0.08124,
+       "at_peak": -0.09397,
+       "chg_since_peak": 0.01,
+       "chg_4w": 0.03,
+       "chg_1w": 0.0
+      },
+      "NFCICREDIT": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": -0.10773,
+       "at_peak": -0.08509,
+       "chg_since_peak": -0.02,
+       "chg_4w": -0.03,
+       "chg_1w": -0.01
+      },
+      "NFCIRISK": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": -0.67169,
+       "at_peak": -0.64806,
+       "chg_since_peak": -0.02,
+       "chg_4w": -0.04,
+       "chg_1w": -0.0
+      },
+      "STLFSI4": {
+       "basis": "alfred",
+       "obs_date": "2024-07-26",
+       "value": -0.5959,
+       "at_peak": -0.821,
+       "chg_since_peak": 0.23,
+       "chg_4w": 0.22,
+       "chg_1w": 0.03
+      }
+     },
+     "vix_over_vix3m": 1.144,
+     "index_drawdown_from_peak_pct": -7.94
+    },
+    {
+     "as_of": "2024-08-19",
+     "values": {
+      "DGS10": {
+       "basis": "current",
+       "obs_date": "2024-08-19",
+       "value": 3.86,
+       "at_peak": 4.28,
+       "chg_since_peak_bp": -42.0,
+       "chg_4w_bp": -40.0,
+       "chg_1w_bp": -4.0
+      },
+      "DFII10": {
+       "basis": "current",
+       "obs_date": "2024-08-19",
+       "value": 1.79,
+       "at_peak": 2.01,
+       "chg_since_peak_bp": -22.0,
+       "chg_4w_bp": -17.0,
+       "chg_1w_bp": 0.0
+      },
+      "BAA10Y": {
+       "basis": "current",
+       "obs_date": "2024-08-19",
+       "value": 1.68,
+       "at_peak": 1.56,
+       "chg_since_peak_bp": 12.0,
+       "chg_4w_bp": 10.0,
+       "chg_1w_bp": -10.0,
+       "pctile_since_1986": 17.7
+      },
+      "VIXCLS": {
+       "basis": "current",
+       "obs_date": "2024-08-19",
+       "value": 14.65,
+       "at_peak": 12.85,
+       "chg_since_peak": 1.8,
+       "chg_4w": -0.26,
+       "chg_1w": -6.06,
+       "pctile_since_1986": 30.9
+      },
+      "VXVCLS": {
+       "basis": "current",
+       "obs_date": "2024-08-19",
+       "value": 17.59,
+       "at_peak": 14.5,
+       "chg_since_peak": 3.09,
+       "chg_4w": 1.5,
+       "chg_1w": -4.04
+      },
+      "TEDRATE": {
+       "basis": "current",
+       "missing": true,
+       "last_obs": "2022-01-21"
+      },
+      "CBBTCUSD": {
+       "basis": "current",
+       "obs_date": "2024-08-19",
+       "pct_since_peak": 3.15,
+       "pct_4w": -12.01,
+       "pct_1w": 0.22
+      },
+      "NASDAQCOM": {
+       "basis": "current",
+       "obs_date": "2024-08-19",
+       "pct_since_peak": -4.13,
+       "pct_4w": -0.73,
+       "pct_1w": 6.53
+      },
+      "SP500": {
+       "basis": "current",
+       "obs_date": "2024-08-19",
+       "pct_since_peak": -0.46,
+       "pct_4w": 0.79,
+       "pct_1w": 4.94
+      },
+      "DTWEXBGS": {
+       "basis": "alfred",
+       "obs_date": "2024-08-16",
+       "value": 122.6944,
+       "at_peak": 123.5508,
+       "pct_since_peak": -0.69,
+       "pct_4w": -0.65,
+       "pct_1w": -0.41
+      },
+      "DEXJPUS": {
+       "basis": "alfred",
+       "obs_date": "2024-08-16",
+       "value": 148.13,
+       "at_peak": 161.73,
+       "pct_since_peak": -8.41,
+       "pct_4w": -5.88,
+       "pct_1w": 1.12
+      },
+      "NFCI": {
+       "basis": "alfred",
+       "obs_date": "2024-08-09",
+       "value": -0.49852,
+       "at_peak": -0.51938,
+       "chg_since_peak": 0.02,
+       "chg_4w": 0.02,
+       "chg_1w": 0.01,
+       "pctile_since_1986": 51.3
+      },
+      "NFCILEVERAGE": {
+       "basis": "alfred",
+       "obs_date": "2024-08-09",
+       "value": -0.08401,
+       "at_peak": -0.09593,
+       "chg_since_peak": 0.01,
+       "chg_4w": 0.0,
+       "chg_1w": -0.0
+      },
+      "NFCICREDIT": {
+       "basis": "alfred",
+       "obs_date": "2024-08-09",
+       "value": -0.04562,
+       "at_peak": -0.04916,
+       "chg_since_peak": 0.0,
+       "chg_4w": 0.0,
+       "chg_1w": 0.0
+      },
+      "NFCIRISK": {
+       "basis": "alfred",
+       "obs_date": "2024-08-09",
+       "value": -0.58111,
+       "at_peak": -0.61924,
+       "chg_since_peak": 0.04,
+       "chg_4w": 0.04,
+       "chg_1w": 0.01
+      },
+      "STLFSI4": {
+       "basis": "alfred",
+       "obs_date": "2024-08-09",
+       "value": -0.1432,
+       "at_peak": -0.822,
+       "chg_since_peak": 0.68,
+       "chg_4w": 0.66,
+       "chg_1w": 0.14
+      }
+     },
+     "vix_over_vix3m": 0.833,
+     "index_drawdown_from_peak_pct": -7.94
+    }
+   ]
+  }
+ ]
+}

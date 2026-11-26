@@ -1,0 +1,126 @@
+# 方法卡 market-drawdown-layer-diagnosis 的执行实测：历史事件回放 E1。
+# 只写步骤编号和执行结果，不含方法卡正文。数值由 scripts/market_drawdown_replay.py 计算，
+# 汇总值见 market-drawdown-replay-metrics.json（同目录）。
+id: fred-us-market-drawdown-2022-20261126
+record_type: application
+status: draft
+
+# ---- 跑数据之前定下的预期（来自任务说明，未因数据改动） ----
+expected:
+  event: E1 2022 年加息熊市
+  window: {peak: "2022-01-03", trough: "2022-10-12"}
+  expected_layer: "只在第 1 层"
+  qualitative_source:
+    title: "Federal Reserve Board, Financial Stability Report, November 2022"
+    published_on: "2022-11-04"
+    locator: "https://www.federalreserve.gov/publications/files/financial-stability-report-20221104.pdf"
+    bibliography_check: "2026-11-26 核实：美联储官网 PDF 存在，报告日 2022-11-04，资料截至 2022-10-21。只核实了书目，没有逐页核对正文里的定性表述，复核时请核对。"
+    replaced: false
+  source_bias: "来源偏差：2022 年是方法卡来源视频作者自己举过的例子（卡的来源案例与危害尺都提到），回放结果与作者叙述一致不构成独立检验。"
+  sequence_note: "预期层级在任务说明中、取数之前已经给定；本文件是取数后写成的，预期一字未改。"
+
+source:
+  type: official
+  title: "FRED / ALFRED 序列（圣路易斯联储），French 12 行业月度收益（本机）"
+  data_as_of: "按观察时点，见下"
+  locator: "scripts/market_drawdown_replay.py；methodology/records/market-drawdown-replay-metrics.json"
+  outcome_known: true
+
+extraction:
+  extracted_on: "2026-11-26"
+  method: ai_assisted
+  tool: "Claude Code（Opus 5.5），investment-research-os 会话"
+  review: "pending：等用户复核"
+  quality_notes: "层级判定是执行者按卡的步骤作出的推导（ai_inference），不是材料事实。"
+
+point_in_time:
+  rule: "每个时点只用当天收盘后已公布的数据：日度收盘值取观测日 ≤ 时点；NFCI 及分项、美元广义指数、日元汇率取 ALFRED 当日版本；STLFSI4 在 2022-11-10 之前没有 ALFRED 版本，用当前版本按 6 天滞后截断，标 post_hoc_vintage；French 月度收益当时未公布，标 post_hoc，只作事后对照。"
+  equity_index: "SP500（FRED，价格指数，不含股息）"
+
+method_output:
+  as_of_points:
+    - as_of: "2022-02-03"
+      label: 见顶后一个月
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口：一致预期盈利修正历史是付费数据，未取得。"
+        rates: "10 年期名义 1.82%，自见顶 +19bp；实质 -0.56%，自见顶 +41bp。实质利率上升是主要变化。"
+        accelerators:
+          - {event: "俄罗斯入侵乌克兰", first_report: "2022-02-24", vs_peak: after, note: "日期为执行者所知，未逐条核对首次报导"}
+        ledger: {removed: [], unchanged: ["加息预期"], added: []}
+      how_it_falls: "当时可得数据无法判断（日度板块数据缺口）。事后对照（French，post_hoc）：1 月市场 -6.2%，公用事业 -2.1%、必需消费 -0.7%、金融 -0.7%，医疗 -8.8%；多数防御板块撑住，像有涨有跌。"
+      everything_falls_split: "利率上升，比特币自见顶 -20%，美元 +0.6%：利率上升带来的一起重估，属第 1 层。黄金缺口。"
+      flows: {foreign: "不适用：卡的外资买卖超是台湾口径，美国没有对应日度数据（G03）", margin_balance: "缺口：FINRA 保证金债务未接入；替代指标 NFCI 杠杆分项 -0.17，自见顶 -0.01，无变化", fx: "美元广义指数 +0.6%"}
+      credit: {aggregate: "Baa 利差 1.92%（1986 年以来第 34 百分位），自见顶 +10bp", local: ["TED 利差 0.09%（2022-01-21 后停更）"]}
+      structure: {concentration: "缺口：未取指数权重", leverage: "NFCI -0.57（低于均值即宽松）", fx: "不适用：只诊断美国"}
+      layer_now: [1]
+      bottoms: {forced_selling: "未出现强制卖压迹象（VIX/VIX3M 0.91，正常升水）", valuation: "利率仍在升，估值底未到"}
+      watchlist:
+        - {layer: 1, indicator: "FOMC 是否开始加息", date: "2022-03-16"}
+        - {layer: 2, indicator: "NFCI 杠杆分项（保证金债务的替代）", date: "每周三"}
+      equity_research_note: "第 1 层：个股财报与事件反应可照常读，但要扣掉利率带来的估值重估。"
+
+    - as_of: "2022-06-16"
+      label: 急跌中（CPI 与 75bp 加息后）
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口（同上）。"
+        rates: "10 年期名义 3.28%（自见顶 +165bp，近 1 周 +24bp）；实质 0.66%（+163bp）。"
+        accelerators:
+          - {event: "加密借贷平台暂停提款（Celsius）", first_report: "2022-06-12", vs_peak: after, note: "加密市场内部的杠杆清算，日期未逐条核对"}
+        ledger: {removed: [], unchanged: ["通胀高于预期、加息加速"], added: ["加密市场局部去杠杆"]}
+      how_it_falls: "当时不可判断。事后对照（post_hoc）：6 月市场 -8.3%，医疗 -2.0%、必需消费 -3.9%，公用事业 -6.5%、金融 -9.1%；防御板块仍跌得少。"
+      everything_falls_split: "利率上升，比特币近 4 周 -33%、自见顶 -56%，美元自见顶 +4.1%：按第 3 步仍是利率带动的一起重估（第 1 层）；比特币的跌幅另有加密杠杆清算。"
+      flows: {foreign: "不适用（G03）", margin_balance: "缺口；替代 NFCI 杠杆分项 0.30，自见顶 +0.48，由负转正", fx: "美元自见顶 +4.1%"}
+      credit: {aggregate: "Baa 利差 2.13%（第 46 百分位），自见顶 +31bp，近 4 周 -24bp", local: ["NFCI 信用分项 0.03"]}
+      structure: {concentration: "缺口", leverage: "NFCI 杠杆分项转正", fx: "不适用"}
+      layer_now: [1]
+      bottoms: {forced_selling: "VIX 32.95、VIX/VIX3M 0.98，接近倒挂但未倒挂", valuation: "利率仍在升"}
+      watchlist:
+        - {layer: 1, indicator: "下一次 FOMC", date: "2022-07-27"}
+        - {layer: 2, indicator: "NFCI 杠杆分项是否继续上升", date: "每周三"}
+        - {layer: 4, indicator: "Baa 利差是否升破历史中位以上", date: "每日"}
+      equity_research_note: "仍是第 1 层；NFCI 杠杆分项转正是第 2 层的替代信号，但它是慢变量，不等于融资余额在被清。"
+
+    - as_of: "2022-10-12"
+      label: 谷底附近
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口（同上）。"
+        rates: "10 年期名义 3.91%（自见顶 +228bp）；实质 1.62%（+259bp）。"
+        accelerators:
+          - {event: "英国减税预算引发金边债券抛售", first_report: "2022-09-23", vs_peak: after, note: "英国养老金 LDI 的局部第 2–3 层，日期未逐条核对"}
+        ledger: {removed: [], unchanged: ["加息"], added: ["英国 LDI 局部去杠杆"]}
+      how_it_falls: "当时不可判断。事后对照（post_hoc）：9 月市场 -9.2%，医疗 -1.9%、必需消费 -8.4%，公用事业 -11.6%；利率敏感的公用事业跌得比市场多。"
+      everything_falls_split: "利率上升，比特币自见顶 -59%，美元自见顶 +10.4%、日元贬值 26%：第 1 层，美元走强是助推。"
+      flows: {foreign: "不适用（G03）", margin_balance: "缺口；替代 NFCI 杠杆分项 0.13，近 4 周 -0.11", fx: "美元广义指数自见顶 +10.4%"}
+      credit: {aggregate: "Baa 利差 2.27%（第 56 百分位），自见顶 +45bp", local: ["NFCI 信用分项 0.15", "STLFSI4 0.51（post_hoc_vintage）"]}
+      structure: {concentration: "缺口", leverage: "NFCI -0.06，仍低于均值", fx: "不适用"}
+      layer_now: [1]
+      bottoms: {forced_selling: "VIX/VIX3M 1.01，刚刚倒挂；没有踩踏式的成交数据可核", valuation: "利率未转向；当时看不到估值底"}
+      watchlist:
+        - {layer: 1, indicator: "下一次 FOMC", date: "2022-11-02"}
+        - {layer: 4, indicator: "Baa 利差", date: "每日"}
+      equity_research_note: "第 1 层贯穿全程；个股估值信号要先扣除利率。"
+
+  diagnosis: "三个时点都判为第 1 层；信用利差在历史中位附近，NFCI 一直低于均值，没有第 4 层迹象。"
+  comparison_with_expected: "一致（预期只在第 1 层）。"
+
+execution:
+  steps: [1, 2, 3, 4, 5, 6, 7, 8]
+  reached: "八步都有输出；第 2 步当时不可判断，只能事后用月度行业收益对照；第 4、6 步大半是缺口或不适用。"
+  first_guess: "第 2 步：利率驱动的下跌里，公用事业这类利率敏感的“防御股”本身会跌（2022-09 跌得比市场多），卡没说“防御股”选哪些、算不算撑住。"
+  consistent_with_expected: true
+  data_gaps:
+    - "第 1 步：一致预期盈利修正（付费）"
+    - "第 2 步：日度板块 / 防御股价格（XLU、XLP、XLV 没有接入约定）"
+    - "第 3 步：黄金价格（FRED 不再提供 LBMA 金价，GLD 没有接入约定）"
+    - "第 4 步：FINRA 保证金债务（未接入）；外资买卖超（美国不适用）"
+    - "第 5 步：高收益债利差（ICE 序列不用于回放）、HYG 价格"
+    - "第 6 步：指数集中度"
+  substitutes:
+    - "防御股 → French 12 行业月度收益（Utils、NoDur、Hlth、Money），事后数据"
+    - "高收益债利差 → 穆迪 Baa 利差 BAA10Y（收益率利差，不是期权调整利差）"
+    - "保证金债务 → NFCI 杠杆分项 NFCILEVERAGE（慢变量）"
+    - "强制交易 → VIX / VIX3M（VIXCLS / VXVCLS），卡的整理时补充"
+  review: pending
