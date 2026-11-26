@@ -86,7 +86,7 @@
 - [已处理 2026-11-26] 2026-11-26 · market-drawdown-layer-diagnosis · 第 4 步 · 补上 FINRA 保证金债务后：月度且滞后一个多月，2020-03 和 2024-08 两次下跌期间一个新数都看不到；2022 年九个月降 25%（价格降 13%），照字面是第 2 层，2008 年反而与价格同步。需要写“大减”的口径（相对价格、速度）和快速事件该看什么 · methodology/records/fred-us-market-drawdown-2024-20261126.yaml、-2022- · 处理结果：方法库提交 7978834 登记为 G30
 - [已处理 2026-11-26] 2026-11-26 · market-drawdown-layer-diagnosis · 第 2 步 · 补上日度 ETF 净值后：“撑没撑住”用累计相对表现还是下跌日的跟跌程度，结论不同（2022-10-12 累计撑住，XLU 下跌日比值 1.56）；2024-08-05 防御股撑住，照卡只能判第 1 层，判不出套息平仓的第 2 层 · methodology/records/fred-us-market-drawdown-2022-20261126.yaml、-2024- · 处理结果：方法库提交 7978834 登记为 G29、G30
 - [已处理 2026-11-26] 2026-11-26 · market-drawdown-layer-diagnosis · 第 3 步 · 补上黄金后：2008-10 抢美元时黄金在涨（一周 +8.8%），卡的第 3 层只写了黄金跟跌这一种样子；2020-03-23 黄金止跌回升，卡的推翻条件可读出抢现金结束，这条有用 · methodology/records/fred-us-market-drawdown-2008-20261126.yaml、-2020- · 处理结果：方法库提交 7978834 登记为 G28
-- [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 第 2、3 步 · 两步给出不同的层时以哪步为准：2026-11-20 防御股撑住（第 2 步判第 1 层），同时利率下降而黄金比特币大跌（第 3 步判第 3 层） · methodology/records/fred-us-market-drawdown-2026-20261126.yaml
+- [已处理 2026-11-26] 2026-11-26 · market-drawdown-layer-diagnosis · 第 2、3 步 · 两步给出不同的层时以哪步为准：2026-11-20 防御股撑住（第 2 步判第 1 层），同时利率下降而黄金比特币大跌（第 3 步判第 3 层） · methodology/records/fred-us-market-drawdown-2026-20261126.yaml · 处理结果：方法库提交 1c2bb95 登记为 G32
 
 ## 8. NVIDIA FY27 Q3 季度研究：FCF 口径适配与网站待办
 
