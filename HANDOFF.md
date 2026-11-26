@@ -81,6 +81,9 @@
 - [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 第 2 步 · 没说“防御股”选哪些：利率驱动的下跌里公用事业这类利率敏感板块本身会跌（2022-09 跌得比市场多），按它判“撑不住”会误判出第 2 层 · methodology/records/fred-us-market-drawdown-2022-20261126.yaml
 - [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 第 1 步 · 起点在信用层时怎样走：2008 年的基金冻结（2007-08）早于股市见顶，按第 1 步是起点不是加速器，但卡的叙述从第 1 层起跌（卡的方法失效条件已提到这一疑问） · methodology/records/fred-us-market-drawdown-2008-20261126.yaml
 - [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 所需数据 · 美国执行时卡里多项数据无公开免费历史：黄金（FRED 已无 LBMA 金价）、板块 ETF 日价、HYG、FINRA 保证金债务、单一公司 CDS 和 ABS 利差、一致预期盈利修正；ICE 高收益债利差在 FRED 只留 3 年且许可受限。卡的“整理时补充”可考虑写替代指标（Baa 利差、TED 利差、NFCI 分项、VIX/VIX3M、实质利率一周变化）或列为执行前提 · 四份回放记录的 data_gaps
+- [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 第 4 步 · 补上 FINRA 保证金债务后：月度且滞后一个多月，2020-03 和 2024-08 两次下跌期间一个新数都看不到；2022 年九个月降 25%（价格降 13%），照字面是第 2 层，2008 年反而与价格同步。需要写“大减”的口径（相对价格、速度）和快速事件该看什么 · methodology/records/fred-us-market-drawdown-2024-20261126.yaml、-2022-
+- [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 第 2 步 · 补上日度 ETF 净值后：“撑没撑住”用累计相对表现还是下跌日的跟跌程度，结论不同（2022-10-12 累计撑住，XLU 下跌日比值 1.56）；2024-08-05 防御股撑住，照卡只能判第 1 层，判不出套息平仓的第 2 层 · methodology/records/fred-us-market-drawdown-2022-20261126.yaml、-2024-
+- [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 第 3 步 · 补上黄金后：2008-10 抢美元时黄金在涨（一周 +8.8%），卡的第 3 层只写了黄金跟跌这一种样子；2020-03-23 黄金止跌回升，卡的推翻条件可读出抢现金结束，这条有用 · methodology/records/fred-us-market-drawdown-2008-20261126.yaml、-2020-
 
 ## 8. NVIDIA FY27 Q3 季度研究：FCF 口径适配与网站待办
 
@@ -147,3 +150,4 @@
 - 公开输出只含汇总值：标普 500、纳斯达克、比特币只留百分比变化；不取 ICE 高收益债利差。
 - 缺口：黄金、板块 ETF 日价、HYG、FINRA 保证金债务都没有接入约定，按默认做法记为缺口并已向发起会话说明；如用户选定来源，补取后重跑。四份定性文献只核实了书目，没有逐页核对正文。
 - 写回方法库：`executions` 条目草稿交给 research-method-extraction 的会话，本仓库不写。方法问题见「给方法库」2026-11-26 的五条。
+- 重跑（2026-11-26，补充数据）：用户手动下载黄金（World Gold Council）、SPY/XLU/XLP/XLV/XLF/HYG 发行商每股净值和 FINRA 保证金债务 Excel，放在 `data/drawdown_replay/manual/`（不入库，公开输出只留百分比和比值）。脚本读到就加算第 2–5 步的补充指标；没有这些文件时 `manual` 块不生成。四份记录各追加 `rerun_supplementary` 一节，第一次执行的内容不改写，四个字段以重跑为准。结论变化：E2 2008-10 不再列第 3 层（黄金在涨）；E3 3-09 照卡判得出不是第 3 层，3-23 黄金止跌触发卡的推翻条件；E4 照卡只能判第 1 层，从“一致”改为“部分一致”；E1 仍是第 1 层，但第 4 步照字面有第 2 层信号。净值不是市价：2020-03 HYG 的市价折价看不到。
