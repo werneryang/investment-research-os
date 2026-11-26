@@ -5911,6 +5911,53 @@
   "MARGIN": "present"
  },
  "nvda_event_windows": {
-  "missing": true
+  "resignation": {
+   "day0": "2026-11-12",
+   "d0": {
+    "NVDA": -4.34,
+    "SPY": -0.35,
+    "NVDA_minus_SPY": -3.99,
+    "SMH": -1.0,
+    "NVDA_minus_SMH": -3.34
+   },
+   "d0_d1": {
+    "NVDA": -6.26,
+    "SPY": -0.74,
+    "NVDA_minus_SPY": -5.52,
+    "SMH": -4.01,
+    "NVDA_minus_SMH": -2.25
+   },
+   "dm1_d1": {
+    "NVDA": -3.58,
+    "SPY": 0.56,
+    "NVDA_minus_SPY": -4.14,
+    "SMH": 0.6,
+    "NVDA_minus_SMH": -4.18
+   }
+  },
+  "reinstatement": {
+   "day0": "2026-11-23",
+   "d0": {
+    "NVDA": 31.48,
+    "SPY": 4.72,
+    "NVDA_minus_SPY": 26.76,
+    "SMH": 15.21,
+    "NVDA_minus_SMH": 16.27
+   },
+   "d0_d1": {
+    "NVDA": 23.78,
+    "SPY": 4.21,
+    "NVDA_minus_SPY": 19.57,
+    "SMH": 6.98,
+    "NVDA_minus_SMH": 16.8
+   },
+   "dm1_d1": {
+    "NVDA": 6.44,
+    "SPY": 0.36,
+    "NVDA_minus_SPY": 6.08,
+    "SMH": -4.48,
+    "NVDA_minus_SMH": 10.92
+   }
+  }
  }
 }
