@@ -477,6 +477,31 @@ def cmd_notes(args: argparse.Namespace) -> int:
     return 2 if rejected else 0
 
 
+def cmd_lineage(args: argparse.Namespace) -> int:
+    import json as _json
+
+    from . import lineage
+
+    root = _root(args.root)
+    graph = lineage.build(root)
+    c = graph["counts"]
+    print(f"研究 {c['studies']} · 模块 {c['modules']}（计算 {c['compute']}、取数 {c['fetch']}、脚本 {c['scripts']}）"
+          f" · 数据集 {c['datasets']} · 未被研究用到 {c['unused']}（模块、接入器与脚本 {c['unused_modules']}）· 断链 {c['broken']}")
+    if args.study:
+        if args.study not in graph["studies"]:
+            raise LookupError(f"未登记的研究：{args.study}")
+        print(_json.dumps(lineage.chain(graph, args.study), ensure_ascii=False, indent=2))
+    if args.md:
+        Path(args.md).write_text(lineage.markdown(graph), encoding="utf-8")
+        print(f"已写入 {args.md}")
+    if args.json:
+        Path(args.json).write_text(_json.dumps(graph, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"已写入 {args.json}")
+    for b in graph["broken"]:
+        print(f"[断链] {b['from']} → {b['to']}（{b['kind']}）：{b['detail']}")
+    return 1 if args.check and graph["broken"] else 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="iros", description="个人投资研究框架")
     p.add_argument("--root", help="项目根目录（默认当前目录或 IROS_HOME）")
@@ -529,6 +554,13 @@ def build_parser() -> argparse.ArgumentParser:
     c.set_defaults(func=cmd_calendar)
 
     sub.add_parser("runs", help="运行记录").set_defaults(func=cmd_runs)
+
+    g = sub.add_parser("lineage", help="研究依赖图：研究 → 计算 → 数据集 → 来源，未使用的模块与断链")
+    g.add_argument("--study", help="打印这项研究的依赖链")
+    g.add_argument("--md", help="把清单写入 Markdown 文件（如 docs/lineage.md）")
+    g.add_argument("--json", help="把完整的图写入 JSON 文件")
+    g.add_argument("--check", action="store_true", help="有断链时以状态 1 退出")
+    g.set_defaults(func=cmd_lineage)
 
     e = sub.add_parser("edgar", help="SEC 财报：同步、年度指标、核对")
     e.add_argument("action", choices=["sync", "annual", "check"])

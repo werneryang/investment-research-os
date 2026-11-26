@@ -57,6 +57,7 @@ scripts/snapshot-agent.sh install
 - **研究发现了什么**：每项研究有固定地址的研究页 `studies/<study_id>/`，按「研究问题 → 关键发现 → 可视化证据 → 方法 → 证据与限制 → 历史与复现」组织。关键发现由固定规则从结果生成，每条可展开查看所依据的指标。
 - **这些发现有多可靠**：研究页的证据面板逐项列出来源与版本、日期与期限覆盖、核验与复现结果、限制，不汇总成笼统分数；数据覆盖条按日期显示缺失。`methods.html` 说明数据来源、时间规则、日历、可靠性机制与复现方法。
 - **系统能研究什么**：`map.html` 研究能力地图由登记与运行记录生成，区分工程完成与研究验证；研究框架与规划中的方向在 `site/content.yaml` 维护。系统状态放在页脚与 `methods.html#status`，只有更新停滞时才在页面顶部提示。
+- **研究依赖什么**：`lineage.html` 研究依赖图（只有中文，从「数据、方法与状态」页进入）从每项研究反向追溯到计算模块、数据集、取数模块与来源，列出来源出错会波及的研究、没有研究用到的模块与断链；每次构建由 `src/investment_os/lineage.py` 从研究定义、数据集登记与源码 import 静态读出，经本地中间文件的环节在 `config/lineage.yaml` 声明。
 - **可以用哪些免费资源**：`sources.html` 数据资源目录由 `config/sources.yaml` 生成，列出已接入与候选来源的取得方式、许可、核验状态、可服务的研究方向与下一步，并按研究方向索引能力缺口。
 
 页面顶端右侧可切换中英文：英文页面在 `en/` 下，研究发现按同一规则的英文措辞生成；完整报告只有中文。译文维护在 `site/en.yaml`。
@@ -123,6 +124,8 @@ uv run iros edgar annual apple revenue --as-of 2024-01-01
 
 季度财报研究：`iros earnings fetch`（下载登记的申报原文）、`iros earnings check`（核对原文校验值、数值出现在原文中、会计恒等式与摘录）、`iros earnings bundle`（生成并导入财报证据包）；研究 `config/studies/earnings_googl_2026q3.yaml`；每家公司的差异写在登记的 `profile`，新增公司的步骤见[季度财报研究设计](docs/study-earnings.md)。
 
+研究依赖图：`iros lineage`（研究、模块、未使用与断链计数；`--study <id>` 打印一项研究的依赖链，`--md docs/lineage.md` 重写清单，`--check` 有断链时以状态 1 退出）。新增研究、数据集或模块后重写清单。
+
 其他命令：`iros fetch --all`（全部定时数据集）、`iros sources`（已接入与候选来源及核验状态）、`iros datasets`（版本与质量概况）、`iros runs`、`iros import <dataset> <file> --declared-source "..."`（人工导入）。
 
 ```bash
@@ -179,6 +182,7 @@ uv run pytest
 - [研究报告图块：风格与写法](docs/note-figures.md)：给网站中文报告加图，数字只引用公开走查记录字段；结论式标题、证据级别标签、展望值虚框、不画双轴与不相加量的堆叠，另有产业链图型：收入结构条、层次 × 时态矩阵、供应商依赖斜率图（NVDA FY27 Q3、AAPL 产业链、GOOGL Q3'26 已实现）
 - [股票群组研究：新股与热门股](docs/study-stock-cohorts.md)：按规则筛出的股票群组在不同市场状态下的后续表现；分类位置、共用的市场状态定义（事前与事后分开）、数据可得性与幸存者偏差、分阶段计划（设计草案，个股日价来源未选定，未实现）
 - [研究方法提取模块](methodology/README.md)：从公开研究中提取可复用分析方法的独立实验区，不接入研究体系与网站（初版，只有文档）
+- [研究依赖清单](docs/lineage.md)：每项研究的依赖链、模块被多少研究用到、来源出错波及的研究、没有研究用到的模块与断链（`iros lineage --md` 生成）
 - [历史方案索引](docs/archive/README.md)：保留 A、B、C 原始文档及 V0.2，追溯设计来源与定位变化。
 
 历史方案与当前框架有差异时，以当前框架为准。当前文档的修订说明记录本次取舍，Git 用于保存后续版本历史。

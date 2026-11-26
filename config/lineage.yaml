@@ -1,0 +1,13 @@
+# 研究依赖图（src/investment_os/lineage.py）读不出的取数环节，在这里声明。
+# 只写机器读不出的部分：证据包经本地中间文件生成时，生成中间文件的脚本。
+# 导入证据包的脚本（源码里出现数据集 ID）与写有 DATASET_ID 的模块会被自动识别，不用写在这里。
+evidence_inputs:
+  industry_sec_facts:
+    via: data/industry/fundamentals.json
+    built_by: [scripts/build_industry_fundamentals.py]
+  industry_valuation:
+    via: data/industry/valuation.json
+    built_by: [scripts/prepare_industry_cases.py]
+  industry_guidance:
+    via: data/industry/guidance.json
+    built_by: [scripts/prepare_industry_cases.py]

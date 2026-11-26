@@ -158,6 +158,8 @@ def test_site_without_runs(project):
     build_site(project, project / "_site")
     assert "尚未发布" in (project / "_site" / "research.html").read_text(encoding="utf-8")
     assert (project / "_site" / "map.html").exists() and (project / "_site" / "methods.html").exists()
+    lineage = (project / "_site" / "lineage.html").read_text(encoding="utf-8")
+    assert "研究依赖图" in lineage and 'lineage.html"' in (project / "_site" / "methods.html").read_text(encoding="utf-8")
 
 
 def test_site_refuses_unmanaged_output_and_protected_paths(project):

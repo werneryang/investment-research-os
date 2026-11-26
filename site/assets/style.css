@@ -433,3 +433,12 @@ overflow-wrap:anywhere}
 .nf-legend i.nf-rel-additive{border-color:var(--c1)}.nf-legend i.nf-rel-substitute{border-color:var(--c2)}
 .nf-legend i.nf-rel-upstream_downstream{border-top-style:dashed;border-color:var(--c7)}.nf-legend i.nf-rel-overlap{border-color:var(--c5)}
 .nf-legend .nf-s5{background:var(--c5)}.nf-legend .nf-s8{background:var(--c8)}
+/* 研究依赖图（lineage.html）：类型标签用半透明底色，明暗主题都可读 */
+.lin-study{margin:.5rem 0}
+.lin-study summary{cursor:pointer}
+.lin-tree{list-style:none;margin:.25rem 0 .25rem .4rem;padding-left:1rem;border-left:1px solid var(--line)}
+.lin-tree li{margin:.2rem 0;overflow-wrap:anywhere}
+.lin-kind{display:inline-block;min-width:3em;font-size:.75rem;padding:0 .35em;margin-right:.35em;border-radius:3px;text-align:center;background:color-mix(in srgb,var(--muted) 18%,transparent)}
+.lin-compute{background:color-mix(in srgb,var(--c1) 22%,transparent)}.lin-fetch{background:color-mix(in srgb,var(--c3) 22%,transparent)}
+.lin-dataset{background:color-mix(in srgb,var(--c2) 24%,transparent)}.lin-source{background:color-mix(in srgb,var(--c7) 22%,transparent)}
+.lin-sig{font-size:.8rem;color:var(--muted);margin-right:.25em}
