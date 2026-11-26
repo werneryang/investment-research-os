@@ -45,7 +45,7 @@ def test_ice_series_excluded():
 
 def test_committed_metrics_match_records_and_omit_local_levels():
     out = json.loads((ROOT / "methodology/records/market-drawdown-replay-metrics.json").read_text())
-    assert [e["id"] for e in out["events"]] == ["E1", "E2", "E3", "E4"]
+    assert [e["id"] for e in out["events"]] == ["E1", "E2", "E3", "E4", "E5"]
     for e in out["events"]:
         for p in e["points"]:
             for s in M["LEVELS_LOCAL_ONLY"]:
@@ -79,3 +79,22 @@ def test_manual_block_has_no_levels():
             for k, v in p.get("manual", {}).items():
                 if isinstance(v, dict):
                     assert "value" not in v and "at_peak" not in v, k
+
+
+def test_splits_adjust_pre_split_nav():
+    rows = [("2025-12-04", 291.0), ("2025-12-05", 146.6)]
+    adj = M["apply_splits"](rows, [("2025-12-05", 2.0)])
+    assert adj == [("2025-12-04", 145.5), ("2025-12-05", 146.6)]
+
+
+def test_window_return_counts_trading_days():
+    rows = [("d1", 100.0), ("d2", 110.0), ("d3", 99.0)]
+    assert M["window_return"](rows, "d2", 0, 0) == 10.0
+    assert M["window_return"](rows, "d2", 0, 1) == -1.0
+    assert M["window_return"](rows, "d1", 0, 0) is None
+
+
+def test_ice_values_never_in_public_output():
+    text = (ROOT / "methodology/records/market-drawdown-replay-metrics.json").read_text()
+    for s in M["ICE_SERIES"]:
+        assert s not in text

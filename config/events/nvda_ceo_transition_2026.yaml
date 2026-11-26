@@ -7,15 +7,17 @@ schema_version: event.v1
 event_id: nvda_ceo_transition_2026
 entity: co_nvidia
 title:
-  zh: NVIDIA 首席执行官离任
-  en: NVIDIA chief executive resignation
+  zh: NVIDIA 首席执行官离任与回任
+  en: NVIDIA chief executive resignation and reinstatement
 event_date: "2026-11-11"
-# 截至这一天查阅了 EDGAR 的申报列表：2026-11-12 之后没有新的 8-K
-as_of: "2026-11-15"
+# 截至这一天查阅了 EDGAR 的申报列表：2026-11-23 之后没有新的 8-K（上一次查阅 2026-11-15）
+as_of: "2026-11-26"
 filings_checked:
   list: https://data.sec.gov/submissions/CIK0001045810.json
-  checked_at: "2026-11-15"
-  note: 2026 年 6 月以来的 8-K、10-Q 与 10-K；第 5.02 项（高管与董事变动）共两份，均已登记
+  checked_at: "2026-11-26"
+  note: >-
+    2026 年 6 月以来的 8-K、10-Q 与 10-K；第 5.02 项（高管与董事变动）共三份（2026-07-02、2026-11-12、2026-11-23 接受），均已登记。
+    2026-11-17 接受的 8-K 为第 2.02 项（季度业绩），只登记它确认日程已按时发生的一句。
 
 documents:
   - id: doc_nvda_8k_20261111
@@ -45,6 +47,33 @@ documents:
     sha256: 7ded7313c04731e78c422ea16d6bb3f6b1b6bffd9998c0023d1c2fc76e7c336f
     accepted_at: "2026-07-02T09:23:16-04:00"
     retrieved_at: "2026-11-15"
+  - id: doc_nvda_8k_20261117
+    accession: 0001045810-26-000088
+    form: 8-K
+    items: ["2.02", "9.01"]
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000088/nvda-20261117.htm
+    file: nvda-20261117.htm
+    sha256: 0a9fd6b1260e8425ca38d9d9381fa32c7faa4414ebb500e1de7b57c58ded7434
+    accepted_at: "2026-11-17T16:20:51-05:00"
+    retrieved_at: "2026-11-26"
+  - id: doc_nvda_8k_20261122
+    accession: 0001045810-26-000090
+    form: 8-K
+    items: ["5.02", "9.01"]
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000090/nvda-20261122.htm
+    file: nvda-20261122.htm
+    sha256: 3779c41ebbd37a57bdca3468899bd1e0fbf4be8879ea5144f3e0e5bca8c43fbc
+    accepted_at: "2026-11-23T08:57:54-05:00"
+    retrieved_at: "2026-11-26"
+  - id: doc_nvda_8k_20261122_ex991
+    accession: 0001045810-26-000090
+    form: 8-K EX-99.1
+    items: []
+    url: https://www.sec.gov/Archives/edgar/data/1045810/000104581026000090/nov23pressrelease.htm
+    file: nov23pressrelease.htm
+    sha256: 754875af21f9a417b9978646af22a3ab71fede84134b7bb32a6e1c2d29797ac2
+    accepted_at: "2026-11-23T08:57:54-05:00"
+    retrieved_at: "2026-11-26"
   # 已在产业链登记（config/supply_chain/claims.yaml）的年报，复用那里的出处与 SHA256
   - id: doc_nvda_10k_fy2026
     catalog: supply_chain
@@ -151,18 +180,78 @@ facts:
     statement:
       zh: 董事会开始寻找正式的首席执行官，内部和外部人选都会考虑
       en: The board is starting a search for a permanent CEO and will consider internal and external candidates
+  # 原为 scheduled（11-11 新闻稿公布的日程）；2026-11-26 按实际发生的情况改登为 11-17 的 8-K 第 2.02 项
   - id: f_q3_results
     date: "2026-11-17"
-    kind: scheduled
-    document: doc_nvda_8k_20261111_ex991
+    kind: related
+    document: doc_nvda_8k_20261117
+    locator: Item 2.02
+    excerpt: >-
+      On November 17, 2026, NVIDIA Corporation, or the Company, issued a press release announcing its results for the
+      quarter ended October 25, 2026.
+    statement:
+      zh: 公司按 11-11 公布的日程，于 11 月 17 日发布截至 2026 年 10 月 25 日季度的业绩新闻稿
+      en: As scheduled on 11 November, the company issued its results press release for the quarter ended 25 October 2026 on 17 November
+  - id: f_huang_reinstated
+    date: "2026-11-22"
+    kind: event
+    document: doc_nvda_8k_20261122
+    locator: Item 5.02
+    excerpt: >-
+      On November 22, 2026, the Board of Directors of NVIDIA Corporation reinstated Jen-Hsun Huang as NVIDIA’s President,
+      Chief Executive Officer and member of the Board of Directors, effective immediately.
+    statement:
+      zh: 董事会恢复黄仁勋的总裁、首席执行官和董事职务，即时生效
+      en: The board reinstated Jen-Hsun Huang as President, CEO and director, effective immediately
+  - id: f_kress_cfo_only
+    date: "2026-11-22"
+    kind: event
+    document: doc_nvda_8k_20261122
+    locator: Item 5.02
+    excerpt: >-
+      Following the reinstatement of Mr. Huang, Ms. Kress will continue to serve as NVIDIA’s Executive Vice President and
+      Chief Financial Officer.
+    statement:
+      zh: 黄仁勋回任后，Kress 继续任执行副总裁兼首席财务官
+      en: After Huang's reinstatement, Kress continues as EVP and CFO
+  - id: f_jones_stays_chair
+    date: "2026-11-23"
+    kind: event
+    document: doc_nvda_8k_20261122_ex991
+    locator: Exhibit 99.1
+    excerpt: Mr. Jones will continue to serve as Board chair.
+    statement:
+      zh: 新闻稿说明 Harvey C. Jones 继续任董事会主席
+      en: The press release says Harvey C. Jones continues as Board chair
+  - id: f_investigation_continues
+    date: "2026-11-23"
+    kind: event
+    document: doc_nvda_8k_20261122_ex991
+    locator: Exhibit 99.1
+    excerpt: The Board reiterated that the committee’s investigation will proceed to conclusion.
+    statement:
+      zh: 新闻稿说明，董事会此前成立的独立董事调查委员会的调查会继续进行到结束
+      en: The press release says the investigation by the independent-director committee the board had formed will proceed to conclusion
+  - id: f_ns_committee
+    date: "2026-11-23"
+    kind: event
+    document: doc_nvda_8k_20261122_ex991
     locator: Exhibit 99.1
     excerpt: >-
-      NVIDIA will report its third-quarter fiscal 2027 financial results on Tuesday, November 17, at approximately 1:20 p.m.
-      PT, as previously scheduled, followed by its earnings call at 2 p.m. PT.
+      The Board also recently formed a National Security and Export Control Committee comprised solely of independent
+      directors to oversee trade compliance and national security risks.
     statement:
-      zh: 公司按原定日程于 11 月 17 日公布 2027 财年第三季度业绩并召开电话会
-      en: The company will report fiscal 2027 third-quarter results and hold its call on 17 November, as previously scheduled
-
+      zh: 董事会新近成立由独立董事组成的国家安全与出口管制委员会，监督贸易合规与国家安全风险
+      en: The board recently formed a National Security and Export Control Committee of independent directors to oversee trade compliance and national security risks
+  - id: f_cco_search
+    date: "2026-11-23"
+    kind: event
+    document: doc_nvda_8k_20261122_ex991
+    locator: Exhibit 99.1
+    excerpt: NVIDIA is commencing a search to fill a new position, Chief Compliance Officer,
+    statement:
+      zh: 公司开始招聘新设的首席合规官职位
+      en: The company is starting a search for a newly created Chief Compliance Officer position
 not_mentioned:
   - id: n_reason
     item:
@@ -188,3 +277,9 @@ not_mentioned:
       en: Severance or other separation arrangements
     documents: [doc_nvda_8k_20261111, doc_nvda_8k_20261111_ex991]
     terms: [severance, separation]
+  - id: n_reinstatement_terms
+    item:
+      zh: 回任时的薪酬或聘用条款
+      en: Pay or employment terms on reinstatement
+    documents: [doc_nvda_8k_20261122, doc_nvda_8k_20261122_ex991]
+    terms: [salary, severance, employment agreement]
