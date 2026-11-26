@@ -1,0 +1,269 @@
+{
+  "run_id": "us_asset_history-20261126T192903Z-61603278",
+  "study_id": "us_asset_history",
+  "study_path": "config/studies/us_asset_history.yaml",
+  "study_config": {
+    "study_id": "us_asset_history",
+    "title": "美国主要资产的长期回报与风险（1928 年起）",
+    "question": "1928 年以来，美国股票、小盘股、长期国债、公司债、国库券、房地产与黄金的回报与风险各是多少？扣除通胀后呢？资产之间的相关性在不同年代是否稳定？",
+    "result_type": "descriptive",
+    "branch": "asset_history",
+    "scope": {
+      "market": "US",
+      "currency": "USD",
+      "start": "1928-01-01",
+      "end": "2025-12-31",
+      "frequency": "annual",
+      "vintage_policy": "latest",
+      "evaluated_at": "2026-11-26T19:29:03+00:00",
+      "data_checked_at": {
+        "damodaran_histret": "2026-11-26T19:28:48+00:00",
+        "fred_cpiaucsl": "2026-11-26T19:28:38+00:00",
+        "french_ff3": "2026-11-26T19:28:46+00:00",
+        "shiller_real": "2026-11-26T19:28:51+00:00",
+        "fred_dtb3": "2026-11-26T19:28:45+00:00"
+      }
+    },
+    "data": {
+      "annual": "damodaran_histret",
+      "cpi": {
+        "dataset": "fred_cpiaucsl",
+        "required": false
+      },
+      "monthly_market": {
+        "dataset": "french_ff3",
+        "required": false
+      },
+      "long_real": {
+        "dataset": "shiller_real",
+        "required": false
+      },
+      "tbill_check": {
+        "dataset": "fred_dtb3",
+        "required": false
+      }
+    },
+    "method": {
+      "assets": [
+        "SP500",
+        "SMALLCAP",
+        "TBOND10Y",
+        "BAA",
+        "TBILL3M",
+        "REALESTATE",
+        "GOLD"
+      ],
+      "real_start_year": 1948,
+      "periods": [
+        [
+          1928,
+          1969
+        ],
+        [
+          1970,
+          1999
+        ],
+        [
+          2000,
+          2025
+        ]
+      ],
+      "period_shift_years": 5,
+      "rolling_years": 20
+    },
+    "benchmark": "3 个月国库券（风险溢价的基准）",
+    "evaluation": [
+      "由数据重算的平均与原表汇总一致（接入核验）",
+      "标普 500 与 CRSP 市场年度回报相关 ≥ 0.98",
+      "国库券与 FRED DTB3 年均值差异 ≤ 0.5 个百分点",
+      "月度最大回撤不浅于年度",
+      "固定数据版本可重现（iros verify）"
+    ],
+    "limitations": [
+      "只描述美国历史；美国是事后表现最好的市场之一，存在幸存者偏差，不代表其他市场或未来",
+      "债券回报由收益率推算，不是指数实际持有回报；房地产为房价变化，不含租金；黄金在 1971 年以前价格基本固定；国库券回报为年内平均利率",
+      "不含交易成本、税负与管理费；年度数据低估年内回撤",
+      "实际回报从 1948 年起（CPI 12 月对 12 月）；相关系数只描述线性同向程度，样本只有几十个年度观测",
+      "历史统计不是预测，也不是配置建议"
+    ]
+  },
+  "study_config_hash": "1f2185a12abc9256d0528e3252a0b63d378617c16be56b1afaee8327007e105c",
+  "started_at": "2026-11-26T19:29:03+00:00",
+  "code": {
+    "package_version": "0.1.0",
+    "source_hash": "9f859d8eab0cc05dcd7a1415d6bbbe2c01ff38463020c9afd489e66d81139877",
+    "git_commit": "b47560a8d550078c219ec746e5e1cf0363d81179",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.16",
+    "pandas": "3.1.0",
+    "numpy": "2.5.4",
+    "pyarrow": "26.0.0",
+    "matplotlib": "3.11.2",
+    "pyyaml": "6.0.3"
+  },
+  "pins": {},
+  "status": "success",
+  "inputs": [
+    {
+      "role": "annual",
+      "used": true,
+      "dataset_id": "damodaran_histret",
+      "version_id": "v20261126T192848Z-864ffa5e",
+      "content_hash": "864ffa5e6134ff8ec097a83c6c6c40804b27d852a4af4408d36493e65724668e",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "1928-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-25"
+        ]
+      }
+    },
+    {
+      "role": "cpi",
+      "used": true,
+      "dataset_id": "fred_cpiaucsl",
+      "version_id": "v20261126T192838Z-5782fbf5",
+      "content_hash": "5782fbf5d1df34f09fc2ddb6dd5e823194f7702be1a22242e94870ea31f7b9af",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "partial",
+        "uncovered": [
+          [
+            "1928-01-01",
+            "1947-11-30"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "1947-12-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-11-15"
+        ]
+      }
+    },
+    {
+      "role": "monthly_market",
+      "used": true,
+      "dataset_id": "french_ff3",
+      "version_id": "v20261126T192846Z-c7e0022f",
+      "content_hash": "c7e0022fd9460aa944c366e1e6d4b4ad8dfc867b669751af8b5f0b99408a472c",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "in_scope",
+        "uncovered": [],
+        "verified_ranges": [
+          [
+            "1928-01-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-25"
+        ]
+      }
+    },
+    {
+      "role": "long_real",
+      "used": true,
+      "dataset_id": "shiller_real",
+      "version_id": "v20261126T192851Z-debd2936",
+      "content_hash": "debd2936b774fcb454c36e1be2cdc4f2d3a59e66794e78e7740e9cd470f0c5a9",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "partial",
+        "uncovered": [
+          [
+            "1928-01-01",
+            "1947-11-30"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "1947-12-01",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-10-25"
+        ]
+      }
+    },
+    {
+      "role": "tbill_check",
+      "used": true,
+      "dataset_id": "fred_dtb3",
+      "version_id": "v20261126T192845Z-4ba0e8b1",
+      "content_hash": "4ba0e8b128d9aa9984530364515f98cde7d90b7ceffbdbdb3b828f30baa5383d",
+      "source_status": "use_verified",
+      "use": "descriptive",
+      "use_scope": {
+        "status": "partial",
+        "uncovered": [
+          [
+            "1928-01-01",
+            "1954-01-03"
+          ]
+        ],
+        "verified_ranges": [
+          [
+            "1954-01-04",
+            "2025-12-31"
+          ]
+        ],
+        "record_dates": [
+          "2026-11-15"
+        ]
+      }
+    }
+  ],
+  "result_hash": "0fa5bf23e74bca596b33ed3200fa425bd94ccdf4d9aaac32f49b655f8caa853e",
+  "warnings": [],
+  "unsupported": [],
+  "outputs": [
+    {
+      "path": "runs/us_asset_history-20261126T192903Z-61603278/result.json",
+      "sha256": "0e40cf848f70f966dd61c6bc82cb7a890838ea337c5dd27ef4c63c1d3d3cb0ff"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261126T192903Z-61603278/report.md",
+      "sha256": "e0f791c99dcf0a61055e41a7fa0980fffc4b36c5f166ded78c3138bef16443ed"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261126T192903Z-61603278/report.html",
+      "sha256": "0859848731b42be64e1fb6fc84a021075086b8bb3bc92acc7cefb1e45c93544d"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261126T192903Z-61603278/figures/risk_return.png",
+      "sha256": "e12023f2dbe89c42836928d040e98df0432b5487b8595fe32bf690ec672c1f67"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261126T192903Z-61603278/figures/wealth.png",
+      "sha256": "b138f253643c2789058b4840dead63dc093ac13a4144798d59464f3527bc7032"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261126T192903Z-61603278/figures/correlations.png",
+      "sha256": "e68837847f7d509fa84fd17417115dbd2df63eb5e01805a02928b171e3ac61f7"
+    },
+    {
+      "path": "reports/us_asset_history/us_asset_history-20261126T192903Z-61603278/figures/rolling.png",
+      "sha256": "401135ddd9cce4796ba5144ccd8ddfd39ec8aed3324575c3c9f88c19ad8c9cc7"
+    }
+  ],
+  "finished_at": "2026-11-26T19:29:04+00:00"
+}
