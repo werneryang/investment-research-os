@@ -1,0 +1,122 @@
+# 方法卡 market-drawdown-layer-diagnosis 的执行实测：历史事件回放 E4。
+# 只写步骤编号和执行结果，不含方法卡正文。数值由 scripts/market_drawdown_replay.py 计算，
+# 汇总值见 market-drawdown-replay-metrics.json（同目录）。
+id: fred-us-market-drawdown-2024-20261126
+record_type: application
+status: draft
+
+expected:
+  event: E4 2024 年 8 月日元套息平仓
+  window: {peak: "2024-07-10", trough: "2024-08-19"}
+  expected_layer: "只到第 2 层，很快修复"
+  qualitative_source:
+    title: "BIS Quarterly Review, September 2024, \"Carry off, carry on\""
+    published_on: "2024-09-16"
+    locator: "https://www.bis.org/publ/qtrpdf/r_qt2409a.htm"
+    bibliography_check: "2026-11-26 核实：BIS 官网页面存在，《季度评论》2024 年 9 月的市场综述章，覆盖 6-1 至 9-6。只核实了书目，没有逐段核对正文。同期另有 BIS Bulletin No 90（2024-08-27）专讲 8 月动荡，未使用。"
+    replaced: false
+  source_bias: "无来源偏差：方法卡来源视频作者没有提到这次事件。"
+  sequence_note: "预期层级在任务说明中、取数之前已经给定；本文件是取数后写成的，预期一字未改。"
+
+source:
+  type: official
+  title: "FRED / ALFRED 序列（圣路易斯联储），French 12 行业月度收益（本机）"
+  locator: "scripts/market_drawdown_replay.py；methodology/records/market-drawdown-replay-metrics.json"
+  outcome_known: true
+
+extraction:
+  extracted_on: "2026-11-26"
+  method: ai_assisted
+  tool: "Claude Code（Opus 5.5），investment-research-os 会话"
+  review: "pending：等用户复核"
+  quality_notes: "层级判定是执行者按卡的步骤作出的推导（ai_inference）。"
+
+point_in_time:
+  rule: "日度收盘值取观测日 ≤ 时点；NFCI 及分项、STLFSI4、美元广义指数、日元汇率都取 ALFRED 当日版本，四个事件里只有这一个全部是当时版本。"
+  equity_index: "SP500（另看 NASDAQCOM）"
+
+method_output:
+  as_of_points:
+    - as_of: "2024-08-02"
+      label: 急跌中（7 月就业数据当日）
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口（付费）。就业数据弱于预期，市场担心增长，属盈利变数，但没有修正数据可量化。"
+        rates: "10 年期名义 3.80%，近 1 周 -40bp；实质 1.76%。利率在降。"
+        accelerators:
+          - {event: "日本央行加息并公布减少购债", first_report: "2024-07-31", vs_peak: after, note: "日期未逐条核对"}
+          - {event: "美国 7 月非农就业弱于预期", first_report: "2024-08-02", vs_peak: after}
+        ledger: {removed: [], unchanged: [], added: ["日元利率上升", "美国增长担忧"]}
+      how_it_falls: "当时不可判断。事后对照（post_hoc）：7 月市场 +1.7%，公用事业 +6.4%、必需消费 +4.8%、金融 +7.7%；资金从大型科技股转向其他板块（纳斯达克自见顶 -10%，标普 -5%），像第 1 层的轮动。"
+      everything_falls_split: "利率在降，比特币近 1 周 -9.5%，美元广义指数平，日元自见顶升 4.9%：卡只看美元强弱，没有涵盖“融资货币升值”。"
+      flows: {foreign: "不适用（G03）", margin_balance: "缺口；NFCI 杠杆分项 -0.08（当日版本，到 7-26），无变化", fx: "日元兑美元 153.86，自见顶升 4.9%"}
+      credit: {aggregate: "Baa 利差 1.80%（第 26 百分位），自见顶 +24bp", local: []}
+      structure: {concentration: "缺口：大型科技股集中度高，未取权重数据", leverage: "NFCI -0.58（当日版本）", fx: "日元升值使套息头寸亏损"}
+      layer_now: [1, 2]
+      bottoms: {forced_selling: "VIX 23.39、VIX/VIX3M 1.00：刚到倒挂边缘", valuation: "利率在降，第 1 层变数之一在转好"}
+      watchlist:
+        - {layer: 2, indicator: "日元是否继续急升", date: "每日"}
+        - {layer: 1, indicator: "FOMC", date: "2024-09-18"}
+      equity_research_note: "第 1 层轮动叠加第 2 层去杠杆的开头。"
+
+    - as_of: "2024-08-05"
+      label: 急跌当日（日本股市暴跌）
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口。"
+        rates: "10 年期名义 3.78%，实质 1.71%，利率继续降。"
+        accelerators: []
+        ledger: {removed: [], unchanged: ["增长担忧"], added: ["套息平仓蔓延到全球"]}
+      how_it_falls: "当日不可判断。"
+      everything_falls_split: "利率在降、债券在涨，比特币一周 -19%：照第 3 步字面，利率解释不了，属第 3 层抢现金；但美元广义指数一周 -0.2% 没有走强，与抢美元不符。"
+      flows: {foreign: "不适用", margin_balance: "缺口", fx: "日元兑美元 146.98，自见顶升 9.1%：套息头寸在被平"}
+      credit: {aggregate: "Baa 利差 1.85%（第 30 百分位），自见顶 +29bp", local: ["NFCI 信用分项 -0.11（当日版本，到 7-26）"]}
+      structure: {concentration: "缺口", leverage: "STLFSI4 -0.60（当日版本，到 7-26）", fx: "日元急升"}
+      layer_now: [2]
+      bottoms: {forced_selling: "VIX 38.57（收盘）、VIX/VIX3M 1.14：倒挂，强制卖出在发生", valuation: "利率在降"}
+      watchlist:
+        - {layer: 2, indicator: "日元是否止升、VIX 期限结构是否转回升水", date: "每日"}
+        - {layer: 4, indicator: "Baa 利差", date: "每日"}
+      equity_research_note: "第 2 层：被迫卖出与公司好坏无关，这几天的个股反应要标注。"
+
+    - as_of: "2024-08-19"
+      label: 修复后
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口。"
+        rates: "10 年期名义 3.86%，与 8-5 接近。"
+        accelerators: []
+        ledger: {removed: ["日元急升"], unchanged: ["增长担忧缓和"], added: []}
+      how_it_falls: "事后对照（post_hoc）：8 月市场 +2.1%，医疗 +6.4%、公用事业 +4.6%。"
+      everything_falls_split: "比特币一周持平，美元一周 -0.4%：不再一起跌。"
+      flows: {foreign: "不适用", margin_balance: "缺口", fx: "日元兑美元 148.13，不再升"}
+      credit: {aggregate: "Baa 利差 1.68%（第 18 百分位），回落", local: []}
+      structure: {concentration: "缺口", leverage: "NFCI -0.50（当日版本，到 8-9）", fx: "日元稳定"}
+      layer_now: [1]
+      bottoms: {forced_selling: "VIX 14.65、VIX/VIX3M 0.83，回到升水：第一个底在 8-5 前后已过", valuation: "标普离见顶只差 0.5%，谈不上估值底"}
+      watchlist:
+        - {layer: 1, indicator: "FOMC", date: "2024-09-18"}
+        - {layer: 2, indicator: "日本央行会议", date: "2024-09-20"}
+      equity_research_note: "回到第 1 层；8-1 至 8-7 的个股反应要单独标注。"
+
+  diagnosis: "8-5 前后到第 2 层（日元急升、VIX 期限结构倒挂、比特币急跌），信用利差始终在历史低位，两周内修复。"
+  comparison_with_expected: "一致（预期只到第 2 层、很快修复），但第 3 步照字面会判到第 3 层；判为第 2 层是执行者看美元没有走强、日元急升作出的推断。"
+
+execution:
+  steps: [1, 2, 3, 4, 5, 6, 7, 8]
+  reached: "八步都有输出；第 2、3 层的分界照卡判不出，靠卡之外的日元和美元判断。"
+  first_guess: "第 3、4 步：第 2 层和第 3 层怎样分（卡的待补充 G02）。8-5 利率降而比特币急跌，照第 3 步是第 3 层；卡的汇率看的是本币贬值和美元走强，没有说融资货币（日元）急升时该判哪层。"
+  consistent_with_expected: true
+  data_gaps:
+    - "第 1 步：一致预期盈利修正（付费）"
+    - "第 2 步：日度板块价格"
+    - "第 3 步：黄金价格"
+    - "第 4 步：FINRA 保证金债务；投机性日元头寸（CFTC 持仓未接入）"
+    - "第 5 步：高收益债利差（ICE 不用）、HYG"
+    - "第 6 步：指数集中度"
+  substitutes:
+    - "防御股 → French 12 行业月度收益，事后数据"
+    - "高收益债利差 → BAA10Y"
+    - "杠杆 → 日元兑美元 DEXJPUS 与 NFCI 杠杆分项"
+    - "强制交易 → VIX / VIX3M"
+  review: pending

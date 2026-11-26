@@ -1,0 +1,125 @@
+# 方法卡 market-drawdown-layer-diagnosis 的执行实测：历史事件回放 E2。
+# 只写步骤编号和执行结果，不含方法卡正文。数值由 scripts/market_drawdown_replay.py 计算，
+# 汇总值见 market-drawdown-replay-metrics.json（同目录）。
+id: fred-us-market-drawdown-2008-20261126
+record_type: application
+status: draft
+
+expected:
+  event: E2 2008 年金融危机（重点是 2008 年 9 月雷曼倒闭以后）
+  window: {peak: "2007-10-09", trough: "2009-03-09"}
+  expected_layer: "走到第 4 层"
+  qualitative_source:
+    title: "Financial Crisis Inquiry Commission, The Financial Crisis Inquiry Report (Official Government Edition)"
+    published_on: "2011-01"
+    locator: "https://fdlp.gov/fcic-report；GPO 永久链接 https://purl.fdlp.gov/GPO/gpo3449"
+    bibliography_check: "2026-11-26 核实：联邦存放图书馆与 FCIC 历史页确认，委员会 2011-01-27 提交，GPO 官方版 2011 年 1 月。只核实了书目，没有逐页核对正文。"
+    replaced: false
+  source_bias: "来源偏差：2008 年是方法卡来源视频作者自己举过的例子（第 5 步用它作信用利差的对照水平），回放结果与作者叙述一致不构成独立检验。"
+  sequence_note: "预期层级在任务说明中、取数之前已经给定；本文件是取数后写成的，预期一字未改。"
+
+source:
+  type: official
+  title: "FRED / ALFRED 序列（圣路易斯联储），French 12 行业月度收益（本机）"
+  locator: "scripts/market_drawdown_replay.py；methodology/records/market-drawdown-replay-metrics.json"
+  outcome_known: true
+
+extraction:
+  extracted_on: "2026-11-26"
+  method: ai_assisted
+  tool: "Claude Code（Opus 5.5），investment-research-os 会话"
+  review: "pending：等用户复核"
+  quality_notes: "层级判定是执行者按卡的步骤作出的推导（ai_inference）。"
+
+point_in_time:
+  rule: "日度收盘值取观测日 ≤ 时点。2008 年早于所有周度序列的 ALFRED 首个版本（NFCI 2011、美元广义指数 2019、STLFSI4 2022、日元汇率 2014），这些都只能用当前版本按发布滞后截断，标 post_hoc_vintage：NFCI 当时还不存在（2011 年才发布），STLFSI 也是 2010 年才有，当时的人看不到这些指数。"
+  equity_index: "NASDAQCOM（FRED 上的标普 500 只有最近 10 年）"
+
+method_output:
+  as_of_points:
+    - as_of: "2008-09-19"
+      label: 雷曼倒闭当周
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口（付费）。"
+        rates: "10 年期名义 3.78%，自见顶 -89bp；实质 1.85%，-49bp。利率在降，不是第 1 层的利率压力。"
+        accelerators:
+          - {event: "法国巴黎银行冻结三只基金赎回", first_report: "2007-08-09", vs_peak: before, note: "早于股市见顶：按第 1 步这是候选起点，不是加速器；日期未逐条核对"}
+          - {event: "贝尔斯登被收购", first_report: "2008-03-16", vs_peak: after}
+          - {event: "雷曼申请破产；AIG 救助；货币基金跌破面值", first_report: "2008-09-15", vs_peak: after}
+        ledger: {removed: [], unchanged: [], added: ["投行倒闭", "货币基金挤兑"]}
+      how_it_falls: "当时不可判断。事后对照（post_hoc）：9 月市场 -9.2%，公用事业 -11.8%、医疗 -6.0%、必需消费 -3.0%，金融 -4.9%。"
+      everything_falls_split: "利率在降、债券在涨；黄金缺口，比特币不存在；美元近 4 周 +2.0%。按第 3 步，股跌而利率降、只剩美元走强，利率解释不了。"
+      flows: {foreign: "不适用（G03）", margin_balance: "缺口；替代 NFCI 杠杆分项 2.48（post_hoc_vintage）", fx: "美元广义指数近 4 周 +2.0%"}
+      credit: {aggregate: "Baa 利差 3.77%（1986 年以来第 99.8 百分位），自见顶 +187bp", local: ["TED 利差 2.24%（第 99.6 百分位，近 4 周 +110bp）：银行间放款在收缩", "NFCI 信用分项 1.29（post_hoc_vintage）"]}
+      structure: {concentration: "缺口", leverage: "NFCI 1.24（post_hoc_vintage，历史最高区间）", fx: "不适用"}
+      layer_now: [3, 4]
+      bottoms: {forced_selling: "VIX/VIX3M 1.14，已倒挂；未见底", valuation: "当时看不到"}
+      watchlist:
+        - {layer: 4, indicator: "TED 利差与 Baa 利差", date: "每日"}
+        - {layer: 1, indicator: "下一次 FOMC", date: "2008-10-29"}
+      equity_research_note: "第 4 层：金融机构倒闭，个股反应读不得，扣市场收益也不够。"
+
+    - as_of: "2008-10-10"
+      label: 急跌周
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口。"
+        rates: "10 年期名义 3.89%（近 1 周 +26bp）；实质 2.97%（近 1 周 +79bp）。实质利率一周大涨而名义小涨，像通胀保值债被抛售，不像利率预期变化。"
+        accelerators:
+          - {event: "国会通过问题资产救助计划", first_report: "2008-10-03", vs_peak: after}
+          - {event: "多国央行联合降息", first_report: "2008-10-08", vs_peak: after}
+        ledger: {removed: [], unchanged: ["信用冻结"], added: ["政策开始介入，但还未见效"]}
+      how_it_falls: "事后对照（post_hoc）：10 月市场 -17.1%，公用事业 -11.1%、必需消费 -13.4%、医疗 -11.0%、金融 -20.2%：不分好坏都跌。"
+      everything_falls_split: "股一周 -15%，实质利率上升，美元一周 +3.2%：抢现金加美元挤兑，属第 3 层；美元越强越说明是全球性的。"
+      flows: {foreign: "不适用", margin_balance: "缺口", fx: "美元一周 +3.2%"}
+      credit: {aggregate: "Baa 利差 4.86%（第 100 百分位），自见顶 +296bp", local: ["TED 利差 4.58%，历史最高", "STLFSI4 7.30（post_hoc_vintage）"]}
+      structure: {concentration: "缺口", leverage: "NFCI 2.08（post_hoc_vintage）", fx: "不适用"}
+      layer_now: [2, 3, 4]
+      bottoms: {forced_selling: "VIX 69.95、VIX/VIX3M 1.37：踩踏中", valuation: "未到"}
+      watchlist:
+        - {layer: 4, indicator: "TED 利差是否回落", date: "每日"}
+        - {layer: 1, indicator: "FOMC", date: "2008-10-29"}
+      equity_research_note: "第 2–4 层同时：被迫卖出与公司好坏无关。"
+
+    - as_of: "2009-03-09"
+      label: 谷底
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口。"
+        rates: "10 年期名义 2.89%，自见顶 -178bp。"
+        accelerators: []
+        ledger: {removed: ["银行间挤兑（TED 回到 1.08%）"], unchanged: ["企业信用利差高位"], added: ["经济衰退兑现"]}
+      how_it_falls: "事后对照（post_hoc）：2 月市场 -10.1%，公用事业 -12.5%、医疗 -10.8%、金融 -15.4%：仍是一起跌。"
+      everything_falls_split: "利率在降，美元自见顶 +16.6%：利率解释不了，仍有抢美元。"
+      flows: {foreign: "不适用", margin_balance: "缺口", fx: "美元自见顶 +16.6%，日元升 17%"}
+      credit: {aggregate: "Baa 利差 5.40%（第 98.8 百分位），自见顶 +350bp", local: ["TED 利差 1.08%，自高点大幅回落：银行间这一段被政策修住"]}
+      structure: {concentration: "缺口", leverage: "NFCI 2.16（post_hoc_vintage）", fx: "不适用"}
+      layer_now: [4]
+      bottoms: {forced_selling: "VIX/VIX3M 1.07，仍倒挂；当天看不出是底", valuation: "当天看不出"}
+      watchlist:
+        - {layer: 1, indicator: "FOMC", date: "2009-03-18"}
+        - {layer: 4, indicator: "Baa 利差是否回落", date: "每日"}
+      equity_research_note: "第 4 层未退；当天没有信号表明这是谷底。"
+
+  diagnosis: "雷曼后三个时点都在第 4 层：Baa 与 TED 利差都在 1986 年以来最高区间；10 月一周的实质利率和美元急升显示第 3 层的抢现金同时发生。"
+  comparison_with_expected: "一致（预期走到第 4 层）。"
+
+execution:
+  steps: [1, 2, 3, 4, 5, 6, 7, 8]
+  reached: "八步都有输出；第 5 步的整体信用可判，卡列的局部指标（ABS、单一公司 CDS）没有公开历史，用 TED 利差代替。"
+  first_guess: "第 1 步：信用事件（2007-08 基金冻结）早于股市见顶，按卡的规则它是起点而不是加速器，但卡的叙述是从第 1 层起跌，没有说起点在第 4 层时怎样往下走（卡的方法失效条件已提到这个疑问）。"
+  consistent_with_expected: true
+  data_gaps:
+    - "第 1 步：一致预期盈利修正（付费）"
+    - "第 2 步：日度板块价格；道琼与标普 500 在 FRED 只有最近 10 年，改用纳斯达克综合"
+    - "第 3 步：黄金价格；比特币当时不存在"
+    - "第 4 步：FINRA 保证金债务（未接入）"
+    - "第 5 步：高收益债利差（ICE 不用）、单一公司 CDS、ABS 利差（无公开历史）"
+    - "当时没有 NFCI、STLFSI：金融条件指数只能事后看"
+  substitutes:
+    - "防御股 → French 12 行业月度收益，事后数据"
+    - "高收益债利差 → BAA10Y；银行间局部信用 → TEDRATE"
+    - "股票指数 → NASDAQCOM"
+    - "抢现金 → 10 年期实质利率一周变化（DFII10），执行时补充，卡没有提"
+  review: pending

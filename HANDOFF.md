@@ -2,7 +2,7 @@
 
 按 README「开发流程」约定：开始任务时先读本文件，结束时如有待接手事项再更新。已完成的条目保留结论，方便核对。
 
-更新于 2026-11-19。
+更新于 2026-11-26。
 
 ## 1. FRED 当前版本序列改走官方 API（已完成）
 
@@ -76,6 +76,11 @@
 - [已处理 2026-11-15] 2026-11-15 · 词表（不是某张卡）· — · 本仓库的研究问题词表增加了第 11 类「事件与反应」，方法卡的 question 字段沿用这份词表，请决定是否同步 · docs/research-classification.md §2.2
 - [已处理 2026-11-16] 2026-11-15 · event-study-abnormal-return · 所需数据 · 卡写日收益取自「公开行情，复权」，但没写怎样取得、许可有什么限制：准备执行时没找到免注册的免费复权日价（有的来源对脚本下载加了浏览器验证，有的要注册、免费版限个人内部使用），市场指数在 FRED 只有不含股息的价格指数、标普 500 只有最近 10 年；请补「取得方式与许可」或列为执行前提 · HANDOFF.md 第 6 项、config/sources.yaml 的 fred_sp500 核验记录 · 处理结果：已列为执行前提，来源由本仓库定
 - [已处理 2026-11-19] 2026-11-19 · 模版（不是某张卡）· 报告的图 · 方法库 templates/README.md「报告的图」表中标「待实现」的图型已可用，请方法库把替代说明去掉 · docs/note-figures.md §3 · 处理结果：方法库提交 c4e0b27 已去掉替代说明，直接写新图型
+- [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 第 3 步 · 只按利率方向分层：2020-03-18 联储降到零利率后国债收益率一周 +36bp（实质 +69bp），照字面是第 1 层的“利率上升一起重估”，实际是国债被抢着卖成现金（第 3 层）；需要写怎样区分利率预期变化和被迫抛售国债 · methodology/records/fred-us-market-drawdown-2020-20261126.yaml
+- [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 第 3、4 步 · 第 2、3 层分不开（G02）：2024-08-05 利率降而比特币急跌，照第 3 步是第 3 层，但美元没走强、日元（融资货币）急升，更像第 2 层的套息去杠杆；卡的汇率只讲本币贬值和美元走强，没讲融资货币升值 · methodology/records/fred-us-market-drawdown-2024-20261126.yaml
+- [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 第 2 步 · 没说“防御股”选哪些：利率驱动的下跌里公用事业这类利率敏感板块本身会跌（2022-09 跌得比市场多），按它判“撑不住”会误判出第 2 层 · methodology/records/fred-us-market-drawdown-2022-20261126.yaml
+- [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 第 1 步 · 起点在信用层时怎样走：2008 年的基金冻结（2007-08）早于股市见顶，按第 1 步是起点不是加速器，但卡的叙述从第 1 层起跌（卡的方法失效条件已提到这一疑问） · methodology/records/fred-us-market-drawdown-2008-20261126.yaml
+- [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 所需数据 · 美国执行时卡里多项数据无公开免费历史：黄金（FRED 已无 LBMA 金价）、板块 ETF 日价、HYG、FINRA 保证金债务、单一公司 CDS 和 ABS 利差、一致预期盈利修正；ICE 高收益债利差在 FRED 只留 3 年且许可受限。卡的“整理时补充”可考虑写替代指标（Baa 利差、TED 利差、NFCI 分项、VIX/VIX3M、实质利率一周变化）或列为执行前提 · 四份回放记录的 data_gaps
 
 ## 8. NVIDIA FY27 Q3 季度研究：FCF 口径适配与网站待办
 
@@ -132,3 +137,13 @@
 - 待办：（1）**归类待原作者确认**：矩阵的层次与时态归类是 AI 辅助整理（依据走查记录的 `temporal_status` 与 `limits`），图上标「推断」；原作者（research-os 会话）确认或更正后，在补充记录里改 `status`，需要改动时新增一条更正，不改已入库内容。（2）[已完成 2026-11-19] 产业链的「待兑现事项时间线」：`timeline` 图型已实现，见下一条。（3）[方法库已完成 2026-11-19] 方法库的分析结果模版已写「每节首选图」。
 - 第三批图型（2026-11-19）：`waterfall` 增长归因瀑布、`funnel` 客户转化阶段条、`tree` 层级树、`timeline` 时间线、`scenario` 情景区间与敏感性条（龙卷风式），5 种都已完整实现，各自带校验（瀑布对不上终点、阶段单位不同或后一阶段变大、树的 id 重复或关系指向不存在、日期不合法或区间倒置、情景区间倒置或超出坐标等都报错），没有只做一部分的。`docs/note-figures.md` 第 3 节的首选图表扩到六类结果（财报后更新、产业链、从头研究其余部分、估值检查、突发事件、持仓复核）。现有报告都还用不到这 5 种，没有给已发布报告加图；测试用夹具（`tests/test_note_figures.py`）。
 - 待办：（4）第一份用到这些图型的报告放行后，按记录里的结构化字段写图块；`tree`、`timeline` 需要记录里有节点/关系、事件列表这类结构化字段，走查记录没有时用补充记录（同 AAPL 归类的做法）。
+
+## 12. 市场下跌层级诊断的历史事件回放（执行实测，待用户复核）
+
+- 方法卡 market-drawdown-layer-diagnosis（方法库，draft）的执行实测：四个事件 E1 2022、E2 2008、E3 2020-03、E4 2024-08，每个 3 个观察时点，按卡的第 1–8 步和输出格式填写。记录在 `methodology/records/fred-us-market-drawdown-{2022,2008,2020,2024}-20261126.yaml`，汇总值 `methodology/records/market-drawdown-replay-metrics.json`。四个事件的诊断都与预期层级一致；E3 的“被政策截断”在观察时点内不可验证。复核结论都是 `pending`。
+- 取数与计算：`scripts/market_drawdown_replay.py`（直接调 FRED/ALFRED API，用 `.env` 的 key；缓存在 `data/drawdown_replay/`，不入库），测试 `tests/test_market_drawdown_replay.py`。`--offline` 只用缓存重算。没有在 `config/datasets.yaml` 登记新数据集（methodology 不接入研究体系）；NFCI 及分项、STLFSI4、VXVCLS、TEDRATE、CBBTCUSD、DEXJPUS 是脚本直接取的。
+- 时点规则：日度收盘值取观测日 ≤ 时点；周度或会修订的序列在 ALFRED 有版本时取当日版本，没有时用当前版本按发布滞后截断并标 `post_hoc_vintage`（2008 年的全部周度指数、2022 年以前的 STLFSI4）。French 12 行业月度收益当时未公布，只作事后对照，原始值不入库。
+- 复核日度序列不修订的假设：DGS10、DFII10、BAA10Y、VIXCLS 在有 ALFRED 版本的 38 个时点上，当前值与时点后 3 天的版本逐值相同（0 处不同）；2008 年这些序列没有版本，无法复核。
+- 公开输出只含汇总值：标普 500、纳斯达克、比特币只留百分比变化；不取 ICE 高收益债利差。
+- 缺口：黄金、板块 ETF 日价、HYG、FINRA 保证金债务都没有接入约定，按默认做法记为缺口并已向发起会话说明；如用户选定来源，补取后重跑。四份定性文献只核实了书目，没有逐页核对正文。
+- 写回方法库：`executions` 条目草稿交给 research-method-extraction 的会话，本仓库不写。方法问题见「给方法库」2026-11-26 的五条。

@@ -1,0 +1,125 @@
+# 方法卡 market-drawdown-layer-diagnosis 的执行实测：历史事件回放 E3。
+# 只写步骤编号和执行结果，不含方法卡正文。数值由 scripts/market_drawdown_replay.py 计算，
+# 汇总值见 market-drawdown-replay-metrics.json（同目录）。
+id: fred-us-market-drawdown-2020-20261126
+record_type: application
+status: draft
+
+expected:
+  event: E3 2020 年 3 月
+  window: {peak: "2020-02-19", trough: "2020-03-23"}
+  expected_layer: "到第 3 层，被政策截断"
+  qualitative_source:
+    title: "Financial Stability Board, Holistic Review of the March Market Turmoil"
+    published_on: "2020-11-17"
+    locator: "https://www.fsb.org/2020/11/holistic-review-of-the-march-market-turmoil/（PDF：fsb.org/uploads/P171120-2.pdf）"
+    bibliography_check: "2026-11-26 核实：FSB 官网页面存在，2020-11-17 发布，提交 G20。只核实了书目，没有逐页核对正文。"
+    replaced: false
+  source_bias: "来源偏差：2020 年是方法卡来源视频作者自己举过的例子（两个底的历史对照、第 5 步信用利差的对照水平），回放结果与作者叙述一致不构成独立检验。"
+  sequence_note: "预期层级在任务说明中、取数之前已经给定；本文件是取数后写成的，预期一字未改。"
+
+source:
+  type: official
+  title: "FRED / ALFRED 序列（圣路易斯联储），French 12 行业月度收益（本机）"
+  locator: "scripts/market_drawdown_replay.py；methodology/records/market-drawdown-replay-metrics.json"
+  outcome_known: true
+
+extraction:
+  extracted_on: "2026-11-26"
+  method: ai_assisted
+  tool: "Claude Code（Opus 5.5），investment-research-os 会话"
+  review: "pending：等用户复核"
+  quality_notes: "层级判定是执行者按卡的步骤作出的推导（ai_inference）。"
+
+point_in_time:
+  rule: "日度收盘值取观测日 ≤ 时点；NFCI 及分项、美元广义指数、日元汇率取 ALFRED 当日版本；STLFSI4 用当前版本按 6 天滞后截断（post_hoc_vintage）。"
+  equity_index: "SP500"
+  lag_note: "按当日版本，3 月 23 日能看到的 NFCI 只到 3 月 13 日那一周（-0.48，仍低于均值）；周度金融条件指数在急跌中慢了两周。"
+
+method_output:
+  as_of_points:
+    - as_of: "2020-03-09"
+      label: 急跌中（油价战当日）
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口（付费）。疫情冲击盈利是这时的主要变化，但没有修正数据可量化。"
+        rates: "10 年期名义 0.54%，近 1 周 -56bp；实质 -0.45%。利率急降。"
+        accelerators:
+          - {event: "武汉不明原因肺炎首次通报", first_report: "2019-12-31", vs_peak: before, note: "早于见顶，是起点候选；日期未逐条核对"}
+          - {event: "沙特与俄罗斯油价战", first_report: "2020-03-08", vs_peak: after}
+        ledger: {removed: [], unchanged: [], added: ["疫情扩散到欧美", "油价战"]}
+      how_it_falls: "当时不可判断。事后对照（post_hoc）：2 月市场 -8.0%，公用事业 -9.9%、必需消费 -8.8%，医疗 -5.4%。"
+      everything_falls_split: "利率在降、债券在涨，比特币近 1 周 -11%：按第 3 步字面是第 3 层（利率解释不了）；但这时盈利预期崩塌同样能解释，两种读法分不开。黄金缺口。"
+      flows: {foreign: "不适用（G03）", margin_balance: "缺口；NFCI 杠杆分项 -0.28（当日版本，只到 2-28）", fx: "美元广义指数近 1 周 -0.7%"}
+      credit: {aggregate: "Baa 利差 2.93%（第 84 百分位），近 4 周 +87bp", local: ["TED 利差 0.45%"]}
+      structure: {concentration: "缺口", leverage: "NFCI -0.76（当日版本，宽松）", fx: "不适用"}
+      layer_now: [1, 2]
+      bottoms: {forced_selling: "VIX 54.46、VIX/VIX3M 1.27：已强烈倒挂", valuation: "未到"}
+      watchlist:
+        - {layer: 1, indicator: "FOMC", date: "2020-03-18（预定，实际在 3-15 紧急降息）"}
+        - {layer: 3, indicator: "股市再跌时黄金跟不跟（缺口），美元是否走强", date: "每日"}
+      equity_research_note: "第 1 层的盈利冲击叠加第 2 层迹象。"
+
+    - as_of: "2020-03-18"
+      label: 抢现金高峰
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口。"
+        rates: "10 年期名义 1.18%，近 1 周 +36bp；实质 0.55%，近 1 周 +69bp。联储 3-15 降到零利率之后收益率反而上升。"
+        accelerators:
+          - {event: "联储紧急降息到零并重启购债", first_report: "2020-03-15", vs_peak: after}
+        ledger: {removed: [], unchanged: ["疫情"], added: ["国债也被卖出"]}
+      how_it_falls: "事后对照（post_hoc）：3 月市场 -13.3%，公用事业 -13.1%、必需消费 -10.9%、金融 -20.2%，只有医疗 -5.1%：基本不分好坏。"
+      everything_falls_split: "股一周 -12.5%，国债收益率上升（债跌），比特币一周 -32%，美元一周 +3.3%。按第 3 步字面，“利率上升时一起重估”属第 1 层；但这里利率上升发生在降息之后，是国债被抢着卖成现金，实际是第 3 层。判定时没有照字面。"
+      flows: {foreign: "不适用", margin_balance: "缺口", fx: "美元一周 +3.3%"}
+      credit: {aggregate: "Baa 利差 3.81%（第 98 百分位），近 4 周 +176bp", local: ["TED 利差 1.10%"]}
+      structure: {concentration: "缺口", leverage: "NFCI -0.48（当日版本，只到 3-13）", fx: "不适用"}
+      layer_now: [2, 3]
+      bottoms: {forced_selling: "VIX 76.45、VIX/VIX3M 1.05：踩踏中", valuation: "未到"}
+      watchlist:
+        - {layer: 3, indicator: "国债收益率是否随购债回落、美元是否止涨", date: "每日"}
+        - {layer: 4, indicator: "Baa 利差是否逼近 2008 年水平（2008-10 为 4.86%）", date: "每日"}
+      equity_research_note: "第 3 层：卖得掉的先卖，大盘股、流动性好的个股反而跌得快。"
+
+    - as_of: "2020-03-23"
+      label: 谷底（联储宣布无限量购债与公司债工具当日）
+      markets: [US]
+      layer_1:
+        earnings_expectation: "缺口。"
+        rates: "10 年期名义 0.76%，近 1 周回落；实质 -0.04%。"
+        accelerators:
+          - {event: "联储公布一级、二级市场公司信贷工具", first_report: "2020-03-23", vs_peak: after}
+        ledger: {removed: [], unchanged: ["疫情"], added: ["联储直接买公司债"]}
+      how_it_falls: "当日不可判断。"
+      everything_falls_split: "国债收益率回落，比特币一周 +30%，美元一周 +3.8%（数据到 3-20）：抢现金在减弱，美元还没止涨。"
+      flows: {foreign: "不适用", margin_balance: "缺口", fx: "美元自见顶 +7.2%"}
+      credit: {aggregate: "Baa 利差 4.31%（第 98 百分位），还在扩大，已接近 2008-10 的 4.86%", local: ["TED 利差 1.20%"]}
+      structure: {concentration: "缺口", leverage: "NFCI 当日版本仍只到 3-13", fx: "不适用"}
+      layer_now: [3]
+      bottoms: {forced_selling: "VIX 61.59、VIX/VIX3M 1.09，仍倒挂；当天看不出是底", valuation: "未到"}
+      watchlist:
+        - {layer: 4, indicator: "Baa 利差在公司债工具后是否回落", date: "每日"}
+        - {layer: 3, indicator: "美元是否止涨", date: "每周"}
+      equity_research_note: "政策截断在当天只看得到宣布，看不到效果；“被截断”需要之后的数据确认。"
+
+  diagnosis: "到第 3 层：3 月中旬国债、比特币和股票同时被卖、美元走强。Baa 利差逼近 2008 年水平，第 4 层的入口已冒烟。政策截断在 3-23 当天只能看到宣布，效果要看之后的利差。"
+  comparison_with_expected: "大体一致：到第 3 层一致；“被政策截断”在观察时点内不可验证，需要事后数据。"
+
+execution:
+  steps: [1, 2, 3, 4, 5, 6, 7, 8]
+  reached: "八步都有输出；第 3 步在 3-18 照字面会判错，执行者按“降息后收益率上升”改判为第 3 层。"
+  first_guess: "第 3 步：利率上升可能是利率预期变化（第 1 层），也可能是国债被抢着卖成现金（第 3 层），卡只按利率方向分，没有说怎样区分。这里靠“降息后收益率反升”和“实质利率一周 +69bp”来猜。"
+  consistent_with_expected: true
+  data_gaps:
+    - "第 1 步：一致预期盈利修正（付费）"
+    - "第 2 步：日度板块价格"
+    - "第 3 步：黄金价格（卡在第 3 步和第 8 步都要“黄金跟不跟”，这一项缺失影响最大）"
+    - "第 4 步：FINRA 保证金债务（月度，且未接入）"
+    - "第 5 步：高收益债利差（ICE 不用）、HYG、CDS"
+    - "周度金融条件指数按当日版本滞后约两周"
+  substitutes:
+    - "防御股 → French 12 行业月度收益，事后数据"
+    - "高收益债利差 → BAA10Y"
+    - "抢现金 → 10 年期实质利率与名义利率的一周变化（DFII10、DGS10），执行时补充"
+    - "强制交易 → VIX / VIX3M"
+  review: pending
