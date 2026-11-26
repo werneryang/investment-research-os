@@ -6,7 +6,7 @@ from typing import Any
 
 from ..registry import Registry
 from .collect import not_fetched_label
-from .common import FETCH_LABEL, STATUS_LABEL, VERIFY_LABEL, chip, e, shell
+from .common import FETCH_LABEL, STATUS_LABEL, VERIFY_LABEL, chip, e, root, shell
 from .i18n import L, Labels, is_en, te
 
 
@@ -156,7 +156,8 @@ def methods_page(content: dict[str, Any], registry: Registry, datasets: list[dic
 """Verification is recorded per source × dataset × use: docs verified → access verified → use verified.
 Data with only the current revision can serve only descriptive studies on the latest revision; point-in-time studies
 need supplier vintages or snapshots this system had already taken at the time.""")}</p>
-{_datasets_table(datasets)}</section>
+{_datasets_table(datasets)}
+<p class="small">{L("每项研究用了哪些计算模块、数据集与来源，某个来源出错会波及哪些研究：", "Which modules, datasets and sources each study uses, and which studies a faulty source would affect: ")}<a href="{root(0)}lineage.html">{L("研究依赖图", "Study dependency graph (Chinese only)")}</a></p></section>
 <section><h2>{L("预期观测日历", "Expected observation calendars")}</h2>
 <p class="muted small">{L("日期覆盖对照经核验的发布日历计算。核验范围之外的日期按规则推定，研究会在限制中注明。",
                           "Date coverage is measured against a verified release calendar. Dates outside the verified "

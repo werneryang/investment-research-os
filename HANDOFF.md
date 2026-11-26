@@ -156,3 +156,12 @@
 - 2026-11-26 复现与前瞻登记（E5）：用同一段 2026 年 10–11 月行情复现这张卡，记录 `methodology/records/fred-us-market-drawdown-2026-20261126.yaml`（来源偏差最强，只算复现）。前瞻登记 `methodology/playbooks/market-drawdown-us-20261126.yaml`，登记于 2026-11-26，提交后不改；**2026-12-10 前后回看 C1–C5**（作证、议息、抢现金是否结束、第 4 层、反弹可信度），**2027-02-10 前后回看 C6–C8**（台积电法说会、四家资本开支、两个底）。回看另写记录。ICE 利差只在本机（`data/drawdown_replay/ice_local_E5.json`）。台股外资与融资、韩国 KRX 买卖超：用户 2026-11-26 决定这次跳过，台韩只用了汇率。NVIDIA 离任、回任两个事件窗口已在同一记录里算（用户下载的纳斯达克日收盘价，只在本机），只用于检查卡的“第 2、3 层时个股反应被污染”这条提醒，不是网站上的事件反应研究。
 - [已完成 2026-11-26] 方法库提交 7978834 已登记四条执行记录（复核均为 pending）和缺口 G28–G31：G28 第 3 层怎样认，G29 防御股的量法，G30 第 2 层指标的频率和口径，G31 起点在信用层。「给方法库」八条已标为已处理。待办：用户复核四条执行记录。
 - 重跑（2026-11-26，补充数据）：用户手动下载黄金（World Gold Council）、SPY/XLU/XLP/XLV/XLF/HYG 发行商每股净值和 FINRA 保证金债务 Excel，放在 `data/drawdown_replay/manual/`（不入库，公开输出只留百分比和比值）。脚本读到就加算第 2–5 步的补充指标；没有这些文件时 `manual` 块不生成。四份记录各追加 `rerun_supplementary` 一节，第一次执行的内容不改写，四个字段以重跑为准。结论变化：E2 2008-10 不再列第 3 层（黄金在涨）；E3 3-09 照卡判得出不是第 3 层，3-23 黄金止跌触发卡的推翻条件；E4 照卡只能判第 1 层，从“一致”改为“部分一致”；E1 仍是第 1 层，但第 4 步照字面有第 2 层信号。净值不是市价：2020-03 HYG 的市价折价看不到。
+
+## 13. 研究依赖图（已上线，2026-11-26）
+
+- 脚本 `src/investment_os/lineage.py`（ast 与 PyYAML，只读静态信号），命令 `iros lineage`，网站页面 `lineage.html`（只有中文，从「数据、方法与状态」页链接，每次构建重新生成），清单 `docs/lineage.md`（`iros lineage --md docs/lineage.md` 生成，不会自动更新）。
+- 信号：研究定义的 `branch` / `data` / `method`（earnings、event、units、root、downstream_notes），`@register_branch`，源码 import（只沿计算与取数模块传递，不穿过基础设施），`runs.py` 导入的框架模块，数据集的 `connector` / `source_id`，证据包的 `DATASET_ID` 与导入脚本。行业证据包经 `data/industry/*.json` 的生成脚本读不出，在 `config/lineage.yaml` 声明。四种信号覆盖全部 36 项研究，不需要给研究补元数据字段。
+- 2026-11-26 结果：研究 36、模块 48（计算 31、取数 11、脚本 6）、数据集 87；没有研究用到的模块、接入器与脚本 7 个（`analytics/returns.py`、`analytics/risk.py` 只被测试用；`connectors/manual.py`；接入器 `fred_graph_csv` 无数据集、`fred_api_vintages` 的 4 个 ALFRED 数据集无研究用；两个脚本不属于研究），另有 30 个数据集没有研究用（多为定时取数的汇率、利差、指数与 French 地区因子）；断链 0。
+- 反测：`tests/test_lineage.py`（阳性 `ust_curve_2024` 一直追到 Treasury 与 FRED 来源；阴性 `analytics/returns.py` 经 grep 手工确认只被测试导入；构造小仓库测 6 类断链）。
+- 局限：只读静态写明的引用，函数里按字符串拼出的数据集或文件读不出；基础设施模块（契约、登记、存储、报告、网站）不判断是否被用。删不删未使用的模块没有决定，页面只列出研究之外的引用供判断。
+- 待办：新增研究、数据集或模块后跑 `iros lineage --md docs/lineage.md --check` 重写清单（网站页面自动更新）。

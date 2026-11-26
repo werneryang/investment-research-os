@@ -19,6 +19,7 @@
     latest/<study_id>/report.html   最新完整报告的稳定地址
     history/<study_id>.html         旧地址，转到研究页的历史部分
     map.html、methods.html           研究能力地图；数据、方法与状态
+    lineage.html                    研究依赖图（只有中文）：研究 → 计算 → 数据集 → 来源，未使用的模块与断链
     sources.html                    数据资源目录（已接入与候选来源）
     en/…                            上述页面的英文版（index、map、sources、methods、studies/<id>/）；与中文共用 assets/、runs/
     summary.json                    页面所示内容的机器可读摘要
@@ -41,6 +42,7 @@ import yaml
 
 from ..archive import archived_runs
 from ..data.store import DataStore
+from ..lineage import build as build_lineage
 from ..maintenance import check_calendar
 from ..registry import Registry
 from .capability import capability_page, summary
@@ -52,6 +54,7 @@ from . import browse, discovery
 from .references import reference_page_part, company_reference_part
 from .entities import build_index
 from .i18n import LANGS, load_phrases, use
+from .lineage import lineage_page
 from .methods import methods_page
 from .renderers import get_renderer
 from .sources import catalog, sources_page
@@ -245,6 +248,8 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
             (base / "methods.html").write_text(
                 methods_page(content, registry, ds_rows, latest, build, calendar_checks), encoding="utf-8")
             discovery.verify_targets(base, out, [*discovery_model["studies"], *discovery_model["references"], *discovery_model["notes"]])
+    graph = build_lineage(root)
+    (out / "lineage.html").write_text(lineage_page(graph, build, set(latest)), encoding="utf-8")
     (out / ".nojekyll").write_text("", encoding="utf-8")
 
     doc = {
@@ -256,6 +261,7 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
         # 英文页面上仍显示中文原文的文字（需要在 site/en.yaml 补译文）
         "untranslated": sorted(untranslated),
         "calendar_checks": calendar_checks,
+        "lineage": {"counts": graph["counts"], "unused": graph["unused"], "broken": graph["broken"]},
         "datasets": ds_rows,
         "sources": catalog(registry, ds_by_id),
         "runs": [{
