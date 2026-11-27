@@ -1,0 +1,241 @@
+# 方法卡 capex-boom-credit-transition 的执行实测：历史投资潮回放，1873 年美国铁路危机。
+# 只写卡 id、方法库提交号、步骤编号、数据来源、期间和数值；不含方法卡正文、来源案例和出处判定。
+# 数值由一次性脚本计算（不在仓库内），输入文件的 SHA-256 列在 source.files 下，可按同一批文件复算。
+id: hist-us-railroad-capex-1873-20261126
+record_type: application
+status: draft
+
+expected:
+  card: capex-boom-credit-transition
+  method_library_commit: 1c2bb95
+  steps: [1, 2, 3, 4, 5, 6, 7, 8]
+  event: "1860 年代末至 1876 年前后的美国铁路建设潮，到 1873 年 9 月危机为止"
+  objects:
+    industry: 全美铁路
+    company: [北太平洋铁路（Northern Pacific）, Jay Cooke & Co.（北太平洋的财务代理和债券承销商）]
+  as_of_points:
+    T1: "1869-05：太平洋铁路贯通"
+    T2: "1872-12：危机前一年"
+    T3: "1873-09：Jay Cooke & Co. 倒闭（9 月 18 日），纽约证券交易所闭市"
+    T4: "1876 年前后：回看"
+  source_bias: "来源偏差：方法卡的来源材料写卡时已拿 1870 年代铁路作过对照，回放与卡一致不构成独立检验。"
+  sequence_note: "逐步预期在方法库题目文件中、取数之前已经写定；本文件是取数后写成的，没有改预期。"
+
+source:
+  type: mixed
+  outcome_known: true
+  files:
+    - title: "NBER Macrohistory Database（rectdata，月度和年度序列）"
+      locator: "https://data.nber.org/databases/macrohistory/rectdata/"
+      downloaded_on: "2026-11-26（用户同意后下载，只在本机临时目录）"
+      series:
+        - {id: m13019, name: "高等级铁路债券收益率（Macaulay）", sha256: 37d9785e877b86ccec994e1604a510d29866b69dc1e65d304eafa9da2bf99b78}
+        - {id: m11005, name: "铁路股票价格指数（Macaulay）", sha256: c6f03bd300314baa73b3bedebfa38ef74777cda24289f1791a1bdfa8006c6a7a}
+        - {id: m13001, name: "纽约通知贷款利率（call money）", sha256: 9ce44de177113922f38befaab11e5480103c362f60b921a2c996e2e6318e05eb}
+        - {id: m13002, name: "纽约商业票据利率", sha256: cdd996194d1c47f6559dec75343bef32c070d5128f81664322113da7cedd4739}
+        - {id: m03003, name: "铁路货运吨英里（Babson，季调，月度）", sha256: 2538dfbd6be6059207987b29281abf9d6c658abf17623d3d1eb7f32790eb2b0a}
+        - {id: m14020, name: "纽约市国民银行贷款与贴现（货币监理署，零散月份）", sha256: 6cea29f92535d3bf14c16794bcbbc8dda24e4a74ba6bc7402c0cdcb3d866eca5}
+        - {id: m14046, name: "纽约市国民银行贷款对个人存款比率", sha256: ccfee5eb0b0e26e8f4c3f18da5f0892379bfdced73994bae1ac50942294685e2}
+        - {id: a02082, name: "铁路里程年增量（Poor's 1912 汇编）", sha256: 020cba85c531c98de9f25be79fd1a6bab714e958f8e9be1821b40b53e85eb13f}
+        - {id: a02082a, name: "铁路建成里程（1880 年普查回溯）", sha256: 07b2b625ff608a98015a952c8799f27452aa588314a93c0cca9394ac33b248b5}
+        - {id: a02084, name: "钢轨消费量", sha256: a039096cea8be695f13674650b5f3a2f0dc8138bc7b5b48e6c4c11a6d5fb91cb}
+        - {id: a03003g, name: "13 家铁路货运吨英里（年度）", sha256: c7c0cd859b251a2ed7e22fdc3155e25c247b2362683880f5c7e92d49ee64d772}
+    - title: "Poor's Manual of the Railroads，三个年版的扫描件 OCR 文字层（Internet Archive，公有领域）"
+      downloaded_on: "2026-11-26（用户同意后下载，只在本机临时目录）"
+      editions:
+        - {edition: "1868-69（第 1 版，1868 年出版，数据多为 1867 年）", locator: "https://archive.org/details/poorsmanualofrai1186unse", sha256: ccbf8b08d5a8b9e0139abe70c94f3bbb180a7496db1c7ae097860ba979a11f25}
+        - {edition: "1873-74（第 6 版；正文以 1873 年 5 月前后的状态为准，危机前出版；财务数据为各公司 1872 财年）", locator: "https://archive.org/details/poorsmanualofrai00unse", sha256: 23d21abfd1e5df5aba354296ddb373870b3d7c20202ad6485d43cac9523477d5}
+        - {edition: "1876-77（数据为 1875 财年，附 1871–1875 五年表）", locator: "https://archive.org/details/poorsmanualofr1877newyuoft", sha256: 9e58e3ab8db03d0a3f19c4e913635494cb7aeae7309ce2c6556504c09063c921}
+    - title: "E. P. Oberholtzer, Jay Cooke: Financier of the Civil War, vol. 2（1907，公有领域）OCR 文字层"
+      locator: "https://archive.org/details/jaycookefinancie02ober"
+      sha256: e9ca704688705afaf82a9984a019af76ec520e2695081b26a7ac6b92d3963564
+      note: "二手研究，但大量转引 Cooke 当年的书信和倒闭后公布的资产负债表；书信内容在 T2 时不公开，按“事后披露”标。"
+    - title: "Commercial and Financial Chronicle（FRASER 数字化全文，在浏览器里读，没有下载）"
+      issues:
+        - {date: "1872-11-02", locator: "https://fraser.stlouisfed.org/title/commercial-financial-chronicle-1339/november-2-1872-528168", used_for: "北太平洋债券广告的条款"}
+        - {date: "1872-11-09", locator: "https://fraser.stlouisfed.org/title/commercial-financial-chronicle-1339/november-9-1872-528169", used_for: "担保债券只付纸币利息；北太平洋否认对关联铁路负债负责"}
+        - {date: "1873-01-25", locator: "https://fraser.stlouisfed.org/title/commercial-financial-chronicle-1339/january-25-1873-528181", used_for: "承销商自报的债券销售"}
+        - {date: "1873-11-15", locator: "https://fraser.stlouisfed.org/title/commercial-financial-chronicle-1339/november-15-1873-558413", used_for: "“Railroads in Default”统计与建造方式评论"}
+        - {date: "1876-01-22", locator: "https://fraser.stlouisfed.org/title/commercial-financial-chronicle-1339/january-22-1876-528244", used_for: "1873-09 至 1876-01 违约汇总"}
+        - {date: "1876-01-29", locator: "https://fraser.stlouisfed.org/title/commercial-financial-chronicle-1339/january-29-1876-528246", used_for: "同一汇总的修订版（投资者增刊）"}
+        - {date: "1876-01-08", locator: "https://fraser.stlouisfed.org/title/commercial-financial-chronicle-1339/january-8-1876-528242", used_for: "1875 年回顾：Erie、Toledo Wabash & Western 违约"}
+      ocr_note: "FRASER 全文是 OCR，双栏排版被拼在一起，个别数字读错；本记录凡用到 OCR 有疑问的数字都写明。"
+
+extraction:
+  extracted_on: "2026-11-26"
+  method: ai_assisted
+  tool: "Claude Code（Opus 5.5），investment-research-os 会话；Poor's 与 Oberholtzer 用 OCR 文字层按关键词定位后逐段读，CFC 在内置浏览器里取全文"
+  review: "pending：等用户复核"
+  quality_notes:
+    - "每个数字标 availability：contemporaneous（当时已公开）、contemporaneous_lagged（当时公开但晚于该时点）、post_hoc_disclosure（事件当时存在、后来才公开，如书信）、post_hoc_estimate（后人汇编或估计）。"
+    - "Poor's 各年版的覆盖范围不同（报告运营数据的里程 1871 年 44,614、1872 年 57,323、1875 年 71,759），跨年变化里混有覆盖扩大，不能当成同一批公司的增长。"
+    - "Poor's 1876-77 五年表的 1872 年总收入是 465.2 百万美元，1873-74 版正文写 473.2 百万（同段又写 472.2），口径或 OCR 有出入；比率按五年表算。"
+
+point_in_time:
+  rule: "每个时点只用当时已公开的信息作判断；事后数据另列，用来对照。Macaulay 的利率和股价序列是 1938 年汇编的，但底层报价当时每天见报，标 post_hoc_estimate（底层当时可得）。货币监理署的银行报表按报告日公开，滞后数周到数月。Poor's 每年一版，T2（1872-12）能看到的是 1872-73 版（1871 财年数据）；本次没有取 1872-73 版，1871 财年数字取自 1876-77 版五年表，标 contemporaneous_lagged 并注明转引。"
+
+method_output:
+  as_of: "1869-05 / 1872-12 / 1873-09 / 约 1876"
+  theme: "美国铁路建设潮（全美铁路；北太平洋铁路与 Jay Cooke & Co.）"
+
+  steps:
+    - step: 1
+      output:
+        technology: "铁路的变革作用当时没有争议。T1 时 Poor's 1868-69 版已把铁路的社会收益（估计为其成本合理利息的五倍）和对股东、债权人的直接回报分开写，并认为即使没有直接回报也值得修。availability: contemporaneous"
+        return_on_timeline:
+          T1: "Poor's 1868-69：北方各州铁路总收入（不是净收益）约为成本的 23%，Poor's 据此说四年多的总收入等于成本；全国净收益约 1 亿美元，北方约为成本的 6.7%。估计口径粗（按每英里收入假定外推）。availability: contemporaneous"
+          T3: "Poor's 1873-74（危机前出版）：预计 10 年内收入翻倍，1881 年达到 10 亿美元；1872 年为 4.73 亿。availability: contemporaneous"
+          T4: "Poor's 1876-77 五年表：总收入 1873 年 5.26 亿、1874 年 5.20 亿、1875 年 5.03 亿，连续两年下降；同版称过去两年为萧条。按 1873 年预测的十年翻倍路径（执行时按复合增长约 7.2%/年，以五年表的 1872 年 4.652 亿为基数），1875 年应约 5.73 亿，实际 5.031 亿，低约 12%。availability: contemporaneous（T4 时）"
+      reached: 走完
+      first_guess: "无。两个问题当时的行业手册已分开写。"
+      card_vs_added: "两个问题分开来自卡；用 Poor's 的收入预测当作“回本时间表”的当时预期是执行时补充。"
+      consistent_with_expected: true
+
+    - step: 2
+      output:
+        industry:
+          funding_mix:
+            T1: "Poor's 1868-69：股本对债务约 3 比 2（债务约占 40%），并称重组中有把债务转成股本的趋势。估计值。availability: contemporaneous"
+            T3: "Poor's 1873-74（1872 财年，57,323 英里）：成本 31.59 亿美元 = 股本 16.48 亿 + 各类债务 15.12 亿，债务占 47.85%。availability: contemporaneous（T3 前出版）"
+            T4: "Poor's 1876-77（1875 财年，71,759 英里）：股本 21.99 亿 + 债务 24.60 亿，债务占 52.8%（股本对债务 89 比 100）。availability: contemporaneous"
+          capex_proxy: "没有现金流量表。用资本加债务账户的变化代替资本开支：1871→1875 年 26.65 亿 → 46.58 亿；1872→1875 年总账户 +47.4%，其中债务 +62.7%、股本 +33.4%，同期总收入 +8.1%。覆盖范围扩大混在里面，不能全算成新建。"
+          internal_funds: "1872 财年净收益 1.658 亿、分红 0.644 亿，剩 1.018 亿，相当于债务的 6.70%（Poor's 原文给出这一比率）。按 7% 票面（执行时假定，CFC 1873-11-15 称新债最常见是 7% 金债按 90 发行）估算利息约 1.058 亿，净收益覆盖利息 1.57 倍；1875 财年降到 1.08 倍，扣分红后只剩债务的 4.52%。"
+          T1_warning: "Poor's 1868-69 已写：收入每年增长 20% 时，扩建投入会超过净收益，只能对外融资或停发分红；把营运支出记进建设账户会虚增净收益。availability: contemporaneous"
+          new_mileage: "Poor's 当年数：1869 年新增 5,118 英里，1872 年新增 6,427 英里（1873-01-01 累计 67,104）。Poor's 1912 汇编（NBER a02082）的同年数为 4,615 和 5,870，1871 年为 7,379；1880 年普查回溯（a02082a）1872 年为 7,439。三套数字互有出入。"
+          stock_watering: "Poor's 1868-69：股票和债券实际募得大概不超过面值的 75%；资本账户常因合并、送股膨胀。availability: contemporaneous"
+        company_np:
+          T1: "北太平洋 1864 年获国会特许和约 4,700 万英亩土地赠予，没有联邦贷款；T1 时尚未开工。availability: contemporaneous（Poor's 1868-69 有条目但无财务数字）"
+          T2: "没有营运收入。融资全靠 7.3% 金债（1870-07-01 发行，30 年期，按每英里不超过 5 万美元的抵押）；CFC 1872-11-02 的承销商广告称按面值出售，折合纸币收益约 8¼%。availability: contemporaneous"
+          T2_post_hoc: "Oberholtzer 转引的书信：1872 年 9 月债券月销售降到 17.3 万美元，公司每月支用约 100 万；1873 年春零售累计约 1,600 万，加 1870 年内部认购团 500 万，共约 2,100 万。availability: post_hoc_disclosure"
+          T3: "Poor's 1873-74：已支出 1,580 万美元（土地、建设、设备等合计），称公司未提供营运和土地部门的报表。availability: contemporaneous"
+          T4: "Poor's 1876-77 转引明尼苏达铁路委员会：到 1874-06-30 发行债券 3,078 万、股票 20.2 万、流动负债 77.8 万；卖债实得现金 2,277 万（面值的 74.0%，按 7.3% 票面折合约 9.87% 的现金成本），建设和设备支出 2,132 万。availability: contemporaneous（T4 时）"
+      reached: 部分走到
+      first_guess: "这一步。资本开支没有披露，只能用资本加债务账户的变化代替，而这个变化里混着覆盖范围扩大和注水股本；“自由现金流转负”在行业层算不出来，只能看净收益扣分红后对债务的覆盖。"
+      card_vs_added: "比较投资和内部资金、拆分外部融资来自卡；用账户变化代替资本开支、用净收益扣分红对债务的比率代替自由现金流、假定 7% 票面算覆盖倍数，都是执行时补充。"
+      consistent_with_expected: partial
+      expected_diff: "方向一致（部分能走，公司层要改成建设支出对融资）；但第一处要猜在这一步，早于预期的第 3 步。"
+
+    - step: 3
+      historical_analogs_used: "执行时补充（卡没有写历史上怎样找）：①租入线路时承担的被租线路债息和租金；②其他铁路或州政府对债券的担保、背书；③地方政府认购铁路股票或发行援建债券；④土地赠予抵押进债券（属表内抵押，列出作对照）。"
+      output:
+        np_lease:
+          T2: "北太平洋 1872-05-01 起租入 Lake Superior & Mississippi（999 年），承担其第一抵押债 450 万（7% 金币）的利息和税共 31.5 万金元/年，以及三条被租支线债券的利息 10.5 万金元/年（2.8 万 + 2.8 万 + 4.9 万；另有第二抵押债 320 万在换成收益债，有收益才付息）。Poor's 列的合计为 42 万金元/年，不在北太平洋自己的债券里；按其 7.3% 金债约 3,010 万面值的年息 219.7 万算，约为自身年息的 19%（执行时计算；T2 时北太平洋已售债券少于此数，比例会更高）。availability: contemporaneous（Poor's 1873-74 刊出，T2 时租约已签、是否已见报未核）"
+          T2_related: "北太平洋持有 St. Paul & Pacific 的控股权（Poor's 1873-74）。CFC 1872-11-09：有传 St. Paul & Pacific 未付息，被否认，并说北太平洋对其负债不负责任。availability: contemporaneous"
+          T4: "Poor's 1876-77：这项租约 1874-05-01 终止。"
+        industry_guarantees:
+          T2: "CFC 1872-11-09：Chicago & Rock Island 担保的 Chicago & Southwestern 7% 第一抵押债是金债，但担保只保纸币利息，1872-11 的利息改按纸币付；同文提醒按合同的法律责任而不是关联公司的实力看担保。availability: contemporaneous"
+          T3: "CFC 1873-11-15 违约表里有带担保的债：Erie 担保的 Berdell 抵押债 500 万（担保在诉讼中）、阿拉巴马州背书的 Alabama & Chattanooga 债（州拒付）、Rock Island 仍在代付 Chicago & Southwestern 500 万债的利息。availability: contemporaneous（T3 后两个月）"
+        municipal_aid: "Poor's 1873-74：纽约州准许市镇认购铁路股本，推动了近几年的建设；没有给全国汇总金额。availability: contemporaneous"
+        vs_on_balance_sheet: "Poor's 的全国汇总只列股本和债务，没有租金、担保和地方援建债，无法与表内负债并列加总；只能在单家公司条目里逐条读。"
+      reached: 部分走到
+      first_guess: "这里也要猜：卡列的承诺类型都是现代会计附注里的，历史上用哪些对应物要执行者自己定；担保的或有性还取决于付款货币这类条款。"
+      card_vs_added: "盘点表外义务、分固定与或有、与表内并列来自卡；四类历史对应物、按单家条目逐条读和占自身年息的比率是执行时补充。"
+      consistent_with_expected: partial
+      expected_diff: "预期第一处要猜在这里；实际第 2 步已先要猜。预期的对应物（土地赠予、地方担保债、建设公司合同）找到了，另外还有租入线路时承担的债息，这一类预期没有列。"
+
+    - step: 4
+      output:
+        np_cooke:
+          T2_public: "Jay Cooke & Co. 是北太平洋的财务代理；Poor's 1873-74 列 J. Edgar Thomson 和 Jay Cooke 为债券持有人受托人：承销商同时是受托人。availability: contemporaneous（Poor's 1873-74；T2 时是否已公开未核）"
+          T2_post_hoc:
+            - "合同规定承销商在需要时向公司垫款不超过 50 万美元，以公司债券按面值五成作抵押；1872-06-01 透支 60.5 万，1872-08-20 达 177.5 万（扣当月售债后 158.3 万），为上限的 3.55 倍。availability: post_hoc_disclosure"
+            - "Oberholtzer 称 Cooke 拥有该路的多数权益，Jay Cooke & Co. 在公司里有 12 份“interests”。1870 年的内部认购团共 560 万（500 万买债、60 万买股），另按份额分配 4,000 万股票作为奖励，以及土地公司股份。availability: post_hoc_disclosure"
+            - "1873 年春的新认购团：债券按 85 净价认购，另送 50% 股票；代理人佣金提到 15% 现金加 50% 股票。availability: post_hoc_disclosure"
+          T3: "倒闭后公布的资产负债表（Oberholtzer 转载）：负债 793.9 万；资产中对北太平洋的贷款为 150 万（以 375 万 Oregon Steam Navigation 股票作抵押）加 406.8 万（以北太平洋债券作抵押），合计 556.8 万，占负债的 70.1%、占列报资产 1,596.6 万的 34.9%。availability: contemporaneous（倒闭后不久公布）"
+          interlock: "被租的 Lake Superior & Mississippi 董事中有 Cooke 合伙人 W. G. Moorhead（Poor's 1873-74）。"
+        industry:
+          T3: "CFC 1873-11-15：新路的真实股本认购一般只有估算成本的三分之一到四分之一，其余靠卖债（新债常见为 7% 金债按 90 发行，实际成本 8–9%），或把债券低价直接交给承包商；由董事组成的建设公司（文中点名 Crédit Mobilier）抬高了债务。举例：现金 75 万能建的路，建成后背着 100 万债务。availability: contemporaneous（T3 后两个月）"
+      network: "没有成体系的交易数据，无法把公开交易汇成网络。"
+      reached: 部分走到
+      first_guess: "无新的。卡的两种形式（供应商投资客户、担保资产残值）在这里都不是主形式；这里的循环走承销商：承销商以未售出的债券作抵押向发行人垫款，再靠卖同一批债券收回。"
+      card_vs_added: "找循环关系、记股权和债务、看是否集中来自卡；承销商垫款、受托人身份、认购团送股这三种对应形式是执行时补充。"
+      consistent_with_expected: true
+      expected_diff: "与预期一致（有对应物，没有网络数据）；承销商身兼受托人和垫款上限被突破 3.55 倍，比预期写得具体。"
+
+    - step: 5
+      output:
+        np:
+          T2: "没有营运收入。承销商广告以土地价值支撑债券：CFC 广告写每英里约 2.3 万英亩；Oberholtzer 转引的推介把土地收入估为 1.65 亿至 5.5 亿美元。availability: contemporaneous（广告）；估值区间为 post_hoc_disclosure"
+          T4: "1875 年全线总收入 61.9 万、净收益 15.2 万；7.3% 金债 3,009.8 万的年息约 219.7 万，净收益只够付 6.9%。土地：约 4,700 万英亩中截至 1875-06-30 只确认 63.1 万英亩（1.34%）；到 1875-12-03 签约出售 16.2 万英亩（每英亩 6 美元），土地累计现金 112.1 万，约为一年利息的 0.51 倍。availability: contemporaneous（Poor's 1876-77）"
+        industry:
+          T3: "Poor's 1873-74：完成里程 67,104 中有 9,781 英里没有报收入，其中 6,427 英里是当年新开通的；Poor's 承认新路的收入对成本比很低。availability: contemporaneous"
+          T4: "货运量没有塌：Babson 货运吨英里 1873-09 为 16.9 亿，1876-06 为 19.2 亿（+13.6%）；13 家铁路年度吨英里 1873 年 74.8 亿、1876 年 87.4 亿。但总收入 1873→1875 年降 4.4%，Poor's 1876-77 写运价二十年来降到约三分之一。availability: post_hoc_estimate（Babson、NBER 汇编）；收入为 contemporaneous"
+      reached: 部分走到
+      first_guess: "无新的。注意口径：行业层的需求在量上兑现了，回报落空出在运价下降和新线收入滞后，单看量会判成“已被最终需求替代”。"
+      card_vs_added: "看被投资方能否用外部客户收入替代融资来自卡；用土地变现当作最终需求的另一来源、拆分量与价，是执行时补充。"
+      consistent_with_expected: true
+      expected_diff: "一致（北太平洋到 1873 年没有收入）；另发现行业层量增而收入降。"
+
+    - step: 6
+      historical_analog_used: "执行时补充：资产寿命没有会计寿命可读，只记债券期限；错配改到融资链上找（承销商、银行、流动负债）。"
+      output:
+        issuer_level: "北太平洋 7.3% 金债 1900 年到期（30 年）；Lake Superior & Mississippi 第一抵押债 30 年；Poor's 1873-74 称行业债务主要是远期到期的债券。路基和线路寿命长于这些期限，卡的比较给出“没有错配”。"
+        funding_chain:
+          - "承销商：用存款和短期资金向北太平洋垫款 556.8 万（T3），资金是短的，资产是长的。availability: contemporaneous（T3 后）"
+          - "纽约银行：纽约市国民银行贷款对个人存款比率 1870-06 为 144%，1872-12 为 186%，1873-02 为 203%，1873-09 为 199%（个人存款不含同业存款，贷款超出的部分大致靠各地银行存在纽约的同业存款支撑；这一解读是执行时补充）。availability: contemporaneous_lagged（货币监理署报表）"
+          - "铁路流动负债：Lake Shore 铁路在危机第三天付不出一笔 175 万的通知贷款（Oberholtzer 转引）；北太平洋 1874-06 流动负债 77.8 万。"
+      reached: 部分走到
+      first_guess: "这里要猜：卡的比较只在发行人一层做，照做得出“没有错配”；短期资金在承销商和银行一层，要另找。"
+      card_vs_added: "债务期限对资产寿命的比较来自卡；把比较移到承销商、银行和流动负债上是执行时补充。"
+      consistent_with_expected: true
+      expected_diff: "一致：发行人层没有错配，危机仍然发生；错配在融资链上。"
+
+    - step: 7
+      historical_analogs_used: "执行时补充：卡列的现代杠杆指标没有历史对应序列，改用通知贷款利率、纽约银行贷存比、外国持有比例。"
+      output:
+        call_money_pct: {T1: 6.75, T2: 20.06, T3: 61.23, T4_1876-06: 2.56, note: "Macaulay 月均；1873-04 为 27.52。availability: post_hoc_estimate（底层当时可得）"}
+        commercial_paper_pct: {T1: 7.81, T2: 10.83, T3: 14.28, peak: "1873-10 16.50", T4_1876-06: 4.75}
+        nyc_bank_loans_to_individual_deposits_pct: {"1870-06": 144, "1872-12": 186, "1873-02": 203, "1873-09": 199, "1876-06": 150}
+        nyc_bank_loans_mn: {"1869-04": 163, "1872-12": 192, "1873-09": 199, "1876-06": 176}
+        foreign_holders: "CFC 1876-01-22 估计：1873-09 以后违约的铁路债中约 2.51 亿美元在国外持有（约 32%）；1876-01-29 修订版 OCR 读出约 2.534 亿（数字有一位 OCR 不清）。availability: contemporaneous（T4）"
+        broker_calls: "Fisk & Hatch 开门 15 分钟被提取 150 万后停业（Oberholtzer 转引，T3）。"
+        data_gap: "经纪商通知贷款余额、股票保证金没有公开序列；Sprague（1910）有纽约清算所银行周度数据，本次没有取。"
+      reached: 部分走到
+      first_guess: "无新的。"
+      card_vs_added: "盘点投资者侧杠杆并与投资潮开始前比较来自卡；三个替代指标是执行时补充。"
+      consistent_with_expected: true
+      expected_diff: "一致：数据难找，通知贷款利率和资本流动有侧面数据。"
+
+    - step: 8
+      output:
+        path:
+          - "回报落空的来源：新线收入滞后、运价下降、土地变现慢（第 5 步）。"
+          - "承销商：Jay Cooke & Co. 1873-09-18 停业，对北太平洋贷款占其负债 70.1%。"
+          - "货币市场：通知贷款月均 61.23%（1873-09），商业票据 1873-10 为 16.50%。"
+          - "股票：铁路股价指数 1873-09 比 8 月 -7.5%；1873-11 比 1873-02 -21.6%；1877-06 比 1873-02 -47.3%（谷底 23.59）。"
+          - "违约：CFC 1873-11-15 统计逾期未付息的铁路债 2.180 亿美元，约为它估算的全部铁路债 17 亿的 12.8%（按 Poor's 1872 财年债务 15.12 亿算为 14.4%）。CFC 1876-01-22 统计 1873-09-20 至 1876-01 有违约的铁路债 7.840 亿（196 家公司，修订版 7.894 亿），其中仍未解决 5.330 亿（134 家）；以 Poor's 估计的 1875-01-01 全部铁路债约 30 亿为分母，执行时计算为 26.1% 和 17.8%（OCR 上原文的百分比读不清）。按首次违约时间：1873 年以前 37 家 1.347 亿、1873-01 至 09-20 共 35 家 0.917 亿、09-20 至年底 25 家 1.502 亿、1874 年 71 家 2.634 亿、1875 年 25 家 1.404 亿、1876-01 共 3 家 0.045 亿。CFC 据此认为危机不主要是 Cooke 倒闭引起的（约 2.26 亿属于恐慌前已违约的公司；原文 OCR 读作 3.26 亿，与分项不符，按分项合计）。"
+          - "北太平洋：1874-01-01 停付利息，1875-04 进入接管，同年止赎，债权人以每 1,000 美元债换 1,400 美元优先股（含利息到 1878-07-01）。"
+        loss_bearers: "债券持有人（约三分之一在国外）、承销商的存款人和债权人、通知贷款的放款方；股东先承担，但新线股本本来很薄（CFC：认购只占成本的三分之一到四分之一）。"
+        caveat_hg_bond_index: "高等级铁路债收益率几乎没动：1873-08 为 6.06%，10 月 6.49%，此后一路下降到 1876-08 的 5.09%。损失集中在新线和低等级债，看高等级指数会以为信用层没出事。"
+      reached: 走完
+      first_guess: "无新的。"
+      card_vs_added: "从盈利落空推到财务后果和由谁承担来自卡；用违约汇总分首次违约时间、用高等级与违约债对照是执行时补充。"
+      consistent_with_expected: true
+
+  open_questions:
+    - "T2 时北太平洋的租约和受托人安排是否已见报，本次只读到 Poor's 1873-74（T3 前出版）。"
+    - "Poor's 1872-73 版（T2 可得）没有取；T2 的行业数字用 1876-77 版五年表转引。"
+    - "铁路资产（铁轨、车辆、路基）的经济寿命没有找到当时的数据。"
+    - "CFC 1876 汇总的百分比和一处合计数 OCR 不清，需要看页面图核对。"
+
+execution:
+  steps: [1, 2, 3, 4, 5, 6, 7, 8]
+  reached: "八步都有输出：第 1、8 步走完；第 2–7 步部分走到，主要缺口是没有现金流量表、没有表外附注、没有现代杠杆统计，要用历史对应物代替。"
+  first_guess: "第 2 步：资本开支和自由现金流在 19 世纪没有披露，要用资本加债务账户的变化代替，其中混着覆盖范围扩大和注水股本。"
+  second_guess: "第 3 步：卡列的表外承诺都是现代会计项目，历史上的对应物（租入线路承担的债息、他路或州的担保、地方援建）要执行者自己定。"
+  third_guess: "第 6 步：只在发行人一层比较期限和寿命会得出没有错配；短期资金在承销商和银行。"
+  consistent_with_expected: "大体一致。不同处：第一处要猜在第 2 步，早于预期的第 3 步；第 3 步多了一类预期没列的对应物（租入线路承担的债息）；第 5 步发现行业层量增而收入降。"
+  data_gaps:
+    - "Poor's 1872-73 版（T2 可得版本）没有取"
+    - "经纪商通知贷款余额、纽约清算所银行周度数据（Sprague 1910）没有取"
+    - "欧洲投资者买入铁路债的流量没有序列，只有 1876 年的存量估计"
+    - "铁路资产的经济寿命"
+    - "低等级或新线铁路债的价格、收益率序列（Macaulay 只有高等级）"
+  substitutes:
+    - "资本开支 → Poor's 资本加债务账户的变化（覆盖范围不一致）"
+    - "自由现金流 → 净收益扣分红后对债务的比率；利息按 7% 票面假定"
+    - "表外义务 → 租入线路承担的债息、他路或州的担保、地方援建"
+    - "循环融资 → 承销商以未售债券作抵押垫款、承销商兼受托人、认购团送股"
+    - "投资者侧杠杆 → 通知贷款利率、纽约国民银行贷存比、外国持有比例"
+  reproducibility: "计算用一次性脚本，不在仓库内；NBER 与 Internet Archive 文件的 SHA-256 已列出，Poor's 与 Oberholtzer 的数字按段落人工录入。CFC 是浏览器里读的 OCR 全文，没有存档。"
+  review: pending
