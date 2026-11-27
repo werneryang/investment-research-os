@@ -96,16 +96,16 @@
 - [已处理 2026-11-26] 2026-11-26 · capex-boom-credit-transition（方法库 1c2bb95）· 第 7、8 步 · 卡的杠杆指标没有历史对应序列（回放改用通知贷款利率、银行贷存比、外国持有比例）；另外高等级铁路债收益率在危机中几乎不动（1873-08 6.06%、10 月 6.49%），损失集中在新线和低等级债，按整体利差看会漏掉信用层 · methodology/records/hist-us-railroad-capex-1873-20261126.yaml · 处理结果：方法库登记为 G38
 - [已处理 2026-11-26] 2026-11-26 · market-drawdown-layer-diagnosis · 执行实测 · 四条回放执行记录已做技术复核（未经人工），结果 E1、E3 通过并有更正，E2、E4 通过并有待定事项；请把方法库 executions 条目的复核状态同步为技术复核 · methodology/records/fred-us-market-drawdown-{2022,2008,2020,2024}-20261126.yaml 的 technical_review · 处理结果：方法库提交 637667d 在四条 executions 另加 technical_review 字段（E1、E3 有更正，E2、E4 有待定事项），review 仍为 pending，等用户复核
 - [已处理 2026-11-26] 2026-11-26 · market-drawdown-layer-diagnosis · 整理时补充 · 回放判定算不算卡的“整理时补充”没有约定：E4 2024-08-05 的 VIX 期限结构倒挂按整理时补充可判第 2 层，只按作者的步骤只能判第 1 层；两份记录对它的标注也不一致（E1 写“卡的整理时补充”，E4 写“卡外”）。用户 2026-11-26 已决定：执行实测的判定不算整理时补充，只按作者的步骤判，整理时补充的指标只作旁证；请方法库按此登记 · methodology/records/fred-us-market-drawdown-2024-20261126.yaml 的 technical_review · 处理结果：方法库提交 637667d 把用户决定写进执行实测的约定：判定只按作者的步骤，整理时补充只作旁证
-- [未处理] 2026-11-27 · capex-boom-credit-transition（方法库 1c2bb95）· 执行实测 · 1873 年铁路回放执行记录已做技术复核（未经人工），通过并有 5 处更正，都不改结论，G33–G38 不受影响；请把方法库 executions 条目的复核状态同步为技术复核 · methodology/records/hist-us-railroad-capex-1873-20261126.yaml 的 technical_review
+- [已处理 2026-11-27] 2026-11-27 · capex-boom-credit-transition（方法库 1c2bb95）· 执行实测 · 1873 年铁路回放执行记录已做技术复核（未经人工），通过并有 5 处更正，都不改结论，G33–G38 不受影响；请把方法库 executions 条目的复核状态同步为技术复核 · methodology/records/hist-us-railroad-capex-1873-20261126.yaml 的 technical_review · 处理结果：方法库提交 0988a39 在 executions 条目另加 technical_review（pass_with_corrections），review 仍为 pending，等用户复核
 
-## 8. NVIDIA FY27 Q3 季度研究：FCF 口径适配与网站待办
+## 8. NVIDIA FY27 Q3 季度研究：FCF 口径适配（已上线）
 
 - 任务 R-20261117-nvda-earnings，证据见 `methodology/records/sec-nvda-earnings-20261117.yaml` 的 `site_study`。SEC 8-K 的 99.1/99.3 HTML 已有当季报表；缺 Q3 10-Q 不是当前配置的主要阻碍。
 - NVIDIA 发行人 FCF 从 CFO 同时扣现金购置固定资产/无形资产及相关本金支付。现有 `earnings/__init__.py` 的 CASH_METRICS、核对和导入，以及 `research/earnings_quarter.py` 的季度公式，只支持 CFO−cash_ppe；页面/发现仍标发行人定义。独立实测会多报本金支付部分，不能直接套用。
 - 未创建无效 earnings/study 配置，未执行 fetch/check/bundle/run/verify，未发布研究页。不要把本金混进 cash_ppe，或省略 issuer_fcf 核对后沿用错误标签。
 - 原限定范围：增加本金支付科目、FCF 公式与核对/标签支持，补真实科目差异的测试，再按 README 的研究计算/公共契约 PR 流程处理，之后构建并逐字段对照走查。本任务的私有财报结果不因该 site 阻碍而被视为已发布网站研究。
 - 后续适配：`profile.fcf_deduct_principal: true` 显式启用独立 `cash_ppe_principal`，核对、证据包、季度/近四季计算与中英页面共用 CFO−购置支出−相关本金的定义，详见 `docs/study-earnings.md`。专项测试 70 项、完整测试 486 项通过；独立只读复核确认 Q3 43,777、Q2 21,341（百万美元），并将现有 Alphabet 登记的季度行、现金转换与中英文现金表同旧实现逐项比较，一致；已归档 Alphabet 运行也复现相同结果校验值。
-- 网站仍待办：本次只修代码契约，未新增 NVIDIA 登记、研究配置、运行或页面，也未改写已发布走查记录。下一步从允许使用的同一批 SEC 披露准备登记，逐字段对照、运行/复现、单独归档并验证中英页面与检索后，才可报告 site 已发布。
+- 当时的网站待办（只修了代码契约，未新增登记与页面）已在下面「NVIDIA site continuation」完成并上线核验，这里不再有待办。
 
 ### NVIDIA site continuation（已上线）
 
@@ -173,6 +173,7 @@
 - 脚本 `src/investment_os/lineage.py`（ast 与 PyYAML，只读静态信号），命令 `iros lineage`，网站页面 `lineage.html`（只有中文，从「数据、方法与状态」页链接，每次构建重新生成），清单 `docs/lineage.md`（`iros lineage --md docs/lineage.md` 生成，不会自动更新）。
 - 信号：研究定义的 `branch` / `data` / `method`（earnings、event、units、root、downstream_notes），`@register_branch`，源码 import（只沿计算与取数模块传递，不穿过基础设施），`runs.py` 导入的框架模块，数据集的 `connector` / `source_id`，证据包的 `DATASET_ID` 与导入脚本。行业证据包经 `data/industry/*.json` 的生成脚本读不出，在 `config/lineage.yaml` 声明。四种信号覆盖全部 36 项研究，不需要给研究补元数据字段。
 - 2026-11-26 结果：研究 36、模块 48（计算 31、取数 11、脚本 6）、数据集 87；没有研究用到的模块、接入器与脚本 7 个（`analytics/returns.py`、`analytics/risk.py` 只被测试用；`connectors/manual.py`；接入器 `fred_graph_csv` 无数据集、`fred_api_vintages` 的 4 个 ALFRED 数据集无研究用；两个脚本不属于研究），另有 30 个数据集没有研究用（多为定时取数的汇率、利差、指数与 French 地区因子）；断链 0。
+- 2026-11-27：用户决定删除 `fred_graph_csv` 接入器（图表导出自 2026-11-06 起不响应，不再保留降级路径）。代码、注册、测试夹具（改用假的 FRED API 返回）、`sources.yaml` 的降级说法与网站英文对照一并删改；`fred_graph` 来源条目和历史核验记录保留备查。清单重写后未被研究用到的模块、接入器与脚本为 6 个，断链 0。顺带修了原始快照抽查读不了 FRED API JSON 快照的问题：线上没有研究以 FRED 序列作主数据集，所以没有实际影响。
 - 反测：`tests/test_lineage.py`（阳性 `ust_curve_2024` 一直追到 Treasury 与 FRED 来源；阴性 `analytics/returns.py` 经 grep 手工确认只被测试导入；构造小仓库测 6 类断链）。
 - 局限：只读静态写明的引用，函数里按字符串拼出的数据集或文件读不出；基础设施模块（契约、登记、存储、报告、网站）不判断是否被用。删不删未使用的模块没有决定，页面只列出研究之外的引用供判断。
 - 待办：新增研究、数据集或模块后跑 `iros lineage --md docs/lineage.md --check` 重写清单（网站页面自动更新）。

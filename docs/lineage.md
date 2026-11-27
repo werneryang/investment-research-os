@@ -3,7 +3,7 @@
 由 `uv run iros lineage --md docs/lineage.md` 生成，不要手改；网站页面 `lineage.html` 在每次构建时重新生成。方法与信号见 `src/investment_os/lineage.py` 开头的说明。
 
 - 研究 36 项；模块 48 个（计算 31、取数 11、脚本 6）；数据集 87 个；已接入来源 9 个
-- 从任何研究都到达不了：38 项（其中模块与脚本 7 个）
+- 从任何研究都到达不了：37 项（其中模块与脚本 6 个）
 - 断链：0 处
 
 ## 1. 信号覆盖
@@ -582,7 +582,6 @@
 | `analytics/risk.py` | 计算模块 | tests/test_analytics.py |
 | `connectors/manual.py` | 取数模块 | connectors；tests/test_connectors_ingest.py；数据集 manual_example |
 | `connectors/fred.py · fred_api_vintages` | 接入器 | 数据集 alfred_cpiaucsl；数据集 alfred_gdp；数据集 alfred_payems；数据集 alfred_unrate |
-| `connectors/fred.py · fred_graph_csv` | 接入器 | 没有登记的数据集使用这个接入器 |
 | `scripts/market_drawdown_replay.py` | 脚本 | 脚本，不被研究引用 |
 | `scripts/run_company_research.py` | 脚本 | 脚本，不被研究引用 |
 | `alfred_cpiaucsl` | 数据集 | 网站说明 site/content.yaml |

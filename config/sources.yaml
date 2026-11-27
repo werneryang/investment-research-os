@@ -90,7 +90,7 @@ sources:
     rate_limit: 未公布；本项目串行请求，失败有界重试
     revisions: 按日发布，偶有更正；官网不提供历史版本，本地以快照保存
     maintenance: 期限列会随发行变化（如 2022 年新增 4 Mo、2025 年新增 1.5 Month），解析按列名识别
-    alternatives: [fred_graph]
+    alternatives: [fred_api]
     category: rates
     directions: [us_treasury_curve, rates_duration_risk, real_bonds]
     access: file
@@ -156,8 +156,8 @@ sources:
       - ICE BofA 期权调整利差（第三方权利与可得历史待核验）
     notes: >-
       2026-11-15 起没有数据集经本来源取得：原有 35 个当前版本数据集改经 fred_api（fred_api_current）。
-      下列核验记录是当时经图表导出取得的历史记录，保留备查；fred_graph_csv 接入器保留，供复查与降级
-    next_step: 不再新增序列；新的当前版本序列登记到 fred_api。图表导出恢复响应后，可作为 key 失效时的降级路径
+      下列核验记录是当时经图表导出取得的历史记录，保留备查。fred_graph_csv 接入器已于 2026-11-27 删除，本来源不再能取数
+    next_step: 不再使用；新的当前版本序列登记到 fred_api。没有降级路径，key 失效时需修复 key
     verification:
       - dataset: fred_dcoilwtico
         status: access_verified
@@ -397,8 +397,8 @@ sources:
     registration: 免费注册取得 API key；key 不进入 Git
     rate_limit: 以官方说明为准；本项目串行请求
     revisions: 当前版本数据集只有当前修订值，按本机取得时间记版本；历史版本数据集以 realtime_start 给出每个版本的发布日期，可用于时点研究
-    maintenance: key 失效或额度变化时，当前版本数据集可降级到 fred_graph（只限描述性研究；fred_graph 自 2026-11-06 起不响应本项目请求，降级前先确认已恢复）
-    alternatives: [fred_graph]
+    maintenance: key 失效或额度变化时没有降级路径（图表导出接入器已于 2026-11-27 删除），需修复 key 或额度
+    alternatives: []
     category: macro
     directions: [us_inflation_macro, policy_liquidity, growth_labor, us_treasury_curve, credit_premium, vol_premium, global_assets, signal_tests]
     access: api
@@ -737,7 +737,7 @@ sources:
     rate_limit: 未公布；本项目串行请求，失败有界重试
     revisions: 只有当前版本；周度值随月度、年度报告修订，文件不提供历史版本
     maintenance: 工作表版式固定（Sourcekey / Date 表头）；按序列代码定位列并逐字核对列标题，不一致即报错
-    alternatives: [fred_graph]
+    alternatives: [fred_api]
     category: industry
     directions: [sector_structure]
     access: file

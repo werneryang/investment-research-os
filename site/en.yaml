@@ -320,7 +320,6 @@ phrases:
   基金发行方资料: Fund issuer materials
   基金持仓申报（如 N-PORT，待核验）: Fund holdings filings (e.g. N-PORT, to be verified)
   基金资料: Fund information
-  复用 fred_graph_csv 接入器，新增序列只需在 datasets.yaml 登记: Reuses the fred_graph_csv connector; a new series only needs an entry in datasets.yaml
   学术因子与估值: Academic factors & valuations
   完整历史期权链: Full historical option chains
   宏观与历史修订: Macro & historical revisions

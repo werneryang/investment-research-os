@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
+import json
 import shutil
 import urllib.error
+import urllib.parse
 from pathlib import Path
 
 import pytest
 
-from investment_os.connectors.fred import FredGraphCsvConnector
+from investment_os.connectors.fred import FredApiCurrentConnector
 from investment_os.connectors.treasury import URL_TEMPLATE, TreasuryParCurveConnector
 from investment_os.data import DataStore, ingest
 from investment_os.registry import Registry
@@ -58,10 +60,6 @@ def treasury_url(year: int) -> str:
     return URL_TEMPLATE.format(year=year)
 
 
-def dgs10_url(start: str, end: str) -> str:
-    return f"https://fred.stlouisfed.org/graph/fredgraph.csv?id=DGS10&cosd={start}&coed={end}"
-
-
 NO_RETRY = {"attempts": 1, "sleep": lambda s: None}
 
 
@@ -88,8 +86,28 @@ def treasury_connector(responses: dict[int, str | Exception]) -> TreasuryParCurv
     return TreasuryParCurveConnector(http_get=http, **NO_RETRY)
 
 
-def dgs10_connector(start: str, end: str, body: str = DGS10_2024) -> FredGraphCsvConnector:
-    return FredGraphCsvConnector(http_get=FakeHttp({dgs10_url(start, end): body.encode()}), **NO_RETRY)
+def fred_api_connector(series_rows: dict[str, dict[str, object]]) -> FredApiCurrentConnector:
+    """假的 FRED API（series/observations，当前版本）：按 series_id 与 observation_start/end 返回预设观测。
+
+    空值按 API 的写法返回 "."；未登记的序列视为网络错误。
+    """
+    def http(url: str, timeout: float) -> bytes:
+        q = {k: v[0] for k, v in urllib.parse.parse_qs(urllib.parse.urlparse(url).query).items()}
+        rows = series_rows.get(q.get("series_id", ""))
+        if rows is None:
+            raise urllib.error.URLError(f"no route to {url}")
+        start, end = q.get("observation_start", ""), q.get("observation_end", "9999-12-31")
+        obs = [{"date": d, "value": ("." if v in ("", None) else str(v))}
+               for d, v in rows.items() if start <= d <= end]
+        return json.dumps({"count": len(obs), "offset": 0, "observations": obs}).encode()
+
+    return FredApiCurrentConnector(http_get=http, api_key="test-key", **NO_RETRY)
+
+
+def dgs10_connector(start: str, end: str, body: str = DGS10_2024) -> FredApiCurrentConnector:
+    """DGS10 的假 API 接入器；body 沿用 "日期,值" 的 CSV 写法，首行是表头。"""
+    rows = dict(line.split(",", 1) for line in body.strip().splitlines()[1:])
+    return fred_api_connector({"DGS10": rows})
 
 
 @pytest.fixture

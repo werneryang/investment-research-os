@@ -53,7 +53,7 @@ def test_module_confirmed_unused_by_hand_is_listed(graph):
     assert unused["mod:investment_os.analytics.returns"]["others"] == ["tests/test_analytics.py"]
     assert not graph["used_by"].get("mod:investment_os.analytics.returns")
     # 模块被用到、但其中的接入器没有数据集被研究用到
-    assert "connector:fred_graph_csv" in unused
+    assert "connector:fred_api_vintages" in unused  # 4 个 ALFRED 数据集都没有研究用
     assert "connector:fred_api_current" not in unused
     # 被研究用到的不列入
     assert "mod:investment_os.analytics.rates" not in unused

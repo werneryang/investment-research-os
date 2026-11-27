@@ -132,20 +132,11 @@ def test_load_detects_tampered_version(registry, store):
         store.load("ust_par_yield_curve")
 
 
-def test_fred_graph_marks_holidays_missing(registry, store):
+def test_fred_api_marks_holidays_missing(registry, store):
     body = "observation_date,DGS10\n2024-01-12,3.94\n2024-01-15,\n2024-01-16,4.07\n"
     v = ingest(registry, store, "fred_dgs10", {"start": "2024-01-12", "end": "2024-01-16"},
                dgs10_connector("2024-01-12", "2024-01-16", body)).version
     assert v.quality["status_counts"] == {"ok": 2, "missing": 1}
-
-
-def test_fred_graph_rejects_wrong_series(registry, store):
-    body = "observation_date,DGS2\n2024-01-12,4.14\n"
-    r = ingest(registry, store, "fred_dgs10", {"start": "2024-01-12", "end": "2024-01-12"},
-               dgs10_connector("2024-01-12", "2024-01-12", body))
-    assert r.status == "failed" and "DGS2" in r.message
-    # 原始快照仍保存供诊断
-    assert store.fetch_log("fred_dgs10")[-1]["raw_snapshots"]
 
 
 ALFRED = {"count": 3, "offset": 0, "limit": 100000, "observations": [
@@ -335,7 +326,7 @@ datasets:
   a: {source_id: s, upstream_id: u, connector: c, frequency: daily, unit: percent,
       timezone: UTC, availability: {type: unknown}, scheduled_fetch: {series: X}}
 """, encoding="utf-8")
-    src = Registry.load(PROJECT_ROOT).sources["fred_graph"]
+    src = Registry.load(PROJECT_ROOT).sources["fred_api"]
     with pytest.raises(RegistryError, match="scheduled_fetch"):
         load_datasets(tmp_path / "d.yaml", {"s": src})
 
