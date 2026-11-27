@@ -126,7 +126,7 @@
 - 2026-11-19 报告间引用：company-dossiers 结果新增 `builds_on`/`see_also` 后，报告里会有指向其他报告或结果的相对链接。`clean_report` 现在把已发布报告的链接换成站内页 `../../../<代码>/<日期>/<id>/`，未发布报告、结果文件和其他私有文件只留「（见 <id>，未公开）」纯文本，走查记录链接保留为公开 GitHub 链接；构建时站内链接目标不在本次发布中的报告记 `unresolved_note_link` 不发布。网站工作流构建后加了 `iros notes check --site _site`，任何页面链接私有仓库或本机路径即停止发布。规则见 README「公开边界与研究报告」。已发布的三份报告检查过，没有违规链接，未改动。
 - 待办：被引用的报告晚于引用方发布时，引用方里只有纯文本 id；那时重新导入引用方（固定 owner 已推送字节）才会换成链接，目前没有自动重导。
 
-## 10. TSLA 2026 Q3 site backfill（进行中）
+## 10. TSLA 2026 Q3 site backfill（已完成）
 
 - 使用已发布 `methodology/records/sec-tsla-earnings-20261116.yaml` 同批 SEC HTML，不改该记录（SHA256 `a7ff27c03a131763d215d39cf05ad7048766238e75c338a077499956815647f0`）。原结果与走查已完成；本项仅补季度研究。
 - 已识别适配点：单季 CFO/现金 PPE 由累计期间相减；现有现金流入口只支持直接数值存在性，必须保留累计输入/减算式与源日期，不能拿派生值冒称原表直接披露。Tesla 正式分部以毛利润披露，不可套成分部营业利润或 EBIT。先核同批原件，再作必要代码/契约 PR。
@@ -136,8 +136,8 @@
 ### TSLA 部署核验完成与 robots 清理
 
 - TSLA PR #30 merge `a3b3bff8ee591c6b6f12c3455be21574206f1a11`，[Actions 44223350617](https://github.com/werneryang/investment-research-os/actions/runs/44223350617) success。中英文 live study 均 HTTP 200、指向正式 run；实际中文 Tesla/TSLA 与英文 TSLA 搜索及点击季度研究通过，study `earnings_tsla_2026q3` 状态 published。原走查及验证 checkpoint 不改写。
-- AAPL 供应商新补证已独立复核并回传 lead，原走查不改；新记录在任务 ledger 中，未提交待 main 重新放行。
-- 队尾清理：不再生成项目子路径 robots.txt；报告/目录继续 meta noindex，入口 nofollow，不向域名根添加 notes Disallow。部署及 live 文件移除仍待本次 main 推送后的 Actions 核验。
+- AAPL 供应商新补证已独立复核并回传 lead，原走查不改。[已完成，2026-11-26 核对] 记录 `methodology/records/sec-aapl-supplier-concentration-20261117.yaml`（b501f4e）与修订报告经 PR #31（2026-11-18）并入 main；原走查 `sec-aapl-value-chain-20261117.yaml` 此后无改动；线上 AAPL 报告页已含供应商集中度内容。
+- 队尾清理：不再生成项目子路径 robots.txt；报告/目录继续 meta noindex，入口 nofollow，不向域名根添加 notes Disallow。[已完成，2026-11-26 核对] 提交 1f9afba 已在 main，`tests/test_notes.py` 断言不生成 robots.txt；线上 `/investment-research-os/robots.txt` 返回 404，notes 目录页带 `noindex`，最近三次 main 网站运行均成功。
 
 ## 11. 研究报告图块（NVDA、AAPL、GOOGL 已实现；14 种图型）
 
