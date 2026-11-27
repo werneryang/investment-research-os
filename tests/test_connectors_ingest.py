@@ -146,6 +146,18 @@ ALFRED = {"count": 3, "offset": 0, "limit": 100000, "observations": [
 ]}
 
 
+def test_spot_check_reads_alfred_vintage_snapshots(registry, store):
+    """ALFRED 同一日期有多个版本：抽查按 (日期, 序列, 版本) 定位，逐个版本对上原始快照。"""
+    from investment_os.validation.reference import spot_check
+    conn = FredApiVintagesConnector(http_get=lambda url, timeout: json.dumps(ALFRED).encode(), api_key="k", **NO_RETRY)
+    v = ingest(registry, store, "alfred_cpiaucsl", {}, conn).version
+    frame = store.load("alfred_cpiaucsl")
+    frame = frame[0] if isinstance(frame, tuple) else frame
+    out = spot_check(store, v, frame)
+    assert out["status"] == "pass" and out["checked"] == 3
+    assert sorted(i["raw"] for i in out["samples"]) == ["308.417", "309.685", "310.326"]
+
+
 def test_fred_api_requires_key(registry, monkeypatch):
     monkeypatch.delenv("FRED_API_KEY", raising=False)
     with pytest.raises(FetchError, match="FRED_API_KEY"):

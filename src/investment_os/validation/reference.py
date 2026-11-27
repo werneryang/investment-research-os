@@ -31,10 +31,12 @@ def _parse_date(text: str) -> date | None:
     return None
 
 
-def _index_fred_api_json(content: bytes, version: DatasetVersion, index: dict[tuple[date, str], str]) -> None:
-    """FRED API（series/observations）当前版本快照：每个日期一个值，记到该数据集唯一的 FRED 序列名下。
+def _index_fred_api_json(content: bytes, version: DatasetVersion, index: dict[tuple, str]) -> None:
+    """FRED API（series/observations）快照，记到该数据集唯一的 FRED 序列名下。
 
-    同一日期出现多个值（ALFRED 历史版本）时无法按 (日期, 序列) 定位，整份快照不入索引。
+    当前版本：每个日期一个值，按 (日期, 序列) 记。ALFRED 历史版本：同一日期有多个版本，
+    另按 (日期, 序列, "alfred:<realtime_start>") 记，与标准化表的 vintage_id 对应；
+    这种快照不按 (日期, 序列) 记，避免把某一个版本误当成该日期的值。
     """
     labels = [m["fred_series"] for m in version.series.values() if m.get("fred_series")]
     try:
@@ -44,17 +46,21 @@ def _index_fred_api_json(content: bytes, version: DatasetVersion, index: dict[tu
     if len(labels) != 1 or not isinstance(obs, list):
         return
     dates = [o.get("date") for o in obs]
-    if len(dates) != len(set(dates)):
-        return
+    unique = len(dates) == len(set(dates))
     for o in obs:
         d = _parse_date(str(o.get("date", "")))
-        if d is not None:
-            index[(d, labels[0])] = str(o.get("value", "")).strip()
+        if d is None:
+            continue
+        raw = str(o.get("value", "")).strip()
+        if o.get("realtime_start"):
+            index[(d, labels[0], f"alfred:{o['realtime_start']}")] = raw
+        if unique:
+            index[(d, labels[0])] = raw
 
 
-def _raw_index(store: DataStore, version: DatasetVersion) -> dict[tuple[date, str], str]:
-    """(日期, 原始列名) → 原始字符串；按快照顺序，后取得的覆盖先取得的。"""
-    index: dict[tuple[date, str], str] = {}
+def _raw_index(store: DataStore, version: DatasetVersion) -> dict[tuple, str]:
+    """(日期, 原始列名) → 原始字符串（ALFRED 另有带版本的三元键）；按快照顺序，后取得的覆盖先取得的。"""
+    index: dict[tuple, str] = {}
     for ref in version.raw_snapshots:
         if ref["path"].endswith(".zip") and any(m.get("french_file") for m in version.series.values()):
             sections = {m["section"] for m in version.series.values() if m.get("french_file")}
@@ -113,7 +119,7 @@ def spot_check(store: DataStore, version: DatasetVersion, frame: pd.DataFrame,
     for i in picks:
         r = rows.iloc[i]
         key = (r["observation_at"].date(), labels[r["series_id"]])
-        raw = index.get(key)
+        raw = index.get((*key, str(r.get("vintage_id", "")))) or index.get(key)
         item = {"series_id": r["series_id"], "date": key[0].isoformat(), "normalized": float(r["value"]),
                 "raw": raw}
         checked.append(item)
