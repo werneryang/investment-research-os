@@ -93,8 +93,8 @@
 - [已处理 2026-11-26] 2026-11-26 · capex-boom-credit-transition（方法库 1c2bb95）· 第 5 步 · “被最终需求替代”看量还是看收入：1873-09 至 1876-06 货运吨英里 +13.6%，同期行业总收入下降、运价下降，单看量会判成已被替代 · methodology/records/hist-us-railroad-capex-1873-20261126.yaml · 处理结果：方法库登记为 G36
 - [已处理 2026-11-26] 2026-11-26 · capex-boom-credit-transition（方法库 1c2bb95）· 第 6 步 · 只在发行人一层比较债务期限和资产寿命，1873 年得出“没有错配”（30 年期债对长寿命线路），但短期资金在承销商（存款支撑的垫款）和银行（纽约国民银行贷款对个人存款 1873-02 达 203%）；卡没写要不要往融资链上查 · methodology/records/hist-us-railroad-capex-1873-20261126.yaml · 处理结果：方法库登记为 G37
 - [已处理 2026-11-26] 2026-11-26 · capex-boom-credit-transition（方法库 1c2bb95）· 第 7、8 步 · 卡的杠杆指标没有历史对应序列（回放改用通知贷款利率、银行贷存比、外国持有比例）；另外高等级铁路债收益率在危机中几乎不动（1873-08 6.06%、10 月 6.49%），损失集中在新线和低等级债，按整体利差看会漏掉信用层 · methodology/records/hist-us-railroad-capex-1873-20261126.yaml · 处理结果：方法库登记为 G38
-- [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 执行实测 · 四条回放执行记录已做技术复核（未经人工），结果 E1、E3 通过并有更正，E2、E4 通过并有待定事项；请把方法库 executions 条目的复核状态同步为技术复核 · methodology/records/fred-us-market-drawdown-{2022,2008,2020,2024}-20261126.yaml 的 technical_review
-- [未处理] 2026-11-26 · market-drawdown-layer-diagnosis · 整理时补充 · 回放判定算不算卡的“整理时补充”没有约定：E4 2024-08-05 的 VIX 期限结构倒挂按整理时补充可判第 2 层，只按作者的步骤只能判第 1 层；两份记录对它的标注也不一致（E1 写“卡的整理时补充”，E4 写“卡外”）。用户 2026-11-26 已决定：执行实测的判定不算整理时补充，只按作者的步骤判，整理时补充的指标只作旁证；请方法库按此登记 · methodology/records/fred-us-market-drawdown-2024-20261126.yaml 的 technical_review
+- [已处理 2026-11-26] 2026-11-26 · market-drawdown-layer-diagnosis · 执行实测 · 四条回放执行记录已做技术复核（未经人工），结果 E1、E3 通过并有更正，E2、E4 通过并有待定事项；请把方法库 executions 条目的复核状态同步为技术复核 · methodology/records/fred-us-market-drawdown-{2022,2008,2020,2024}-20261126.yaml 的 technical_review · 处理结果：方法库提交 637667d 在四条 executions 另加 technical_review 字段（E1、E3 有更正，E2、E4 有待定事项），review 仍为 pending，等用户复核
+- [已处理 2026-11-26] 2026-11-26 · market-drawdown-layer-diagnosis · 整理时补充 · 回放判定算不算卡的“整理时补充”没有约定：E4 2024-08-05 的 VIX 期限结构倒挂按整理时补充可判第 2 层，只按作者的步骤只能判第 1 层；两份记录对它的标注也不一致（E1 写“卡的整理时补充”，E4 写“卡外”）。用户 2026-11-26 已决定：执行实测的判定不算整理时补充，只按作者的步骤判，整理时补充的指标只作旁证；请方法库按此登记 · methodology/records/fred-us-market-drawdown-2024-20261126.yaml 的 technical_review · 处理结果：方法库提交 637667d 把用户决定写进执行实测的约定：判定只按作者的步骤，整理时补充只作旁证
 
 ## 8. NVIDIA FY27 Q3 季度研究：FCF 口径适配与网站待办
 
