@@ -28,7 +28,7 @@ extraction:
   extracted_on: "2026-11-26"
   method: ai_assisted
   tool: "Claude Code（Opus 5.5），investment-research-os 会话"
-  review: "pending：等用户复核"
+  review: "技术复核 2026-11-26（见文末 technical_review）；未经人工核对"
   quality_notes: "层级判定是执行者按卡的步骤作出的推导（ai_inference）。"
 
 point_in_time:
@@ -119,7 +119,7 @@ execution:
     - "高收益债利差 → BAA10Y"
     - "杠杆 → 日元兑美元 DEXJPUS 与 NFCI 杠杆分项"
     - "强制交易 → VIX / VIX3M"
-  review: pending
+  review: "技术复核 2026-11-26（见文末 technical_review）；未经人工核对"
 
 # ---- 重跑（2026-11-26，补充数据后）----
 # 上面是第一次执行，按记录的修改规则不改写；以下是补充数据后的重跑，四个字段以这里为准。
@@ -170,4 +170,39 @@ rerun_supplementary:
     substitutes:
       - "高收益债利差 → BAA10Y"
       - "杠杆 → 日元兑美元 DEXJPUS、VIX / VIX3M（卡外）"
-    review: pending
+    review: "技术复核 2026-11-26（见文末 technical_review）；未经人工核对"
+
+# ---- 技术复核（2026-11-26）----
+# 复核在另一个会话里做，复核者没有参与本记录的执行；与执行者是同一模型，不算独立人员复核。上面的内容不改写，更正以本节为准。
+technical_review:
+  reviewed_on: "2026-11-26"
+  reviewer: "Claude Code（Opus 5.5），investment-research-os 会话"
+  scope: "事实核对（数值、时点、版本）；语义核对（层级推导是否照卡的步骤，证据撑不撑得住结论）；定性文献正文核对（此前只核了书目）。"
+  human_review: "未做；可选。"
+  fact_check:
+    recompute: "用缓存以 --offline 重算，汇总值文件与入库版本逐字节相同。"
+    numbers: "第一次执行与重跑两部分写出的全部数字，逐个对到同一事件的汇总值（或本机 French 对照、补充数据算出的比值）；按记录写的小数位四舍五入后全部对上。"
+    against_fred: "抽查 7 个日度值（DGS10、BAA10Y、DFII10、VIXCLS、VXVCLS）向 FRED 现取，与缓存相同；脚本写的 4 个 ALFRED 首个版本日（STLFSI4、DTWEXBGS、NFCI、DEXJPUS）与 FRED 现查一致。"
+    point_in_time: "按 ALFRED 当日版本取的 27 个值（3 个时点 × 美元广义指数、3 个汇率、NFCI 及 3 个分项、STLFSI4），逐个向 ALFRED 查该时点的版本：所用观测日都已在当日版本里，数值相同，没有超前。"
+    not_checked:
+      - "补充数据（黄金、ETF 净值、FINRA 保证金债务）只核到记录与脚本从本机文件算出的值一致，没有核本机文件与发行方原件是否一致。"
+      - "事件首次报导日按复核者所知的史实核对，没有逐条查当日报导。"
+  semantic_check:
+    - "重跑认定照卡三个时点都是第 1 层，推导照卡的第 2–4 步走，读数支持（防御股在下跌日平均没跌，黄金没跌，保证金债务没有新数）。"
+    - "VIX 期限结构的归属前后不一：本记录重跑称它为“卡外”，E1 记录却写成“卡的整理时补充”。方法卡确实在“整理时补充”一节列了 VIX 近月高于远月可提示被迫交易，只是注明作者没讲。8-05 的 VIX/VIX3M 1.14 若按卡的整理时补充算，可判第 2 层，与预期一致；只按作者的步骤，只能判第 1 层，部分一致。日元作为融资货币急升确实不在卡里（台账 G30）。"
+  literature_check:
+    source: "BIS Quarterly Review, September 2024, Carry off, carry on（官网 HTML 全文）"
+    supports:
+      - "开篇与「Key takeaways」：去风险的压力短暂；平掉杠杆头寸（包括套息交易）放大了 8 月初股市和汇率的剧烈波动。"
+      - "第 2 节「De-leveraging and carry trade unwinding amplify volatility」：联储和日本央行会议被视为偏鹰后，市场对 8-2 疲弱的美国就业数据反应过度；8-5 风暴中心转到日本；杠杆头寸、尤其是套息交易受压，日元急升；VIX 盘前一度超过 60，收盘低于 40；套息平仓幅度大，但和过去的套息崩盘相比不算特别大。"
+      - "信用市场受影响最小，公司债利差只小幅走阔，信贷条件仍属宽松；市场在几天内收复失地。这支持没有到第 3、4 层、很快修复。"
+    cuts_against:
+      - "BIS 把增长担忧和就业数据当作导火索，去杠杆是放大器，所以更准确的说法是第 1 层起、第 2 层放大，与第一次执行 8-02 判 [1, 2] 相符。"
+      - "国债收益率下跌部分来自空头回补和避险资金，不是抢现金。"
+      - "9 月初波动再起，修复不是一次了结。"
+      - "文中没有讲黄金，也没有讲 VIX 期限结构。"
+    verdict: "支持到第 2 层（作为放大器）、没有到第 3、4 层、很快修复的预期。"
+  corrections: []
+  open_for_user:
+    - "回放判定算不算方法卡的“整理时补充”（VIX 期限结构）。算的话，8-05 可判第 2 层，本记录与预期改为一致；不算的话维持部分一致，并把 E1 记录对 VIX 的标注统一为“卡外”。复核者倾向不算、维持部分一致：整理时补充注明不是作者的方法，回放要检验的是作者的步骤。"
+  result: pass_with_notes

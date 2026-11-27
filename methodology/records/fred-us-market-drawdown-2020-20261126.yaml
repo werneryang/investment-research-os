@@ -28,7 +28,7 @@ extraction:
   extracted_on: "2026-11-26"
   method: ai_assisted
   tool: "Claude Code（Opus 5.5），investment-research-os 会话"
-  review: "pending：等用户复核"
+  review: "技术复核 2026-11-26（见文末 technical_review）；未经人工核对"
   quality_notes: "层级判定是执行者按卡的步骤作出的推导（ai_inference）。"
 
 point_in_time:
@@ -122,7 +122,7 @@ execution:
     - "高收益债利差 → BAA10Y"
     - "抢现金 → 10 年期实质利率与名义利率的一周变化（DFII10、DGS10），执行时补充"
     - "强制交易 → VIX / VIX3M"
-  review: pending
+  review: "技术复核 2026-11-26（见文末 technical_review）；未经人工核对"
 
 # ---- 重跑（2026-11-26，补充数据后）----
 # 上面是第一次执行，按记录的修改规则不改写；以下是补充数据后的重跑，四个字段以这里为准。
@@ -175,4 +175,38 @@ rerun_supplementary:
     substitutes:
       - "高收益债利差 → BAA10Y；HYG 净值只作旁证"
       - "强制交易 → VIX / VIX3M"
-    review: pending
+    review: "技术复核 2026-11-26（见文末 technical_review）；未经人工核对"
+
+# ---- 技术复核（2026-11-26）----
+# 复核在另一个会话里做，复核者没有参与本记录的执行；与执行者是同一模型，不算独立人员复核。上面的内容不改写，更正以本节为准。
+technical_review:
+  reviewed_on: "2026-11-26"
+  reviewer: "Claude Code（Opus 5.5），investment-research-os 会话"
+  scope: "事实核对（数值、时点、版本）；语义核对（层级推导是否照卡的步骤，证据撑不撑得住结论）；定性文献正文核对（此前只核了书目）。"
+  human_review: "未做；可选。"
+  fact_check:
+    recompute: "用缓存以 --offline 重算，汇总值文件与入库版本逐字节相同。"
+    numbers: "第一次执行与重跑两部分写出的全部数字，逐个对到同一事件的汇总值（或本机 French 对照、补充数据算出的比值）；按记录写的小数位四舍五入后全部对上。"
+    against_fred: "抽查 7 个日度值（DGS10、BAA10Y、DFII10、VIXCLS、VXVCLS）向 FRED 现取，与缓存相同；脚本写的 4 个 ALFRED 首个版本日（STLFSI4、DTWEXBGS、NFCI、DEXJPUS）与 FRED 现查一致。"
+    point_in_time: "按 ALFRED 当日版本取的 24 个值（3 个时点 × 美元广义指数、3 个汇率、NFCI 及 3 个分项），逐个向 ALFRED 查该时点的版本：所用观测日都已在当日版本里，数值相同，没有超前。lag_note 所说 3-23 的 NFCI 只到 3-13 属实。"
+    not_checked:
+      - "补充数据（黄金、ETF 净值、FINRA 保证金债务）只核到记录与脚本从本机文件算出的值一致，没有核本机文件与发行方原件是否一致。"
+      - "事件首次报导日按复核者所知的史实核对，没有逐条查当日报导。"
+  semantic_check:
+    - "3-18 判第 3 层靠卡外的推断（降息后收益率反升），记录已写明（first_guess，台账 G28）；下面的 FSB 正文支持这个推断。"
+    - "3-23 卡的推翻条件已触发而 layer_now 仍列 [3]，记录的 note 写明了理由，可以接受。"
+  literature_check:
+    source: "Financial Stability Board, Holistic Review of the March Market Turmoil（2020-11-17，PDF 正文，取文字层读执行摘要与第 2 节）"
+    supports:
+      - "执行摘要第 1 页：冲击来自金融体系之外；银行和金融市场基础设施吸收了冲击，没有放大；关键融资市场承受了严重压力。"
+      - "第 2 节第 5–6 页：2 月下旬到 3 月初是避险阶段，投资者卖风险资产、买国债这类安全资产。这与重跑 3-09 判第 1 层、黄金在涨一致。"
+      - "第 2.3 节第 6–8 页：3 月中旬转为抢现金，连国债也大跌，股债同跌；国债、黄金这类平时稳定的资产波动也很大，投资者卖掉此前涨过的资产换现金；美元大幅升值，离岸美元融资紧张；部分 ETF 净值与盘中价格明显脱节。图中把 3 月 11–23 日标为这一段。"
+      - "第 2.4 节第 9 页：抢现金一直持续到各央行大规模干预；美股在 3 月 23 日见底。这支持“到第 3 层、被政策截断”。"
+    cuts_against:
+      - "第 7 页：报告认为基金赎回、追加保证金和非银机构平掉杠杆头寸也推高了现金需求，所以 3 月中旬同时有第 2 层成分；记录在 3-18 列 [2, 3]，与此相符。"
+    verdict: "支持到第 3 层、被政策截断的预期，也支持第 3 层里黄金会跟跌（G28）。"
+  corrections:
+    - "3-09 时点的观察清单写了「实际在 3-15 紧急降息」，这是事后信息，当时看不到。层级不变。"
+    - "3-09 时点第 1 步没有提 3-03 联储紧急降息 50bp（早于该时点，当时已知）。只是漏记，不改变利率在降的判断。"
+  open_for_user: []
+  result: pass_with_corrections
