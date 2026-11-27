@@ -30,7 +30,7 @@ extraction:
   extracted_on: "2026-11-26"
   method: ai_assisted
   tool: "Claude Code（Opus 5.5），investment-research-os 会话"
-  review: "pending：等用户复核"
+  review: "技术复核 2026-11-26（见文末 technical_review）；未经人工核对"
   quality_notes: "层级判定是执行者按卡的步骤作出的推导（ai_inference），不是材料事实。"
 
 point_in_time:
@@ -123,7 +123,7 @@ execution:
     - "高收益债利差 → 穆迪 Baa 利差 BAA10Y（收益率利差，不是期权调整利差）"
     - "保证金债务 → NFCI 杠杆分项 NFCILEVERAGE（慢变量）"
     - "强制交易 → VIX / VIX3M（VIXCLS / VXVCLS），卡的整理时补充"
-  review: pending
+  review: "技术复核 2026-11-26（见文末 technical_review）；未经人工核对"
 
 # ---- 重跑（2026-11-26，补充数据后）----
 # 上面是第一次执行，按记录的修改规则不改写；以下是补充数据后的重跑，四个字段以这里为准。
@@ -172,4 +172,38 @@ rerun_supplementary:
     substitutes:
       - "高收益债利差 → BAA10Y；HYG 净值只作旁证"
       - "强制交易 → VIX / VIX3M"
-    review: pending
+    review: "技术复核 2026-11-26（见文末 technical_review）；未经人工核对"
+
+# ---- 技术复核（2026-11-26）----
+# 复核在另一个会话里做，复核者没有参与本记录的执行；与执行者是同一模型，不算独立人员复核。上面的内容不改写，更正以本节为准。
+technical_review:
+  reviewed_on: "2026-11-26"
+  reviewer: "Claude Code（Opus 5.5），investment-research-os 会话"
+  scope: "事实核对（数值、时点、版本）；语义核对（层级推导是否照卡的步骤，证据撑不撑得住结论）；定性文献正文核对（此前只核了书目）。"
+  human_review: "未做；可选。"
+  fact_check:
+    recompute: "用缓存以 --offline 重算，汇总值文件与入库版本逐字节相同。"
+    numbers: "第一次执行与重跑两部分写出的全部数字，逐个对到同一事件的汇总值（或本机 French 对照、补充数据算出的比值）；按记录写的小数位四舍五入后全部对上。"
+    against_fred: "抽查 7 个日度值（DGS10、BAA10Y、DFII10、VIXCLS、VXVCLS）向 FRED 现取，与缓存相同；脚本写的 4 个 ALFRED 首个版本日（STLFSI4、DTWEXBGS、NFCI、DEXJPUS）与 FRED 现查一致。"
+    point_in_time: "按 ALFRED 当日版本取的 24 个值（3 个时点 × 美元广义指数、3 个汇率、NFCI 及 3 个分项），逐个向 ALFRED 查该时点的版本：所用观测日都已在当日版本里，数值相同，没有超前。STLFSI4 标 post_hoc_vintage 属实（首个版本 2022-11-10）。"
+    not_checked:
+      - "补充数据（黄金、ETF 净值、FINRA 保证金债务）只核到记录与脚本从本机文件算出的值一致，没有核本机文件与发行方原件是否一致。"
+      - "事件首次报导日按复核者所知的史实核对，没有逐条查当日报导。"
+  semantic_check:
+    - "三个时点判第 1 层有依据：名义与实质利率上升，Baa 利差在 1986 年以来中位附近，NFCI 低于均值。重跑里照字面偏向第 2 层的两个读数（保证金债务降幅约为价格两倍、10-12 的 XLU 下跌日比值 1.56）都如实记下，判第 1 层的理由写明了（VIX 期限结构未倒挂、防御股累计撑住）。"
+    - "观察清单里晚于时点的日期（FOMC 2022-03-16、07-27、11-02）是事先排定的会议，不算事后信息。"
+  literature_check:
+    source: "Federal Reserve Board, Financial Stability Report, November 2022（官网 PDF，80 页，取文字层逐段读）"
+    data_cutoff: "目录页注明资料截至 2022-10-21，与书目核实一致。"
+    supports:
+      - "概览第 1–3 页：风险资产价格下跌归于经济前景转弱和利率上升；股票与公司债风险溢价在历史分布中段；企业与家庭借款的脆弱性中等、上半年变化不大；银行资本比率在 2010 年后区间中段，券商杠杆处于历史低位；中央对手方的追加保证金都已付清。"
+      - "第 23 页：杠杆贷款违约率只是从历史低位小幅上升。"
+    cuts_against:
+      - "第 7–8 页（专栏 1.1）：国债市场流动性低于历史常态，报告认为会放大价格冲击。"
+      - "概览第 2 页：对冲基金杠杆可能略高于历史均值。"
+      - "第 53 页（专栏 5.1）：9 月下旬英国国债收益率急升，迫使用杠杆的养老金卖资产补保证金，英格兰银行临时买债。这是英国的第 2–3 层，记录已作为加速器列入。"
+    verdict: "支持美国只在第 1 层的预期；流动性偏紧和英国 LDI 是局部信号，没有发展成美国的强制卖出或信用层。"
+  corrections:
+    - "2022-02-03 时点的加速器「俄罗斯入侵乌克兰（2022-02-24）」晚于该时点，当时看不到，是事后信息。该时点判第 1 层不靠这一条，层级不变；以本条为准，该时点没有可列的加速器。"
+  open_for_user: []
+  result: pass_with_corrections
