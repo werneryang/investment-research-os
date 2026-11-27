@@ -1,6 +1,6 @@
 """标准化结果与原始快照的逐点抽查。
 
-使用标准库 csv 独立读取原始文件，不复用接入器的解析代码，
+使用标准库 csv / json 独立读取原始文件，不复用接入器的解析代码，
 用于发现解析、单位或日期对齐错误（architecture §8 数据与工程层）。
 """
 
@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import csv
 import io
+import json
 import zipfile
 from datetime import date, datetime
 from typing import Any
@@ -28,6 +29,27 @@ def _parse_date(text: str) -> date | None:
         except ValueError:
             continue
     return None
+
+
+def _index_fred_api_json(content: bytes, version: DatasetVersion, index: dict[tuple[date, str], str]) -> None:
+    """FRED API（series/observations）当前版本快照：每个日期一个值，记到该数据集唯一的 FRED 序列名下。
+
+    同一日期出现多个值（ALFRED 历史版本）时无法按 (日期, 序列) 定位，整份快照不入索引。
+    """
+    labels = [m["fred_series"] for m in version.series.values() if m.get("fred_series")]
+    try:
+        obs = json.loads(content).get("observations")
+    except (json.JSONDecodeError, AttributeError):
+        return
+    if len(labels) != 1 or not isinstance(obs, list):
+        return
+    dates = [o.get("date") for o in obs]
+    if len(dates) != len(set(dates)):
+        return
+    for o in obs:
+        d = _parse_date(str(o.get("date", "")))
+        if d is not None:
+            index[(d, labels[0])] = str(o.get("value", "")).strip()
 
 
 def _raw_index(store: DataStore, version: DatasetVersion) -> dict[tuple[date, str], str]:
@@ -57,6 +79,9 @@ def _raw_index(store: DataStore, version: DatasetVersion) -> dict[tuple[date, st
                 fmt = {4:"%Y",6:"%Y%m",8:"%Y%m%d"}[len(stamp)]
                 d = datetime.strptime(stamp,fmt).date()
                 for col, raw in zip(header,row[1:]): index[(d,col)] = raw.strip()
+            continue
+        if ref["path"].endswith(".json"):
+            _index_fred_api_json(store.read_raw(ref), version, index)
             continue
         if not ref["path"].endswith(".csv"):
             continue

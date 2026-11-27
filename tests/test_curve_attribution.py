@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 import yaml
 
-from investment_os.connectors.fred import FredGraphCsvConnector
+from investment_os.connectors.fred import FredApiCurrentConnector
 from investment_os.contracts import DatasetVersion, ResultType
 from investment_os.data import ingest
 from investment_os.registry import parse_study
@@ -17,7 +17,7 @@ from investment_os.research.findings import curve_attribution_findings, curve_at
 from investment_os.runs import run_study, verify_run
 from investment_os.site import build_site
 
-from .conftest import NO_RETRY, PROJECT_ROOT, FakeHttp
+from .conftest import PROJECT_ROOT, fred_api_connector
 
 STUDY = {
     "study_id": "attr_test", "title": "分解测试", "question": "q", "result_type": "explanatory",
@@ -143,10 +143,8 @@ def test_branch_only_produces_explanatory_results():
     assert parse_study(STUDY).result_type is ResultType.EXPLANATORY
 
 
-def _fred(series: str, rows: dict) -> FredGraphCsvConnector:
-    body = f"observation_date,{series}\n" + "".join(f"{d},{v}\n" for d, v in rows.items())
-    url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}"
-    return FredGraphCsvConnector(http_get=FakeHttp({url: body.encode()}), **NO_RETRY)
+def _fred(series: str, rows: dict) -> FredApiCurrentConnector:
+    return fred_api_connector({series: rows})
 
 
 def test_end_to_end_run_reproduces_and_publishes(loaded, registry, store):

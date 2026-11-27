@@ -524,7 +524,7 @@ def test_not_fetched_reason_comes_from_the_registry():
               for d in reg.datasets.values()}
     assert reason["alfred_gdp"] == "key" and reason["manual_example"] == "manual"
     assert reason["fred_dff"] is None and reason["ust_par_yield_curve"] is None
-    assert skip_reason("fred_graph_csv", "none", False) == "unscheduled"
+    assert skip_reason("treasury_par_curve", "none", False) == "unscheduled"
     # 需要 key 的来源：定时取得的在 CI 用仓库 secret 取得，没登记定时的只在本机
     assert skip_reason("fred_api_current", "free_key", True) is None
     assert skip_reason("fred_api_vintages", "free_key", False) == "key"
