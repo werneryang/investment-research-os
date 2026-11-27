@@ -1,0 +1,102 @@
+# 补充记录第二版：AAPL 产业链走查记录里 32 条关系的「层次」与「时态类别」，供报告图块（层次 × 时态矩阵）使用。
+# 2026-11-27 技术复核后替代第一版（见 supersedes）；第一版原样保留。原走查记录不改（见 supplements.sha256）。
+# 本文件只做结构化归类，不新增任何事实、数字或关系。
+id: sec-aapl-value-chain-layout-20261127
+task_id: R-20261117-aapl-value-chain
+record_type: supplemental-structured-classification
+status: AI-assisted classification of existing relationships; technical review 2026-11-27 (see technical_review); no human review
+supersedes:
+  path: methodology/records/sec-aapl-value-chain-layout-20261119.yaml
+  sha256: ebf0847daf9b46d11dd22adc4335446b4a265febbf59d371cd1ef5e5bb748b27
+  reason: technical review corrected three items (u_ti, u_coherent, e_goldman); everything else unchanged
+supplements:
+  path: methodology/records/sec-aapl-value-chain-20261117.yaml
+  sha256: cbfdda1bcfad073781cfbe4f0b06edd843c4f36d81f80fb3290c129abdaf2b47
+  unchanged: true
+scope:
+  purpose: Chart layout only (layer x tense matrix in the published AAPL report). No new fact, figure or relationship.
+  universe: Every id in the parent record's relationships list (32), each classified exactly once.
+  not_claimed: Not a procurement ranking, not share, not exclusivity; a cell count is a count of named relationships, not importance.
+classification_rules:
+  layer: Taken from the id prefix used in the parent record (u_ component and manufacturing, t_ upstream-of-upstream chain, h_ final assembly, d_ channel and end use, e_ software and financial ecosystem). Display order runs along the chain, upstream first.
+  tense: |
+    Read from the parent record's temporal_status wording and its limits field.
+    current = the source describes the relationship as existing or in operation, or a dated 2026 arrangement in force.
+    announced = a signed agreement, announcement or plan whose delivery or rollout is not confirmed by the source.
+    historical = the source evidence is a past instance only and does not show the relationship in the latest period.
+  future_component: true when a current relationship also carries a stated future expansion, goal or prospective commitment in the same source.
+layers:
+  - {id: materials_equipment, label: 上上游：材料与设备}
+  - {id: components, label: 上游：芯片、组件与材料}
+  - {id: assembly, label: 总装}
+  - {id: channel, label: 渠道与终端使用}
+  - {id: ecosystem, label: 软件、AI 与金融生态}
+tenses:
+  - {id: current, label: 现有（披露为现行或在产）}
+  - {id: announced, label: 已签或已公告，交付未核}
+  - {id: historical, label: 仅历史实例}
+items:
+  - {id: t_gwa, label: GlobalWafers America, layer: materials_equipment, tense: announced, future_component: false}
+  - {id: t_amat, label: Applied Materials, layer: materials_equipment, tense: announced, future_component: false}
+  - {id: u_tsmc, label: TSMC, layer: components, tense: current, future_component: false}
+  - {id: u_broadcom_rf, label: Broadcom（射频）, layer: components, tense: current, future_component: true}
+  - {id: u_broadcom_asic, label: Broadcom（定制芯片）, layer: components, tense: announced, future_component: false}
+  - {id: u_qualcomm, label: Qualcomm, layer: components, tense: announced, future_component: false}
+  - {id: u_corning, label: Corning, layer: components, tense: current, future_component: true}
+  - {id: u_coherent, label: Coherent, layer: components, tense: current, future_component: true}
+  - {id: u_perryman, label: Perryman, layer: components, tense: current, future_component: true}
+  - {id: u_qnity, label: Qnity, layer: components, tense: current, future_component: true}
+  - {id: u_tdk, label: TDK, layer: components, tense: current, future_component: true}
+  - {id: u_amkor_existing, label: Amkor（现有封装）, layer: components, tense: historical, future_component: false}
+  - {id: u_amkor_future, label: Amkor Peoria（拟议）, layer: components, tense: announced, future_component: false}
+  - {id: u_mp, label: MP Materials, layer: components, tense: announced, future_component: false}
+  - {id: u_bosch, label: Bosch, layer: components, tense: announced, future_component: false}
+  - {id: u_cirrus, label: Cirrus Logic, layer: components, tense: announced, future_component: false}
+  - {id: u_gf, label: GlobalFoundries, layer: components, tense: announced, future_component: false}
+  - {id: u_ti, label: Texas Instruments, layer: components, tense: current, future_component: true}
+  - {id: u_samsung, label: Samsung, layer: components, tense: announced, future_component: false}
+  - {id: h_foxconn, label: Foxconn, layer: assembly, tense: historical, future_component: false}
+  - {id: h_quanta, label: Quanta, layer: assembly, tense: historical, future_component: false}
+  - {id: h_pegatron, label: Pegatron, layer: assembly, tense: historical, future_component: false}
+  - {id: d_att, label: AT&T, layer: channel, tense: current, future_component: false}
+  - {id: d_tmobile, label: T-Mobile, layer: channel, tense: current, future_component: false}
+  - {id: d_verizon, label: Verizon, layer: channel, tense: current, future_component: false}
+  - {id: d_cdw, label: CDW, layer: channel, tense: current, future_component: false}
+  - {id: d_united, label: United Airlines, layer: channel, tense: historical, future_component: false}
+  - {id: e_openai, label: OpenAI, layer: ecosystem, tense: current, future_component: false}
+  - {id: e_mastercard, label: Mastercard, layer: ecosystem, tense: current, future_component: false}
+  - {id: e_goldman, label: Goldman Sachs, layer: ecosystem, tense: current, future_component: false}
+  - {id: e_google, label: Google（Gemini）, layer: ecosystem, tense: announced, future_component: false}
+  - {id: e_chase, label: Chase, layer: ecosystem, tense: announced, future_component: false}
+publication:
+  status: public; classification supplement only
+  site_study: false
+
+technical_review:
+  reviewed_on: "2026-11-27"
+  reviewer: "Claude Code（Opus 5.5），investment-research-os 会话；没有参与第一版归类，与归类者是同一模型，不算独立人员复核"
+  human_review: "未做；可选。"
+  checks:
+    parent_unchanged: "原走查记录 sha256 与 supplements 声明一致。"
+    universe: "items 的 32 个 id 与原记录 relationships 一一对应，没有重复、遗漏或多出。"
+    layer: "32 条的层次都按 id 前缀归类，与 classification_rules 一致。"
+    tense: "逐条对照原记录的 temporal_status、limits 和 evidence_date_refs；TI、Coherent 另读了出处原文（Apple 2025-08-06 公告、2026-10-20 公告）。29 条与规则一致，3 条更正，见 corrections。"
+    rendering: "线上报告页的矩阵与第一版一致（14 条现行、13 条已签或已公告、5 条只有历史，6 个星号）。"
+  corrections:
+    - id: u_ti
+      before: {tense: announced, future_component: false}
+      after: {tense: current, future_component: true}
+      reason: "原记录 temporal_status 写的是扩大合作；出处原文是 Apple 与 TI 扩大双方合作，并为 TI 现有工厂加装设备、新建工厂。按规则，现有关系另含未来扩产，应归现有并打星号，与 Corning 同类。原记录 limits 不认定扩产已完成，星号正好表达这一点。"
+    - id: u_coherent
+      before: {future_component: false}
+      after: {future_component: true}
+      reason: "出处原文是与这家长期合作伙伴新签多年协议，2026-10 仍在此协议下供货。规则把同一来源的前瞻承诺记为星号；同样有多年协议的 Broadcom（射频）、Perryman 都打了星号，Coherent 应一致。"
+    - id: e_goldman
+      before: {future_component: true}
+      after: {future_component: false}
+      reason: "Goldman 的未来变化是 2026-01 签约把 Apple Card 移交给 Chase，是退出，不是扩产或承诺。图上星号的说明是另含未来扩产或承诺，打星号会让读者读反。移交由 e_chase（已签或已公告）表达。"
+  borderline_kept:
+    - "u_qualcomm 维持已签或已公告：协议覆盖 2024–2026 年机型，但原记录 limits 不认定 2026 年实际出货。"
+    - "u_amkor_existing 维持仅历史实例：现有封装关系的直接证据是 2023-11-30，最新一期出处只提新厂项目。"
+    - "u_qnity 维持现有加星号：原记录写的是扩大关系，同时说明项目公告不等于已全量交付。"
+  effect: "矩阵改为 15 条现行、12 条已签或已公告、5 条只有历史；星号仍为 6 个（加 TI、Coherent，去 Goldman）。"

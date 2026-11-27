@@ -5,7 +5,7 @@ note: AAPL-20261117-value-chain
 records:
   R: methodology/records/sec-aapl-value-chain-20261117.yaml
   S: methodology/records/sec-aapl-supplier-concentration-20261117.yaml
-  L: methodology/records/sec-aapl-value-chain-layout-20261119.yaml
+  L: methodology/records/sec-aapl-value-chain-layout-20261127.yaml
 
 figures:
   - id: kpis
@@ -62,7 +62,7 @@ figures:
     type: matrix
     title: "已登记的 {#n_total} 条具名关系中，{#n_current} 条有现行证据，{#n_announced} 条仍是已签或已公告，{#n_historical} 条只有历史实例"
     subtitle: 按层次与证据时态归类，格内是对方名称，* 表示同一来源另含未来扩产或承诺。空格只表示记录里没有这一类，不表示现实中不存在；数的是具名关系条数，不是重要性或份额
-    note: 归类写在补充记录 L 里（AI 辅助整理，尚待原作者确认），图只负责排版；原走查记录没有改动。
+    note: 归类写在补充记录 L 里（AI 辅助整理，2026-11-27 经技术复核，未经人工核对），图只负责排版；原走查记录没有改动。
     items: "L:items"
     layers: "L:layers"
     tenses: "L:tenses"

@@ -108,7 +108,7 @@ def test_axis_ticks_are_round():
 # ---- 第二批图型：收入结构条、层次 × 时态矩阵、供应商依赖斜率图（AAPL）、三级标题定位 ----
 
 AAPL = 'AAPL-20261117-value-chain'
-LAYOUT = 'methodology/records/sec-aapl-value-chain-layout-20261119.yaml'
+LAYOUT = 'methodology/records/sec-aapl-value-chain-layout-20261127.yaml'
 
 
 def aapl_page():
