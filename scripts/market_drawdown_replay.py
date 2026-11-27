@@ -102,6 +102,7 @@ ETF_ALL = ["SPY", *ETF_DEFENSIVE, "XLF", "HYG", "XLK", "SMH"]
 # 每股净值的拆分断点（用户提供）：拆分日之前的净值除以比例，换成拆分后的口径
 SPLITS = {"XLU": [("2025-12-05", 2.0)], "XLK": [("2025-12-05", 2.0)]}
 NVDA_FILE = MANUAL / "NVDA.csv"  # 纳斯达克官网日收盘价（用户下载，未复权），只在本机
+NVDA_LOCAL = CACHE / "nvda_event_windows_local.json"  # 只在本机，不进公开汇总
 NVDA_EVENTS = {"resignation": "2026-11-12", "reinstatement": "2026-11-23"}  # 公告均在开盘前，第 0 天为公告当天
 DOWN_DAY_WINDOW = 20      # 最近 20 个交易日里看标普下跌日（执行者自定，卡没有给窗口）
 FINRA_LAG_DAYS = 31       # 月度保证金债务：月末后 31 天才算已发布（保守；FINRA 一般在次月第三周发布）
@@ -518,7 +519,9 @@ def compute(offline: bool) -> tuple[dict[str, Any], dict[str, Any]]:
         })
         french_out[ev["id"]] = fr
     if man:
-        result["nvda_event_windows"] = nvda_windows(man)
+        # NVDA 事件窗口只写本机（用户 2026-11-27 决定：事件价格结果只留本机和私有仓库），不进公开汇总
+        NVDA_LOCAL.parent.mkdir(parents=True, exist_ok=True)
+        NVDA_LOCAL.write_text(json.dumps(nvda_windows(man), ensure_ascii=False, indent=1) + "\n")
     ICE_LOCAL.parent.mkdir(parents=True, exist_ok=True)
     ICE_LOCAL.write_text(json.dumps(ice_out, ensure_ascii=False, indent=1) + "\n")
     return result, french_out
