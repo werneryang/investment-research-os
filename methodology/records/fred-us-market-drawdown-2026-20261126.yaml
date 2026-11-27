@@ -152,30 +152,26 @@ execution:
 
 # ---- 补充（2026-11-26，同日）：NVIDIA 事件窗口与台韩取数决定 ----
 # 上面的 nvda_event_check 是占位，按记录的修改规则不改写，结果写在这里。
+# 2026-11-27 改写本节：用户决定事件价格结果只留本机和私有仓库，原有的收益率数字与区间撤下，
+# 数字在本机（data/drawdown_replay/nvda_event_windows_local.json）和 company-dossiers 的私有结果里；定性结论保留。
 nvda_event_check_result:
-  data: "NVDA 日收盘价（纳斯达克官网，用户下载，未复权，2025-10-01 至 2026-11-25，只在本机）；基准 SPY、SMH 每股净值。第 0 天为公告当天（两次公告都在开盘前）。只写收益率，不写价格水平。"
+  data: "NVDA 日收盘价（纳斯达克官网，用户下载，未复权，只在本机）；基准 SPY、SMH 每股净值。第 0 天为公告当天（两次公告都在开盘前）。数字不写进本记录。"
   windows:
     resignation:
       day0: "2026-11-12"
       market_layer_that_day: [1]
-      d0: {NVDA: -4.34, SPY: -0.35, SMH: -1.00, NVDA_minus_SPY: -3.99, NVDA_minus_SMH: -3.34}
-      d0_d1: {NVDA: -6.26, NVDA_minus_SPY: -5.52, NVDA_minus_SMH: -2.25}
-      dm1_d1: {NVDA: -3.58, NVDA_minus_SPY: -4.14, NVDA_minus_SMH: -4.18}
-      spread_across_choices: "超额反应在 -2.3% 到 -5.5% 之间，三种窗口、两种基准的结论方向一致"
+      reading: "三种窗口（第 0 天、第 0 至 1 天、第 -1 至 1 天）、两种基准下，超额反应都为负，方向一致，幅度差别不大"
     reinstatement:
       day0: "2026-11-23"
       market_layer_that_day: [1, 3]
-      d0: {NVDA: 31.48, SPY: 4.72, SMH: 15.21, NVDA_minus_SPY: 26.76, NVDA_minus_SMH: 16.27}
-      d0_d1: {NVDA: 23.78, NVDA_minus_SPY: 19.57, NVDA_minus_SMH: 16.80}
-      dm1_d1: {NVDA: 6.44, NVDA_minus_SPY: 6.08, NVDA_minus_SMH: 10.92}
-      spread_across_choices: "超额反应在 +6% 到 +27% 之间：换基准差 10 个百分点（SPY 对 SMH），换窗口差 20 个百分点（第 -1 天 11-20 是急跌日，含进窗口后反应大幅缩小）"
+      reading: "超额反应都为正，但幅度随基准和窗口大幅变化：换基准（SPY 对 SMH）差别明显；第 -1 天（11-20）是急跌日，把它含进窗口后反应大幅缩小"
   card_reminder: "卡的提醒：市场在第 2、3 层时，个股的事件反应会被强制卖压和抢现金污染。"
   result: "这一例与提醒相符：第 1 层那天（离任）的反应对窗口和基准不敏感；第 1、3 层那天（回任）的反应随窗口和基准大幅变化，前一天的急跌和当天的大涨都混进了事件反应。只有一个公司、两个事件，不是检验。"
   confounds:
     - "NVIDIA 本身是 SMH 和标普 500 的大权重成分，回任当天基准的大涨有一部分就是 NVIDIA 自己，扣基准会扣掉一部分事件本身（方法库的 G07）"
-    - "回任当天 SMH +15%、SPY +4.7%，市场整体在大涨，卡第 7 步说下跌途中的大涨不是止跌信号，这部分与事件无关"
+    - "回任当天 SMH、SPY 都大涨，市场整体在大涨，卡第 7 步说下跌途中的大涨不是止跌信号，这部分与事件无关"
     - "未复权收盘价；窗口内没有除息"
-  not_done: "不写 NVDA 的投资判断。需要个股判断时交给 company-dossiers；这次没有要交的事项。"
+  not_done: "不写 NVDA 的投资判断。按市场模型做的事件研究（2026-11-27，legosmos 日度 K 线）只在本机和 company-dossiers。"
 
 tw_kr_decision:
   date: "2026-11-26"

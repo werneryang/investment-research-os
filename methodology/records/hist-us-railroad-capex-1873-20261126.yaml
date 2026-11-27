@@ -272,3 +272,44 @@ technical_review:
     - "第 3 步漏记一项：Poor's 1873-74 同一条目还写北太平洋每年另付 3.5 万金元，是为买下 Lake Superior & Mississippi 24 英里线路一半权益而发行的 50 万美元债券的利息。计入后，北太平洋在自身债券之外承担的固定付息约 45.5 万金元/年，约为自身年息的 21%（原记录 19%）。结论方向不变。"
     - "第 8 步 CFC 1876 分首次违约时间的六档，按原文正文相加是 784,967,865 美元，比原文总额 783,967,665 多约 100 万；差在 OCR（正文与表格对同两档读出的数字不同），六档数字可以引用，但不要用它们复算总额。"
   result: pass_with_corrections
+
+# ---- 技术复核补充（2026-11-27，同日稍后）：CFC 1876 页面原图核对 ----
+# 通过 FRASER 的 IIIF 图像服务，按原始分辨率看了两处 OCR 存疑的页面原图。上面 technical_review.fact_check.cfc 里
+# “记录自算 26.1%、17.8% 并注明读不清，处理得当”这一判断撤回，以本节为准。
+technical_review_addendum:
+  checked_on: "2026-11-27"
+  method: "FRASER 页面原图（IIIF，原始分辨率截取局部），只看图，没有下载"
+  findings:
+    - "1876-01-22（第 8 页）：原文写 Poor's 给出的 1875-01-01 全部铁路债约 20 亿美元（$2,000,000,000），OCR 把 2 读成了 3。原文的两个百分比是约 39% 和约 26½%，分别是 783,967,665 ÷ 20 亿 = 39.2%、533,045,115 ÷ 20 亿 = 26.7%，原文自洽。"
+    - "1876-01-29 修订版（第 3 页）：估计在美国持有 535,967,665 美元、在国外持有 253,400,000 美元，相加等于修订总额 789,367,665 美元；国外约占 32.1%。记录里“约 2.534 亿（约 32%）”与此一致，OCR 存疑解除。修订版仍未解决的违约额是 538,415,115 美元。"
+  corrections:
+    - "第 8 步违约：分母应为 CFC 所引 Poor's 的约 20 亿美元，不是 30 亿；1873-09-20 至 1876-01 有违约的铁路债约占全部铁路债的 39%（原文），仍未解决的约 26½%（原文），记录自算的 26.1% 和 17.8% 作废。结论方向不变，违约的范围比记录写的更大。"
+  open_questions_closed:
+    - "open_questions 第 4 条（CFC 1876 汇总的百分比和一处合计数 OCR 不清）已由本节解决。"
+
+# ---- 补充数据（2026-11-27）：Sprague（1910）纽约清算所银行周报 ----
+# 回填 data_gaps 里“纽约清算所银行周度数据（Sprague 1910）没有取”。只追加，不改写上文。
+supplement_sprague:
+  added_on: "2026-11-27"
+  source:
+    title: "O. M. W. Sprague, History of Crises under the National Banking System（National Monetary Commission, 1910，公有领域）"
+    locator: "https://archive.org/details/historyofcrisesu00spra；第 34 页（1873-08-16、09-13 汇总表）、第 55 页（1873-09-27 至 11-08 周报表）"
+    file: {name: historyofcrisesu00spra_djvu.txt, sha256: b7c4390857641ee698d4e353ac8300b503fb47adbbf4d01918a09515ee58b755, note: "用户同意后下载到本机临时目录，不入库"}
+    checks:
+      - "第 55 页表格按页面原图核对：10-04 硬币为 10,635,500（OCR 被墨点读坏），10-18 硬币以表格 13,388,500 为准（正文约数 13,338,000）。"
+      - "第 34 页两个时点用“硬币 + 法币 − 25% ×（存款 + 流通券）”复算出的超额准备金为 9.7 和 −1.6 百万美元，与表中一致。"
+      - "复算 10-18：准备金缺口 25.6 百万美元、准备金对存款加流通券 10.85%、对存款 12.8%，与 Sprague 正文写的 25,648,000、10.85%、12.79% 一致。"
+  availability: "08-16、09-13 为当时公布的周报（contemporaneous）；09-27 至 11-08 期间清算所停发周报，这七周是事后公布（post_hoc_disclosure），当时的人看不到。"
+  unit: "百万美元；清算所成员银行合计（08-16、09-13 为 60 家）"
+  weekly:
+    - {date: "1873-08-16", loans: 292.6, specie: 27.6, legal_tenders: 47.6, deposits: 234.9, circulation: 27.2, reserve_to_deposits_pct: 32.0, loans_to_deposits_pct: 125, surplus_reserve: 9.7}
+    - {date: "1873-09-13", loans: 284.5, specie: 20.4, legal_tenders: 36.7, deposits: 207.3, circulation: 27.4, reserve_to_deposits_pct: 27.5, loans_to_deposits_pct: 137, surplus_reserve: -1.6}
+    - {date: "1873-09-27", loans: 266.81, specie: 12.94, legal_tenders: 21.23, deposits: 174.53, circulation: 27.33, reserve_to_deposits_pct: 19.6, loans_to_deposits_pct: 153, surplus_reserve: -16.3}
+    - {date: "1873-10-04", loans: 268.41, specie: 10.64, legal_tenders: 12.01, deposits: 156.40, circulation: 27.43, reserve_to_deposits_pct: 14.5, loans_to_deposits_pct: 172, surplus_reserve: -23.3}
+    - {date: "1873-10-11", loans: 265.59, specie: 11.92, legal_tenders: 10.18, deposits: 156.00, circulation: 24.45, reserve_to_deposits_pct: 14.2, loans_to_deposits_pct: 170, surplus_reserve: -23.0}
+    - {date: "1873-10-18", loans: 261.37, specie: 13.39, legal_tenders: 6.28, deposits: 153.79, circulation: 27.45, reserve_to_deposits_pct: 12.8, loans_to_deposits_pct: 170, surplus_reserve: -25.6}
+    - {date: "1873-10-25", loans: 254.90, specie: 13.27, legal_tenders: 8.78, deposits: 150.40, circulation: 27.42, reserve_to_deposits_pct: 14.7, loans_to_deposits_pct: 169, surplus_reserve: -22.4}
+    - {date: "1873-11-01", loans: 253.23, specie: 14.97, legal_tenders: 14.72, deposits: 155.84, circulation: 27.41, reserve_to_deposits_pct: 19.1, loans_to_deposits_pct: 162, surplus_reserve: -16.1}
+    - {date: "1873-11-08", loans: 249.28, specie: 16.88, legal_tenders: 21.04, deposits: 157.97, circulation: 27.43, reserve_to_deposits_pct: 24.0, loans_to_deposits_pct: 158, surplus_reserve: -8.4}
+  reading_for_steps_6_7: "危机前一个月，存款已从 2.349 亿降到 2.073 亿、准备金对存款从 32% 降到 27.5%，按法定口径（对存款加流通券 25%）09-13 已有 160 万美元缺口；危机后存款继续流失，贷款收得慢，贷存比从 125% 升到 10 月的约 170%，准备金率 10-18 见底约 12.8%。这支持第 6 步“短期资金在银行一层”的判断：流失的是银行同业与个人存款，银行却无法同速收回贷款。这是对记录第 6、7 步替代指标的补充，不改变原结论。"
+  card_vs_added: "用清算所周报看银行流动性是执行时补充，卡没有写。"
