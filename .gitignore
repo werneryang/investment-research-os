@@ -13,3 +13,7 @@ __pycache__/
 .DS_Store
 /_site/
 /_archive/
+
+# 本地 Claude Code 配置：只有 skills 入库
+/.claude/*
+!/.claude/skills/
