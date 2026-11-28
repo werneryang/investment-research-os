@@ -159,10 +159,12 @@ def home_page(content, model, latest, build):
               f'<input type="search" name="search" aria-label="{L("搜索研究", "Search research")}" '
               f'placeholder="{L("搜索研究、问题或公司，例如 估值、收益率曲线、NVIDIA", "Search studies, questions or companies, e.g. valuation, yield curve, NVIDIA")}">'
               f'<button type="submit">{L("搜索", "Search")}</button><a href="research.html">{L("高级筛选", "Advanced filters")}</a></form>')
+    atlas = "../method-atlas/" if is_en() else "method-atlas/"
     body = (f'<header class="hero"><div class="wrap"><h1>Investment Research OS</h1>'
             f'<p class="tagline">{L("用公开数据做可复现的美国市场研究：利率、资产、行业与公司。每项结果附数据来源、检查与适用范围。", "Reproducible research on US markets from public data: rates, asset classes, industries and companies. Every result carries its sources, checks and scope.")}</p>'
             f'<p class="small muted">{meta}</p></div></header><main class="wrap home">{search}'
-            f'<p class="question-pills"><span class="muted">{L("按问题", "By question")}</span>{pills}</p>'
+            f'<p class="question-pills"><span class="muted">{L("按问题", "By question")}</span>{pills} '
+            f'<a class="pill" href="{atlas}">{L("研究方法库", "Research method atlas (中文)")}</a></p>'
             f'<div class="object-cards">{"".join(cards)}</div>{none}{coverage_matrix(tax, published)}'
             f'<p class="small home-more"><a href="research.html#data-plans">{L("数据与规划", "Data and plans")}</a> · '
             f'<a href="sources.html#references">{L("分类与产业关系资料", "Classifications and business relationships")}</a> · '

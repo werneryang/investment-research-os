@@ -1,0 +1,208 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>查库验收 · 研究方法库</title><link rel="stylesheet" href="../app.css"><main class="public-results"><nav><a href="../../">OS 首页</a> · <a href="../">方法图谱</a> · <a href="./">全部成果</a></nav><h1>查库验收</h1><p>用实际研究问题检验方法库能否找到方法。只检验能不能找到、能不能照做，不判断方法对错。问题由 AI 拟定，不是真实研究任务。</p>
+<p>查法：先看 README.md 的方法清单，再按关键词搜 <code>methods/</code>，最后查 candidates.md。2026-11-13 起先按 by-task.md 定任务和路径，再按关键词补。测出的缺口汇总在 缺口台账。</p>
+<h2>2026-11-06</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>行业</th>
+<th>问题类型</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>这家铜矿公司处在周期什么位置，铜价下跌 20% 对估值影响多大？</td>
+<td>金属矿业</td>
+<td>周期与情景</td>
+<td>基本可用</td>
+</tr>
+<tr>
+<td>这家亏损的 SaaS 公司，当前 EV/Sales 要求相信什么，增长能否变成利润？</td>
+<td>软件</td>
+<td>估值与单位经济</td>
+<td>部分可用</td>
+</tr>
+<tr>
+<td>降息 100 个基点，这家零售银行的净息差和利润变化多少？</td>
+<td>银行</td>
+<td>经营敏感性</td>
+<td>没有卡，候选清单有线索</td>
+</tr>
+</tbody>
+</table>
+<h3>铜矿</h3>
+<ul>
+<li>用到的卡：cycle-position-signals、macro-demand-drivers、segment-demand-capture、sensitivity-rating-breakpoint、monte-carlo-valuation、historical-stress-analog。</li>
+<li>能走通：三端信号、分层供给缺口，再到分矿区收入和铜价 × 汇率网格。</li>
+<li>卡住：拐点水平和信号矛盾时的取舍，材料没有讲。</li>
+<li>缺卡：商品价格假设怎样定。KGHM 的 M14、M17、M27 都是 runnable，但只在候选清单。</li>
+</ul>
+<h3>SaaS</h3>
+<ul>
+<li>用到的卡：young-company-valuation-questions、multiple-value-driver-chain、expectations-revision、pricing-metric-caliber-check、multiple-pricing-process。</li>
+<li>能走通：定性列出价格要求相信什么，并检查 ARR 口径。</li>
+<li>卡住：young-company-valuation-questions 只有问题，没有答法；数值路径缺输入。</li>
+<li>缺卡：unit-economics-take-rate 明确不适用订阅公司，库里没有净收入留存、获客成本、客户群留存这类方法。</li>
+</ul>
+<h3>银行</h3>
+<ul>
+<li>用到的卡：估值有 dividend-discount-model、multiple-value-driver-chain、valuation-by-company-type。</li>
+<li>缺卡：净息差没有方法卡。report-cba-20190909 的 M10–M17、M39 都与此相关，但 M10 归在 segment-demand-capture，其余在候选清单，只来自一份材料。</li>
+<li>查找困难：搜“净息差”在方法卡里没有结果，只能搜到候选清单的 “NIM”。</li>
+<li>处理：2026-11-06 新建 bank-nim-rate-sensitivity 和 commodity-price-exposure，并加了 by-industry.md。</li>
+</ul>
+<h2>2026-11-13</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>行业</th>
+<th>问题类型</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA 创始人 CEO 离任事件怎样分析？（用户出题）</td>
+<td>半导体</td>
+<td>公司事件与治理</td>
+<td>部分可用，缺关键人物风险卡</td>
+</tr>
+<tr>
+<td>INTC 最新财报后怎样分析？（用户出题）</td>
+<td>半导体</td>
+<td>财报后更新</td>
+<td>可用；电话会读法薄，缺财报后更新路由；Intel 在来源记录里，结果偏乐观</td>
+</tr>
+<tr>
+<td>CRWV 最新财报后怎样分析？（用户出题）</td>
+<td>AI 算力云</td>
+<td>财报后更新</td>
+<td>部分可用；合同换算和折旧年限要猜，by-industry 没有算力云一行</td>
+</tr>
+<tr>
+<td>国会议员交易披露怎样分析？（用户出题）</td>
+<td>跨行业</td>
+<td>他人交易披露</td>
+<td>没有卡；缺事件分流</td>
+</tr>
+<tr>
+<td>HCA 大股东持股披露怎样分析？（用户出题）</td>
+<td>医院运营</td>
+<td>股权变化</td>
+<td>部分可用；读披露本身没有卡</td>
+</tr>
+</tbody>
+</table>
+<h2>2026-11-14</h2>
+<p>第一道执行题。取数和计算在 investment-research-os 里做，本项目只记录每张卡走到哪一步，没有复核数值。</p>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>行业</th>
+<th>问题类型</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首批四张卡在 Micron 上能走到哪一步？（用户发起）</td>
+<td>半导体存储</td>
+<td>执行</td>
+<td>范围内 12 步都走到，没有整步因数据不足停下；8 步完整做完，4 步计算做完、原因或判定需人工判断；四张卡合计 25 处口径是执行时临时定的</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>用到的卡：dupont-return-decomposition、working-capital-forecast、earnings-quality-checklist、guidance-tracking-playbook，只走首批范围。</li>
+<li>第一处要猜：杜邦在第 3 步（平均余额怎样算），其余三张都在第 1 步。</li>
+<li>换一个选项结果会明显不同的三处：营运资本的应收应付取哪一行；财报质量的终端市场口径；指引追踪怎样算达成。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>行业</th>
+<th>问题类型</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>首批四张卡在 Danaher 上能走到哪一步？（Micron 题的复测，公司由 AI 选定）</td>
+<td>生命科学工具与诊断</td>
+<td>执行</td>
+<td>范围内 12 步都走到；补读 10-K、10-Q 正文后，只剩调整后利润率因公司不披露而缺；14 处口径缺口两家都有，11 处只有一家</td>
+</tr>
+<tr>
+<td>持仓披露四类走查</td>
+<td>半导体、医院运营</td>
+<td>执行</td>
+<td>六步走到同口径变化与公开时点；识别联合申报主体错配、共同经理变化及配偶账户边界；待人工复核</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>第一处要猜：杜邦从第 3 步移到第 1 步（终止经营、优先股）；其余三张仍在第 1 步，但财报质量和指引追踪的问题变了。</li>
+<li>整理过的“取数口径”有用：营运资本列全了要定的四项，财报质量的 GAAP 与调整后分开列、指引追踪的中点比较都用上了。没覆盖的是重述、终止经营、分拆和收购（G19）。</li>
+</ul>
+<h2>2026-11-26</h2>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>行业</th>
+<th>问题类型</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-11 这一轮下跌在哪一层，对个股估值和事件判断意味着什么？（用户出题）</td>
+<td>全市场</td>
+<td>市场状态</td>
+<td>没有卡；当天提取點線面视频，新建 draft 卡 market-drawdown-layer-diagnosis</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>第一处要猜：市场跌在哪一层，库里没有任何市场层面的卡（G27 ★）。G07 加一次命中。</li>
+<li>名字像的卡对象不对：historical-stress-analog、cycle-position-signals 都以行业、公司为对象。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>问题</th>
+<th>行业</th>
+<th>问题类型</th>
+<th>结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>市场下跌层级诊断卡在四个历史事件上能走到哪一步？（用户发起，下游执行）</td>
+<td>全市场（美国）</td>
+<td>执行</td>
+<td>四个事件八步都有输出；2022、2008、2020 与预期一致但有来源偏差，2024 部分一致；第一处要猜分别在第 2、1、3、4 步</td>
+</tr>
+</tbody>
+</table>
+<h2>共同发现</h2>
+<ul>
+<li>方法清单按研究问题分类，没有行业入口。行业方法要靠关键词才找得到。</li>
+<li>只有一份材料的方法留在候选清单后，正好缺席行业专用问题。</li>
+<li>查库用到的卡，内容还没有回原文核对。</li>
+<li>没有事件类型入口：by-industry 和 by-mechanism 都查不到“人事 / 治理事件”，NVIDIA 题靠关键词才找到方法。（2026-11-13）</li>
+<li>用来源记录里出现过的公司出题，结果会偏乐观：INTC 题的部分方法就来自 Intel 报告。同类题要再用一家不在来源里的公司测一次。（2026-11-13）</li>
+<li>通用步骤不依赖公司在不在来源里，业务专项卡依赖：CRWV 题的合同、资本开支、经营杠杆卡来源都是电厂、零售、航空货运，借到算力云要大量整理时补充，需要算力云或数据中心公司的研究材料。（2026-11-13）</li>
+<li>缺“他人持仓与交易披露”一族方法：议员交易、内部人交易、机构持仓、大股东持股披露说的都是别人做了什么，不是公司怎样了。议员交易题没有卡，HCA 题只有读懂披露之后的步骤有卡。（2026-11-13 初测）。2026-11-19 已补持仓与交易披露解读并以两家公司走查。</li>
+<li>缺事件分流：库里没有方法判断一条信息值不值得进入分析。前几题的事件都明显重要，议员交易题第一步就卡在这里。（2026-11-13）</li>
+<li>照卡执行时，挡路的不是缺步骤，是缺口径：取哪一行、哪个期间、GAAP 还是非 GAAP、怎样算达成。步骤本身都能走到。（2026-11-14）</li>
+<li>卡里的“待补充”预告不了执行会卡在哪里：25 处临时决定里只有 1 处事先写在“待补充”。“待补充”记的是材料没讲清的地方，查库测试也测不出口径问题，只有执行能测出。（2026-11-14）</li>
+<li>出处只标到段落，下游分不清哪一步有材料来源；有材料来源的做法写在步骤之外时，执行会漏用。（2026-11-14）</li>
+<li>以上只来自一家公司的一次执行，要用第二家业务差别大的公司复测。（2026-11-14）</li>
+<li>Danaher 复测后：口径缺口一半以上两家都有，是通用的；只有一家的那些都对应公司的某个特征（有没有收购和分拆、披露什么、指引怎样给），换到同类公司还会出现。按卡补出处和取数口径，能减少要猜的地方，但补不上材料本来就没讲的口径。（2026-11-14）</li>
+</ul>
+</main></html>

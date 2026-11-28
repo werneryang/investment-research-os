@@ -1,0 +1,110 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>INTC 最新财报后怎样分析 · 研究方法库</title><link rel="stylesheet" href="../app.css"><main class="public-results"><nav><a href="../../">OS 首页</a> · <a href="../">方法图谱</a> · <a href="./">全部成果</a></nav><h1>INTC 最新财报后怎样分析</h1><p>2026-11-13 · done</p><h2>为什么测</h2><p>财报后更新是最常见的研究任务。这道题想看：方法库能不能排出一条从“读财报”到“更新判断”的路径，哪一步方法最薄。</p>
+<p>“最新财报”是哪一季、数字是多少，按项目约定不在这里核实。</p>
+<h2>结果</h2><p>库里方法很多，能排出完整路径。骨架借 company-research-sequence 变体 A 的第 2–5 步（财报细节 → 电话会 → 市场反应 → 估值 → 记录），具体卡的顺序和插入位置是 AI 排的。</p>
+<table>
+<thead>
+<tr>
+<th>顺序</th>
+<th>方法卡</th>
+<th>结论</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>guidance-tracking-playbook</td>
+<td>可用</td>
+<td>第 6 步先读上一次的记录，第 3 步核对上季指引是否兑现。前提是之前登记过</td>
+</tr>
+<tr>
+<td>1</td>
+<td>earnings-quality-checklist</td>
+<td>可用</td>
+<td>增长来源、超预期程度、指引方向、利润率趋势、现金转换，逐项过</td>
+</tr>
+<tr>
+<td>2</td>
+<td>normalized-earnings</td>
+<td>可用</td>
+<td>重组费用、减值这类项目要不要剔除，第 3 步判断它们是否真的不再发生</td>
+</tr>
+<tr>
+<td>2</td>
+<td>forensic-red-flags</td>
+<td>可用</td>
+<td>非 GAAP 调整扩大、资本化激进等追问项；只产生问题，不产生结论</td>
+</tr>
+<tr>
+<td>3</td>
+<td>margin-forecast-drivers</td>
+<td>可用</td>
+<td>毛利率变化拆到产品或业务结构，单列一次性项</td>
+</tr>
+<tr>
+<td>4</td>
+<td>earnings-call-forward-read</td>
+<td>部分可用</td>
+<td>材料只讲了一个读取项：下一期营收指引。电话会里还该读什么没有讲</td>
+</tr>
+<tr>
+<td>5</td>
+<td>earnings-reaction-check</td>
+<td>可用</td>
+<td>财报时点正是这张卡的适用范围</td>
+</tr>
+<tr>
+<td>6</td>
+<td>expectations-revision</td>
+<td>可用</td>
+<td>财报后现价隐含的预期变了多少</td>
+</tr>
+<tr>
+<td>6</td>
+<td>eva-momentum-decomposition</td>
+<td>可选</td>
+<td>经济利润的改善来自利润率还是增长；卡状态是 draft</td>
+</tr>
+<tr>
+<td>7</td>
+<td>thesis-pillar-scorecard</td>
+<td>可用</td>
+<td>财报结果作为新数据点，逐条更新论点支柱。前提是已有论点</td>
+</tr>
+<tr>
+<td>7</td>
+<td>valuation-watchlist-trigger</td>
+<td>部分可用</td>
+<td>买入还是放观察名单；竞争优势和估值判断的来源材料未说明</td>
+</tr>
+<tr>
+<td>8</td>
+<td>catalyst-calendar</td>
+<td>可用</td>
+<td>排出下一次检验节点</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>已完成：查库与路径排序。</li>
+<li>因数据不足未执行：所有卡都没有实际走，没有取数。</li>
+<li>需人工判断：重组费用算不算一次性，normalized-earnings 的来源也说“多靠作者判断”。</li>
+</ul>
+<h3>卡住的地方</h3>
+<p>第一处要猜的在第 4 步：电话会里读什么。earnings-call-forward-read 只来自 Ryan 一份材料，读取项只有营收指引；毛利率指引、资本开支、分部说法要不要读、怎样读，都没有材料。</p>
+<h3>候选清单里的线索</h3>
+<p>这次没有在 candidates.md 里找到专门补电话会读法或财报后更新流程的条目。</p>
+<h2>和预期对照</h2><p>盲测，无预期项。</p>
+<h2>发现的缺口与后续</h2><ol>
+<li><strong>缺财报后更新的路由</strong>：company-research-sequence 是“从头研究”的顺序；财报后已有论点、只做更新时先看什么、哪些卡可以跳过，库里没有。这次十几张卡的顺序是 AI 排的。</li>
+<li><strong>电话会读法太薄</strong>：earnings-call-forward-read 只有一个读取项，只有一份材料，需要新材料。</li>
+<li><strong>卡之间有重叠</strong>：现金转换（经营现金流 ÷ 净利润）同时出现在 earnings-quality-checklist 第 7 步和 forensic-red-flags 第 1 步，forensic-red-flags 的“别名与易混方法”提到了 earnings-quality-checklist，但没说这一步重叠；earnings-quality-checklist 没有反过来指向 forensic-red-flags。</li>
+<li><strong>测试偏差</strong>：Intel 在来源记录里，应换一家不在来源里的公司重做一次同类题。</li>
+</ol>
+<p>2026-11-13 已写入：缺口 1 进 company-research-sequence 的“待补充”；缺口 2 原已在 earnings-call-forward-read 的“待补充”（G07），补注本次测试；缺口 3 进 earnings-quality-checklist 和 forensic-red-flags；缺口 4 进 query-tests.md 的“共同发现”。</p>
+<h2>复核</h2><ul>
+<li>同意结果吗：</li>
+<li>不同意的地方：</li>
+<li>结论：通过 / 部分通过 / 不通过</li>
+</ul>
+</main></html>

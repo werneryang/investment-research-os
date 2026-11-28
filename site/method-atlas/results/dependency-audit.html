@@ -1,0 +1,830 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>方法卡引用审计 · 研究方法库</title><link rel="stylesheet" href="../app.css"><main class="public-results"><nav><a href="../../">OS 首页</a> · <a href="../">方法图谱</a> · <a href="./">全部成果</a></nav><h1>方法卡引用审计</h1><p>由 method_graph 生成，只读，不改卡。重新生成：<code>python3 method_graph --write</code>。
+本页只报告引用关系，不判断方法对错；孤立不等于该删，删卡和改卡由用户定。</p>
+<h2>口径</h2>
+<ul>
+<li><strong>起点</strong>：研究路径 by-task.md、ui-metadata.yaml 的 <code>routes</code>（示例路径），以及 templates/ 下的模版。</li>
+<li><strong>边</strong>：卡的 frontmatter <code>related</code>、卡正文里指向 <code>methods/&lt;id&gt;.md</code> 的 Markdown 链接、ui-metadata.yaml 的 <code>dependencies.methods</code>。从起点出发沿这些边做可达性。</li>
+<li><strong>入度</strong>：直接引用这张卡的不同来源数（路径页、模版、示例路径、其他卡）；同一来源经多个渠道引用只算一次。</li>
+<li><strong>不计入</strong>：索引页（README、by-mechanism.md、by-industry.md、candidates.md、query-tests.md、probability-sizing-integration.md、ui-metadata.yaml 的 <code>stages</code>）只列卡供浏览，单列为“索引提及”；records/ 和 tests/ 是出处，不读。</li>
+<li>正文里不带链接、只写了卡 id 的提及（如“按 event-study-abnormal-return 第 2 步”）机器读不准，不算边，只在“引用写法现状”里计数。</li>
+</ul>
+<h2>汇总</h2>
+<table>
+<thead>
+<tr>
+<th>项</th>
+<th>数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>方法卡</td>
+<td>87</td>
+</tr>
+<tr>
+<td>起点（路径页 + 模版 + 示例路径）</td>
+<td>8</td>
+</tr>
+<tr>
+<td>起点直接引用的卡</td>
+<td>54</td>
+</tr>
+<tr>
+<td>可达的卡</td>
+<td>82</td>
+</tr>
+<tr>
+<td>孤立卡（从任何起点都到不了）</td>
+<td>5</td>
+</tr>
+<tr>
+<td>其中把卡间引用当双向后仍到不了</td>
+<td>0</td>
+</tr>
+<tr>
+<td>低入度（可达，入度 ≤ 1）</td>
+<td>6</td>
+</tr>
+<tr>
+<td>悬空引用</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<h2>孤立卡</h2>
+<p>“双向时可达”：把卡与卡之间的引用当双向（UI 详情页的“相关方法”就是这样显示 <code>related</code> 的），这张卡能否连到起点。“是”说明它引用了可达的卡，只是没有卡或路径反过来引用它。</p>
+<table>
+<thead>
+<tr>
+<th>卡</th>
+<th>路径</th>
+<th>入度</th>
+<th>引用来源</th>
+<th>它引用的卡</th>
+<th>双向时可达</th>
+<th>索引提及</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>替代数据代理指标</td>
+<td><code>alternative-data-proxy</code></td>
+<td>1</td>
+<td>primary-research</td>
+<td>data-source-routing、market-capacity-penetration、peer-layer-comparison、primary-research</td>
+<td>是</td>
+<td>4</td>
+</tr>
+<tr>
+<td>商品价格假设与传导</td>
+<td><code>commodity-price-exposure</code></td>
+<td>0</td>
+<td>无</td>
+<td>cycle-position-signals、fx-exposure、input-cost-bridge-hedging、macro-demand-drivers、monte-carlo-valuation、segment-demand-capture、sensitivity-rating-breakpoint</td>
+<td>是</td>
+<td>4</td>
+</tr>
+<tr>
+<td>一手调研</td>
+<td><code>primary-research</code></td>
+<td>1</td>
+<td>alternative-data-proxy</td>
+<td>alternative-data-proxy、competitor-capability-matrix、customer-dependence、market-capacity-penetration</td>
+<td>是</td>
+<td>4</td>
+</tr>
+<tr>
+<td>PRVit 绩效、风险与估值相对评级</td>
+<td><code>prvit-rating-process</code></td>
+<td>0</td>
+<td>无</td>
+<td>cash-generation-capital-risk、eva-market-value-decomposition、eva-momentum-decomposition、eva-profitability-bridge、uncertainty-adjusted-star-rating</td>
+<td>是</td>
+<td>3</td>
+</tr>
+<tr>
+<td>按估值不确定性解读价格与星级</td>
+<td><code>uncertainty-adjusted-star-rating</code></td>
+<td>1</td>
+<td>prvit-rating-process</td>
+<td>value-price-gap-routing</td>
+<td>是</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h2>低入度（入度 ≤ 1）</h2>
+<table>
+<thead>
+<tr>
+<th>卡</th>
+<th>路径</th>
+<th>入度</th>
+<th>引用来源</th>
+<th>离起点几步</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>收购经济性分析</td>
+<td><code>acquisition-economics</code></td>
+<td>1</td>
+<td>by-task</td>
+<td>0</td>
+</tr>
+<tr>
+<td>银行净息差的利率敏感性</td>
+<td><code>bank-nim-rate-sensitivity</code></td>
+<td>1</td>
+<td>ui-metadata.yaml route: 降息如何影响银行净息差？</td>
+<td>0</td>
+</tr>
+<tr>
+<td>ESG 评估与估值通道</td>
+<td><code>esg-assessment</code></td>
+<td>1</td>
+<td>governance-review</td>
+<td>1</td>
+</tr>
+<tr>
+<td>融资轮远期定价拆解</td>
+<td><code>private-round-forward-pricing</code></td>
+<td>1</td>
+<td>peer-layer-comparison</td>
+<td>1</td>
+</tr>
+<tr>
+<td>交易平台单位经济拆解</td>
+<td><code>unit-economics-take-rate</code></td>
+<td>1</td>
+<td>multiple-value-driver-chain</td>
+<td>1</td>
+</tr>
+<tr>
+<td>分解未管理的 ESG 风险</td>
+<td><code>unmanaged-esg-risk</code></td>
+<td>1</td>
+<td>esg-assessment</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+<h2>悬空引用</h2>
+<p>无。</p>
+<h2>全部卡的入度</h2>
+<p>“离起点几步”：0 表示路径页、模版或示例路径直接引用，1 表示经一张卡转到，以此类推；“—”表示到不了。</p>
+<table>
+<thead>
+<tr>
+<th>卡</th>
+<th>入度</th>
+<th>按渠道（来源数）</th>
+<th>离起点几步</th>
+<th>索引提及</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>估值情景分析</td>
+<td>22</td>
+<td>path 1；route 2；related 19；body link 2；ui dependency 1</td>
+<td>0</td>
+<td>5</td>
+</tr>
+<tr>
+<td>供应链分层与同业比较</td>
+<td>17</td>
+<td>path 1；template 1；related 13；ui dependency 5</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>管理层指引与论点追踪</td>
+<td>15</td>
+<td>path 1；template 1；route 1；related 12；body link 1；ui dependency 2</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>资本成本构造</td>
+<td>14</td>
+<td>related 11；ui dependency 6</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>财报质量检查清单</td>
+<td>14</td>
+<td>path 1；template 1；related 12</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>财报发布后的市场反应检验</td>
+<td>12</td>
+<td>path 1；related 11；body link 2</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>敏感性分析与评级翻转点</td>
+<td>12</td>
+<td>path 1；route 1；related 10</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>比率驱动的三表联动预测</td>
+<td>12</td>
+<td>path 1；route 1；related 8；ui dependency 2</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>利润率驱动因素预测</td>
+<td>11</td>
+<td>path 1；route 1；related 9；ui dependency 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>市场隐含预期与预期修正</td>
+<td>10</td>
+<td>path 1；route 1；related 8；body link 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>蒙特卡洛估值模拟</td>
+<td>9</td>
+<td>route 1；related 8；body link 2</td>
+<td>0</td>
+<td>5</td>
+</tr>
+<tr>
+<td>多方法估值加权与评级映射</td>
+<td>9</td>
+<td>related 9</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>按公司属性选择估值指标</td>
+<td>9</td>
+<td>path 1；related 7；ui dependency 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>客户依赖与绑定</td>
+<td>8</td>
+<td>path 1；related 7；body link 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>股利折现模型</td>
+<td>8</td>
+<td>route 1；related 7</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>事件对产业链的暴露映射</td>
+<td>8</td>
+<td>path 1；template 1；related 6；body link 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>市场容量与渗透空间</td>
+<td>8</td>
+<td>template 1；related 7</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>倍数定价流程</td>
+<td>8</td>
+<td>path 1；related 7；ui dependency 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>从终端需求到分部收入</td>
+<td>8</td>
+<td>path 1；template 1；related 4；ui dependency 2</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>终值假设构造</td>
+<td>8</td>
+<td>related 8；ui dependency 2</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>现金生成、资本占用与偿债风险</td>
+<td>7</td>
+<td>path 1；related 6；body link 1；ui dependency 1</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>竞争者能力矩阵</td>
+<td>7</td>
+<td>related 7</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>周期位置的多信号判断</td>
+<td>7</td>
+<td>path 1；related 5；body link 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>五力打分</td>
+<td>7</td>
+<td>related 7</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>宏观需求驱动因素筛选与传导</td>
+<td>7</td>
+<td>path 1；related 6</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>市场集中度与竞争结构</td>
+<td>7</td>
+<td>related 7</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>市场下跌的层级诊断</td>
+<td>7</td>
+<td>path 1；related 6；body link 5；ui dependency 1</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>倍数到价值的驱动链</td>
+<td>7</td>
+<td>path 1；route 1；related 5；ui dependency 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>定价指标口径检查</td>
+<td>7</td>
+<td>path 1；route 1；related 3；ui dependency 4</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>风险登记与估值挂钩</td>
+<td>7</td>
+<td>path 1；related 6</td>
+<td>0</td>
+<td>5</td>
+</tr>
+<tr>
+<td>资本开支预测</td>
+<td>6</td>
+<td>path 1；related 5；body link 1；ui dependency 2</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>催化剂日历</td>
+<td>6</td>
+<td>path 1；template 1；related 4；body link 2；ui dependency 2</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>公司研究顺序</td>
+<td>6</td>
+<td>path 1；related 5</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>以超额资本回报判断护城河</td>
+<td>6</td>
+<td>path 1；related 4；ui dependency 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>历史冲击类比检验</td>
+<td>6</td>
+<td>path 1；related 5；body link 3；ui dependency 2</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>投入成本传导与套保</td>
+<td>6</td>
+<td>related 6</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>盈利正常化</td>
+<td>6</td>
+<td>path 1；related 3；ui dependency 2</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>期权隐含风险中性分布</td>
+<td>6</td>
+<td>route 1；related 5；body link 5；ui dependency 2</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>风险中性到现实概率的校准与检验</td>
+<td>6</td>
+<td>route 1；related 5；body link 5</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>分部加总估值</td>
+<td>6</td>
+<td>related 6</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>价值、价格与缺口分工</td>
+<td>6</td>
+<td>path 1；related 5</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>从股东角度评估资本配置</td>
+<td>5</td>
+<td>path 1；related 4；ui dependency 1</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>股权价值到每股的稀释换算</td>
+<td>5</td>
+<td>path 1；related 4；ui dependency 4</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>EVA 经济利润与资本收费拆解</td>
+<td>5</td>
+<td>related 4；ui dependency 3</td>
+<td>2</td>
+<td>3</td>
+</tr>
+<tr>
+<td>财务异常排查</td>
+<td>5</td>
+<td>path 1；related 4</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>股价事件时间线</td>
+<td>5</td>
+<td>path 1；related 4；body link 1；ui dependency 1</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>投资论点建档与计分追踪</td>
+<td>5</td>
+<td>path 1；template 1；related 3；ui dependency 1</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>单位成本与单位利润基准</td>
+<td>5</td>
+<td>related 5</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>估值分流与观察名单</td>
+<td>5</td>
+<td>path 1；related 4；body link 1</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>长期合同时间轴</td>
+<td>4</td>
+<td>path 1；related 2；ui dependency 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>成本转嫁能力判断</td>
+<td>4</td>
+<td>route 1；related 3；ui dependency 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>按用途选数据源</td>
+<td>4</td>
+<td>path 1；related 2；ui dependency 2</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>事件研究：异常收益与累计异常收益</td>
+<td>4</td>
+<td>path 1；related 3；body link 3；ui dependency 1</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>汇率敞口分析</td>
+<td>4</td>
+<td>related 4；ui dependency 2</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>公司治理审查</td>
+<td>4</td>
+<td>path 1；related 3</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>库存结构拆解</td>
+<td>4</td>
+<td>path 1；related 3；ui dependency 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>替代品与全生命周期成本比较</td>
+<td>4</td>
+<td>related 4</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>按超额回报收敛的三阶段企业估值</td>
+<td>4</td>
+<td>related 3；ui dependency 1</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>代理权争夺的正反论证对照</td>
+<td>3</td>
+<td>path 1；related 2</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>资本开支繁荣的融资转向检验</td>
+<td>3</td>
+<td>related 3；body link 1；ui dependency 1</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>公司基础画像</td>
+<td>3</td>
+<td>path 1；related 1；ui dependency 2</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>杜邦回报分解</td>
+<td>3</td>
+<td>related 3</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>EVA 动量的效率与增长分解</td>
+<td>3</td>
+<td>related 2；ui dependency 1</td>
+<td>3</td>
+<td>3</td>
+</tr>
+<tr>
+<td>金融稳定的风险与脆弱性评估</td>
+<td>3</td>
+<td>related 3；body link 1</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>固定与变动成本及经营杠杆</td>
+<td>3</td>
+<td>related 3</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>持仓与交易披露解读</td>
+<td>3</td>
+<td>path 1；body link 2</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>SWOT 汇总与子项打分</td>
+<td>3</td>
+<td>related 3</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>竞争解释与副预测核对</td>
+<td>2</td>
+<td>related 2；body link 1；ui dependency 1</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>读电话会逐字稿看未来</td>
+<td>2</td>
+<td>path 1；related 1</td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>EVA 利润与资本的会计调整</td>
+<td>2</td>
+<td>related 2；ui dependency 2</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>市场价值的资本、当前盈利与增长分解</td>
+<td>2</td>
+<td>related 2；ui dependency 1</td>
+<td>4</td>
+<td>3</td>
+</tr>
+<tr>
+<td>观点表达工具选择：期权贵贱、期限与载体</td>
+<td>2</td>
+<td>related 2；body link 1</td>
+<td>1</td>
+<td>3</td>
+</tr>
+<tr>
+<td>政策冲击：存量与增量、时间分层</td>
+<td>2</td>
+<td>path 1；related 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>研究线分流与准入</td>
+<td>2</td>
+<td>path 1；related 1；body link 1</td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr>
+<td>营运资本预测与现金周期</td>
+<td>2</td>
+<td>related 2；ui dependency 1</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>年轻公司估值问题树</td>
+<td>2</td>
+<td>path 1；route 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>收购经济性分析</td>
+<td>1</td>
+<td>path 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>替代数据代理指标</td>
+<td>1</td>
+<td>related 1</td>
+<td>—</td>
+<td>4</td>
+</tr>
+<tr>
+<td>银行净息差的利率敏感性</td>
+<td>1</td>
+<td>route 1</td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>ESG 评估与估值通道</td>
+<td>1</td>
+<td>related 1</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>一手调研</td>
+<td>1</td>
+<td>related 1</td>
+<td>—</td>
+<td>4</td>
+</tr>
+<tr>
+<td>融资轮远期定价拆解</td>
+<td>1</td>
+<td>related 1</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>按估值不确定性解读价格与星级</td>
+<td>1</td>
+<td>related 1</td>
+<td>—</td>
+<td>3</td>
+</tr>
+<tr>
+<td>交易平台单位经济拆解</td>
+<td>1</td>
+<td>related 1</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>分解未管理的 ESG 风险</td>
+<td>1</td>
+<td>related 1</td>
+<td>2</td>
+<td>3</td>
+</tr>
+<tr>
+<td>商品价格假设与传导</td>
+<td>0</td>
+<td>—</td>
+<td>—</td>
+<td>4</td>
+</tr>
+<tr>
+<td>PRVit 绩效、风险与估值相对评级</td>
+<td>0</td>
+<td>—</td>
+<td>—</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<h2>引用写法现状</h2>
+<table>
+<thead>
+<tr>
+<th>写法</th>
+<th>机器可读</th>
+<th>覆盖</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>frontmatter <code>related: [...]</code>（行内或分行列表）</td>
+<td>是</td>
+<td>87 张卡非空，0 张为 <code>[]</code>，0 张缺字段；共 393 条</td>
+</tr>
+<tr>
+<td>正文 Markdown 链接 <code>名称</code></td>
+<td>是</td>
+<td>53 条</td>
+</tr>
+<tr>
+<td>ui-metadata.yaml <code>dependencies.methods</code></td>
+<td>是</td>
+<td>69 条</td>
+</tr>
+<tr>
+<td>正文只写卡 id、不带链接</td>
+<td>否（只能按字符串猜）</td>
+<td>7 处，涉及 7 张卡</td>
+</tr>
+</tbody>
+</table>
+</main></html>
