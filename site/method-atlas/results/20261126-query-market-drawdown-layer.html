@@ -1,0 +1,103 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>这一轮下跌在哪一层，对个股估值和事件判断意味着什么 · 研究方法库</title><link rel="stylesheet" href="../app.css"><main class="public-results"><nav><a href="../../">OS 首页</a> · <a href="../">方法图谱</a> · <a href="./">全部成果</a></nav><h1>这一轮下跌在哪一层，对个股估值和事件判断意味着什么</h1><p>2026-11-26 · done</p><h2>为什么测</h2><p>方法库以公司层面为主。2026-11 全球股市大跌、股债金币同跌，研究个股时绕不开一个前置问题：眼前的价格变化有多少是市场层面的，个股的估值信号和事件反应还能不能照常读。这道题想看库里有没有市场层面的诊断方法，没有的话卡在哪。</p>
+<p>这道题也是提取 video-dianxianmian-market-drawdown-layers-20261126 的选材理由（README 工作流程第 1 步）。</p>
+<h2>结果</h2><table>
+<thead>
+<tr>
+<th>方法卡 / 方法</th>
+<th>结论</th>
+<th>说明</th>
+<th>原文位置或来源</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>（市场层面的下跌诊断）</td>
+<td>没有卡</td>
+<td>81 张卡的 <code>object</code> 没有一张只以市场为对象；含 <code>macro</code> 的 3 张（data-source-routing、catalyst-calendar、guidance-tracking-playbook）是取数、排事件和追踪指引，不诊断市场本身；macro-demand-drivers 从宏观推到行业和公司需求</td>
+<td>README 清单</td>
+</tr>
+<tr>
+<td>historical-stress-analog</td>
+<td>不适用</td>
+<td>问的是过去冲击里某行业或公司怎样表现，对象是 industry、company，不判断这一轮在哪一层</td>
+<td>卡的“回答什么问题”</td>
+</tr>
+<tr>
+<td>cycle-position-signals</td>
+<td>不适用</td>
+<td>行业周期位置，不是市场下跌的性质</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>event-study-abnormal-return</td>
+<td>部分相关</td>
+<td>下跌中测个股事件反应要扣市场；但市场本身在跌、事件公司又是指数大权重时基准怎样定，卡里写明材料没讲（G07）</td>
+<td>卡的“待补充”G01</td>
+</tr>
+<tr>
+<td>earnings-reaction-check</td>
+<td>部分相关</td>
+<td>财报后反应在市场整体被强制卖压推着走时会被污染，卡里没有提这种情况</td>
+<td>卡的“适用 / 不适用”</td>
+</tr>
+<tr>
+<td>valuation-watchlist-trigger</td>
+<td>部分相关</td>
+<td>“便宜”信号来自哪一种跌，卡里没有区分</td>
+<td>卡的步骤 1</td>
+</tr>
+<tr>
+<td>price-event-timeline</td>
+<td>部分相关</td>
+<td>能把事件标到价格上，但“先后不等于因果”只写了误读风险，没有判别规则</td>
+<td>卡的“判断规则”</td>
+</tr>
+<tr>
+<td>candidates.md</td>
+<td>没有线索</td>
+<td>105 条候选全来自竞赛报告，没有市场层面的方法</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>已完成：确认库里没有市场层面的卡，个股卡与市场状况的接口没有写。</li>
+<li>因数据不足未执行：不适用（查库题）。</li>
+<li>需人工判断：方法库要不要收市场层面的卡。2026-11-26 用户决定收，建 draft 卡；市场层面卡的执行实测改为“至少两个类型不同的历史事件”回放。</li>
+</ul>
+<h2>和预期对照</h2><table>
+<thead>
+<tr>
+<th>预期项</th>
+<th>实际</th>
+<th>一致？</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>库里没有市场层面的卡</td>
+<td>没有</td>
+<td>一致</td>
+</tr>
+<tr>
+<td>G07 可能被碰到</td>
+<td>碰到：下跌中测个股事件反应，事件公司（NVIDIA）是半导体指数和大盘的大权重。新视频讲了指数集中度怎样放大外资卖压，但没讲基准怎样定，记为命中，不关闭</td>
+<td>一致</td>
+</tr>
+<tr>
+<td>容易把个股卡当市场方法用</td>
+<td>historical-stress-analog、cycle-position-signals 名字像，对象不对</td>
+<td>一致</td>
+</tr>
+</tbody>
+</table>
+<h2>发现的缺口与后续</h2><ul>
+<li>缺口台账新增 G27（市场层面下跌诊断没有卡），★：这道题第一处要猜的就在这里；G07 加一次命中。</li>
+<li>处理：提取视频 video-dianxianmian-market-drawdown-layers-20261126，新建 draft 卡 market-drawdown-layer-diagnosis，写清和 earnings-reaction-check、valuation-watchlist-trigger、event-study-abnormal-return 的接口。卡只有一份 creator 来源，各层阈值、第 2/3 层边界、第一个底怎样确认都没有材料，G27 记“已推进”，不关闭。</li>
+</ul>
+<h2>复核</h2><ul>
+<li>同意结果吗：</li>
+<li>不同意的地方：</li>
+<li>结论：通过 / 部分通过 / 不通过</li>
+</ul>
+</main></html>

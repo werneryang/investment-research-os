@@ -1,0 +1,794 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>缺口台账 · 研究方法库</title><link rel="stylesheet" href="../app.css"><main class="public-results"><nav><a href="../../">OS 首页</a> · <a href="../">方法图谱</a> · <a href="./">全部成果</a></nav><h1>缺口台账</h1><p>只收被研究问题碰到过的缺口，用来决定下一步找什么材料。提取记录的 <code>gaps</code> 和方法卡的“待补充”照常写，但不进本表，除非有一道题碰到它。</p>
+<h2>规则</h2>
+<ul>
+<li><strong>进表</strong>：tests/ 的题或 query-tests.md 的题测出的缺口。同一个缺口再次碰到时不新加行，只在“命中”里加题目。</li>
+<li><strong>真实运行也算命中</strong>（2026-11-15 起）：用 公司研究档案 的编排流程做的真实分析，结果第 9 节列出的方法缺口照样登记，命中写“&lt;代码&gt; 运行”。真实运行算用户发起，第一处要猜的地方同样标 ★。公司本身在来源记录里时照登记，但在命中旁注明“来源偏差”：方法部分来自这家公司自己的材料，走得顺的步骤不能当作方法普适的证据，碰到的缺口则照样成立。</li>
+<li><strong>结果回看也算命中</strong>（2026-11-19 起）：公司研究档案 每季的 <code>YYYY-Qn</code> 把落空的 <code>made_by: self</code> 判断交给本库，只带卡 id、步骤号和问题，不带个股数字和公司判断。按上一条的方式登记，命中写“YYYY-Qn 回看”，不标 ★。一次落空只说明照这张卡这一步得出的说法没兑现，指出卡可能缺的条件，不判断方法对错；登记的是缺口，不是预测准不准。来源方和数据两类原因不归本库。登记后同样请下游会话把条目标为已处理。</li>
+<li><strong>类型</strong>决定怎样处理：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>含义</th>
+<th>处理</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>入口与顺序</td>
+<td>卡有，但找不到或不知道先后</td>
+<td>不需要新材料，整理即可，优先做</td>
+</tr>
+<tr>
+<td>通用卡太薄</td>
+<td>跨公司都会遇到，卡里没讲或讲了一半</td>
+<td>达到下面的门槛就找材料</td>
+</tr>
+<tr>
+<td>要自己定的假设</td>
+<td>换一家公司就变成另一个问题</td>
+<td>不建卡，记在下方“假设清单”，交给下游</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>找材料的门槛</strong>：命中 2 次以上，或者是某道用户出的题里第一处要猜的地方。AI 出的题只算半次参考，不单独触发。</li>
+<li><strong>选材料</strong>时回到 工作流程 第 1 步，写明要关闭本表的哪一条。</li>
+<li><strong>关闭</strong>：对应的卡补上了有材料来源的步骤，“状态”改为已关闭，写明记录名。用整理时补充的内容顶上的，写“已缓解”，不算关闭。</li>
+</ul>
+<h2>缺口</h2>
+<p>命中列里，★ 表示这道题第一处要猜的地方就在这里。</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>缺口</th>
+<th>类型</th>
+<th>命中</th>
+<th>次数</th>
+<th>记在哪</th>
+<th>需要什么材料</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G01</td>
+<td>没有按任务的入口：财报后更新、突发事件的顺序每次都是临时排的</td>
+<td>入口与顺序</td>
+<td>NVDA、INTC、CRWV、议员交易、HCA</td>
+<td>5</td>
+<td>by-task.md</td>
+<td>讲更新流程或事件分析流程的从业者材料</td>
+<td>已缓解：2026-11-13 建 by-task.md，顺序为整理时补充</td>
+</tr>
+<tr>
+<td>G02</td>
+<td>他人持仓与交易披露怎样读：大股东持股披露、内部人、议员、机构持仓</td>
+<td>通用卡太薄</td>
+<td>议员交易 ★、HCA ★</td>
+<td>2</td>
+<td>governance-review、data-source-routing 的“待补充”</td>
+<td>基础方法卡及四类披露走查</td>
+<td><strong>基础披露解读已关闭（2026-11-19）</strong>；预测力另作实证研究</td>
+</tr>
+<tr>
+<td>G03</td>
+<td>事件分流：一条信息值不值得进入分析</td>
+<td>入口与顺序</td>
+<td>议员交易 ★</td>
+<td>1</td>
+<td>query-tests.md“共同发现”</td>
+<td>讲信息筛选或研究优先级的从业者材料</td>
+<td>已缓解：by-task.md 第 0 步三个问题为整理时补充；<strong>达到门槛</strong>。2026-11-27 已推进：从用户自己的期权研究纲领（own-opt-research-program-design-20260919）新建 draft 卡 research-line-triage，回答的是相近的“一条研究线值不值得投入”，对象不是单条信息，by-task.md 第 0 步旁加了链接；第 0 步本身仍是整理时补充，不关闭</td>
+</tr>
+<tr>
+<td>G04</td>
+<td>电话会除营收指引外还读什么、怎样读</td>
+<td>通用卡太薄</td>
+<td>INTC ★、CRWV；NVDA 运行（来源偏差；同季完整 Q&amp;A 已读，但说话人衔接、条件性及仅电话会说法的判断仍薄）</td>
+<td>3</td>
+<td>earnings-call-forward-read 的“待补充”</td>
+<td>讲电话会读法的材料；其他行业、不在来源记录里的公司的电话会；分析师的会后报告</td>
+<td>未关闭，已推进：2026-11-13 提取 Intel 2026 年三季度电话会（记录 call-intc-q3-2026-20261029），补上了“读什么”：分段、指引各项、四种问法。“怎样判断”仍然没有；<strong>仍达到门槛</strong></td>
+</tr>
+<tr>
+<td>G05</td>
+<td>合同覆盖、积压订单怎样换算成预测收入</td>
+<td>通用卡太薄</td>
+<td>CRWV ★；GOOGL 运行（来源接触：取数示例；RPO 定义及合同选项变化，缺年度兑现桥）</td>
+<td>2</td>
+<td>contract-revenue-timeline 的“待补充”</td>
+<td>有积压订单披露的公司的卖方报告或模型说明</td>
+<td>未关闭，<strong>达到门槛</strong></td>
+</tr>
+<tr>
+<td>G06</td>
+<td>管理层变动后怎样评估接任者和战略延续</td>
+<td>通用卡太薄</td>
+<td>NVDA</td>
+<td>1</td>
+<td>governance-review 的“待补充”</td>
+<td>创始人或 CEO 离任的案例分析、卖方事件点评</td>
+<td>未关闭</td>
+</tr>
+<tr>
+<td>G07</td>
+<td>非财报事件的市场反应：观察窗口和基准</td>
+<td>通用卡太薄</td>
+<td>NVDA；2026-11 市场下跌题（下跌中测个股事件反应，事件公司是指数大权重；點線面视频讲了指数集中度，没讲基准，不关闭）；GOOGL 搜索专题运行（来源接触：取数示例；event-study-abnormal-return 第 1–6 步：发布时间、基准自包含与单次低功效；未计算异常收益）</td>
+<td>3</td>
+<td>earnings-reaction-check、event-study-abnormal-return 的“待补充”</td>
+<td>事件研究方法的说明</td>
+<td><strong>部分关闭</strong>（2026-11-15，记录 paper-mackinlay-event-studies-1997）：新建 event-study-abnormal-return，事件日（收盘后含次日、日期不确定取第 0、+1 天）、事件窗口与估计窗口、四类正常收益模型的前提、异常收益与累计异常收益、显著性检验都有了材料来源；earnings-reaction-check 第 1、2 步改为引用它。仍缺：事件公司本身占基准指数很大权重时基准怎样定（材料没讲）、盘前和非交易日的第 0 天（整理时补充）、单家公司单次事件功效很低时怎样做（材料只说要汇总多次事件）、非财报事件的窗口长度规则、反应持续的判断标准</td>
+</tr>
+<tr>
+<td>G08</td>
+<td>年轻公司估值只有问题，没有答法</td>
+<td>通用卡太薄</td>
+<td>CRWV；SaaS（AI 题）</td>
+<td>1.5</td>
+<td>young-company-valuation-questions 的“待补充”</td>
+<td>Damodaran 后续的实际估值文章</td>
+<td>未关闭</td>
+</tr>
+<tr>
+<td>G09</td>
+<td>卡之间有重叠但没有互相指向：现金转换（财报质量与异常排查）；回购与持股比例（治理与资本配置）</td>
+<td>入口与顺序</td>
+<td>INTC、HCA；GOOGL 运行（来源接触：取数示例；质量与法证的现金转换/贸易项检查分工）；NVDA 运行（来源偏差；质量与法证的现金转换检查分工仍重叠）</td>
+<td>4</td>
+<td>四张卡的“待补充”</td>
+<td>不需要</td>
+<td>未关闭，整理即可</td>
+</tr>
+<tr>
+<td>G10</td>
+<td>行业索引没有算力云、数据中心运营一行；相关专项卡来源都是传统行业</td>
+<td>入口与顺序</td>
+<td>CRWV</td>
+<td>1</td>
+<td>by-industry.md“还没有覆盖”</td>
+<td>算力云或数据中心公司的研究报告</td>
+<td>未关闭</td>
+</tr>
+<tr>
+<td>G11</td>
+<td>控股股东带来的折价或溢价只有国有大股东一个例子</td>
+<td>通用卡太薄</td>
+<td>HCA</td>
+<td>1</td>
+<td>multiple-value-driver-chain 的“待补充”</td>
+<td>讲控股股东折价的估值材料</td>
+<td>未关闭</td>
+</tr>
+<tr>
+<td>G12</td>
+<td>订阅软件的单位经济：净收入留存、获客成本、客户群留存</td>
+<td>通用卡太薄</td>
+<td>SaaS（AI 题）</td>
+<td>0.5</td>
+<td>by-industry.md“还没有覆盖”</td>
+<td>订阅软件公司的研究报告</td>
+<td>未关闭</td>
+</tr>
+<tr>
+<td>G13</td>
+<td>周期拐点水平，信号互相矛盾时怎样取舍</td>
+<td>通用卡太薄</td>
+<td>铜矿（AI 题）</td>
+<td>0.5</td>
+<td>query-tests.md</td>
+<td>周期行业的研究报告</td>
+<td>未关闭</td>
+</tr>
+<tr>
+<td>G14</td>
+<td>比率里的余额和期间口径：期末还是平均余额、平均怎样算、年度还是季度、一年天数、财年不按日历年怎样处理</td>
+<td>通用卡太薄</td>
+<td>MU 执行 ★（杜邦、营运资本两张卡）、DHR 执行 ★（营运资本）、INTC 运行（来源偏差；期末还是平均余额，53 周财年不折算）；GOOGL 运行（来源接触：取数示例；期间及资本开支、应付、非现金增加时点对齐）；TSLA 运行（两点平均余额的选择，dupont 第 1 步）；INTC 估值运行（来源偏差；流通股与加权稀释股数、同窗口 TTM）</td>
+<td>6</td>
+<td>dupont-return-decomposition、working-capital-forecast 的“待补充”</td>
+<td>讲财务比率口径的教材或卖方模型说明</td>
+<td>未关闭，<strong>达到门槛</strong></td>
+</tr>
+<tr>
+<td>G15</td>
+<td>营运资本的应收、应付取报表表面行还是附注里的贸易项</td>
+<td>通用卡太薄</td>
+<td>MU 执行 ★；DHR 执行没有碰到（表面行就是贸易项），取决于报表格式；INTC 运行 ★（来源偏差；第三种情况：应付表面行不含应计费用，但含资本开支应付）；GOOGL 运行（来源接触：取数示例；表面 AR/AP 含非贸易项，贸易项及部分库存历史不足）；TSLA 运行（期末应收含已开票未交付的容量，应付可能含资本开支资金，没有可对齐的纯贸易项序列，working-capital-forecast 第 1 步）</td>
+<td>4</td>
+<td>working-capital-forecast 的“待补充”</td>
+<td>同 G14；有营运资本明细的卖方模型</td>
+<td>未关闭，<strong>达到门槛</strong></td>
+</tr>
+<tr>
+<td>G16</td>
+<td>财报质量清单各项的判定口径：有机增长怎样取（不披露时怎样填，自报的非 GAAP 口径能不能用）、利润率方向、终端市场口径、“持续”指几期</td>
+<td>通用卡太薄</td>
+<td>MU 执行 ★、DHR 执行 ★、INTC 运行 ★（来源偏差；不披露有机增长又有出售；“方向”的规则改变结论；分部间收入让占比和贡献相加超过 100%）；GOOGL 运行（来源接触：取数示例；报告/恒定汇率增长非有机增长，分部组合未拆出）；NVDA 运行（来源偏差；缺有机增长及产品级价量桥，不能由筛查推出完整持续性判断）；TSLA 运行 ★（报告收入不是有机或恒定汇率增长；第一处要猜：第 1 步把汽车、能源、服务当产品收入类别，另列报告分部，不混成同一占比）；GOOGL 搜索专题运行（来源接触：取数示例；earnings-quality-checklist 第 1、2、11 步：部分覆盖且经四舍五入的量价代理须标交叉项和未解释范围；基数反事实不是因果归因）</td>
+<td>7</td>
+<td>earnings-quality-checklist 的“待补充”</td>
+<td>讲财报阅读清单且给出判定标准的从业者材料；財女珍妮 2026-11-05 直播的提取记录（第 1–8 步的原清单出自这场直播，目前没有记录）</td>
+<td>未关闭，已推进：2026-11-14 整理出处时发现，第 5 步 GAAP 与调整后分开列有材料（morningstar-intc M05），第 6 步有两种口径变体（qantas M34、dnl M31）；判定口径仍没有。<strong>仍达到门槛</strong></td>
+</tr>
+<tr>
+<td>G17</td>
+<td>指引追踪的登记和核对规则：检查日、GAAP 与非 GAAP 两套指引、约数和描述性指引、多次修订和重申、怎样算达成</td>
+<td>通用卡太薄</td>
+<td>MU 执行 ★、DHR 执行 ★、INTC 运行 ★（来源偏差；毛利率和每股收益指引以收入中点为前提，收入超出区间时怎样比；全年指引只在第二张表里时登记不登记）；GOOGL 运行（来源接触：取数示例；约数/区间与后续定性表述不能直接判重申或达成）；NVDA 运行（来源偏差；既有指引区间与实际比较须保留地区排除等原始条件）；TSLA 运行（「大于」式指引既不是区间中点也不是上限，全年实绩未到期，指标定义要先核对，guidance-tracking-playbook 第 3 步）</td>
+<td>6</td>
+<td>guidance-tracking-playbook 的“待补充”</td>
+<td>讲管理层指引兑现情况怎样统计的研究或从业者材料</td>
+<td>未关闭，已推进：2026-11-14 整理出处时发现，比较基准用区间中点有材料（call-intc M18、morningstar-intc M01）；怎样算达成、检查日、两套口径仍没有。<strong>仍达到门槛</strong>。第 1 步的字段清单和第 2、4、5 步都是整理时补充</td>
+</tr>
+<tr>
+<td>G18</td>
+<td>方法卡的出处按段落写，没有标到步骤和参数；“所需数据”只到科目类别；有材料来源的做法写在“变体与冲突”里而不在步骤里</td>
+<td>入口与顺序</td>
+<td>MU 执行；AAPL 运行（来源接触：第三方潜在合作案例；静态产业链卡输入/步骤出处及未实测边界）；NVDA 运行（来源偏差；完整 Q&amp;A 等未实测卡的输入/覆盖与出处边界须逐项标明）</td>
+<td>3</td>
+<td>四张卡的“待补充”；执行测试 的“交接约定要改的地方”</td>
+<td>不需要</td>
+<td>首批四张卡已处理：2026-11-14 出处标到步骤和参数，加了“取数口径”，有来源的做法移回步骤，并按提取记录更正了几处出处。其余 75 张卡仍按段落标出处，执行用到时再整理</td>
+</tr>
+<tr>
+<td>G19</td>
+<td>重述、终止经营、分拆和收购带来的口径问题：重述后取最新申报混用口径，分拆或收购当年的余额，终止经营下的利润和现金流口径，指引之后指标定义改了</td>
+<td>通用卡太薄</td>
+<td>DHR 执行 ★（杜邦）、INTC 运行（来源偏差；出售业务而非终止经营，且不披露被出售业务的收入；全年指引表的指标改名）；GOOGL 运行（来源接触：取数示例；并购增长比较及指标/合同定义变化）；INTC 估值运行（来源偏差；出售业务退出合并后，TTM 销售不是同口径有机序列）；GOOGL 搜索专题运行（来源接触：取数示例；earnings-quality-checklist 第 1、11 步：只计覆盖与指标定义未对齐的跨期可比问题，不计基数反事实）</td>
+<td>5</td>
+<td>四张卡的“待补充”</td>
+<td>讲重述、终止经营和并购年份怎样调整财务比率的教材或卖方模型说明</td>
+<td>未关闭，<strong>达到门槛</strong>；Micron 期间没有这类事件</td>
+</tr>
+<tr>
+<td>G20</td>
+<td>利润异常时的口径：净利润为负、接近零或被营业外项目主导，少数股东权益又大时，杜邦的利润和权益、现金转换的分子分母怎样取</td>
+<td>通用卡太薄</td>
+<td>MU 执行（净利润为负的年份比值怎样处理）、INTC 运行 ★（来源偏差；整份结果第一处要猜：FY2025 归属口径为负、合并口径为正）；GOOGL 运行（来源接触：取数示例；合并 CFO 与普通股可得净利润归属错配及营业外影响）；TSLA 运行（合并 CFO 与母公司、普通股东净利润范围不同，earnings-quality-checklist 第 7 步，暂以合并净利润为主、母公司比值只作补充）；INTC 估值运行（来源偏差；GAAP 亏损使滚动市盈率失效，归属与合并利润口径，valuation-by-company-type 第 2 步、pricing-metric-caliber-check 第 3 步）</td>
+<td>5</td>
+<td>dupont-return-decomposition、earnings-quality-checklist 的“待补充”</td>
+<td>同 G14；讲亏损期和营业外项目怎样处理财务比率的教材或卖方模型说明</td>
+<td>未关闭，<strong>达到门槛</strong>；两张卡各写了一部分，2026-11-15 由 INTC 运行合并成一条</td>
+</tr>
+<tr>
+<td>G21</td>
+<td>一次性及公允价值项目怎样对齐税务与归属，形成税后经常性盈利基准；近似历史项目不足时怎样报告边界</td>
+<td>通用卡太薄</td>
+<td>GOOGL 运行（来源接触：取数示例）</td>
+<td>1</td>
+<td>normalized-earnings 第 1–4 步的“待补充”</td>
+<td>给出税前、税务、归属及经常性调节桥的财报分析教材或从业者模型说明</td>
+<td>未关闭；未确认是第一处要猜，单次命中尚未达到找材料门槛；与 G20 比率口径问题区分</td>
+</tr>
+<tr>
+<td>G22</td>
+<td>资本开支维护/增长的判定，及单位投入、资产批次到投产和资本回报的桥；总额、承诺、日程不足以推出</td>
+<td>通用卡太薄</td>
+<td>GOOGL 运行（来源接触：取数示例）；GOOGL 搜索专题运行（来源接触：取数示例；capex-forecast 第 1、3、5、6 步：未披露的分部现金成本、资本、折旧与 FCF 须区分披露事实和独立情景参数）</td>
+<td>2</td>
+<td>capex-forecast 第 1、3、5、6 步的“待补充”</td>
+<td>给出维护/增长判定及单位成本、资产批次、投产与折旧桥的重资产模型说明</td>
+<td>未关闭；两次命中，<strong>达到门槛</strong>；具体寿命仍属 A01，缺披露同时是数据限制</td>
+</tr>
+<tr>
+<td>G23</td>
+<td>产品级供应关系的证据门槛：主体/厂址名单如何与组件、型号、期间和关系时态区分；未具名或计划供货时怎样报告</td>
+<td>通用卡太薄</td>
+<td>AAPL 运行（来源接触：第三方潜在合作案例）</td>
+<td>1</td>
+<td>peer-layer-comparison 第 1–3、11、13 步；customer-dependence 第 2、4 步的“待补充”</td>
+<td>明确区分名单、产品供货、未来计划及可核验关系证据的供应链研究材料</td>
+<td>未关闭；未确认第一处要猜，单次命中尚未达到找材料门槛</td>
+</tr>
+<tr>
+<td>G24</td>
+<td>同一主体跨组件/制造、渠道、企业部署和平台生态的多角色分类；如何区分实物流、资金流、部署与兼容合作，避免把终端使用等同直接客户</td>
+<td>通用卡太薄</td>
+<td>AAPL 运行（来源接触：第三方潜在合作案例）</td>
+<td>1</td>
+<td>peer-layer-comparison 第 2、11、13 步；customer-dependence 第 1、2、4、7 步的“待补充”</td>
+<td>给出跨层多角色关系分类和边界实例的产业链或平台生态研究材料</td>
+<td>未关闭；归入卡内已有跨层/多层待补充，本台账首次登记；未确认第一处要猜，单次命中尚未达到找材料门槛</td>
+</tr>
+<tr>
+<td>G25</td>
+<td>静态产业链“主要公司”的筛选标准：缺采购额、产品级份额或集中度时，如何选择代表、识别关键依赖并限制排名</td>
+<td>通用卡太薄</td>
+<td>AAPL 运行（来源接触：第三方潜在合作案例）</td>
+<td>1</td>
+<td>peer-layer-comparison 第 3、12、13 步；customer-dependence 第 1、7 步的“待补充”</td>
+<td>给出关键参与者/代表样本选择依据及披露不足处理的从业者研究流程</td>
+<td>未关闭；归入卡内已有关键公司条件/选样门槛待补充，本台账首次登记；未确认第一处要猜，单次命中尚未达到找材料门槛</td>
+</tr>
+<tr>
+<td>G26</td>
+<td>同一交易日第三方报价字段互相冲突时：用什么交叉验证、观察时点要对到什么程度，才能把价格晋级为“当前价格”；不能晋级时用哪个已核对的旧日价格作基准、怎样标注</td>
+<td>通用卡太薄</td>
+<td>INTC 估值运行（来源偏差）</td>
+<td>1</td>
+<td>value-price-gap-routing 第 1 步、pricing-metric-caliber-check 第 3 步（价格取数部分，卡里只写了市场价格和观察日期）</td>
+<td>讲价格数据取数、时点和多源核对的从业者材料</td>
+<td>未关闭；未确认是第一处要猜，单次命中尚未达到找材料门槛；价格来源的选择和许可归 investment-research-os，这里只登记卡缺的“怎样晋级、怎样标注”</td>
+</tr>
+<tr>
+<td>G27</td>
+<td>市场层面的下跌诊断：一轮下跌跌在哪一层，个股的反应和估值信号这时还能不能照常读</td>
+<td>通用卡太薄</td>
+<td>2026-11 市场下跌题 ★</td>
+<td>1</td>
+<td>market-drawdown-layer-diagnosis 的“待补充”</td>
+<td>讲杠杆与流动性螺旋、信用传导的材料（如 Brunnermeier &amp; Pedersen 2009，未核实）；同一频道后续回看</td>
+<td>未关闭，已推进：2026-11-26 提取记录 video-dianxianmian-market-drawdown-layers-20261126，新建 draft 卡，步骤有材料来源；各层阈值、第二三层边界、第一个底的确认、进入第四层的条件都没有（记录 G01–G05）。2026-11-27 又从用户自己的期权研究提取 own-opt-market-observation-pilot-20260923、own-opt-vix-etp-flow-scale-20260929，并用上 own-opt-stress-participants-card-20260924：第 2、3、4、7 步多了美国波动率市场的量法（作者层级 own，只作旁证）；阈值仍没有。用户出的题，第一处要猜，<strong>达到门槛</strong></td>
+</tr>
+<tr>
+<td>G28</td>
+<td>市场下跌第 3 层（抢现金）怎样认：卡只按利率方向和“黄金也跟跌”判；抢美元时黄金可能在涨，利率上升也可能是国债被抢着卖成现金而不是利率预期变了</td>
+<td>通用卡太薄</td>
+<td>2020 回放 ★（来源偏差；降息后国债收益率反升，照字面判成第 1 层）、2008 回放（来源偏差；2008-10 黄金在涨，第 3 层按卡判不出）</td>
+<td>2</td>
+<td>market-drawdown-layer-diagnosis 第 3 步；回放走查</td>
+<td>讲流动性危机中国债和黄金被抛售的材料；与 G27 同</td>
+<td>未关闭，<strong>达到门槛</strong>。与记录 G02（第 2、3 层边界）相关但不同：这里是第 1 层和第 3 层分不开，不并入。2026-11-27 已推进：用户的试点（own-opt-market-observation-pilot-20260923 M05）给了黄金走势的四解释核对法，说明实际利率和美元上行时黄金跟跌可以是利率重估；但利率美元渠道与去杠杆仍分不开，国债被抛售没有讲</td>
+</tr>
+<tr>
+<td>G29</td>
+<td>第 2 步“防御股撑没撑住”没有量法：选哪几只（利率敏感的公用事业本身会跌），按下跌日的跟跌程度还是自见顶累计</td>
+<td>通用卡太薄</td>
+<td>2022 回放 ★（来源偏差；XLU 下跌日跌得比市场多，累计却撑住）、2024 回放（防御股撑住，照卡判不出第 2 层）</td>
+<td>2</td>
+<td>market-drawdown-layer-diagnosis 第 2 步</td>
+<td>讲板块轮动或防御板块表现的材料</td>
+<td>未关闭，<strong>达到门槛</strong></td>
+</tr>
+<tr>
+<td>G30</td>
+<td>第 2 层（杠杆）的指标：保证金债务月度且滞后一个多月，几周内的去杠杆看不到；“大减”相对价格、按什么速度算没有口径；融资货币（日元）急升时判哪层没讲</td>
+<td>通用卡太薄</td>
+<td>2024 回放 ★、2022 回放（来源偏差；九个月降 25%、价格降 13%，照字面是第 2 层）、2020 回放（来源偏差；事件期间没有新数）</td>
+<td>3</td>
+<td>market-drawdown-layer-diagnosis 第 2、4 步；记录 G03（美股第二层指标）</td>
+<td>讲去杠杆和套息平仓监测的材料</td>
+<td>未关闭，<strong>达到门槛</strong>。记录 G03 的实测版。2026-11-27 已推进：用户的研究（own-opt-market-observation-pilot-20260923 M04、own-opt-vix-etp-flow-scale-20260929 M01–M03）给了波动率市场的周度（CFTC TFF 分类持仓）和日度（VIX ETP 规则重建）指标，比月度保证金债务快；股票融资的“大减”口径和融资货币升值仍没有</td>
+</tr>
+<tr>
+<td>G31</td>
+<td>起点在信用层（第 4 层）时怎样往下判：卡的叙述从第 1 层起跌</td>
+<td>通用卡太薄</td>
+<td>2008 回放 ★（来源偏差；2007-08 基金冻结早于股市见顶）</td>
+<td>1</td>
+<td>market-drawdown-layer-diagnosis 的“方法失效条件”</td>
+<td>讲信用危机先于股市的材料，如 2007–2008 的回顾</td>
+<td>未关闭，第一处要猜，<strong>达到门槛</strong></td>
+</tr>
+<tr>
+<td>G32</td>
+<td>第 2 步和第 3 步给出不同的层时以哪步为准：防御股撑住（第 2 步判第 1 层），同时利率下降而黄金比特币大跌（第 3 步判第 3 层）</td>
+<td>通用卡太薄</td>
+<td>2026-11 下游执行（2026-11-20 时点；HANDOFF「给方法库」2026-11-26 一条）</td>
+<td>1</td>
+<td>market-drawdown-layer-diagnosis 第 2、3 步的“待补充”</td>
+<td>同 G28；讲多信号冲突时怎样取舍的材料</td>
+<td>未关闭。与 G13（周期信号矛盾时怎样取舍）同类，不并入</td>
+</tr>
+<tr>
+<td>G33</td>
+<td>没有现金流量表时怎样量“内部资金够不够”：资本开支只能用资本加债务账户的变化代替（混着统计范围扩大和注水股本），自由现金流只能用净收益扣分红对债务的比率代替</td>
+<td>通用卡太薄</td>
+<td>1873 回放 ★（来源偏差）</td>
+<td>1</td>
+<td>capex-boom-credit-transition 第 2 步；1873 回放</td>
+<td>讲历史或无现金流量表时期怎样估资本开支和内部资金的材料（铁路经济史）</td>
+<td>未关闭，第一处要猜，<strong>达到门槛</strong></td>
+</tr>
+<tr>
+<td>G34</td>
+<td>没有附注时找哪些表外对应物：卡列的都是现代会计项目；回放用了租入线路承担的债息、他路或州的担保、地方援建，担保的或有性还取决于付款货币等条款</td>
+<td>通用卡太薄</td>
+<td>1873 回放（来源偏差）</td>
+<td>1</td>
+<td>capex-boom-credit-transition 第 3 步</td>
+<td>讲表外融资历史形态的材料</td>
+<td>未关闭</td>
+</tr>
+<tr>
+<td>G35</td>
+<td>循环融资的承销商形式：承销商以发行人没卖掉的债券作抵押向它垫款，同时兼任债券受托人；卡只写了供应商投资客户、担保抵押品残值两种</td>
+<td>通用卡太薄</td>
+<td>1873 回放（来源偏差）</td>
+<td>1</td>
+<td>capex-boom-credit-transition 第 4 步</td>
+<td>讲承销商与发行人利益冲突、1873 年 Jay Cooke 倒闭的研究</td>
+<td>未关闭。要决定是否补进卡，需要有材料来源，不用回放结果直接补</td>
+</tr>
+<tr>
+<td>G36</td>
+<td>“被最终需求替代”看量还是看收入：1873-09 至 1876-06 货运量增长，同期行业收入和运价下降，单看量会判成已被替代</td>
+<td>通用卡太薄</td>
+<td>1873 回放（来源偏差）</td>
+<td>1</td>
+<td>capex-boom-credit-transition 第 5 步；方法记录 Barr G03</td>
+<td>同 Barr G03</td>
+<td>未关闭</td>
+</tr>
+<tr>
+<td>G37</td>
+<td>债务期限对资产寿命只在发行人一层比，会得出“没有错配”；短期资金在承销商（存款支撑的垫款）和银行（纽约国民银行贷存比高）</td>
+<td>通用卡太薄</td>
+<td>1873 回放（来源偏差）</td>
+<td>1</td>
+<td>capex-boom-credit-transition 第 6 步</td>
+<td>讲融资链期限错配（承销商、银行）的材料</td>
+<td>未关闭</td>
+</tr>
+<tr>
+<td>G38</td>
+<td>第 7、8 步：卡的杠杆指标没有历史序列（回放改用通知贷款利率、银行贷存比、外国持有比例）；高等级铁路债收益率在危机中几乎不动，损失集中在新线和低等级债，看整体利差会漏掉信用层</td>
+<td>通用卡太薄</td>
+<td>1873 回放（来源偏差）</td>
+<td>1</td>
+<td>capex-boom-credit-transition 第 7、8 步；与 market-drawdown-layer-diagnosis 第 5 步的整体利差相关</td>
+<td>讲 19 世纪金融危机中信用分层的研究</td>
+<td>未关闭</td>
+</tr>
+<tr>
+<td>G40</td>
+<td>方向判断定下后用什么工具表达：期权贵贱的基准（VIX 能不能用于个股）、期限、载体成分，以及持有期间盈利怎样拆成方向和波动率</td>
+<td>通用卡太薄</td>
+<td>2026-11-27 用户的问题（能否提取 Burry 的期权投资方法）</td>
+<td>1</td>
+<td>新建 option-expression-instrument-choice（文献研究草案）；记录 substack-paleobservatory-burry-option-tools-20261126 G01–G05</td>
+<td>Burry 的 Substack 原帖（用户找不到）；Coval &amp; Shumway 2001、Bakshi &amp; Kapadia 2003、Goyal &amp; Saretto 2009 的正文；D'Avolio 2002 借券市场</td>
+<td>未关闭，已推进：2026-11-27 从用户自己 iMac 上的期权研究（opt-analysis）提取四份记录 own-opt-premium-attribution-baseline-20260206、own-opt-premium-greeks-plan-20260203、own-opt-market-observation-case-framework-20261119、own-opt-stress-participants-card-20260924（作者层级 own，不是独立来源）。盈利拆分（第 7 步）的逐项拆分和选合约有了材料来源；第 2 步补了质量门和同一作者的定价口径，但没有贵贱判定线；第 8 步补了 OI 读法和参与者判别。期限、载体和贵贱判定仍只有 C1 和文献摘要。C1 记录 G01、G03、G05 只能由 C1 作者或 Burry 关闭，不因此关闭。用户的真实问题，<strong>仍达到门槛</strong>。离场、分批和尾仓属于下游执行，按用户 2026-11-27 定的范围不建卡，不在本条</td>
+</tr>
+<tr>
+<td>G41</td>
+<td>给定时间窗和价格区间（或目标价与到达日），怎样选期权结构、到期日和行权价；“最优”按什么目标（期望值、最大亏损、中位数）定</td>
+<td>通用卡太薄</td>
+<td>2026-11-27 用户的问题 ★（“在预定的时间范围、预定的价格波动范围下，给出最优的期权组合或合约选择策略”）</td>
+<td>1</td>
+<td>option-expression-instrument-choice 第 5 步与“待补充”；记录 own-opt-call-exit-selection-20261126 G02</td>
+<td>讲由情景判断选期权结构（价差、蝶式、铁鹰、日历）和行权价的从业者材料；用户自己的 strategy-design-card-* 与 strategy-backtest-design-*（opt-analysis docs/research/tracks/strategy-backtest/）</td>
+<td>未关闭，已推进：2026-11-28 提取用户的回测笔记 own-opt-call-exit-selection-20261126，第 5 步补了离场计划、到期日比值和行权价规则，只覆盖看涨的单买 Call 和一族价差，情景概率没有接进选择，也没有“最优”的目标。用户的真实问题，第一处要猜，<strong>达到门槛</strong>。按用户 2026-11-28 确认的范围，离场参数（止损、到价目标）不在本条</td>
+</tr>
+<tr>
+<td>G39</td>
+<td>历史共识前后快照怎样验真：固定目标预测期、指标口径、贡献者范围与当时可见时间，识别事后回填或重述</td>
+<td>通用卡太薄</td>
+<td>GOOGL 搜索专题运行（来源接触：取数示例）</td>
+<td>1</td>
+<td>expectations-revision 第 4 步</td>
+<td>说明历史预测版本、贡献者变动与数据可见时间的点时共识方法文档</td>
+<td>未关闭；未确认是第一处要猜，单次命中尚未达到找材料门槛</td>
+</tr>
+</tbody>
+</table>
+<p>2026-11-06 的 AI 题还测出净息差和商品价格假设两处缺卡，当天已建 bank-nim-rate-sensitivity 和 commodity-price-exposure，不再列入。</p>
+<h2>假设清单</h2>
+<p>这些不是缺方法，而是做具体研究时要自己定的假设或判断。本库只需要在路径里指出“这里要定”，取数和判断交给 investment-research-os。</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>要定的假设</th>
+<th>出现在</th>
+<th>命中</th>
+<th>影响什么</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A01</td>
+<td>快速迭代的设备（算力、半导体）按几年折旧</td>
+<td>capex-forecast 第 6 步</td>
+<td>CRWV</td>
+<td>利润率、维护性开支、偿债能力</td>
+</tr>
+<tr>
+<td>A02</td>
+<td>公司价值多大程度依赖某个人，哪根论点支柱受影响</td>
+<td>thesis-pillar-scorecard；governance-review</td>
+<td>NVDA ★</td>
+<td>离任事件对论点的冲击大小</td>
+</tr>
+<tr>
+<td>A03</td>
+<td>重组、减值这类费用算不算一次性</td>
+<td>normalized-earnings 第 3 步</td>
+<td>INTC</td>
+<td>正常化利润的水平</td>
+</tr>
+</tbody>
+</table>
+<p>A01 和 A02 当时也写进了对应方法卡的“待补充”。同一类假设在三家以上不同公司反复出现，说明它背后可能有通用方法，再升为上表的缺口。</p>
+<h2>现在该找什么材料</h2>
+<p>原有四条达到门槛，G02 的基础读法已完成：</p>
+<ol>
+<li><strong>G04 电话会读法</strong>：两道题碰到，一道是第一处要猜。已提取 Intel 一场电话会，还缺两样：一份直接讲读法的材料（如 Valentine 一书，或提问分析师的会后报告），以及一场其他行业、不在来源记录里的公司的电话会（如 CoreWeave）。</li>
+<li><strong>G02 持股与交易披露的读法</strong>：两道题碰到，2026-11-19 完成基础读法。</li>
+<li><strong>G05 积压订单换算成收入</strong>：一道题，第一处要猜。</li>
+<li><strong>G03 事件分流</strong>：一道题，第一处要猜。</li>
+</ol>
+<p>G09 不需要材料，下次整理方法卡时顺手处理。</p>
+<p>2026-11-14 的 Micron 执行题 又有四条按规则达到门槛：G14–G17，都是首批卡里第一处要猜的地方。它们只来自一家公司的一次执行。整理时的建议，不是规则：先按“出题时注意”用第二家业务差别大的公司把同一条路径再走一遍，两家都卡住的再去找材料。G18 已在首批四张卡上处理。</p>
+<p>同日的 Danaher 复测 确认了 G14、G16、G17：两家都是第一处要猜的地方，各命中 2 次。G15 只有 Micron 碰到，取决于报表格式，暂不找材料。新增的 G19 来自 Danaher 的分拆和收购，只命中一次，但是第一处要猜，也达到门槛。</p>
+<p>2026-11-15 登记了 INTC 第一次真实运行（私有仓库 公司研究档案，本机路径）测出的缺口：G14、G16、G17、G19 加命中，G15 达到门槛，新增 G20。Intel 在来源记录里，命中旁都注明了来源偏差。</p>
+<p>2026-11-16 处理了下游 HANDOFF「给方法库」的一条反馈：event-study-abnormal-return 的复权日价从哪里取、许可有什么限制。这是执行前提，不是方法缺口，不进上表：卡里写明“执行前提”，来源选择归 investment-research-os。</p>
+<p>执行类缺口要找的材料有共同点：讲财务比率口径怎样定的教材或卖方模型说明，一份就可能同时回答 G14、G15、G16、G19、G20。G17 要另找讲管理层指引怎样统计兑现的材料。</p>
+<p>去哪里找见下面的“材料线索”。</p>
+<h3>2026-11-16 GOOGL 首次财报阅读反馈</h3>
+<ul>
+<li>来源：结果第 9 节及 <code>R-20261116-googl-earnings</code> 的 step 6 卡 id/步骤/问题反馈；未复核个股数字。方法来源版本 <code>dd452a85fc35911a6c96de99dab2aa8a1090be26</code>；本次仅登记开放缺口，不表示方法已补齐。</li>
+<li>G05、G09、G14、G15、G16、G17、G19、G20 各加一次真实运行命中；新增 G21（税后正常化桥）、G22（资本开支拆分与资产投产桥）。未获“第一处要猜”明确证据，不标 ★，不将单次新缺口判为达到找材料门槛。</li>
+<li>G04 仍未关闭；本次未处理电话会全文，不增加独立电话会实测命中。原件/条款是执行覆盖限制，不是新方法来源。G10 是跨行业借用背景，不新建专项卡。</li>
+<li>缺库存历史、贸易项、单位成本或资产批次，仍列数据不足；缺口编号不替代补数，也不表示已有完整现金周期或资本回报算法。</li>
+<li>Google 曾在取数示例中出现（<code>video-ryan-ai-stock-analysis-20261014</code> corrections 图 14/15）：属局部来源接触，不是 Alphabet 专属完整方法来源，不能称完全样本外验收。Google Trends / Destination Insights 用于别家公司，不是 Google 公司案例。</li>
+<li>方法库不修改下游文件；登记完成后请用户确认 公司研究档案 反馈已处理。此次仅处理 GOOGL，先前 INTC/TSLA 待登记反馈未顺带处理。</li>
+</ul>
+<h3>2026-11-17 AAPL 静态产业链反馈</h3>
+<ul>
+<li>来源：结果第 9 节及 <code>R-20261117-aapl-value-chain</code> 的 step 6 方法反馈；仅记录方法问题，不复制结果正文、公司数值或用户判断。来源方法版本 <code>dd452a85fc35911a6c96de99dab2aa8a1090be26</code>；本次仅登记开放缺口，不表示方法已补齐。</li>
+<li>G18 加一次真实运行命中。产品级关系证据门槛首次入表为 G23；跨层多角色与“主要公司”筛选分别对应卡内已存在的多层处理/关键公司标准待补充，首次入表为 G24、G25；G01 的任务入口问题不重复新增命中，也不将卡内记录的 G14/G02 误当台账同编号。</li>
+<li>三项新缺口均未关闭、未标 ★、未判达到找材料门槛；没有新增有来源的方法、改动执行步骤或提升实测状态。静态产业链限定范围不等于走完全部 first_look。</li>
+<li>名单/厂址不等于具体组件/型号供货，计划和已供货需区分；部署/兼容/合作也不等于直接采购。披露不足时的证据分级、多角色标注和代表性限定目前仍是执行时补充，未变成原作者方法。</li>
+<li>方法材料仅有第三方潜在合作的 Apple 提及，不是已核实产品供货案例；标局部来源接触，不称完全样本外。待用户确认 公司研究档案 反馈已处理；不由方法库改下游文件。</li>
+</ul>
+<h3>2026-11-17 NVDA 财报及同季 Q&amp;A 反馈</h3>
+<ul>
+<li>来源：结果第 9 节、任务 <code>R-20261117-nvda-earnings</code> 台账“缺口处理”及 step 6 卡/步骤/问题反馈。方法来源版本为 <code>ea65b013157284c82b98950ae5fe47de10109d70</code>；仅登记方法问题，未核验个股数字、未复制结果分析。</li>
+<li>G04、G09、G16、G17、G18 各追加一次本次真实运行命中，没有新增编号/卡或标 ★。G16 只登记有机增长、产品级桥及质量判定边界，不把完整税后正常化的 G21 自动算成命中。</li>
+<li>G04 的命中来自已读同季完整第三方 Q&amp;A 的运行反馈，不表示已用官方校订稿/录音解决说话人歧义，或已具备独立判断 call-only 前瞻的完整方法。转写完整性/归属不确定与方法薄弱分别保留；只在电话会出现的说法不自动变成申报指引。</li>
+<li>原指引区间与实绩的比较须保留期间、指标定义及地区排除等条件（G17）；现金转换归质量还是异常筛查仍有重叠（G09）。没有有机/产品级因果桥时不把筛查当成持续性已证（G16）。</li>
+<li>NVIDIA 已是库存、电话会及研究顺序的来源例子，命中标来源偏差；未实测卡输入/覆盖与出处边界另记 G18。本次运行不提升卡状态、不新增 execute 验收记录、不证明普适性。</li>
+<li>网站研究的发行人 FCF 硬编码/公共契约由 research-os 负责，是实现问题；本次不因此改现金流方法、登记新方法缺口或修改下游文件。未公开附注、许可行情或官方原件等限制不自动算本批新方法命中。</li>
+<li>本次登记后请用户确认 公司研究档案 对应反馈已处理；方法库不改私有结果、报告或任务台账。新增命中仍开放，本轮未提交/推送。</li>
+</ul>
+<h3>2026-11-19 TSLA 财报与 INTC 估值反馈（补登记）</h3>
+<ul>
+<li>来源：TSLA 结果第 9 节（任务 <code>R-20261116-tsla-earnings</code>，卡/步骤取自走查记录的 <code>method_execution_issues</code>）和 INTC 估值结果第 9 节（任务 <code>R-20261116-intc-valuation</code>）。这两份此前因本库有未提交改动暂缓登记，现补上；仅登记方法问题，未核验个股数字、未复制结果分析。方法来源版本 <code>aac6b6b81fbeabdbd1c1fc56a8e68edcd37356ef</code>。</li>
+<li>TSLA：G14、G15、G16、G17、G20 各加一次真实运行命中；Tesla 不在来源记录里，不标来源偏差。G16 的第一处临时口径是第 1 步产品收入类别与报告分部怎样分，按规则标 ★。</li>
+<li>TSLA 结果第 9 节还列了 G04、G09，但那次没读电话会，现金转换分工也没有具体的卡/步骤问题，不算命中。关税退款的静态毛利桥和 SpaceX 公允价值影响对应的是 normalized-earnings，该卡本次没有执行，不给 G21 加命中。</li>
+<li>INTC 估值：G14、G19、G20 各加一次命中，Intel 在来源记录里，注明来源偏差。新增 G26（同日第三方报价冲突时怎样晋级为当前价格），单次命中，未标 ★。缺完全稀释股数、市值口径少数股东权益、债务桥、匹配同业等是数据限制，不算方法缺口。</li>
+<li>所有新增命中仍开放，没有新增有来源的方法，没有改动方法卡或提升实测状态。</li>
+<li>方法库不改下游文件；请 公司研究档案 会话把 TSLA 与 INTC 估值两份的方法反馈标为已处理。</li>
+</ul>
+<h3>2026-11-26 市场下跌层级诊断的四个历史事件回放</h3>
+<ul>
+<li>来源：investment-research-os 提交 <code>65c8d3c</code>、<code>739202b</code> 的四份回放记录（<code>fred-us-market-drawdown-{2022,2008,2020,2024}-20261126</code>，以末尾重跑一节为准）和 HANDOFF「给方法库」2026-11-26 的 8 条。只登记方法问题，没有复核数值。</li>
+<li>新增 G28–G31，各事件第一处要猜标 ★。2022、2008、2020 是视频作者举过的年份，标来源偏差；2024 没有。</li>
+<li>HANDOFF 的 8 条归属：第 3 步利率方向、黄金在涨两条 → G28；第 2 步防御股两条 → G29；第 4 步保证金债务、第 3/4 步融资货币（第一次执行的读法，重跑后第 3 层的误判已由黄金解决，融资货币的问题仍在）→ G30；第 1 步信用起点 → G31；“所需数据”一条是执行前提，写进卡的“所需数据”，不进上表。</li>
+<li>卡的步骤没有改；只改了“所需数据”的执行前提、“方法失效条件”的实测依据和“待补充”。</li>
+<li>方法库不改下游文件；请 investment-research-os 会话把这 8 条标为已处理。</li>
+</ul>
+<h3>2026-11-26 AI 资本开支融资的三份监管原件</h3>
+<ul>
+<li>选材料：用户的真实问题“怎样评判金融危机；AI 资本开支是否在从技术驱动转向信贷驱动”。提取了美联储 Barr 2026-11-16 演讲、ECB 2026 年 11 月《金融稳定评论》专栏 3、IMF 2026 年 10 月 GFSR 第 1 章，记录 speech-barr-ai-financial-stability-20261116、ecb-fsr-ai-debt-financing-202611、imf-gfsr-ch1-202610。</li>
+<li>新建 capex-boom-credit-transition（三家独立机构，consolidated）和 financial-stability-risk-vulnerability（只有 IMF，draft）。前者没有缺口表的条目要关；后者回答上一轮回答里说的“库里没有事前预警”，那不是缺口表的条目。</li>
+<li>G28：IMF 把国债收益率变化拆成预期短端利率和期限溢价（图 1.4），可能用来区分利率预期和被迫抛售国债；材料讲的是财政和通胀，不是抢现金，写进卡的“变体与冲突”作为线索，<strong>不关闭</strong>。</li>
+<li>A01：ECB 给出“债务期限对经济寿命和会计寿命”的比较做法，Barr 给出旧代芯片租赁价格这个观察点；寿命本身仍要自己定，仍在假设清单。</li>
+<li>处理了下游 HANDOFF 的 1 条未处理反馈，登记为 G32；按规则请 investment-research-os 的会话把它标为已处理（本库不改下游文件）。</li>
+</ul>
+<h3>2026-11-26 资本开支融资转向卡的 1873 年铁路回放</h3>
+<ul>
+<li>来源：investment-research-os 会话写的回放记录 <code>hist-us-railroad-capex-1873-20261126</code>（未提交），以及下游 HANDOFF「给方法库」2026-11-26 新增的 6 条。只登记方法问题，没有复核数值。走查见 题目文件。</li>
+<li>新增 G33–G38；第一处要猜在第 2 步（G33 ★），比预期早一步。卡的来源（ECB、Barr）写卡时看过这段历史，全部标来源偏差。</li>
+<li>卡的步骤没有改，只在“待补充”加了缺口编号，在 ui-metadata 的 <code>executions</code> 加了一条。卡层面的执行实测还差一个类型不同的投资潮。</li>
+<li>方法库不改下游文件；请 investment-research-os 会话把这 6 条标为已处理。</li>
+</ul>
+<h3>2026-11-27 搜索预期专题反馈</h3>
+<ul>
+<li>来源：<code>R-20261127-googl-search-expectations</code> STEP 6 与结果第 9 节；路线版本 <code>0988a39c567bddd7cf324277bf0a221d41aa8806</code>。</li>
+<li>G07、G16、G19、G22 各追加一次；G39 单列，因为历史共识版本的验真与回填侦测不同于管理层指引到期核对（G17），也不同于同日报价核对（G26）。拿不到历史数据是执行限制，不等同于已解决验真规则。</li>
+<li>不标 ★，不关闭缺口，不改卡步骤或实测状态。请下游将对应反馈标为已处理；方法库不改下游文件。</li>
+</ul>
+<h2>材料线索</h2>
+<p>线索分为以下两种。已取得原件或已完成提取的条目另行注明进度。</p>
+<ul>
+<li>没有标注的，是 AI（Claude）凭记忆列出的，没有联网核实。</li>
+<li>标“已联网核实”的，是缺口达到门槛后按 工作流程 的“联网找线索”搜过的：作者、标题、年份和刊物对过，附网址、核实日期和取得方式（公开全文、付费、只有摘要）。</li>
+</ul>
+<p>处理规则：</p>
+<ul>
+<li>凭记忆的线索在联网核实或取到原件时确认书目，对不上的删掉。</li>
+<li>取到原件后按 工作流程 正常提取，才能进方法库。线索本身不能写进方法卡的 <code>sources</code>。</li>
+<li>想在取到原件前先有卡可用，只能走文献研究草案，要用户明确要求。</li>
+<li>学术论文提取的是做法（怎样分类、怎样定窗口、怎样换算），不提取“有没有预测力”的结论。本项目不判断方法是否有效。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>缺口</th>
+<th>线索</th>
+<th>作者层级</th>
+<th>要提取的做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G04 电话会读法</td>
+<td>Valentine，《Best Practices for Equity Research Analysts》，2011</td>
+<td>professional</td>
+<td>分析师怎样准备问题、怎样读管理层的回答</td>
+</tr>
+<tr>
+<td>G04</td>
+<td>几家公司的电话会逐字稿原件，重点看问答部分；由用户选公司。Intel 2026 年三季度一场已提取（记录 call-intc-q3-2026-20261029）</td>
+<td>official</td>
+<td>问答里分析师追问什么，管理层怎样答、怎样不答</td>
+</tr>
+<tr>
+<td>G04</td>
+<td>Matsumoto、Pronk、Roelofsen，2011，电话会陈述部分与问答部分的信息量，The Accounting Review</td>
+<td>academic</td>
+<td>把陈述和问答分开读的做法</td>
+</tr>
+<tr>
+<td>G04</td>
+<td>Hollander、Pronk、Roelofsen，2010，管理层在电话会上不回答问题，Journal of Accounting Research</td>
+<td>academic</td>
+<td>怎样识别和记录“没有回答”</td>
+</tr>
+<tr>
+<td>G04</td>
+<td>Larcker、Zakolyukina，2012，识别电话会中的回避性表述，Journal of Accounting Research</td>
+<td>academic</td>
+<td>用哪些语言特征标记可疑回答</td>
+</tr>
+<tr>
+<td>G02 持股与交易披露</td>
+<td>SEC 对 Schedule 13D、13G、Form 4、Form 13F 的规则说明和填报说明。已联网核实（2026-11-19）：13D/13G 见 2023 年修订 Release 33-11253 概要（13D 首报改为 5 个工作日、修订 2 个工作日，13G 期限 2024-09-30 起缩短）和 Regulation 13D-G 的 C&amp;DI；Form 4 见 Section 16 的 C&amp;DI 和 Form 4 表格及说明；13F 见 Form 13F FAQ。公开全文</td>
+<td>official</td>
+<td>各表格谁要报、多久内报、主动型与被动型的区别、持股目的写在哪；规则有修订，取原件时以 SEC 现行页面为准</td>
+</tr>
+<tr>
+<td>G02 本批原件（2026-11-19）</td>
+<td>已归档上行三页 SEC 网页。13D/13G 正文版本 2026-11-17（51 个题号，103.05 已撤回）；Section 16 为 2026-10-15（57 个题号，133.08 为保留项，另含分条解释）；13F FAQ 为 2026-03-06（75 个题号，含字母后缀和 2 张表）。本地见 来源与校验记录，Drive 同名目录保留副本。</td>
+<td>official</td>
+<td>三页完整归档，九份官方材料按独立问答、表式或专章提取，已覆盖两院并完成 INTC、HCA 走查。预测力线索保留供独立实证研究。</td>
+</tr>
+<tr>
+<td>G02 实证扩展（独立待办）</td>
+<td>下列论文作为分类、样本与窗口的候选原件。</td>
+<td>academic</td>
+<td>下游可按历史公开时间重建当时可见样本，区分例行与机会型交易、金额区间和账户角色，定义基准、成本和样本外检验。基础卡关闭不代表该任务完成。</td>
+</tr>
+<tr>
+<td>G02</td>
+<td>Seyhun，《Investment Intelligence from Insider Trading》，MIT Press，1998（精装；2000 年平装版）。已联网核实（2026-11-19），书目对得上：EconPapers 书目。付费（购书或图书馆借阅），网上只有书目和商业摘要</td>
+<td>academic</td>
+<td>按交易人身份、金额、买卖方向读内部人交易</td>
+</tr>
+<tr>
+<td>G02</td>
+<td>Cohen、Malloy、Pomorski，2012，“Decoding Inside Information”，Journal of Finance 67(3)，DOI 10.1111/j.1540-6261.2012.01740.x。已联网核实（2026-11-19），书目对得上：EconPapers；工作论文版 NBER w16454（2010）。期刊版付费；哈佛 DASH 存档 有公开全文（作者稿，与期刊版可能有差异）</td>
+<td>academic</td>
+<td>把内部人交易分成例行和机会型的分类步骤</td>
+</tr>
+<tr>
+<td>G02</td>
+<td>Belmont、Sacerdote、Sehgal、Van Hoek，2022，“Do senators and house members beat the stock market? Evidence from the STOCK Act”，Journal of Public Economics 207。已联网核实（2026-11-19），作者、年份、刊物对得上，原线索没有标题，已补：IDEAS。期刊版付费；前身工作论文 NBER w26975（2020，只含参议员，“Relief Rally”）有公开 PDF</td>
+<td>academic</td>
+<td>议员交易披露的数据口径：交易日与披露日、金额区间、账户归属</td>
+</tr>
+<tr>
+<td>G05 积压订单换算收入</td>
+<td>披露剩余履约义务分期的公司年报附注（ASC 606 的披露要求）；由用户选公司</td>
+<td>official</td>
+<td>披露里有哪些时间段、哪些合同被排除在外</td>
+</tr>
+<tr>
+<td>G05</td>
+<td>Rajgopal、Shevlin、Venkatachalam，2003，订单积压与未来盈利，Review of Accounting Studies</td>
+<td>academic</td>
+<td>积压订单怎样进入盈利预测</td>
+</tr>
+<tr>
+<td>G05</td>
+<td>国防、工程或设备类公司的卖方报告，有订单到收入的换算表的；由用户提供</td>
+<td>professional</td>
+<td>换算比例和时间分布怎样假设</td>
+</tr>
+<tr>
+<td>G03 事件分流</td>
+<td>Sonkin、Johnson，《Pitch the Perfect Investment》，2017</td>
+<td>professional</td>
+<td>怎样判断一条信息是否已反映在价格里、是否值得研究</td>
+</tr>
+<tr>
+<td>G03</td>
+<td>Valentine 同上，讲“关键因素”的章节</td>
+<td>professional</td>
+<td>怎样只跟踪会改变结论的少数因素</td>
+</tr>
+<tr>
+<td>G06 管理层变动</td>
+<td>卖方对 CEO 离任的事件点评；由用户提供</td>
+<td>professional</td>
+<td>事件发生后分析师先看什么</td>
+</tr>
+<tr>
+<td>G06</td>
+<td>Huson、Malatesta、Parrino，2004，“Managerial succession and firm performance”，Journal of Financial Economics</td>
+<td>academic</td>
+<td>区分内部接任与外部接任、被迫离任与正常离任</td>
+</tr>
+<tr>
+<td>G06</td>
+<td>Fahlenbrach，2009，创始人担任 CEO 的公司，Journal of Financial and Quantitative Analysis</td>
+<td>academic</td>
+<td>创始人公司与其他公司比较哪些指标</td>
+</tr>
+<tr>
+<td>G07 事件反应窗口</td>
+<td>MacKinlay，1997，“Event Studies in Economics and Finance”，Journal of Economic Literature</td>
+<td>academic</td>
+<td>已取得原件并提取（记录 paper-mackinlay-event-studies-1997）</td>
+</tr>
+<tr>
+<td>G07 剩余：基准权重、单次事件</td>
+<td>Campbell、Lo、MacKinlay，《The Econometrics of Financial Markets》，1997，第 4 章；法律诉讼中的单公司事件研究文献（MacKinlay 文中引 Mitchell、Netter 1994）</td>
+<td>academic</td>
+<td>单家公司事件怎样检验；事件公司在指数中权重大时基准怎样定</td>
+</tr>
+<tr>
+<td>G27 市场下跌层级</td>
+<td>Brunnermeier、Pedersen，2009，“Market Liquidity and Funding Liquidity”，Review of Financial Studies（凭记忆，未联网核实，未下载）</td>
+<td>academic</td>
+<td>杠杆与流动性怎样互相放大，第二、三层的边界</td>
+</tr>
+<tr>
+<td>G41 期权结构选择</td>
+<td>用户 iMac 上 opt-analysis 的策略设计卡：strategy-design-card-{carry,eod-directional,eod-short-vol,tail-hedge}-2026-04-14 与 strategy-backtest-design-*（用户自己的研究，已在本机挂载，未提取）</td>
+<td>own</td>
+<td>每种结构适合什么情景、行权价和到期怎样定、按什么目标比较</td>
+</tr>
+</tbody>
+</table>
+<p>还没有题目碰到、但投资研究闭环里缺的一段是事后复盘和失败案例。线索先记在这里，等有题目碰到再进上面的缺口表：</p>
+<table>
+<thead>
+<tr>
+<th>主题</th>
+<th>线索</th>
+<th>作者层级</th>
+<th>要提取的做法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>亏损时怎样处理</td>
+<td>Freeman-Shor，《The Art of Execution》，2015</td>
+<td>professional</td>
+<td>持仓亏损后几种处理方式及各自的条件</td>
+</tr>
+<tr>
+<td>决策复盘</td>
+<td>Montier，《Behavioural Investing》，2007</td>
+<td>professional</td>
+<td>复盘时检查哪些判断偏差</td>
+</tr>
+<tr>
+<td>财务造假案例</td>
+<td>Schilit，《Financial Shenanigans》</td>
+<td>professional</td>
+<td>可对照补充 forensic-red-flags 的检查项</td>
+</tr>
+<tr>
+<td>预测校准</td>
+<td>Tetlock、Gardner，《Superforecasting》，2015</td>
+<td>academic</td>
+<td>怎样登记预测并事后打分，可对照 guidance-tracking-playbook</td>
+</tr>
+</tbody>
+</table>
+<p>卖方事件点评和电话会逐字稿没有具体篇目，要用户从手上的材料里选。</p>
+<h2>出题时注意</h2>
+<ul>
+<li>用不在来源记录里的公司出题。INTC 题因为 Intel 本身在来源里，结果偏乐观。</li>
+<li>同一类任务至少用两家业务差别大的公司各测一次，才能分清缺口是通用的还是公司特有的。</li>
+<li>by-task.md 的“持仓复核”还没有题测过。</li>
+<li><code>execute</code> 题的首批四张卡已在 Micron 和 Danaher 上走过。指引追踪的题目只取最近 5 个季度，覆盖不到一年以上的全年指引，下次要另定回看几年。</li>
+</ul>
+</main></html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>研究方法图谱 · 公开方法库</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="app.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳到内容</a>
+  <header class="appbar">
+    <a class="brand" href="#" aria-label="研究方法图谱首页"><span class="brand-mark" aria-hidden="true">研</span><span class="brand-name">研究方法图谱<small>RESEARCH METHOD ATLAS</small></span></a>
+    <nav aria-label="主导航" id="view-nav">
+      <button data-view="logic" aria-pressed="true">投资逻辑</button>
+      <button data-view="library" aria-pressed="false">方法库</button>
+      <button data-view="relations" aria-pressed="false">关联方法</button>
+      <button data-view="labels" aria-pressed="false">标签说明</button>
+    </nav>
+    <div class="appbar-meta"><span id="library-stats"></span></div>
+  </header>
+  <div class="shell">
+    <main id="main">
+      <nav aria-label="站内导航"><a href="../">OS 首页</a> · <a href="results/">全部研究成果</a></nav>
+      <div id="load-state" role="status">正在读取公开方法库…</div>
+      <section class="filters" aria-label="查找方法" hidden>
+        <div class="page-head">
+          <p class="eyebrow">方法库</p>
+          <h1>沿研究流程查找方法</h1>
+          <p class="lede">八个环节按一次完整研究的先后排列。环节归类是整理建议，方法可以跨环节使用。</p>
+        </div>
+        <nav id="stage-nav" class="pipeline" aria-label="研究环节"></nav>
+        <div class="filter-row">
+          <label class="search"><span>搜索方法</span><input id="search" type="search" placeholder="名称、问题、别名或输入，例如：现金周期" autocomplete="off"></label>
+          <label><span>公开数据</span><select id="availability"><option value="all">全部可得性</option><option value="public">通常公开可得</option><option value="partial">部分 / 条件可得</option><option value="unavailable">关键数据未公开</option><option value="unknown">尚未评估</option></select></label>
+          <label><span>执行范围</span><select id="scope"><option value="all">全部范围</option><option value="facts">事实整理</option><option value="historical">历史计算</option><option value="conditional">条件推演</option><option value="qualitative">定性线索</option><option value="unassessed">待评估</option></select></label>
+        </div>
+        <div class="batch-filters" id="batch-filters" aria-label="实施批次"></div>
+      </section>
+      <section id="results" aria-label="内容"></section>
+    </main>
+    <aside id="detail" aria-label="选中方法详情"></aside>
+  </div>
+  <footer><span>批次表示实施顺序，不是方法有效性评级</span><span id="build-info"></span></footer>
+  <noscript>请启用 JavaScript 以浏览公开方法库。</noscript>
+</body>
+</html>

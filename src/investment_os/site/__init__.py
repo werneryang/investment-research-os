@@ -180,6 +180,7 @@ def _build_site(root: Path, out: Path, archive: Path | None) -> Path:
     registry, store = Registry.load(root), DataStore(root)
     out.mkdir(parents=True)
     shutil.copytree(root / "site" / "assets", out / "assets")
+    shutil.copytree(root / "site" / "method-atlas", out / "method-atlas")
     archived = archived_runs(archive) if archive is not None else None
 
     discovery.validate(content)
