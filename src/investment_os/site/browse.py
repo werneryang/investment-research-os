@@ -164,7 +164,7 @@ def home_page(content, model, latest, build):
             f'<p class="tagline">{L("用公开数据做可复现的美国市场研究：利率、资产、行业与公司。每项结果附数据来源、检查与适用范围。", "Reproducible research on US markets from public data: rates, asset classes, industries and companies. Every result carries its sources, checks and scope.")}</p>'
             f'<p class="small muted">{meta}</p></div></header><main class="wrap home">{search}'
             f'<p class="question-pills"><span class="muted">{L("按问题", "By question")}</span>{pills} '
-            f'<a class="pill" href="{atlas}">{L("研究方法库", "Research method atlas (中文)")}</a></p>'
+            f'<a class="pill" href="{atlas}">{L("研究方法库", "Research method atlas (Chinese)")}</a></p>'
             f'<div class="object-cards">{"".join(cards)}</div>{none}{coverage_matrix(tax, published)}'
             f'<p class="small home-more"><a href="research.html#data-plans">{L("数据与规划", "Data and plans")}</a> · '
             f'<a href="sources.html#references">{L("分类与产业关系资料", "Classifications and business relationships")}</a> · '
